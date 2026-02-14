@@ -1329,6 +1329,23 @@ class MusicService :
                 val shufflePlaylistFirst = dataStore.get(ShufflePlaylistFirstKey, false)
                 applyShuffleOrder(player.currentMediaItemIndex, player.mediaItemCount, shufflePlaylistFirst)
             }
+
+            // Eagerly load the next page if the initial status has few items
+            // (e.g. Spotify queues return only the selected track for instant playback)
+            if (player.mediaItemCount <= 5 && queue.hasNextPage()) {
+                val moreItems = withContext(Dispatchers.IO) {
+                    queue.nextPage()
+                        .filterExplicit(dataStore.get(HideExplicitKey, false))
+                        .filterVideoSongs(dataStore.get(HideVideoSongsKey, false))
+                }
+                if (moreItems.isNotEmpty()) {
+                    player.addMediaItems(moreItems)
+                    if (player.shuffleModeEnabled) {
+                        val shufflePlaylistFirst = dataStore.get(ShufflePlaylistFirstKey, false)
+                        applyShuffleOrder(player.currentMediaItemIndex, player.mediaItemCount, shufflePlaylistFirst)
+                    }
+                }
+            }
         }
     }
 

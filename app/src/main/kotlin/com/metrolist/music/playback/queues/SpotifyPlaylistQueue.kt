@@ -16,7 +16,11 @@ import timber.log.Timber
 
 /**
  * Queue implementation that loads tracks from a Spotify playlist.
- * Supports pagination and resolves each Spotify track to a YouTube equivalent.
+ *
+ * Optimized for fast playback start: only the selected track is resolved
+ * during [getInitialStatus], while the remaining tracks are resolved
+ * progressively in [nextPage] batches as the player approaches the end of
+ * the currently loaded queue.
  */
 class SpotifyPlaylistQueue(
     private val playlistId: String,
@@ -25,67 +29,121 @@ class SpotifyPlaylistQueue(
     private val mapper: SpotifyYouTubeMapper,
     override val preloadItem: MediaMetadata? = null,
 ) : Queue {
-    private var nextOffset: Int = 0
-    private var hasMore = true
-    private var totalTracks = 0
+
+    companion object {
+        private const val SPOTIFY_PAGE_SIZE = 50
+        private const val RESOLVE_BATCH_SIZE = 10
+    }
+
+    // All Spotify tracks fetched so far (may span multiple API pages)
+    private val allTracks = mutableListOf<SpotifyTrack>()
+
+    // Index into [allTracks] for the next batch to resolve to YouTube
+    private var resolveOffset = 0
+
+    // Spotify API pagination state
+    private var apiFetchOffset = 0
+    private var apiTotal = 0
+    private var apiHasMore = true
 
     override suspend fun getInitialStatus(): Queue.Status = withContext(Dispatchers.IO) {
-        val items = mutableListOf<MediaItem>()
+        try {
+            if (initialTracks.isNotEmpty()) {
+                // Tracks were already loaded by the ViewModel
+                allTracks.addAll(initialTracks)
+                apiTotal = initialTracks.size
+                apiFetchOffset = apiTotal
+                apiHasMore = false // All tracks already available
+            } else {
+                // Fetch the first API page
+                val result = Spotify.playlistTracks(
+                    playlistId, limit = SPOTIFY_PAGE_SIZE, offset = 0
+                ).getOrThrow()
+                apiTotal = result.total
+                val fetched = result.items.mapNotNull { it.track?.takeIf { t -> !t.isLocal } }
+                allTracks.addAll(fetched)
+                apiFetchOffset = result.items.size
+                apiHasMore = apiFetchOffset < apiTotal
+            }
 
-        val tracks = if (initialTracks.isNotEmpty()) {
-            nextOffset = initialTracks.size
-            totalTracks = initialTracks.size
-            initialTracks
-        } else {
-            // Fetch first page of playlist tracks
-            try {
-                val result = Spotify.playlistTracks(playlistId, limit = 50, offset = 0).getOrThrow()
-                nextOffset = result.items.size
-                totalTracks = result.total
-                result.items.mapNotNull { it.track?.takeIf { t -> !t.isLocal } }
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to fetch Spotify playlist tracks")
-                hasMore = false
+            // If startIndex is beyond current fetched tracks, fetch more
+            while (startIndex >= allTracks.size && apiHasMore) {
+                fetchNextApiPage()
+            }
+
+            // Resolve only the selected track for immediate playback
+            val targetIndex = startIndex.coerceIn(0, (allTracks.size - 1).coerceAtLeast(0))
+            val targetTrack = allTracks.getOrNull(targetIndex)
+            val resolvedItem = targetTrack?.let { mapper.resolveToMediaItem(it) }
+
+            if (resolvedItem == null) {
+                Timber.w("SpotifyPlaylistQueue: Could not resolve track at index $targetIndex")
                 return@withContext Queue.Status(
                     title = null,
                     items = emptyList(),
                     mediaItemIndex = 0,
                 )
             }
+
+            // Start resolving forward from the track after the selected one
+            resolveOffset = targetIndex + 1
+
+            Timber.d("SpotifyPlaylistQueue: Resolved track '${targetTrack.name}' instantly, " +
+                "${allTracks.size} tracks fetched, total=$apiTotal")
+
+            Queue.Status(
+                title = null,
+                items = listOf(resolvedItem),
+                mediaItemIndex = 0,
+            )
+        } catch (e: Exception) {
+            Timber.e(e, "SpotifyPlaylistQueue: Failed initial fetch")
+            Queue.Status(
+                title = null,
+                items = emptyList(),
+                mediaItemIndex = 0,
+            )
         }
-
-        hasMore = nextOffset < totalTracks
-
-        for (track in tracks) {
-            val mediaItem = mapper.resolveToMediaItem(track)
-            if (mediaItem != null) {
-                items.add(mediaItem)
-            }
-        }
-
-        Queue.Status(
-            title = null,
-            items = items,
-            mediaItemIndex = startIndex.coerceIn(0, (items.size - 1).coerceAtLeast(0)),
-        )
     }
 
-    override fun hasNextPage(): Boolean = hasMore
+    override fun hasNextPage(): Boolean =
+        resolveOffset < allTracks.size || apiHasMore
 
     override suspend fun nextPage(): List<MediaItem> = withContext(Dispatchers.IO) {
-        if (!hasMore) return@withContext emptyList()
+        // If we've resolved all fetched tracks but the API has more, fetch another page
+        if (resolveOffset >= allTracks.size && apiHasMore) {
+            fetchNextApiPage()
+        }
 
+        if (resolveOffset >= allTracks.size) {
+            return@withContext emptyList()
+        }
+
+        // Resolve the next batch
+        val end = (resolveOffset + RESOLVE_BATCH_SIZE).coerceAtMost(allTracks.size)
+        val batch = allTracks.subList(resolveOffset, end)
+        resolveOffset = end
+
+        Timber.d("SpotifyPlaylistQueue: Resolving batch of ${batch.size} tracks " +
+            "(offset=$resolveOffset/${allTracks.size}, apiTotal=$apiTotal)")
+
+        batch.mapNotNull { track -> mapper.resolveToMediaItem(track) }
+    }
+
+    private suspend fun fetchNextApiPage() {
+        if (!apiHasMore) return
         try {
-            val result = Spotify.playlistTracks(playlistId, limit = 50, offset = nextOffset).getOrThrow()
-            val tracks = result.items.mapNotNull { it.track?.takeIf { t -> !t.isLocal } }
-            nextOffset += tracks.size
-            hasMore = nextOffset < totalTracks
-
-            tracks.mapNotNull { track -> mapper.resolveToMediaItem(track) }
+            val result = Spotify.playlistTracks(
+                playlistId, limit = SPOTIFY_PAGE_SIZE, offset = apiFetchOffset,
+            ).getOrThrow()
+            val fetched = result.items.mapNotNull { it.track?.takeIf { t -> !t.isLocal } }
+            allTracks.addAll(fetched)
+            apiFetchOffset += result.items.size
+            apiHasMore = apiFetchOffset < apiTotal
+            Timber.d("SpotifyPlaylistQueue: Fetched API page, now have ${allTracks.size} tracks")
         } catch (e: Exception) {
-            Timber.e(e, "Failed to fetch next page of Spotify playlist")
-            hasMore = false
-            emptyList()
+            Timber.e(e, "SpotifyPlaylistQueue: Failed to fetch next API page")
+            apiHasMore = false
         }
     }
 }

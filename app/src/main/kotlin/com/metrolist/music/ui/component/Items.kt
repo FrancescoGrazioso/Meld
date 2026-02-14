@@ -792,14 +792,19 @@ fun PlaylistListItem(
                     stringResource(R.string.liked) -> R.drawable.favorite_border
                     stringResource(R.string.offline) -> R.drawable.offline
                     stringResource(R.string.cached_playlist) -> R.drawable.cached
-                    // R.drawable.backup as placeholder
                     stringResource(R.string.uploaded_playlist) -> R.drawable.backup
+                    stringResource(R.string.spotify_liked_songs) -> R.drawable.spotify
                     else -> if (autoPlaylist) R.drawable.trending_up else R.drawable.queue_music
                 }
                 Icon(
                     painter = painterResource(painter),
                     contentDescription = null,
-                    tint = LocalContentColor.current.copy(alpha = 0.8f),
+                    tint = if (playlist.playlist.name == stringResource(R.string.spotify_liked_songs)) {
+                        // Use Spotify brand green for the icon
+                        androidx.compose.ui.graphics.Color(0xFF1DB954)
+                    } else {
+                        LocalContentColor.current.copy(alpha = 0.8f)
+                    },
                     modifier = Modifier.size(ListThumbnailSize / 2)
                 )
             },
@@ -892,8 +897,8 @@ fun PlaylistGridItem(
                     stringResource(R.string.liked) -> R.drawable.favorite_border
                     stringResource(R.string.offline) -> R.drawable.offline
                     stringResource(R.string.cached_playlist) -> R.drawable.cached
-                    // R.drawable.backup as placeholder
                     stringResource(R.string.uploaded_playlist) -> R.drawable.backup
+                    stringResource(R.string.spotify_liked_songs) -> R.drawable.spotify
                     else -> if (autoPlaylist) R.drawable.trending_up else R.drawable.queue_music
                 }
                 Box(
@@ -903,7 +908,11 @@ fun PlaylistGridItem(
                     Icon(
                         painter = painterResource(painter),
                         contentDescription = null,
-                        tint = LocalContentColor.current.copy(alpha = 0.8f),
+                        tint = if (playlist.playlist.name == stringResource(R.string.spotify_liked_songs)) {
+                            androidx.compose.ui.graphics.Color(0xFF1DB954)
+                        } else {
+                            LocalContentColor.current.copy(alpha = 0.8f)
+                        },
                         modifier = Modifier.size(width / 2)
                     )
                 }

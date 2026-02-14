@@ -35,6 +35,7 @@ import com.metrolist.music.ui.screens.playlist.AutoPlaylistScreen
 import com.metrolist.music.ui.screens.playlist.CachePlaylistScreen
 import com.metrolist.music.ui.screens.playlist.LocalPlaylistScreen
 import com.metrolist.music.ui.screens.playlist.OnlinePlaylistScreen
+import com.metrolist.music.ui.screens.playlist.SpotifyLikedSongsScreen
 import com.metrolist.music.ui.screens.playlist.SpotifyPlaylistScreen
 import com.metrolist.music.ui.screens.playlist.TopPlaylistScreen
 import com.metrolist.music.ui.screens.search.OnlineSearchResult
@@ -383,6 +384,10 @@ fun NavGraphBuilder.navigationBuilder(
         ),
     ) {
         SpotifyPlaylistScreen(navController, scrollBehavior)
+    }
+
+    composable("spotify_liked_songs") {
+        SpotifyLikedSongsScreen(navController, scrollBehavior)
     }
 
     composable("settings/discord/login") {

@@ -118,6 +118,7 @@ fun LibraryPlaylistsScreen(
     // Spotify integration - when active, Spotify is the PRIMARY source
     val isSpotifyActive by spotifyViewModel.isSpotifyActive.collectAsState()
     val spotifyPlaylists by spotifyViewModel.spotifyPlaylists.collectAsState()
+    val spotifyLikedSongsTotal by spotifyViewModel.likedSongsTotal.collectAsState()
     val isUsingFallback by spotifyViewModel.isUsingFallback.collectAsState()
     val fallbackReason by spotifyViewModel.fallbackReason.collectAsState()
 
@@ -420,6 +421,30 @@ fun LibraryPlaylistsScreen(
                         }
                     }
 
+                    // Spotify Liked Songs as a special playlist entry
+                    if (isSpotifyActive && spotifyLikedSongsTotal > 0) {
+                        item(key = "spotify_liked_songs") {
+                            PlaylistListItem(
+                                playlist = Playlist(
+                                    playlist = PlaylistEntity(
+                                        id = "spotify_liked_songs",
+                                        name = stringResource(R.string.spotify_liked_songs),
+                                        remoteSongCount = spotifyLikedSongsTotal,
+                                    ),
+                                    songCount = spotifyLikedSongsTotal,
+                                    songThumbnails = emptyList(),
+                                ),
+                                autoPlaylist = true,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        navController.navigate("spotify_liked_songs")
+                                    }
+                                    .animateItem(),
+                            )
+                        }
+                    }
+
                     // Spotify playlists rendered as regular playlist items
                     if (isSpotifyActive && spotifyPlaylists.isNotEmpty()) {
                         items(
@@ -610,6 +635,31 @@ fun LibraryPlaylistsScreen(
                                 coroutineScope = coroutineScope,
                                 playlist = playlist,
                                 modifier = Modifier.animateItem()
+                            )
+                        }
+                    }
+
+                    // Spotify Liked Songs as a special playlist entry (grid)
+                    if (isSpotifyActive && spotifyLikedSongsTotal > 0) {
+                        item(key = "spotify_liked_songs") {
+                            PlaylistGridItem(
+                                playlist = Playlist(
+                                    playlist = PlaylistEntity(
+                                        id = "spotify_liked_songs",
+                                        name = stringResource(R.string.spotify_liked_songs),
+                                        remoteSongCount = spotifyLikedSongsTotal,
+                                    ),
+                                    songCount = spotifyLikedSongsTotal,
+                                    songThumbnails = emptyList(),
+                                ),
+                                fillMaxWidth = true,
+                                autoPlaylist = true,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        navController.navigate("spotify_liked_songs")
+                                    }
+                                    .animateItem(),
                             )
                         }
                     }
