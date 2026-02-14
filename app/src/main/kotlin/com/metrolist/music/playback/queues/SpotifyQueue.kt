@@ -16,29 +16,43 @@ import timber.log.Timber
 
 /**
  * Queue implementation that uses Spotify recommendations to build a radio-like queue.
- * Each Spotify track is resolved to a YouTube equivalent before playback.
+ *
+ * Optimized for fast playback start: only the initial track is resolved in
+ * [getInitialStatus]. Recommendations are fetched from Spotify but resolved
+ * progressively in [nextPage] batches.
  */
 class SpotifyQueue(
     private val initialTrack: SpotifyTrack,
     private val mapper: SpotifyYouTubeMapper,
     override val preloadItem: MediaMetadata? = null,
 ) : Queue {
-    private var hasMore = true
+
+    companion object {
+        private const val RESOLVE_BATCH_SIZE = 10
+    }
+
+    private val recommendedTracks = mutableListOf<SpotifyTrack>()
+    private var resolveOffset = 0
+    private var recommendationsFetched = false
 
     override suspend fun getInitialStatus(): Queue.Status = withContext(Dispatchers.IO) {
-        val items = mutableListOf<MediaItem>()
-
-        // Resolve the initial track
+        // Resolve only the initial track for immediate playback
         val initialMediaItem = mapper.resolveToMediaItem(initialTrack)
-        if (initialMediaItem != null) {
-            items.add(initialMediaItem)
+
+        if (initialMediaItem == null) {
+            Timber.w("SpotifyQueue: Could not resolve initial track '${initialTrack.name}'")
+            return@withContext Queue.Status(
+                title = null,
+                items = emptyList(),
+                mediaItemIndex = 0,
+            )
         }
 
-        // Fetch recommendations based on the seed track
-        val seedTrackId = initialTrack.id
-        val seedArtistIds = initialTrack.artists.mapNotNull { it.id }.take(2)
-
+        // Fetch recommendations in the background (don't resolve yet)
         try {
+            val seedTrackId = initialTrack.id
+            val seedArtistIds = initialTrack.artists.mapNotNull { it.id }.take(2)
+
             val recommendations = Spotify.recommendations(
                 seedTrackIds = listOf(seedTrackId),
                 seedArtistIds = seedArtistIds,
@@ -46,27 +60,40 @@ class SpotifyQueue(
             ).getOrNull()
 
             if (recommendations != null) {
-                for (track in recommendations.tracks) {
-                    val mediaItem = mapper.resolveToMediaItem(track)
-                    if (mediaItem != null) {
-                        items.add(mediaItem)
-                    }
-                }
+                recommendedTracks.addAll(recommendations.tracks)
+                Timber.d("SpotifyQueue: Fetched ${recommendations.tracks.size} recommendations")
             }
         } catch (e: Exception) {
-            Timber.e(e, "Failed to fetch Spotify recommendations")
+            Timber.e(e, "SpotifyQueue: Failed to fetch recommendations")
         }
 
-        hasMore = false
+        recommendationsFetched = true
+
+        Timber.d("SpotifyQueue: Resolved initial track '${initialTrack.name}' instantly, " +
+            "${recommendedTracks.size} recommendations queued for resolution")
 
         Queue.Status(
             title = null,
-            items = items,
+            items = listOf(initialMediaItem),
             mediaItemIndex = 0,
         )
     }
 
-    override fun hasNextPage(): Boolean = hasMore
+    override fun hasNextPage(): Boolean =
+        resolveOffset < recommendedTracks.size
 
-    override suspend fun nextPage(): List<MediaItem> = emptyList()
+    override suspend fun nextPage(): List<MediaItem> = withContext(Dispatchers.IO) {
+        if (resolveOffset >= recommendedTracks.size) {
+            return@withContext emptyList()
+        }
+
+        val end = (resolveOffset + RESOLVE_BATCH_SIZE).coerceAtMost(recommendedTracks.size)
+        val batch = recommendedTracks.subList(resolveOffset, end)
+        resolveOffset = end
+
+        Timber.d("SpotifyQueue: Resolving batch of ${batch.size} recommended tracks " +
+            "(offset=$resolveOffset/${recommendedTracks.size})")
+
+        batch.mapNotNull { track -> mapper.resolveToMediaItem(track) }
+    }
 }
