@@ -51,6 +51,7 @@ import com.metrolist.music.db.entities.SongAlbumMap
 import com.metrolist.music.db.entities.SongArtistMap
 import com.metrolist.music.db.entities.SongEntity
 import com.metrolist.music.db.entities.SongWithStats
+import com.metrolist.music.db.entities.SpotifyMatchEntity
 import com.metrolist.music.extensions.reversed
 import com.metrolist.music.extensions.toSQLiteQuery
 import com.metrolist.music.models.MediaMetadata
@@ -1672,4 +1673,18 @@ interface DatabaseDao {
 
     @Delete
     fun delete(podcast: PodcastEntity)
+
+    // Spotify match cache
+
+    @Query("SELECT * FROM spotify_match WHERE spotifyId = :spotifyId LIMIT 1")
+    fun getSpotifyMatch(spotifyId: String): SpotifyMatchEntity?
+
+    @Upsert
+    fun upsertSpotifyMatch(match: SpotifyMatchEntity)
+
+    @Query("DELETE FROM spotify_match WHERE cachedAt < :before")
+    fun clearOldSpotifyMatches(before: Long)
+
+    @Query("DELETE FROM spotify_match")
+    fun clearAllSpotifyMatches()
 }

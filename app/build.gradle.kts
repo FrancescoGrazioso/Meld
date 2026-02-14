@@ -34,6 +34,14 @@ android {
 
         buildConfigField("String", "LASTFM_API_KEY", "\"$lastFmKey\"")
         buildConfigField("String", "LASTFM_SECRET", "\"$lastFmSecret\"")
+
+        // Spotify API Client ID (register at https://developer.spotify.com)
+        val spotifyClientId = localProperties.getProperty("SPOTIFY_CLIENT_ID") ?: System.getenv("SPOTIFY_CLIENT_ID") ?: ""
+        buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"$spotifyClientId\"")
+        
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
+        }
     }
 
     flavorDimensions += listOf("abi", "variant")
@@ -104,6 +112,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            ndk {
+                debugSymbolLevel = "NONE"
+            }
         }
         debug {
             applicationIdSuffix = ".debug"
@@ -112,6 +123,9 @@ android {
                 signingConfigs.getByName("debug")
             } else {
                 signingConfigs.getByName("persistentDebug")
+            }
+            ndk {
+                debugSymbolLevel = "FULL"
             }
         }
     }
@@ -189,6 +203,7 @@ dependencies {
     implementation(libs.concurrent.futures)
 
     implementation(libs.activity)
+    implementation(libs.browser)
     implementation(libs.hilt.navigation)
     implementation(libs.datastore)
 
@@ -245,6 +260,7 @@ dependencies {
     implementation(project(":betterlyrics"))
     implementation(project(":simpmusic"))
     implementation(project(":shazamkit"))
+    implementation(project(":spotify"))
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
