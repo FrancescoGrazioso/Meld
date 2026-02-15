@@ -121,6 +121,7 @@ fun LibraryPlaylistsScreen(
     val spotifyLikedSongsTotal by spotifyViewModel.likedSongsTotal.collectAsState()
     val isUsingFallback by spotifyViewModel.isUsingFallback.collectAsState()
     val fallbackReason by spotifyViewModel.fallbackReason.collectAsState()
+    val needsSpotifyReLogin by spotifyViewModel.needsReLogin.collectAsState()
 
     LaunchedEffect(isSpotifyActive) {
         if (isSpotifyActive) {
@@ -418,6 +419,50 @@ fun LibraryPlaylistsScreen(
                                 playlist = playlist,
                                 modifier = Modifier.animateItem()
                             )
+                        }
+                    }
+
+                    // Spotify session expired banner
+                    if (needsSpotifyReLogin) {
+                        item(key = "spotify_relogin_banner") {
+                            androidx.compose.material3.Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                colors = androidx.compose.material3.CardDefaults.cardColors(
+                                    containerColor = MaterialTheme.colorScheme.errorContainer,
+                                ),
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Icon(
+                                        painterResource(R.drawable.spotify),
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onErrorContainer,
+                                    )
+                                    Spacer(modifier = Modifier.padding(horizontal = 8.dp))
+                                    Text(
+                                        text = stringResource(R.string.spotify_session_expired),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onErrorContainer,
+                                        modifier = Modifier.weight(1f),
+                                    )
+                                    androidx.compose.material3.TextButton(
+                                        onClick = {
+                                            navController.navigate("settings/spotify/login")
+                                        },
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.spotify_relogin),
+                                            color = MaterialTheme.colorScheme.onErrorContainer,
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
 
