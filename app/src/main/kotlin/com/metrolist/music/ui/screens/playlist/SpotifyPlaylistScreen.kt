@@ -146,6 +146,28 @@ fun SpotifyPlaylistScreen(
 
             if (error != null) {
                 item(key = "error") {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = error ?: "",
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        androidx.compose.material3.OutlinedButton(
+                            onClick = { viewModel.retry() },
+                        ) {
+                            Text(stringResource(R.string.retry_button))
+                        }
+                    }
+                }
+            }
+
+            if (!isLoading && error == null && tracks.isEmpty()) {
+                item(key = "empty") {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -153,8 +175,8 @@ fun SpotifyPlaylistScreen(
                         contentAlignment = Alignment.Center,
                     ) {
                         Text(
-                            text = error ?: "",
-                            color = MaterialTheme.colorScheme.error,
+                            text = stringResource(R.string.spotify_no_tracks),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }

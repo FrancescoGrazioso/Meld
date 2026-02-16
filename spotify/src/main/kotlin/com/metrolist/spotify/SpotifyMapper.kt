@@ -10,14 +10,23 @@ import com.metrolist.spotify.models.SpotifyTrack
  */
 object SpotifyMapper {
 
+    // Pre-compiled regex patterns for title normalization (avoids re-creation on each call)
+    private val FEAT_PATTERN = Regex("\\(feat\\..*?\\)")
+    private val FT_PATTERN = Regex("\\(ft\\..*?\\)")
+    private val BRACKET_PATTERN = Regex("\\[.*?]")
+    private val REMASTER_PATTERN = Regex("\\(.*?remaster.*?\\)", RegexOption.IGNORE_CASE)
+    private val REMIX_PATTERN = Regex("\\(.*?remix.*?\\)", RegexOption.IGNORE_CASE)
+    private val NON_ALNUM_PATTERN = Regex("[^a-z0-9\\s]")
+    private val MULTI_SPACE_PATTERN = Regex("\\s+")
+
     /**
      * Builds a YouTube search query from a Spotify track.
      * The query is optimized for finding the matching song on YouTube Music.
      */
     fun buildSearchQuery(track: SpotifyTrack): String {
-        val artist = track.artists.firstOrNull()?.name ?: ""
+        val artist = track.artists.firstOrNull()?.name.orEmpty()
         val title = track.name
-        return "$artist $title".trim()
+        return if (artist.isEmpty()) title else "$artist $title"
     }
 
     /**
@@ -86,13 +95,13 @@ object SpotifyMapper {
      */
     private fun normalizeTitle(title: String): String {
         return title.lowercase()
-            .replace(Regex("\\(feat\\..*?\\)"), "")
-            .replace(Regex("\\(ft\\..*?\\)"), "")
-            .replace(Regex("\\[.*?]"), "")
-            .replace(Regex("\\(.*?remaster.*?\\)", RegexOption.IGNORE_CASE), "")
-            .replace(Regex("\\(.*?remix.*?\\)", RegexOption.IGNORE_CASE), "")
-            .replace(Regex("[^a-z0-9\\s]"), "")
-            .replace(Regex("\\s+"), " ")
+            .replace(FEAT_PATTERN, "")
+            .replace(FT_PATTERN, "")
+            .replace(BRACKET_PATTERN, "")
+            .replace(REMASTER_PATTERN, "")
+            .replace(REMIX_PATTERN, "")
+            .replace(NON_ALNUM_PATTERN, "")
+            .replace(MULTI_SPACE_PATTERN, " ")
             .trim()
     }
 

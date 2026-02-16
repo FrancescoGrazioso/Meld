@@ -28,6 +28,7 @@ import kotlinx.serialization.json.Json
  * Requires a valid OAuth2 access token obtained via PKCE flow.
  */
 object Spotify {
+    @Volatile
     var accessToken: String? = null
 
     private val json = Json {
@@ -50,9 +51,7 @@ object Spotify {
 
     class SpotifyException(val statusCode: Int, override val message: String) : Exception(message)
 
-    /**
-     * Optional logger callback. Set by the app module to forward logs to Timber.
-     */
+    @Volatile
     var logger: ((level: String, message: String) -> Unit)? = null
 
     private fun log(level: String, message: String) {

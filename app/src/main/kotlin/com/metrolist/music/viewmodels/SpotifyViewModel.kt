@@ -141,14 +141,16 @@ constructor(
     fun loadPlaylists() {
         viewModelScope.launch(Dispatchers.IO) {
             Timber.d("SpotifyVM: loadPlaylists() start")
+            _playlistsLoading.value = true
+            _playlistsError.value = null
+
             if (!ensureAuthenticated()) {
                 Timber.w("SpotifyVM: loadPlaylists() - auth failed")
                 _playlistsError.value = "Not authenticated"
+                _playlistsLoading.value = false
                 setFallback("Authentication failed while loading playlists")
                 return@launch
             }
-            _playlistsLoading.value = true
-            _playlistsError.value = null
 
             Spotify.myPlaylists(limit = 50).onSuccess { paging ->
                 Timber.d("SpotifyVM: loadPlaylists() - SUCCESS, got ${paging.items.size} playlists")
@@ -170,11 +172,14 @@ constructor(
     fun loadLikedSongs() {
         viewModelScope.launch(Dispatchers.IO) {
             Timber.d("SpotifyVM: loadLikedSongs() start")
+            _likedSongsLoading.value = true
+
             if (!ensureAuthenticated()) {
                 Timber.w("SpotifyVM: loadLikedSongs() - auth failed")
+                _likedSongsLoading.value = false
+                setFallback("Authentication failed while loading liked songs")
                 return@launch
             }
-            _likedSongsLoading.value = true
 
             Spotify.likedSongs(limit = 50).onSuccess { paging ->
                 Timber.d("SpotifyVM: loadLikedSongs() - SUCCESS, got ${paging.items.size} songs, total=${paging.total}")
@@ -183,6 +188,7 @@ constructor(
             }.onFailure { e ->
                 Timber.e(e, "SpotifyVM: loadLikedSongs() - FAILED")
                 handleAuthError(e)
+                setFallback("Failed to load liked songs: ${e.message}")
             }
 
             _likedSongsLoading.value = false
@@ -203,6 +209,7 @@ constructor(
             }.onFailure { e ->
                 Timber.e(e, "SpotifyVM: loadTopTracks() - FAILED")
                 handleAuthError(e)
+                setFallback("Failed to load top tracks: ${e.message}")
             }
         }
     }
@@ -316,9 +323,10 @@ constructor(
 
     private fun handleAuthError(error: Throwable) {
         if (error is Spotify.SpotifyException && error.statusCode == 401) {
-            Timber.w("SpotifyVM: Got 401, will retry auth on next request")
+            Timber.w("SpotifyVM: Got 401, will attempt token refresh")
             viewModelScope.launch(Dispatchers.IO) {
-                ensureAuthenticated()
+                val refreshed = ensureAuthenticated()
+                Timber.d("SpotifyVM: handleAuthError - refresh result: $refreshed")
             }
         }
     }

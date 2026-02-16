@@ -68,11 +68,6 @@ class SpotifyYouTubeMapper(
      * Resolves a Spotify track to a MediaItem suitable for the player queue.
      * The MediaItem's id is the YouTube video ID, allowing the existing
      * ResolvingDataSource to resolve the actual stream URL.
-     */
-    /**
-     * Resolves a Spotify track to a MediaItem suitable for the player queue.
-     * The MediaItem's id is the YouTube video ID, allowing the existing
-     * ResolvingDataSource to resolve the actual stream URL.
      * Returns null if no match was found (track will be skipped).
      */
     suspend fun resolveToMediaItem(track: SpotifyTrack): androidx.media3.common.MediaItem? {

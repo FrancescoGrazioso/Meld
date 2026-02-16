@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -124,6 +125,30 @@ fun SpotifySettings(
             onCheckedChange = onEnableSpotifyChange,
             isEnabled = isLoggedIn,
         )
+
+        if (isLoggedIn && enableSpotify) {
+            PreferenceGroupTitle(
+                title = stringResource(R.string.information),
+            )
+
+            PreferenceEntry(
+                title = {
+                    Text(
+                        text = stringResource(R.string.spotify_mapping_info),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
+                description = null,
+                icon = {
+                    Icon(
+                        painterResource(R.drawable.info),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                },
+            )
+        }
     }
 
     TopAppBar(

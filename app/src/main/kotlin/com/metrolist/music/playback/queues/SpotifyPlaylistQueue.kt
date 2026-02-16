@@ -11,6 +11,9 @@ import com.metrolist.music.playback.SpotifyYouTubeMapper
 import com.metrolist.spotify.Spotify
 import com.metrolist.spotify.models.SpotifyTrack
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -127,7 +130,11 @@ class SpotifyPlaylistQueue(
         Timber.d("SpotifyPlaylistQueue: Resolving batch of ${batch.size} tracks " +
             "(offset=$resolveOffset/${allTracks.size}, apiTotal=$apiTotal)")
 
-        batch.mapNotNull { track -> mapper.resolveToMediaItem(track) }
+        coroutineScope {
+            batch.map { track -> async { mapper.resolveToMediaItem(track) } }
+                .awaitAll()
+                .filterNotNull()
+        }
     }
 
     private suspend fun fetchNextApiPage() {

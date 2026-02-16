@@ -21,13 +21,13 @@ import java.util.Base64
  * This eliminates the need for a client secret, making it safe for public clients (mobile apps).
  */
 object SpotifyAuth {
+    @Volatile
     private var clientId: String = ""
 
     private const val REDIRECT_URI = "metrolist://spotify/callback"
     private const val AUTH_URL = "https://accounts.spotify.com/authorize"
     private const val TOKEN_URL = "https://accounts.spotify.com/api/token"
 
-    // Scopes required for reading user data (no playback control needed)
     private val SCOPES = listOf(
         "user-read-private",
         "user-read-email",
@@ -37,6 +37,7 @@ object SpotifyAuth {
         "user-top-read",
     )
 
+    @Volatile
     private var codeVerifier: String? = null
 
     private val json = Json {
@@ -84,7 +85,8 @@ object SpotifyAuth {
      * Exchanges the authorization code for access and refresh tokens.
      */
     suspend fun exchangeCodeForToken(code: String): Result<SpotifyToken> = runCatching {
-        val verifier = codeVerifier ?: throw IllegalStateException("No code verifier available")
+        val verifier = codeVerifier
+            ?: throw IllegalStateException("No code verifier available. Call getAuthorizationUrl() first.")
 
         val response = client.post(TOKEN_URL) {
             setBody(FormDataContent(Parameters.build {

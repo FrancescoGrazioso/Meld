@@ -12,7 +12,6 @@ import androidx.lifecycle.viewModelScope
 import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.playback.SpotifyYouTubeMapper
 import com.metrolist.spotify.Spotify
-import com.metrolist.spotify.SpotifyMapper
 import com.metrolist.spotify.models.SpotifyPlaylist
 import com.metrolist.spotify.models.SpotifyTrack
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,7 +31,8 @@ constructor(
     savedStateHandle: SavedStateHandle,
     database: MusicDatabase,
 ) : ViewModel() {
-    val playlistId = savedStateHandle.get<String>("playlistId")!!
+    val playlistId: String = savedStateHandle.get<String>("playlistId")
+        ?: throw IllegalArgumentException("playlistId is required")
     val mapper = SpotifyYouTubeMapper(database)
 
     private val _playlist = MutableStateFlow<SpotifyPlaylist?>(null)
@@ -56,11 +56,11 @@ constructor(
             _isLoading.value = true
             _error.value = null
 
-            // Load playlist metadata
             Spotify.playlist(playlistId).onSuccess { pl ->
                 _playlist.value = pl
             }.onFailure { e ->
                 Timber.e(e, "Failed to load Spotify playlist metadata")
+                _error.value = e.message ?: "Failed to load playlist info"
             }
 
             // Load all tracks

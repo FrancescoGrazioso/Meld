@@ -11,6 +11,9 @@ import com.metrolist.music.playback.SpotifyYouTubeMapper
 import com.metrolist.spotify.Spotify
 import com.metrolist.spotify.models.SpotifyTrack
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -33,7 +36,6 @@ class SpotifyQueue(
 
     private val recommendedTracks = mutableListOf<SpotifyTrack>()
     private var resolveOffset = 0
-    private var recommendationsFetched = false
 
     override suspend fun getInitialStatus(): Queue.Status = withContext(Dispatchers.IO) {
         // Resolve only the initial track for immediate playback
@@ -67,8 +69,6 @@ class SpotifyQueue(
             Timber.e(e, "SpotifyQueue: Failed to fetch recommendations")
         }
 
-        recommendationsFetched = true
-
         Timber.d("SpotifyQueue: Resolved initial track '${initialTrack.name}' instantly, " +
             "${recommendedTracks.size} recommendations queued for resolution")
 
@@ -94,6 +94,11 @@ class SpotifyQueue(
         Timber.d("SpotifyQueue: Resolving batch of ${batch.size} recommended tracks " +
             "(offset=$resolveOffset/${recommendedTracks.size})")
 
-        batch.mapNotNull { track -> mapper.resolveToMediaItem(track) }
+        // Resolve tracks in parallel for faster queue loading
+        coroutineScope {
+            batch.map { track -> async { mapper.resolveToMediaItem(track) } }
+                .awaitAll()
+                .filterNotNull()
+        }
     }
 }
