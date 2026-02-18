@@ -529,8 +529,8 @@
     <string name="ai_model">Modell</string>
     <string name="ai_translation_mode">Übersetzungsmodus</string>
     <string name="ai_target_language">Zielsprache</string>
-    <string name="ai_setup_guide">Einrichtungsanleitung</string>
-    <string name="ai_translation_literal">Original + Übersetzung</string>
+    <string name="ai_setup_guide">API-Anmeldeinformationen</string>
+    <string name="ai_translation_literal">Übersetzung</string>
     <string name="ai_translation_transcribed">Original + Transkription</string>
     <string name="ai_api_key_required">API-Schlüssel erforderlich</string>
     <string name="ai_error_api_key_required">Ein API-Schlüssel ist erforderlich.</string>
@@ -586,4 +586,13 @@
     <string name="listen_together_in_top_bar_desc">Gemeinsam hören in der oberen App-Leiste anstelle der Navigationsleiste anzeigen</string>
     <string name="player_background_solid">Einfärbig</string>
     <string name="prevent_duplicate_tracks_in_queue">Doppelte Songs in der Warteschlange vermeiden</string>
+    <string name="prevent_duplicate_tracks_in_queue_desc">Wird ein Titel zur Warteschlange hinzugefügt, wird er von seiner vorherigen Position entfernt, falls er bereits existiert.</string>
+    <string name="resume_on_bluetooth_connect">Bei Bluetooth-Verbindung fortsetzen</string>
+    <string name="lyrics_romanize_hindi">Hindi-Texte romanisieren</string>
+    <string name="lyrics_romanize_punjabi">Punjabi-Texte romanisieren</string>
+    <string name="lyrics_romanize_as_main">Romanisierten Songtext als Haupttext anzeigen</string>
+    <string name="ai_translation_literal_desc">Bedeutung in Zielsprache übersetzen</string>
+    <string name="button_visible">Sichtbar</string>
+    <string name="discord_information_warning">Diese Funktion verwendet die KizzyRPC-Bibliothek, um eine Verbindung zum Discord-Gateway herzustellen und Ihren Rich Presence-Status festzulegen. Obwohl keine Kontosperrungen aufgrund einer ähnlichen Nutzung bekannt sind, wird diese Methode von Discord nicht offiziell unterstützt und kann als Verstoß gegen die Nutzungsbedingungen angesehen werden. Ihr Token wird lokal extrahiert und niemals an Server Dritter gesendet. Gehen Sie nach eigenem Ermessen vor.</string>
+    <string name="discord_activity_type">Aktivitätstyp</string>
 </resources>
