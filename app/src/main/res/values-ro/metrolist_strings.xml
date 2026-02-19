@@ -634,4 +634,9 @@
     <string name="discord_activity_name_description">Nume personalizat pentru activitate (lasă gol pentru numele prestabilit)</string>
     <string name="discord_advanced_mode">Mod avansat</string>
     <string name="discord_advanced_mode_description">Afișează opțiuni adiționale de personalizare pentru Rich Presence</string>
+    <string name="resume_on_bluetooth_connect">Reia redarea la conectarea unui dispozitiv Bluetooth</string>
+    <string name="lyrics_romanize_hindi">Romanizează versurile în hindi</string>
+    <string name="lyrics_romanize_punjabi">Romanizează versurile în punjabi</string>
+    <string name="lyrics_romanize_as_main">Afișează versurile romanizate ca principale</string>
+    <string name="player_background_solid">Solid</string>
 </resources>
