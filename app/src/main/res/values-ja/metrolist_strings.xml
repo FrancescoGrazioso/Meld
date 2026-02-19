@@ -128,8 +128,8 @@
     <string name="auto_download_on_like_desc">ハートをつけた曲を自動でダウンロードします</string>
     <string name="swipe_sensitivity">ミニプレーヤーのスワイプ感度</string>
     <string name="swipe_sensitivity_desc">曲を変更する際のスワイプ操作の感度を調整します</string>
-    <string name="clear_song_cache_dialog">キャッシュした曲をすべて消去しますか？</string>
-    <string name="clear_image_cache_dialog">キャッシュした画像をすべて消去しますか？</string>
+    <string name="clear_song_cache_dialog">キャッシュ済みの曲をすべて削除しますか？</string>
+    <string name="clear_image_cache_dialog">画像のキャッシュをすべて削除しますか？</string>
     <string name="clear_downloads_dialog">ダウンロードした曲をすべて消去しますか？</string>
     <string name="disable">無効</string>
     <string name="pause_remote_listen_history">YouTube Musicとの再生履歴の共有を停止</string>
@@ -262,7 +262,7 @@
     <string name="persistent_shuffle_desc">新しい曲やプレイリストを再生してもシャッフル再生状態を維持します</string>
     <string name="remember_shuffle_and_repeat">シャッフル/リピート再生を保持</string>
     <string name="remember_shuffle_and_repeat_desc">アプリを再起動したあともシャッフル/リピート再生を維持します</string>
-    <string name="pause_music_when_media_is_muted">ミュート時に曲を停止</string>
+    <string name="pause_music_when_media_is_muted">ミュート時に再生を停止</string>
     <string name="keep_screen_on_when_player_is_expanded">プレーヤーを展開中は画面をオンに保つ</string>
     <string name="lyrics_offset">歌詞のタイミングを調整</string>
     <string name="google_cast_description">Chromecastなどのキャスト対応のデバイスに音声をキャストできます</string>
@@ -418,7 +418,7 @@
     <string name="reconnect">再接続</string>
     <string name="mini_player_outline">ミニプレーヤーの枠線</string>
     <string name="cache_size_warning_title">ちょっと待って！</string>
-    <string name="cache_size_warning_message">現在アプリが使用している容量（%1$s）より小さいキャッシュサイズを選択しています。続行すると、新しい上限に合わせるため、キャッシュされた一部の%2$sが削除される可能性があります。本当に続行しますか？</string>
+    <string name="cache_size_warning_message">現在アプリが使用している容量（%1$s）より小さいキャッシュサイズ上限を選択しています。新しい上限に合わせるため、一部の%2$sが削除されることがあります。続行しますか？</string>
     <string name="album_art_for">%sのアルバムアート</string>
     <string name="wrapped_total_albums_title">これまでに再生した</string>
     <string name="wrapped_total_albums_subtitle">ユニークなアルバム数</string>
