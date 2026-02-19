@@ -654,4 +654,23 @@
     <string name="discord_activity_name_description">اسم مخصص للنشاط (اتركه فارغًا للافتراضي)</string>
     <string name="discord_advanced_mode">الوضع المتقدم</string>
     <string name="discord_advanced_mode_description">عرض خيارات تخصيص إضافية لـ Rich Presence</string>
+    <string name="display_density">كثافة الشاشة</string>
+    <string name="restart">إعادة التشغيل</string>
+    <string name="restart_required">إعادة التشغيل مطلوبة</string>
+    <string name="density_restart_message">سيسري تغيير كثافة الشاشة بعد إعادة تشغيل التطبيق.\nهل تريد إعادة التشغيل الآن؟</string>
+    <string name="found_in_settings_content">موجود في الإعدادات &gt; المحتوى</string>
+    <string name="plays">مرات التشغيل</string>
+    <string name="speed_dial">الاتصال السريع</string>
+    <string name="pin_to_speed_dial">رقم التعريف الشخصي للاتصال السريع</string>
+    <string name="unpin_from_speed_dial">إلغاء التثبيت من الاتصال السريع</string>
+    <string name="randomize_home_order">ترتيب الشاشة الرئيسية عشوائيًا</string>
+    <string name="randomize_home_order_desc">إعادة ترتيب أقسام الشاشة الرئيسية عشوائيًا حسب الأهمية</string>
+    <string name="daily_discover_sounds_like">صوته مثل %1$s</string>
+    <string name="your_daily_discover">اكتشافك اليومي</string>
+    <string name="daily_discover_because_you_listen_to">لأنك تستمع إلى %1$s</string>
+    <string name="daily_discover_similar_to">مشابه لـ %1$s</string>
+    <string name="daily_discover_based_on">بناءً على %1$s</string>
+    <string name="daily_discover_for_fans_of">لمحبي %1$s</string>
+    <string name="from_the_community">‌من قِبل المجتمع</string>
+    <string name="songs_count">%s أغاني</string>
 </resources>
