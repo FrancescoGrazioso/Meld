@@ -631,7 +631,7 @@
     <string name="discord_advanced_mode_description">Zengin özelleştirme içeriklerini ayarlarda göster</string>
     <string name="player_background_solid">Katı</string>
     <string name="resume_on_bluetooth_connect">Bluetooth aygıtı bağlanınca devam et</string>
-    <string name="lyrics_romanize_hindi">Hintçe sözleri romanlaştır</string>
-    <string name="lyrics_romanize_punjabi">Punjabice sözleri romanlaştır</string>
-    <string name="lyrics_romanize_as_main">Romanlaştırılmış sözleri öntanımlı olarak göster</string>
+    <string name="lyrics_romanize_hindi">Hintçe şarkı sözlerini Latinleştir</string>
+    <string name="lyrics_romanize_punjabi">Punjabice şarkı sözlerini Latinleştir</string>
+    <string name="lyrics_romanize_as_main">Latin harfleriyle yazılmış sözleri ana metin olarak göster</string>
 </resources>
