@@ -624,4 +624,9 @@
     <string name="enable">Aktifkan</string>
     <string name="prevent_duplicate_tracks_in_queue">Cegah lagu yang sama di antrean</string>
     <string name="prevent_duplicate_tracks_in_queue_desc">Saat menambahkan lagu ke antrean, hapus kemunculannya sebelumnya jika lagu tersebut sudah ada dalam antrean</string>
+    <string name="resume_on_bluetooth_connect">Lanjutkan saat Bluetooth terhubung</string>
+    <string name="player_background_solid">Pekat</string>
+    <string name="lyrics_romanize_hindi">Romanisasikan lirik Hindi</string>
+    <string name="lyrics_romanize_punjabi">Romanisasikan lirik Punjabi</string>
+    <string name="lyrics_romanize_as_main">Tampilkan lirik yang diromanisasi sebagai utama</string>
 </resources>
