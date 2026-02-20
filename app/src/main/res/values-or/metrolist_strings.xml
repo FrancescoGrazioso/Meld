@@ -1,3 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="explore">ଅନୁସନ୍ଧାନ</string>
+    <string name="local_history">ସ୍ଥାନୀୟ</string>
+    <string name="remote_history">ଦୂରସ୍ଥ</string>
+    <string name="charts">ଚାର୍ଟ</string>
+    <string name="back_button_desc">ପଛକୁ</string>
+    <string name="no_title">ଶୀର୍ଷକ ନାହିଁ</string>
+    <string name="unknown_artist">ଅଜଣା କଳାକାର</string>
+    <string name="unknown_item_type">ଅଜଣା ତାଲିକାଭୁକ୍ତ</string>
+    <string name="loading_charts">ଚାର୍ଟ ଲୋଡ ହେଉଛି</string>
+    <string name="retry_button">ପୁନର୍ବାର ଚେଷ୍ଟା</string>
+    <string name="album_cover_desc">ଆଲବମ୍ ମଲାଟ</string>
+    <string name="top_music_videos">ଶ୍ରେଷ୍ଠ ସଙ୍ଗୀତ ଭିଡିଓ</string>
 </resources>
