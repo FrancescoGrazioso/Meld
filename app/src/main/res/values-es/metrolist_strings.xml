@@ -639,4 +639,23 @@
     <string name="discord_activity_name_description">Nombre personalizado para la actividad (dejar vacío para el valor predeterminado)</string>
     <string name="discord_advanced_mode">Modo avanzado</string>
     <string name="discord_advanced_mode_description">Mostrar opciones de personalización adicionales para Rich Presence</string>
+    <string name="display_density">Densidad de pantalla</string>
+    <string name="restart">Reiniciar</string>
+    <string name="restart_required">Se requiere reiniciar</string>
+    <string name="density_restart_message">El cambio en la densidad de pantalla se aplicará después de reiniciar la aplicación. ¿Quieres reiniciarla ahora?</string>
+    <string name="found_in_settings_content">Se encuentra en Ajustes &gt; Contenido</string>
+    <string name="plays">reproducciones</string>
+    <string name="speed_dial">Acceso rápido</string>
+    <string name="pin_to_speed_dial">Fijar al acceso rápido</string>
+    <string name="unpin_from_speed_dial">Quitar del acceso rápido</string>
+    <string name="randomize_home_order">Aleatorizar el orden de la pantalla de inicio</string>
+    <string name="randomize_home_order_desc">Reordenar aleatoriamente las secciones de la pantalla de inicio según prioridades ponderadas</string>
+    <string name="daily_discover_sounds_like">Suena como %1$s</string>
+    <string name="your_daily_discover">Tu descubrimiento diario</string>
+    <string name="daily_discover_because_you_listen_to">Porque escuchas a %1$s</string>
+    <string name="daily_discover_similar_to">Similar a %1$s</string>
+    <string name="daily_discover_based_on">Basado en %1$s</string>
+    <string name="daily_discover_for_fans_of">Para fans de %1$s</string>
+    <string name="from_the_community">De la comunidad</string>
+    <string name="songs_count">%s canciones</string>
 </resources>
