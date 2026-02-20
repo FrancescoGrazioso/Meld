@@ -629,4 +629,18 @@
     <string name="restart_required">Neustart erforderlich</string>
     <string name="display_density">Anzeigedichte</string>
     <string name="density_restart_message">Die Änderung der Anzeigedichte wird nach dem Neustart der App wirksam. Möchten Sie jetzt neu starten?</string>
+    <string name="found_in_settings_content">Zu finden unter Einstellungen &gt; Inhalt</string>
+    <string name="speed_dial">Schnellwahl</string>
+    <string name="pin_to_speed_dial">An Schnellwahl anheften</string>
+    <string name="unpin_from_speed_dial">Von Schnellwahl lösen</string>
+    <string name="randomize_home_order">Reihenfolge des Startbildschirms zufällig anordnen</string>
+    <string name="randomize_home_order_desc">Die Abschnitte des Startbildschirms nach gewichteten Prioritäten zufällig neu anordnen</string>
+    <string name="daily_discover_sounds_like">Klingt wie %1$s</string>
+    <string name="your_daily_discover">Ihre tägliche Entdeckung</string>
+    <string name="daily_discover_because_you_listen_to">Weil du %1$s hörst</string>
+    <string name="daily_discover_similar_to">Ähnlich wie %1$s</string>
+    <string name="daily_discover_based_on">Basierend auf %1$s</string>
+    <string name="daily_discover_for_fans_of">Für Fans von %1$s</string>
+    <string name="from_the_community">Aus der Community</string>
+    <string name="songs_count">%s Songs</string>
 </resources>
