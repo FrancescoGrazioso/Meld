@@ -61,7 +61,7 @@
     <string name="subscribers">Abonnenten</string>
     <string name="views">Aufrufe</string>
     <string name="likes">Likes</string>
-    <string name="dislikes">Mag ich nicht</string>
+    <string name="dislikes">Dislikes</string>
     <plurals name="seconds">
         <item quantity="one">1 Sekunde</item>
         <item quantity="other">%d Sekunden</item>
@@ -625,4 +625,8 @@
     <string name="discord_activity_name_description">Benutzerdefinierter Name für die Aktivität (für Standardwert leer lassen)</string>
     <string name="discord_advanced_mode">Erweiterter Modus</string>
     <string name="discord_advanced_mode_description">Zusätzliche Personalisierungsoptionen für Rich Presence anzeigen</string>
+    <string name="restart">Neustart</string>
+    <string name="restart_required">Neustart erforderlich</string>
+    <string name="display_density">Anzeigedichte</string>
+    <string name="density_restart_message">Die Änderung der Anzeigedichte wird nach dem Neustart der App wirksam. Möchten Sie jetzt neu starten?</string>
 </resources>
