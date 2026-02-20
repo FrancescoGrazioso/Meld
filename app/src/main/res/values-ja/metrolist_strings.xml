@@ -606,7 +606,7 @@
     <string name="button_text">ボタンのテキスト</string>
     <string name="button_visible">表示する</string>
     <string name="login_successful">ログインに成功しました！</string>
-    <string name="discord_information_warning">この機能は、KizzyRPCライブラリを使用してDiscordのゲートウェイに接続し、リッチプレゼンスステータスを設定します。同様の使用方法によるアカウント停止は現在まで報告されていませんが、この方法はDiscordによって公式にサポートされておらず、利用規約違反とみなされる可能性があります。トークンはデバイス内でのみ取得され、第三者のサーバーに送信されることはありません。自己責任で使用してください。</string>
+    <string name="discord_information_warning">この機能は、KizzyRPCライブラリを使用してDiscordのゲートウェイに接続し、再生状況を表示します。同様の使用方法によるアカウント停止の報告はありませんが、この方法はDiscordによって公式にサポートされておらず、利用規約違反とみなされる場合があります。トークンはデバイス内でのみ取得され、第三者のサーバーに送信されることはありません。自己責任で使用してください。</string>
     <string name="discord_activity_type">アクティビティの種類</string>
     <string name="discord_activity_playing">プレイ中</string>
     <string name="discord_activity_listening">再生中</string>
@@ -614,7 +614,7 @@
     <string name="discord_activity_competing">大会に参加中</string>
     <string name="discord_customization">カスタマイズ</string>
     <string name="discord_button_text_variables">利用可能な変数：{song_name}, {artist_name}, {album_name}</string>
-    <string name="discord_rpc_preview">リッチプレゼンスのプレビュー</string>
+    <string name="discord_rpc_preview">再生状況のプレビュー</string>
     <string name="discord_presence">プレゼンス</string>
     <string name="discord_connect_description">Discordにサインインして、再生中の内容を共有しよう</string>
     <string name="discord_playing_metrolist">Metrolistで再生中</string>
@@ -623,7 +623,7 @@
     <string name="discord_activity_name">アクティビティ名</string>
     <string name="discord_activity_name_description">アクティビティのカスタム名（空欄の場合はデフォルトを使用）</string>
     <string name="discord_advanced_mode">詳細設定</string>
-    <string name="discord_advanced_mode_description">リッチプレゼンスの追加のカスタマイズオプションを表示します</string>
+    <string name="discord_advanced_mode_description">再生状況の追加のカスタマイズオプションを表示します</string>
     <string name="player_background_solid">単色</string>
     <string name="resume_on_bluetooth_connect">Bluetooth接続時に再生を再開</string>
     <string name="lyrics_romanize_hindi">ヒンディー語の歌詞にローマ字を追加</string>
