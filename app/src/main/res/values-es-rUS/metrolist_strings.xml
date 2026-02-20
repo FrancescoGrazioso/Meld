@@ -469,13 +469,13 @@
     <string name="prevent_duplicate_tracks_in_queue">Previene el duplicado de canciones en la cola de reproducción</string>
     <string name="prevent_duplicate_tracks_in_queue_desc">Al añadir una pista a la cola, elimínela de su posición anterior si ya está presente</string>
     <string name="resume_on_bluetooth_connect">Resume al conectar Bluetooth</string>
-    <string name="crossfade">Desvanecimiento</string>
-    <string name="crossfade_desc">Desvanecimiento entre canciones</string>
+    <string name="crossfade">Transición suave</string>
+    <string name="crossfade_desc">Transición suave entre canciones</string>
     <string name="crossfade_duration">Duración del desvanecido</string>
     <string name="crossfade_gapless">Desactivar para álbumes sin pausas</string>
     <string name="crossfade_gapless_desc">No desvanecer si el álbum no tiene pausas</string>
     <string name="crossfade_beta_title">Funciones Beta</string>
-    <string name="crossfade_beta_message">Desvanecimiento es una nueva función y puede tener errores. Si experimentas algún problema, por favor, infórmanos.\n\nEsta función desactiva la descarga de audio debido a limitaciones técnicas.</string>
+    <string name="crossfade_beta_message">Transición suave es una nueva función y puede tener errores. Si experimentas algún problema, por favor, infórmanos.\n\nEsta función desactiva la descarga de audio debido a limitaciones técnicas.</string>
     <string name="lyrics_romanize_hindi">Romanizar letras Hindi</string>
     <string name="lyrics_romanize_punjabi">Romanizar letras Punjabi</string>
     <string name="audio_offload_disabled_by_crossfade">Deshabilitado porque el desvanecido esta activo</string>
