@@ -613,9 +613,9 @@
     <string name="login_successful">Giriş başarılı!</string>
     <string name="discord_information_warning">Bu özellik, Discord Gateway’e bağlanmak ve Rich Presence durumunuzu ayarlamak için KizzyRPC kütüphanesini kullanır.Benzer kullanımlar nedeniyle bilinen bir hesap askıya alma durumu yaşanmamış olsa da, bu yöntem Discord tarafından resmi olarak desteklenmemektedir ve Kullanım Koşulları ihlali sayılabilir.Tokeniniz yalnızca cihazınızda yerel olarak alınır ve üçüncü taraf sunuculara gönderilmez.Kullanım sorumluluğu tamamen size aittir.</string>
     <string name="discord_activity_type">Etkinlik türü</string>
-    <string name="discord_activity_playing">Oynatılıyor</string>
-    <string name="discord_activity_listening">Dinleniliyor</string>
-    <string name="discord_activity_watching">İzleniyor</string>
+    <string name="discord_activity_playing">Oynuyor</string>
+    <string name="discord_activity_listening">Dinliyor</string>
+    <string name="discord_activity_watching">İzliyor</string>
     <string name="discord_activity_competing">Rekabet</string>
     <string name="discord_customization">Özelleştirme</string>
     <string name="discord_button_text_variables">Değişkenler: {song_name}, {artist_name}, {album_name}</string>
