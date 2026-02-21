@@ -639,4 +639,7 @@
     <string name="lyrics_romanize_punjabi">Romanitza lletra en Panjabi</string>
     <string name="lyrics_romanize_as_main">Mostra lletres romanitzades principalment</string>
     <string name="discord_information_warning">Aquesta funcionalitat utilitza la llibreria KizzyRPC per a connectar-se als ports de Discord i configurar el vostre estatus de Rich Presence. Encara que no s\'ha informat de cap suspensió de comptes per aquest tipus d\'ús, aquest mètode no està oficialment acceptat per Discord i es podria considerar una violació dels seus Termes d\'ús. El vostre token s\'extrau localment i mai s\'envia a servidors de terceres parts. Actue sota la seua pròpia consideració.</string>
+    <string name="display_density">Densitat de pantalla</string>
+    <string name="restart">Reinicia</string>
+    <string name="restart_required">Cal reiniciar</string>
 </resources>
