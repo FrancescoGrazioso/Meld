@@ -418,7 +418,7 @@ fun AboutScreen(
             Spacer(Modifier.height(24.dp))
     
             Text(
-                text = leadDeveloper.name,
+                text = "MELD",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,

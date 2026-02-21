@@ -1195,8 +1195,8 @@ class MainActivity : ComponentActivity() {
         intent.removeExtra(Intent.EXTRA_TEXT)
         val coroutineScope = lifecycle.coroutineScope
 
-        // Handle Spotify OAuth callback (metrolist://spotify/callback?code=...)
-        if (uri.scheme == "metrolist" && uri.host == "spotify") {
+        // Handle Spotify OAuth callback (meld://spotify/callback?code=...)
+        if (uri.scheme == "meld" && uri.host == "spotify") {
             val code = uri.getQueryParameter("code")
             val error = uri.getQueryParameter("error")
 
