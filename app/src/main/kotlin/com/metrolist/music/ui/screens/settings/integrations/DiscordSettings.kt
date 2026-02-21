@@ -663,7 +663,7 @@ fun DiscordSettings(
                         Material3SettingsItem(
                             title = { Text(stringResource(R.string.discord_button_2)) },
                             description = {
-                                Text(button2Text.ifEmpty { "Visit Metrolist" })
+                                Text(button2Text.ifEmpty { "Visit Meld" })
                             },
                             trailingContent = {
                                 Switch(
@@ -903,16 +903,16 @@ fun RichPresence(
             if (button2Visible) {
                 val resolvedButton2 = if (song != null) {
                     DiscordRPC.resolveVariables(
-                        button2Text.ifEmpty { "Visit Metrolist" }, song
+                        button2Text.ifEmpty { "Visit Meld" }, song
                     )
                 } else {
-                    button2Text.ifEmpty { "Visit Metrolist" }
+                    button2Text.ifEmpty { "Visit Meld" }
                 }
                 OutlinedButton(
                     onClick = {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            "https://github.com/MetrolistGroup/Metrolist".toUri()
+                            "https://github.com/FrancescoGrazioso/Meld".toUri()
                         )
                         context.startActivity(intent)
                     },

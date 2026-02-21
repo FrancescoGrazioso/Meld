@@ -74,7 +74,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:scheme="metrolist"
+                    android:scheme="meld"
                     android:host="spotify"
                     android:pathPrefix="/callback" />
             </intent-filter>

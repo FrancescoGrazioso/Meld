@@ -24,7 +24,7 @@ object SpotifyAuth {
     @Volatile
     private var clientId: String = ""
 
-    private const val REDIRECT_URI = "metrolist://spotify/callback"
+    private const val REDIRECT_URI = "meld://spotify/callback"
     private const val AUTH_URL = "https://accounts.spotify.com/authorize"
     private const val TOKEN_URL = "https://accounts.spotify.com/api/token"
 

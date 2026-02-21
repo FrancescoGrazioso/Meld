@@ -7,7 +7,7 @@
  * third-party OAuth providers (Facebook, Google, Apple) block or
  * degrade their login flows inside WebViews.
  * The OAuth redirect is handled via a deep link intent-filter
- * (metrolist://spotify/callback) registered in AndroidManifest.xml,
+ * (meld://spotify/callback) registered in AndroidManifest.xml,
  * with token exchange handled in MainActivity.handleDeepLinkIntent().
  */
 
