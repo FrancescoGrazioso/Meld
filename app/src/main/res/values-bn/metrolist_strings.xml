@@ -52,4 +52,13 @@
         <item quantity="one">%d সেকেন্ড</item>
         <item quantity="other">%d সেকেন্ড</item>
     </plurals>
+    <string name="show_less">কম দেখুন</string>
+    <string name="show_artist_description">শিল্পীর সম্পর্কে দেখুন</string>
+    <string name="show_artist_subscriber_count">সাবস্ক্রাইবার সংখ্যা দেখুন</string>
+    <string name="show_artist_monthly_listeners">মাসিক শ্রোতা সংখ্যা দেখুন</string>
+    <string name="download_playlist_desc">অফলাইনে শোনার জন্য সব গান ডাউনলোড করুন</string>
+    <string name="remove_download_playlist_desc">এই প্লেলিস্ট থেকে সব ডাউনলোড গান সরিয়ে দিন</string>
+    <string name="download_in_progress_desc">ভাউনলোড চলছে</string>
+    <string name="share_playlist_desc">এই প্লেলিস্টটি অন্যদের সাথে শেয়ার করুন</string>
+    <string name="delete_playlist_desc">এই প্লেলিস্টটি সম্পূর্ণভাবে মুছে ফেলুন</string>
 </resources>
