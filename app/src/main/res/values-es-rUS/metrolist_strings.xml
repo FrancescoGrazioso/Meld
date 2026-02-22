@@ -376,7 +376,7 @@
     <string name="next">Siguiente</string>
     <string name="like">Me Gusta</string>
     <string name="widget_description">Widget de reproductor de música con controles de reproducción</string>
-    <string name="turntable_widget_description">Widget de música circular con controles de reproducción.</string>
+    <string name="turntable_widget_description">Widget de música circular con controles de reproducción y me gusta</string>
     <string name="queue_widget_description">Reproductor de música con vista previa de la cola</string>
     <string name="progress_percent">Progreso %s%%</string>
     <string name="mini_player_outline">Contorno del mini reproductor</string>
@@ -639,4 +639,21 @@
     <string name="discord_activity_name_description">Nombre personalizado para la actividad (déjelo vacío para usar el nombre predeterminado)</string>
     <string name="discord_advanced_mode">Modo avanzado</string>
     <string name="discord_advanced_mode_description">Mostrar opciones de personalización adicionales para la Presencia Enriquecida</string>
+    <string name="display_density">Densidad de la pantalla</string>
+    <string name="restart">Reiniciar</string>
+    <string name="restart_required">Reinicio requerido</string>
+    <string name="density_restart_message">El cambio en la densidad de la pantalla tendrá efecto después de reiniciar la aplicación. ¿Quieres reiniciarla ahora?</string>
+    <string name="found_in_settings_content">Encontrado en ajustes &gt; Contenido</string>
+    <string name="plays">reproducciones</string>
+    <string name="speed_dial">Velocidad de reproducción</string>
+    <string name="randomize_home_order">Aleatorizar el orden de la pantalla de inicio</string>
+    <string name="randomize_home_order_desc">Reordenar aleatoriamente las secciones de la pantalla de inicio según prioridad</string>
+    <string name="your_daily_discover">Tu descubrimiento diario</string>
+    <string name="daily_discover_because_you_listen_to">Porque escuchas a %1$s</string>
+    <string name="daily_discover_similar_to">Similar a %1$s</string>
+    <string name="daily_discover_based_on">Basado en %1$s</string>
+    <string name="daily_discover_for_fans_of">Para fans de %1$s</string>
+    <string name="from_the_community">De la comunidad</string>
+    <string name="songs_count">%s canciones</string>
+    <string name="daily_discover_sounds_like">Sonidos como %1$s</string>
 </resources>
