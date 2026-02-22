@@ -11,7 +11,7 @@
     <string name="loading_charts">Listeler yükleniyor…</string>
     <string name="retry_button">Tekrar dene</string>
     <string name="album_cover_desc">Albüm açıklaması</string>
-    <string name="top_music_videos">En Popüler Müzik Videoları</string>
+    <string name="top_music_videos">Popüler Müzik Videoları</string>
     <string name="trending">Trendler</string>
     <string name="weeks">Haftalar</string>
     <string name="months">Aylar</string>
