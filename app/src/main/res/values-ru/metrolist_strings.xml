@@ -56,7 +56,7 @@
     <string name="unknown_item_type">Неизвестный тип элементов</string>
     <string name="loading_charts">Загрузка чартов…</string>
     <string name="album_cover_desc">Обложка альбома</string>
-    <string name="top_music_videos">Лучшие музыкальные видео</string>
+    <string name="top_music_videos">Лучшие музыкальные клипы</string>
     <string name="weeks">Недели</string>
     <string name="months">Месяцы</string>
     <string name="years">Годы</string>
@@ -71,8 +71,8 @@
     <string name="share_lyrics">Поделиться текстом</string>
     <string name="trending">Тренды</string>
     <string name="generating_image">Генерация изображения</string>
-    <string name="local_history">Локальный</string>
-    <string name="remote_history">Удаленный</string>
+    <string name="local_history">Локальная</string>
+    <string name="remote_history">Удалённая</string>
     <string name="retry_button">Повторить</string>
     <string name="text_color">Цвет текста</string>
     <string name="background_color">Цвет фона</string>
@@ -100,7 +100,7 @@
         <item quantity="many">%d раз</item>
         <item quantity="other">%d раз</item>
     </plurals>
-    <string name="login_settings">Настройки логина</string>
+    <string name="login_settings">Настройки входа</string>
     <string name="new_player_design">Новый дизайн плеера</string>
     <string name="default_style">По умолчанию</string>
     <string name="secondary_color_style">Вторичный</string>
@@ -119,7 +119,7 @@
     <string name="general">Общие</string>
     <string name="default_lib_chips">Изменение чипа библиотеки (по умолчанию)</string>
     <string name="set_quick_picks">Установить быстрый выбор</string>
-    <string name="intent_app_language_not_found">Не удалось найти языковые настройки приложения, пожалуйста, настройте их вручную</string>
+    <string name="intent_app_language_not_found">Не удалось найти настройки языка приложения, пожалуйста, настройте их вручную</string>
     <string name="intent_supported_links_not_found">Не удалось найти поддерживаемые параметры ссылок, пожалуйста, настройте их вручную</string>
     <string name="set_first_lyrics_provider">Предпочитаемый поставщик текстов песен</string>
     <string name="percentage_format">%d%%</string>
@@ -141,7 +141,7 @@
     <string name="past_month">Последний месяц</string>
     <string name="past_year">Прошлый год</string>
     <string name="top_length">Длина моего топ-листа</string>
-    <string name="history_duration">Продолжительность истории</string>
+    <string name="history_duration">Длительность истории</string>
     <string name="information">Информация</string>
     <string name="description">Описание</string>
     <string name="numbers">Цифры</string>
