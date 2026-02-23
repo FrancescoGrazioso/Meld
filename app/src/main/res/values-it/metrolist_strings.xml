@@ -635,8 +635,8 @@
     <string name="discord_activity_playing">Riproducendo</string>
     <string name="discord_information_warning">Questa funzione utilizza la libreria KizzyRPC per connettersi al gateway di Discord e impostare il tuo stato di Rich Presence. Sebbene non si siano verificate sospensioni di account note a causa di un utilizzo simile, questo metodo non è ufficialmente supportato da Discord e potrebbe essere considerato una violazione dei Termini di Servizio. Il tuo token viene estratto localmente e non viene mai inviato a server di terze parti. Procedi a tua discrezione.</string>
     <string name="player_background_solid">Solido</string>
-    <string name="resume_on_bluetooth_connect">Riprendi con la connessione via Bluetooth</string>
-    <string name="lyrics_romanize_hindi">Romanizza testo in hindi</string>
-    <string name="lyrics_romanize_punjabi">Romanizza testo in punjabi</string>
+    <string name="resume_on_bluetooth_connect">Riprendi dalla connessione Bluetooth</string>
+    <string name="lyrics_romanize_hindi">Romanizza testo in Hindi</string>
+    <string name="lyrics_romanize_punjabi">Romanizza testo in Punjabi</string>
     <string name="lyrics_romanize_as_main">Mostra i testi romanizzati come principali</string>
 </resources>
