@@ -118,4 +118,11 @@
     <string name="shuffle_playlist_first_desc">בעת השמעה בסדר אקראי, השמעה תחילה של כל השירים מרשימת ההשמעה/האלבום המקוריים, ואח\"כ תוכן דומה</string>
     <string name="prevent_duplicate_tracks_in_queue">מניעת רצועות כפולות בתור</string>
     <string name="prevent_duplicate_tracks_in_queue_desc">בעת הוספת רצועה לתור ההשמעה, הסרתה ממקומה הקודם אם היא כבר בתור</string>
+    <string name="top_result">התוצאה המובילה</string>
+    <string name="uploaded_playlist">הועלו</string>
+    <string name="filter_uploaded">הועלו</string>
+    <string name="enable">הפעלה</string>
+    <string name="added_to_queue">נוסף לתור</string>
+    <string name="remove_from_cache">הסרה מהמטמון</string>
+    <string name="about_artist">אודות</string>
 </resources>
