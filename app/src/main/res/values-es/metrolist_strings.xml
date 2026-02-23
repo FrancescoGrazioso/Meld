@@ -595,7 +595,7 @@
     <string name="ai_provider_help">Obtener Llaves API</string>
     <string name="discord_status">Status</string>
     <string name="discord_status_online">Online</string>
-    <string name="discord_activity_competing">Viendo</string>
+    <string name="discord_activity_competing">Compitiendo</string>
     <string name="discord_presence">Presencia</string>
     <string name="player_background_solid">Sólido</string>
     <string name="resume_on_bluetooth_connect">Reanudar al conectar Bluetooth</string>
@@ -627,7 +627,7 @@
     <string name="discord_activity_type">Tipo de actividad</string>
     <string name="discord_activity_playing">Jugando</string>
     <string name="discord_activity_listening">Escuchando</string>
-    <string name="discord_activity_watching">Mirando</string>
+    <string name="discord_activity_watching">Viendo</string>
     <string name="discord_customization">Personalización</string>
     <string name="discord_button_text_variables">Variables: {song_name}, {artist_name}, {album_name}</string>
     <string name="discord_rpc_preview">Vista previa de Rich Presence</string>
