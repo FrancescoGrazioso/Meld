@@ -642,4 +642,20 @@
     <string name="display_density">Densitat de pantalla</string>
     <string name="restart">Reinicia</string>
     <string name="restart_required">Cal reiniciar</string>
+    <string name="density_restart_message">En canvi de densitat de pantalla es farà efectiu després de reiniciar l\'aplicació. La vol reiniciar ara?</string>
+    <string name="found_in_settings_content">Es troba a Configuració &gt; Contingut</string>
+    <string name="plays">reproduccions</string>
+    <string name="speed_dial">Accés ràpid</string>
+    <string name="pin_to_speed_dial">Fixa a l\'accés ràpid</string>
+    <string name="unpin_from_speed_dial">Lleva l\'accés ràpid</string>
+    <string name="randomize_home_order">Aleatoritza l\'orde de la pantalla d\'inici</string>
+    <string name="randomize_home_order_desc">Reordena aleatòriament les seccions de la pantalla d\'inici amb pesos de prioritat</string>
+    <string name="daily_discover_sounds_like">Sona com %1$s</string>
+    <string name="your_daily_discover">El teu descobriment diari</string>
+    <string name="daily_discover_because_you_listen_to">Perquè has escoltat %1$s</string>
+    <string name="daily_discover_similar_to">Semblant a %1$s</string>
+    <string name="daily_discover_based_on">Basat en %1$s</string>
+    <string name="daily_discover_for_fans_of">Per als seguidors de %1$s</string>
+    <string name="from_the_community">De la comunitat</string>
+    <string name="songs_count">%s cançons</string>
 </resources>
