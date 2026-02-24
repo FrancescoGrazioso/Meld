@@ -358,6 +358,9 @@
     <string name="spotify_source_youtube">YouTube Music</string>
     <string name="spotify_source_spotify">Spotify</string>
     <string name="spotify_logging_in">Connecting to Spotify…</string>
+    <string name="spotify_status_verifying">Verifying credentials…</string>
+    <string name="spotify_status_connecting">Obtaining access token…</string>
+    <string name="spotify_status_loading_profile">Loading your profile…</string>
     <string name="spotify_login_error">Login failed. Please try again.</string>
     <string name="spotify_login_success">Connected to Spotify</string>
     <string name="spotify_token_expired">Spotify session expired, please log in again</string>
