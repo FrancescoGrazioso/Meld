@@ -5,15 +5,15 @@
  * Spotify login using an embedded WebView.
  * Loads Spotify's web login page, which supports all auth methods
  * (email/password, Facebook, Google, Apple). After successful login,
- * the sp_dc and sp_key cookies are extracted and used to obtain
- * internal access tokens — no Spotify Developer Client ID required.
+ * the WebView redirect to open.spotify.com is intercepted BEFORE
+ * the page loads, so the Spotify web player never starts.
  *
- * Token acquisition strategy:
- * 1. User logs in via WebView, landing on open.spotify.com
- * 2. sp_dc/sp_key cookies are extracted
- * 3. JavaScript hooks on fetch() and XMLHttpRequest intercept
- *    the web player's /api/token call during initialization
- * 4. A direct JS fetch to /api/token acts as reliable fallback
+ * Token acquisition uses TOTP (Time-based One-Time Password) generated
+ * from a community-maintained shared secret, following the approach used
+ * by the Spotube Spotify plugin. The token is fetched entirely in the
+ * background using HttpURLConnection — no web player, no rate limit issues.
+ *
+ * Reference: https://github.com/sonic-liberation/spotube-plugin-spotify
  */
 
 package com.metrolist.music.ui.screens
@@ -22,7 +22,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.webkit.CookieManager
-import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
@@ -30,9 +29,10 @@ import android.webkit.WebViewClient
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.datastore.preferences.core.edit
 import androidx.navigation.NavController
@@ -66,12 +67,8 @@ import com.metrolist.music.ui.utils.backToMain
 import com.metrolist.music.utils.dataStore
 import com.metrolist.spotify.Spotify
 import com.metrolist.spotify.SpotifyAuth
-import com.metrolist.spotify.models.SpotifyInternalToken
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
 import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -81,13 +78,8 @@ fun SpotifyLoginScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(true) }
-    var isExchangingToken by remember { mutableStateOf(false) }
-
-    val tokenBridge = remember {
-        SpotifyTokenBridge(context, scope, navController) { exchanging ->
-            isExchangingToken = exchanging
-        }
-    }
+    var isProcessing by remember { mutableStateOf(false) }
+    var statusMessage by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TopAppBar(
@@ -102,7 +94,7 @@ fun SpotifyLoginScreen(navController: NavController) {
             },
         )
 
-        if (isLoading || isExchangingToken) {
+        if (isLoading || isProcessing) {
             LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
         }
 
@@ -116,7 +108,6 @@ fun SpotifyLoginScreen(navController: NavController) {
                     cookieManager.flush()
 
                     WebView(ctx).apply {
-                        tokenBridge.webViewRef = this
                         cookieManager.setAcceptThirdPartyCookies(this, true)
 
                         settings.javaScriptEnabled = true
@@ -129,25 +120,26 @@ fun SpotifyLoginScreen(navController: NavController) {
                         settings.setSupportMultipleWindows(false)
                         settings.userAgentString = USER_AGENT_DESKTOP
 
-                        @SuppressLint("JavascriptInterface")
-                        addJavascriptInterface(tokenBridge, "MetrolistBridge")
-
                         webViewClient = object : WebViewClient() {
                             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                                 isLoading = true
                                 Timber.d("SpotifyLogin: page started: $url")
-                                if (url?.startsWith("https://open.spotify.com") == true) {
-                                    installNetworkInterceptors(view)
-                                }
                             }
 
                             override fun onPageFinished(view: WebView?, url: String?) {
                                 isLoading = false
                                 Timber.d("SpotifyLogin: page finished: $url")
-                                if (!isExchangingToken) {
-                                    tryExtractCookiesAndPollToken(view, url, tokenBridge) {
-                                        isExchangingToken = it
-                                    }
+
+                                if (!isProcessing && url?.startsWith("https://open.spotify.com") == true) {
+                                    Timber.d("SpotifyLogin: fallback — extracting from onPageFinished")
+                                    extractAndFetchToken(
+                                        view = view,
+                                        context = context,
+                                        scope = scope,
+                                        navController = navController,
+                                        setProcessing = { isProcessing = it },
+                                        setStatus = { statusMessage = it },
+                                    )
                                 }
                             }
 
@@ -155,24 +147,23 @@ fun SpotifyLoginScreen(navController: NavController) {
                                 view: WebView?,
                                 request: WebResourceRequest?,
                             ): Boolean {
-                                val requestUrl = request?.url?.toString()
+                                val requestUrl = request?.url?.toString() ?: return false
                                 Timber.d("SpotifyLogin: navigating to: $requestUrl")
-                                return false
-                            }
 
-                            override fun shouldInterceptRequest(
-                                view: WebView?,
-                                request: WebResourceRequest?,
-                            ): android.webkit.WebResourceResponse? {
-                                val reqUrl = request?.url?.toString() ?: return null
-                                if (reqUrl.contains("/api/token") || reqUrl.contains("get_access_token")) {
-                                    Timber.d("SpotifyLogin: [INTERCEPT] TOKEN-URL=$reqUrl")
-                                    if (reqUrl.contains("reason=init") && reqUrl.contains("totp=")) {
-                                        tokenBridge.capturedTokenUrl = reqUrl
-                                        Timber.d("SpotifyLogin: [INTERCEPT] Captured TOTP URL for JS fallback")
-                                    }
+                                if (requestUrl.startsWith("https://open.spotify.com") && !isProcessing) {
+                                    Timber.d("SpotifyLogin: intercepting redirect to open.spotify.com")
+                                    extractAndFetchToken(
+                                        view = view,
+                                        context = context,
+                                        scope = scope,
+                                        navController = navController,
+                                        setProcessing = { isProcessing = it },
+                                        setStatus = { statusMessage = it },
+                                    )
+                                    return true
                                 }
-                                return null
+
+                                return false
                             }
                         }
 
@@ -181,7 +172,7 @@ fun SpotifyLoginScreen(navController: NavController) {
                 },
             )
 
-            if (isExchangingToken) {
+            if (isProcessing) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -189,10 +180,13 @@ fun SpotifyLoginScreen(navController: NavController) {
                     contentAlignment = Alignment.Center,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        CircularProgressIndicator(modifier = Modifier.padding())
+                        CircularProgressIndicator()
+                        Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = stringResource(R.string.spotify_logging_in),
-                            modifier = Modifier.padding(),
+                            text = statusMessage.ifEmpty {
+                                stringResource(R.string.spotify_logging_in)
+                            },
+                            style = MaterialTheme.typography.bodyLarge,
                         )
                     }
                 }
@@ -202,91 +196,24 @@ fun SpotifyLoginScreen(navController: NavController) {
 }
 
 /**
- * Hooks both window.fetch and XMLHttpRequest.prototype before any page
- * scripts execute. This intercepts whichever mechanism the Spotify web
- * player uses to obtain its access token.
+ * Extracts sp_dc/sp_key cookies, stops the WebView, and fetches the access
+ * token in the background using [SpotifyAuth.fetchAccessToken] (which now
+ * generates the required TOTP internally).
  */
-private fun installNetworkInterceptors(view: WebView?) {
-    if (view == null) return
-    Timber.d("SpotifyLogin: installing fetch+XHR interceptors")
-    view.evaluateJavascript(
-        """
-        (function() {
-            if (window.__metrolistHooked) return;
-            window.__metrolistHooked = true;
-            window.__metrolistDone = false;
-
-            function handleToken(body) {
-                try {
-                    var data = JSON.parse(body);
-                    if (data.accessToken && !data.isAnonymous) {
-                        window.__metrolistDone = true;
-                        MetrolistBridge.onTokenResult(body);
-                        return true;
-                    }
-                } catch(e) {}
-                return false;
-            }
-
-            function isTokenUrl(u) {
-                return u.indexOf('/api/token') !== -1 || u.indexOf('get_access_token') !== -1;
-            }
-
-            var origFetch = window.fetch;
-            window.fetch = function() {
-                var urlArg = arguments[0];
-                var urlStr = (typeof urlArg === 'string') ? urlArg : (urlArg && urlArg.url ? urlArg.url : '');
-                return origFetch.apply(this, arguments).then(function(response) {
-                    if (!window.__metrolistDone && isTokenUrl(urlStr) && response.ok) {
-                        response.clone().text().then(function(body) { handleToken(body); });
-                    }
-                    return response;
-                });
-            };
-
-            var origOpen = XMLHttpRequest.prototype.open;
-            var origSend = XMLHttpRequest.prototype.send;
-            XMLHttpRequest.prototype.open = function() {
-                this._mUrl = (arguments[1] || '').toString();
-                return origOpen.apply(this, arguments);
-            };
-            XMLHttpRequest.prototype.send = function() {
-                var xhr = this;
-                if (isTokenUrl(xhr._mUrl)) {
-                    xhr.addEventListener('load', function() {
-                        if (!window.__metrolistDone && xhr.status === 200) {
-                            handleToken(xhr.responseText);
-                        }
-                    });
-                }
-                return origSend.apply(this, arguments);
-            };
-        })();
-        """.trimIndent(),
-        null,
-    )
-}
-
-/**
- * Extracts sp_dc/sp_key cookies once the WebView reaches open.spotify.com,
- * then polls the page DOM and storage for the access token that the Spotify
- * web player obtains during initialization.
- */
-private fun tryExtractCookiesAndPollToken(
+private fun extractAndFetchToken(
     view: WebView?,
-    url: String?,
-    bridge: SpotifyTokenBridge,
-    setExchanging: (Boolean) -> Unit,
+    context: Context,
+    scope: kotlinx.coroutines.CoroutineScope,
+    navController: NavController,
+    setProcessing: (Boolean) -> Unit,
+    setStatus: (String) -> Unit,
 ) {
-    if (url == null || !url.startsWith("https://open.spotify.com")) return
-    if (view == null) return
-
     val cookieManager = CookieManager.getInstance()
     val allCookies = cookieManager.getCookie("https://open.spotify.com")
-    Timber.d("SpotifyLogin: checking cookies for open.spotify.com: $allCookies")
+    Timber.d("SpotifyLogin: cookies for open.spotify.com: $allCookies")
 
     if (allCookies.isNullOrBlank()) {
-        Timber.w("SpotifyLogin: no cookies found yet")
+        Timber.w("SpotifyLogin: no cookies found — cannot proceed")
         return
     }
 
@@ -296,201 +223,76 @@ private fun tryExtractCookiesAndPollToken(
             parts[0].trim() to (parts.getOrNull(1)?.trim() ?: "")
         }
 
-    Timber.d("SpotifyLogin: cookie keys: ${cookieMap.keys}")
-
     val spDc = cookieMap["sp_dc"]
     if (spDc.isNullOrBlank()) {
-        Timber.w("SpotifyLogin: sp_dc not found, keys present: ${cookieMap.keys}")
+        Timber.w("SpotifyLogin: sp_dc not found in cookies: ${cookieMap.keys}")
         return
     }
 
     val spKey = cookieMap["sp_key"] ?: ""
-    Timber.d("SpotifyLogin: sp_dc found (${spDc.take(8)}...), polling for token...")
+    Timber.d("SpotifyLogin: sp_dc found (${spDc.take(8)}...), stopping WebView")
 
-    setExchanging(true)
-    bridge.spDc = spDc
-    bridge.spKey = spKey
+    setProcessing(true)
+    setStatus(context.getString(R.string.spotify_status_verifying))
 
-    view.evaluateJavascript(
-        """
-        (function() {
-            if (window.__metrolistDone) return;
+    view?.stopLoading()
+    view?.loadUrl("about:blank")
 
-            function handleToken(body) {
-                try {
-                    var data = (typeof body === 'string') ? JSON.parse(body) : body;
-                    if (data.accessToken && data.accessToken.length > 50 && !data.isAnonymous) {
-                        window.__metrolistDone = true;
-                        var json = (typeof body === 'string') ? body : JSON.stringify(data);
-                        MetrolistBridge.onTokenResult(json);
-                        return true;
-                    }
-                } catch(e) {
-                    MetrolistBridge.onTokenError('handleToken parse error: ' + e.message);
-                }
-                return false;
+    scope.launch(Dispatchers.IO) {
+        try {
+            // Step 1: Save cookies
+            context.dataStore.edit { prefs ->
+                prefs[SpotifySpDcKey] = spDc
+                prefs[SpotifySpKeyKey] = spKey
             }
 
-            var attempts = 0;
-            var maxAttempts = 6;
-
-            function tryFetchToken() {
-                if (window.__metrolistDone) return;
-                attempts++;
-
-                var capturedUrl = MetrolistBridge.getTokenUrl();
-                var fetchUrl = capturedUrl ? capturedUrl : '/api/token?reason=transport&productType=web_player';
-                MetrolistBridge.onTokenError('poll attempt ' + attempts + ' url=' + fetchUrl.substring(0, 70));
-
-                fetch(fetchUrl, { credentials: 'include' })
-                    .then(function(r) {
-                        if (!r.ok) throw new Error('HTTP ' + r.status);
-                        return r.text();
-                    })
-                    .then(function(body) {
-                        if (!window.__metrolistDone) {
-                            MetrolistBridge.onTokenError('fetch response: ' + body.substring(0, 100));
-                            handleToken(body);
-                        }
-                    })
-                    .catch(function(e) {
-                        MetrolistBridge.onTokenError('fetch /api/token failed: ' + e.message);
-                        if (!window.__metrolistDone && attempts < maxAttempts) {
-                            setTimeout(tryFetchToken, 2000);
-                        } else if (!window.__metrolistDone) {
-                            MetrolistBridge.onTokenError('Token not found after ' + maxAttempts + ' fetch attempts');
-                        }
-                    });
+            // Step 2: Fetch access token with TOTP
+            scope.launch(Dispatchers.Main) {
+                setStatus(context.getString(R.string.spotify_status_connecting))
             }
+            Timber.d("SpotifyLogin: fetching access token via SpotifyAuth (with TOTP)...")
 
-            setTimeout(tryFetchToken, 3000);
-        })();
-        """.trimIndent(),
-        null,
-    )
-}
+            val token = SpotifyAuth.fetchAccessToken(spDc, spKey).getOrThrow()
+            Timber.d("SpotifyLogin: token obtained (anonymous=${token.isAnonymous})")
+            Spotify.accessToken = token.accessToken
 
-/**
- * JavaScript bridge that receives the Spotify access token from the WebView.
- * Methods annotated with @JavascriptInterface are called from JS on a
- * background thread managed by WebView.
- */
-private class SpotifyTokenBridge(
-    private val context: Context,
-    private val scope: CoroutineScope,
-    private val navController: NavController,
-    private val setExchanging: (Boolean) -> Unit,
-) {
-    var spDc: String = ""
-    var spKey: String = ""
-
-    @Volatile
-    var capturedTokenUrl: String = ""
-
-    @Volatile
-    var webViewRef: WebView? = null
-
-    @Volatile
-    private var tokenProcessed = false
-
-    private val json = Json {
-        isLenient = true
-        ignoreUnknownKeys = true
-    }
-
-    @JavascriptInterface
-    fun onTokenResult(tokenJson: String) {
-        if (tokenProcessed) return
-        tokenProcessed = true
-        Timber.d("SpotifyLogin: received token response (${tokenJson.length} chars)")
-
-        // Kill the WebView immediately to stop the Spotify web player from
-        // making further API calls that eat into the rolling 30s rate limit.
-        scope.launch(Dispatchers.Main) {
-            webViewRef?.apply {
-                stopLoading()
-                loadUrl("about:blank")
-                Timber.d("SpotifyLogin: WebView stopped to free rate-limit budget")
+            // Step 3: Fetch user profile
+            scope.launch(Dispatchers.Main) {
+                setStatus(context.getString(R.string.spotify_status_loading_profile))
             }
-        }
+            Timber.d("SpotifyLogin: fetching user profile...")
 
-        scope.launch(Dispatchers.IO) {
-            try {
-                val token = json.decodeFromString<SpotifyInternalToken>(tokenJson)
-
-                if (token.isAnonymous || token.accessToken.isBlank()) {
-                    throw IllegalStateException("Received anonymous token — sp_dc cookie is invalid or expired")
-                }
-
-                Timber.d("SpotifyLogin: access token obtained (anonymous=${token.isAnonymous})")
-                Spotify.accessToken = token.accessToken
-
-                // Save cookies now but NOT the access token yet.
-                // Saving the token triggers isSpotifyActive=true, which makes
-                // library screens call loadAll() — we need the WebView's rate
-                // limit budget to drain first.
+            Spotify.me().onSuccess { user ->
+                Timber.d("SpotifyLogin: logged in as ${user.displayName} (${user.id})")
                 context.dataStore.edit { prefs ->
-                    prefs[SpotifySpDcKey] = spDc
-                    prefs[SpotifySpKeyKey] = spKey
+                    prefs[SpotifyUsernameKey] = user.displayName ?: user.id
+                    prefs[SpotifyUserIdKey] = user.id
                 }
+            }.onFailure { e ->
+                Timber.w(e, "SpotifyLogin: could not fetch profile (non-fatal)")
+            }
 
-                // Wait for the web player's in-flight requests to fall out of
-                // Spotify's rolling 30-second rate-limit window.
-                Timber.d("SpotifyLogin: waiting for rate-limit window to clear...")
-                delay(5000)
+            // Step 4: Persist access token — triggers isSpotifyActive in library screens
+            context.dataStore.edit { prefs ->
+                prefs[SpotifyAccessTokenKey] = token.accessToken
+                prefs[SpotifyTokenExpiryKey] = token.accessTokenExpirationTimestampMs
+            }
 
-                var profileFetched = false
-                for (attempt in 1..3) {
-                    Spotify.me().onSuccess { user ->
-                        Timber.d("SpotifyLogin: logged in as ${user.displayName} (${user.id})")
-                        context.dataStore.edit { prefs ->
-                            prefs[SpotifyUsernameKey] = user.displayName ?: user.id
-                            prefs[SpotifyUserIdKey] = user.id
-                        }
-                        profileFetched = true
-                    }.onFailure { e ->
-                        val is429 = e is Spotify.SpotifyException && e.statusCode == 429
-                        if (is429 && attempt < 3) {
-                            Timber.w("SpotifyLogin: me() got 429, retrying in ${attempt * 5}s")
-                            delay(attempt * 5000L)
-                        } else {
-                            Timber.e(e, "SpotifyLogin: failed to fetch user profile")
-                        }
-                    }
-                    if (profileFetched) break
-                }
+            scope.launch(Dispatchers.Main) {
+                setStatus(context.getString(R.string.spotify_login_success))
+            }
+            Timber.d("SpotifyLogin: login complete, navigating back")
 
-                // NOW persist the access token — this flips isSpotifyActive and
-                // triggers loadAll() in the library screens we navigate back to.
-                context.dataStore.edit { prefs ->
-                    prefs[SpotifyAccessTokenKey] = token.accessToken
-                    prefs[SpotifyTokenExpiryKey] = token.accessTokenExpirationTimestampMs
-                }
-
-                scope.launch(Dispatchers.Main) {
-                    navController.navigateUp()
-                }
-            } catch (e: Exception) {
-                Timber.e(e, "SpotifyLogin: token parsing/processing failed")
-                scope.launch(Dispatchers.Main) { setExchanging(false) }
+            scope.launch(Dispatchers.Main) {
+                navController.navigateUp()
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "SpotifyLogin: login failed")
+            scope.launch(Dispatchers.Main) {
+                setStatus(context.getString(R.string.spotify_login_error))
+                setProcessing(false)
             }
         }
-    }
-
-    @JavascriptInterface
-    fun getTokenUrl(): String = capturedTokenUrl
-
-    @JavascriptInterface
-    fun onTokenError(errorMessage: String) {
-        if (errorMessage.startsWith("poll attempt") ||
-            errorMessage.startsWith("fetch response") ||
-            errorMessage.startsWith("handleToken parse")
-        ) {
-            Timber.d("SpotifyLogin: $errorMessage")
-            return
-        }
-        Timber.e("SpotifyLogin: WebView token fetch error: $errorMessage")
-        scope.launch(Dispatchers.Main) { setExchanging(false) }
     }
 }
 
