@@ -21,6 +21,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
@@ -54,7 +55,11 @@ object Spotify {
         }
     }
 
-    class SpotifyException(val statusCode: Int, override val message: String) : Exception(message)
+    class SpotifyException(
+        val statusCode: Int,
+        override val message: String,
+        val retryAfterSec: Long = 0,
+    ) : Exception(message)
 
     @Volatile
     var logger: ((level: String, message: String) -> Unit)? = null
@@ -70,21 +75,40 @@ object Spotify {
         val token = accessToken ?: throw SpotifyException(401, "Not authenticated").also {
             log("E", "API call $endpoint - NOT AUTHENTICATED (no token)")
         }
-        log("D", "API GET $endpoint (token: ${token.take(8)}...)")
-        val response = client.get(endpoint) {
-            header("Authorization", "Bearer $token")
-            block()
+
+        val maxRetries = 3
+
+        for (attempt in 0 until maxRetries) {
+            log("D", "API GET $endpoint (token: ${token.take(8)}...)" +
+                if (attempt > 0) " [retry $attempt]" else "")
+            val response = client.get(endpoint) {
+                header("Authorization", "Bearer $token")
+                block()
+            }
+            log("D", "API GET $endpoint -> ${response.status.value}")
+
+            if (response.status == HttpStatusCode.Unauthorized) {
+                throw SpotifyException(401, "Token expired or invalid")
+            }
+            if (response.status == HttpStatusCode.TooManyRequests) {
+                val retryAfter = response.headers["Retry-After"]?.toLongOrNull() ?: (2L * (attempt + 1))
+                if (attempt < maxRetries - 1) {
+                    log("W", "API GET $endpoint -> 429, waiting ${retryAfter}s before retry (attempt ${attempt + 1}/$maxRetries)")
+                    delay(retryAfter * 1000)
+                    continue
+                }
+                log("W", "API GET $endpoint -> 429, exhausted all $maxRetries attempts (Retry-After: ${retryAfter}s)")
+                throw SpotifyException(429, "Rate limited", retryAfterSec = retryAfter)
+            }
+            if (response.status.value !in 200..299) {
+                val body = response.bodyAsText()
+                log("E", "API GET $endpoint FAILED: ${response.status.value} - ${body.take(200)}")
+                throw SpotifyException(response.status.value, "Spotify API error ${response.status.value}: $body")
+            }
+            return response.body()
         }
-        log("D", "API GET $endpoint -> ${response.status.value}")
-        if (response.status == HttpStatusCode.Unauthorized) {
-            throw SpotifyException(401, "Token expired or invalid")
-        }
-        if (response.status.value !in 200..299) {
-            val body = response.bodyAsText()
-            log("E", "API GET $endpoint FAILED: ${response.status.value} - ${body.take(200)}")
-            throw SpotifyException(response.status.value, "Spotify API error ${response.status.value}: $body")
-        }
-        return response.body()
+
+        throw SpotifyException(429, "Rate limited after $maxRetries retries")
     }
 
     // --- User Profile ---

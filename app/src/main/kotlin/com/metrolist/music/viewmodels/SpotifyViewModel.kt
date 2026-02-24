@@ -29,6 +29,7 @@ import androidx.datastore.preferences.core.edit
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
@@ -49,6 +50,10 @@ constructor(
     @ApplicationContext private val context: Context,
     private val database: MusicDatabase,
 ) : ViewModel() {
+
+    companion object {
+        private const val STAGGER_DELAY_MS = 500L
+    }
 
     val spotifyYouTubeMapper = SpotifyYouTubeMapper(database)
 
@@ -129,89 +134,122 @@ constructor(
     // =========================================================================
 
     /**
-     * Loads ALL Spotify data (playlists, liked songs, top tracks).
-     * Call this when entering the Library or Home screen.
+     * Loads ALL Spotify data sequentially with staggered delays.
+     * If any call hits a 429, waits the full Retry-After before proceeding
+     * to the next endpoint to avoid cascading rate-limit failures.
      */
     fun loadAll() {
         Timber.d("SpotifyVM: loadAll() triggered")
-        loadPlaylists()
-        loadLikedSongs()
-        loadTopTracks()
+        viewModelScope.launch(Dispatchers.IO) {
+            var rateLimitDelay = 0L
+
+            rateLimitDelay = loadPlaylistsInternal()
+            if (rateLimitDelay > 0) {
+                Timber.d("SpotifyVM: loadAll() waiting ${rateLimitDelay}s after playlists 429")
+                delay(rateLimitDelay * 1000)
+            } else {
+                delay(STAGGER_DELAY_MS)
+            }
+
+            rateLimitDelay = loadLikedSongsInternal()
+            if (rateLimitDelay > 0) {
+                Timber.d("SpotifyVM: loadAll() waiting ${rateLimitDelay}s after liked songs 429")
+                delay(rateLimitDelay * 1000)
+            } else {
+                delay(STAGGER_DELAY_MS)
+            }
+
+            loadTopTracksInternal()
+        }
     }
 
     fun loadPlaylists() {
-        viewModelScope.launch(Dispatchers.IO) {
-            Timber.d("SpotifyVM: loadPlaylists() start")
-            _playlistsLoading.value = true
-            _playlistsError.value = null
-
-            if (!ensureAuthenticated()) {
-                Timber.w("SpotifyVM: loadPlaylists() - auth failed")
-                _playlistsError.value = "Not authenticated"
-                _playlistsLoading.value = false
-                setFallback("Authentication failed while loading playlists")
-                return@launch
-            }
-
-            Spotify.myPlaylists(limit = 50).onSuccess { paging ->
-                Timber.d("SpotifyVM: loadPlaylists() - SUCCESS, got ${paging.items.size} playlists")
-                for (pl in paging.items.take(5)) {
-                    Timber.d("SpotifyVM:   playlist: '${pl.name}' (${pl.tracks?.total ?: "?"} tracks)")
-                }
-                _spotifyPlaylists.value = paging.items
-            }.onFailure { e ->
-                Timber.e(e, "SpotifyVM: loadPlaylists() - FAILED")
-                _playlistsError.value = e.message
-                handleAuthError(e)
-                setFallback("Failed to load playlists: ${e.message}")
-            }
-
-            _playlistsLoading.value = false
-        }
+        viewModelScope.launch(Dispatchers.IO) { loadPlaylistsInternal() }
     }
 
     fun loadLikedSongs() {
-        viewModelScope.launch(Dispatchers.IO) {
-            Timber.d("SpotifyVM: loadLikedSongs() start")
-            _likedSongsLoading.value = true
-
-            if (!ensureAuthenticated()) {
-                Timber.w("SpotifyVM: loadLikedSongs() - auth failed")
-                _likedSongsLoading.value = false
-                setFallback("Authentication failed while loading liked songs")
-                return@launch
-            }
-
-            Spotify.likedSongs(limit = 50).onSuccess { paging ->
-                Timber.d("SpotifyVM: loadLikedSongs() - SUCCESS, got ${paging.items.size} songs, total=${paging.total}")
-                _likedSongs.value = paging.items.map { it.track }
-                _likedSongsTotal.value = paging.total
-            }.onFailure { e ->
-                Timber.e(e, "SpotifyVM: loadLikedSongs() - FAILED")
-                handleAuthError(e)
-                setFallback("Failed to load liked songs: ${e.message}")
-            }
-
-            _likedSongsLoading.value = false
-        }
+        viewModelScope.launch(Dispatchers.IO) { loadLikedSongsInternal() }
     }
 
     fun loadTopTracks() {
-        viewModelScope.launch(Dispatchers.IO) {
-            Timber.d("SpotifyVM: loadTopTracks() start")
-            if (!ensureAuthenticated()) {
-                Timber.w("SpotifyVM: loadTopTracks() - auth failed")
-                return@launch
-            }
+        viewModelScope.launch(Dispatchers.IO) { loadTopTracksInternal() }
+    }
 
-            Spotify.topTracks(timeRange = "medium_term", limit = 50).onSuccess { paging ->
-                Timber.d("SpotifyVM: loadTopTracks() - SUCCESS, got ${paging.items.size} tracks")
-                _topTracks.value = paging.items
-            }.onFailure { e ->
-                Timber.e(e, "SpotifyVM: loadTopTracks() - FAILED")
-                handleAuthError(e)
-                setFallback("Failed to load top tracks: ${e.message}")
+    /** @return Retry-After seconds if 429 was hit, 0 otherwise */
+    private suspend fun loadPlaylistsInternal(): Long {
+        Timber.d("SpotifyVM: loadPlaylists() start")
+        _playlistsLoading.value = true
+        _playlistsError.value = null
+
+        if (!ensureAuthenticated()) {
+            Timber.w("SpotifyVM: loadPlaylists() - auth failed")
+            _playlistsError.value = "Not authenticated"
+            _playlistsLoading.value = false
+            setFallback("Authentication failed while loading playlists")
+            return 0
+        }
+
+        var retryAfter = 0L
+        Spotify.myPlaylists(limit = 50).onSuccess { paging ->
+            Timber.d("SpotifyVM: loadPlaylists() - SUCCESS, got ${paging.items.size} playlists")
+            for (pl in paging.items.take(5)) {
+                Timber.d("SpotifyVM:   playlist: '${pl.name}' (${pl.tracks?.total ?: "?"} tracks)")
             }
+            _spotifyPlaylists.value = paging.items
+        }.onFailure { e ->
+            Timber.e(e, "SpotifyVM: loadPlaylists() - FAILED")
+            _playlistsError.value = e.message
+            retryAfter = (e as? Spotify.SpotifyException)?.retryAfterSec ?: 0
+            handleAuthError(e)
+            setFallback("Failed to load playlists: ${e.message}")
+        }
+
+        _playlistsLoading.value = false
+        return retryAfter
+    }
+
+    /** @return Retry-After seconds if 429 was hit, 0 otherwise */
+    private suspend fun loadLikedSongsInternal(): Long {
+        Timber.d("SpotifyVM: loadLikedSongs() start")
+        _likedSongsLoading.value = true
+
+        if (!ensureAuthenticated()) {
+            Timber.w("SpotifyVM: loadLikedSongs() - auth failed")
+            _likedSongsLoading.value = false
+            setFallback("Authentication failed while loading liked songs")
+            return 0
+        }
+
+        var retryAfter = 0L
+        Spotify.likedSongs(limit = 50).onSuccess { paging ->
+            Timber.d("SpotifyVM: loadLikedSongs() - SUCCESS, got ${paging.items.size} songs, total=${paging.total}")
+            _likedSongs.value = paging.items.map { it.track }
+            _likedSongsTotal.value = paging.total
+        }.onFailure { e ->
+            Timber.e(e, "SpotifyVM: loadLikedSongs() - FAILED")
+            retryAfter = (e as? Spotify.SpotifyException)?.retryAfterSec ?: 0
+            handleAuthError(e)
+            setFallback("Failed to load liked songs: ${e.message}")
+        }
+
+        _likedSongsLoading.value = false
+        return retryAfter
+    }
+
+    private suspend fun loadTopTracksInternal() {
+        Timber.d("SpotifyVM: loadTopTracks() start")
+        if (!ensureAuthenticated()) {
+            Timber.w("SpotifyVM: loadTopTracks() - auth failed")
+            return
+        }
+
+        Spotify.topTracks(timeRange = "medium_term", limit = 50).onSuccess { paging ->
+            Timber.d("SpotifyVM: loadTopTracks() - SUCCESS, got ${paging.items.size} tracks")
+            _topTracks.value = paging.items
+        }.onFailure { e ->
+            Timber.e(e, "SpotifyVM: loadTopTracks() - FAILED")
+            handleAuthError(e)
+            setFallback("Failed to load top tracks: ${e.message}")
         }
     }
 

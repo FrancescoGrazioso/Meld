@@ -17,7 +17,7 @@ import java.net.URL
  * requests from non-browser HTTP libraries.
  */
 object SpotifyAuth {
-    private const val TOKEN_URL = "https://open.spotify.com/get_access_token"
+    private const val TOKEN_URL = "https://open.spotify.com/api/token"
     private const val USER_AGENT =
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
 
