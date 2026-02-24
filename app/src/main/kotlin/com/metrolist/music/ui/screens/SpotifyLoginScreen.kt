@@ -12,9 +12,8 @@
  * 1. User logs in via WebView, landing on open.spotify.com
  * 2. sp_dc/sp_key cookies are extracted
  * 3. JavaScript hooks on fetch() and XMLHttpRequest intercept
- *    the web player's own internal get_access_token call
- * 4. A DOM/localStorage poller acts as a fallback if the hooks
- *    miss the request
+ *    the web player's /api/token call during initialization
+ * 4. A direct JS fetch to /api/token acts as reliable fallback
  */
 
 package com.metrolist.music.ui.screens
@@ -70,6 +69,7 @@ import com.metrolist.spotify.SpotifyAuth
 import com.metrolist.spotify.models.SpotifyInternalToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import timber.log.Timber
@@ -116,6 +116,7 @@ fun SpotifyLoginScreen(navController: NavController) {
                     cookieManager.flush()
 
                     WebView(ctx).apply {
+                        tokenBridge.webViewRef = this
                         cookieManager.setAcceptThirdPartyCookies(this, true)
 
                         settings.javaScriptEnabled = true
@@ -164,9 +165,12 @@ fun SpotifyLoginScreen(navController: NavController) {
                                 request: WebResourceRequest?,
                             ): android.webkit.WebResourceResponse? {
                                 val reqUrl = request?.url?.toString() ?: return null
-                                if (reqUrl.contains("access_token") || reqUrl.contains("token")) {
-                                    Timber.d("SpotifyLogin: [INTERCEPT] url=$reqUrl")
-                                    Timber.d("SpotifyLogin: [INTERCEPT] headers=${request.requestHeaders}")
+                                if (reqUrl.contains("/api/token") || reqUrl.contains("get_access_token")) {
+                                    Timber.d("SpotifyLogin: [INTERCEPT] TOKEN-URL=$reqUrl")
+                                    if (reqUrl.contains("reason=init") && reqUrl.contains("totp=")) {
+                                        tokenBridge.capturedTokenUrl = reqUrl
+                                        Timber.d("SpotifyLogin: [INTERCEPT] Captured TOTP URL for JS fallback")
+                                    }
                                 }
                                 return null
                             }
@@ -224,12 +228,16 @@ private fun installNetworkInterceptors(view: WebView?) {
                 return false;
             }
 
+            function isTokenUrl(u) {
+                return u.indexOf('/api/token') !== -1 || u.indexOf('get_access_token') !== -1;
+            }
+
             var origFetch = window.fetch;
             window.fetch = function() {
                 var urlArg = arguments[0];
                 var urlStr = (typeof urlArg === 'string') ? urlArg : (urlArg && urlArg.url ? urlArg.url : '');
                 return origFetch.apply(this, arguments).then(function(response) {
-                    if (!window.__metrolistDone && urlStr.indexOf('access_token') !== -1 && response.ok) {
+                    if (!window.__metrolistDone && isTokenUrl(urlStr) && response.ok) {
                         response.clone().text().then(function(body) { handleToken(body); });
                     }
                     return response;
@@ -244,7 +252,7 @@ private fun installNetworkInterceptors(view: WebView?) {
             };
             XMLHttpRequest.prototype.send = function() {
                 var xhr = this;
-                if (xhr._mUrl.indexOf('access_token') !== -1) {
+                if (isTokenUrl(xhr._mUrl)) {
                     xhr.addEventListener('load', function() {
                         if (!window.__metrolistDone && xhr.status === 200) {
                             handleToken(xhr.responseText);
@@ -307,103 +315,55 @@ private fun tryExtractCookiesAndPollToken(
         """
         (function() {
             if (window.__metrolistDone) return;
-            var attempts = 0;
-            var maxAttempts = 30;
 
             function handleToken(body) {
                 try {
                     var data = (typeof body === 'string') ? JSON.parse(body) : body;
-                    if (data.accessToken && !data.isAnonymous) {
+                    if (data.accessToken && data.accessToken.length > 50 && !data.isAnonymous) {
                         window.__metrolistDone = true;
                         var json = (typeof body === 'string') ? body : JSON.stringify(data);
                         MetrolistBridge.onTokenResult(json);
                         return true;
                     }
-                } catch(e) {}
+                } catch(e) {
+                    MetrolistBridge.onTokenError('handleToken parse error: ' + e.message);
+                }
                 return false;
             }
 
-            function searchObj(obj, depth) {
-                if (!obj || depth > 3) return false;
-                try {
-                    if (typeof obj.accessToken === 'string' && obj.accessToken.length > 50) {
-                        if (obj.isAnonymous === false || obj.isAnonymous === undefined) {
-                            return handleToken(obj);
-                        }
-                    }
-                    if (depth < 3 && typeof obj === 'object') {
-                        var keys = Object.keys(obj);
-                        for (var k = 0; k < keys.length && k < 50; k++) {
-                            try { if (searchObj(obj[keys[k]], depth + 1)) return true; } catch(e) {}
-                        }
-                    }
-                } catch(e) {}
-                return false;
-            }
+            var attempts = 0;
+            var maxAttempts = 6;
 
-            function tryExtract() {
+            function tryFetchToken() {
                 if (window.__metrolistDone) return;
                 attempts++;
-                MetrolistBridge.onTokenError('poll attempt ' + attempts);
 
-                // 1. Inline script tags
-                var scripts = document.querySelectorAll('script:not([src])');
-                for (var i = 0; i < scripts.length; i++) {
-                    var text = scripts[i].textContent;
-                    if (text && text.indexOf('accessToken') !== -1) {
-                        var re = /\{[^{}]*"accessToken"\s*:\s*"[^"]+?"[^{}]*\}/g;
-                        var m; while ((m = re.exec(text)) !== null) { if (handleToken(m[0])) return; }
-                    }
-                }
+                var capturedUrl = MetrolistBridge.getTokenUrl();
+                var fetchUrl = capturedUrl ? capturedUrl : '/api/token?reason=transport&productType=web_player';
+                MetrolistBridge.onTokenError('poll attempt ' + attempts + ' url=' + fetchUrl.substring(0, 70));
 
-                // 2. localStorage
-                try {
-                    for (var j = 0; j < localStorage.length; j++) {
-                        var lv = localStorage.getItem(localStorage.key(j));
-                        if (lv && lv.indexOf('accessToken') !== -1) { if (handleToken(lv)) return; }
-                    }
-                } catch(e) {}
-
-                // 3. sessionStorage
-                try {
-                    for (var k = 0; k < sessionStorage.length; k++) {
-                        var sv = sessionStorage.getItem(sessionStorage.key(k));
-                        if (sv && sv.indexOf('accessToken') !== -1) { if (handleToken(sv)) return; }
-                    }
-                } catch(e) {}
-
-                // 4. Search window properties (shallow) for objects with accessToken
-                try {
-                    var wkeys = Object.getOwnPropertyNames(window);
-                    for (var w = 0; w < wkeys.length; w++) {
-                        try {
-                            var wv = window[wkeys[w]];
-                            if (wv && typeof wv === 'object' && searchObj(wv, 0)) return;
-                        } catch(e) {}
-                    }
-                } catch(e) {}
-
-                // 5. Search for token strings matching Spotify pattern (BQ...)
-                try {
-                    var html = document.documentElement.innerHTML;
-                    var tokenRe = /BQ[A-Za-z0-9_-]{100,}/g;
-                    var tm;
-                    while ((tm = tokenRe.exec(html)) !== null) {
-                        var candidate = tm[0];
-                        MetrolistBridge.onTokenError('found BQ candidate len=' + candidate.length);
-                        var synth = '{"accessToken":"' + candidate + '","accessTokenExpirationTimestampMs":' + (Date.now() + 3600000) + ',"isAnonymous":false}';
-                        if (handleToken(synth)) return;
-                    }
-                } catch(e) {}
-
-                if (attempts < maxAttempts) {
-                    setTimeout(tryExtract, 500);
-                } else if (!window.__metrolistDone) {
-                    MetrolistBridge.onTokenError('Token not found after polling ' + maxAttempts + ' attempts');
-                }
+                fetch(fetchUrl, { credentials: 'include' })
+                    .then(function(r) {
+                        if (!r.ok) throw new Error('HTTP ' + r.status);
+                        return r.text();
+                    })
+                    .then(function(body) {
+                        if (!window.__metrolistDone) {
+                            MetrolistBridge.onTokenError('fetch response: ' + body.substring(0, 100));
+                            handleToken(body);
+                        }
+                    })
+                    .catch(function(e) {
+                        MetrolistBridge.onTokenError('fetch /api/token failed: ' + e.message);
+                        if (!window.__metrolistDone && attempts < maxAttempts) {
+                            setTimeout(tryFetchToken, 2000);
+                        } else if (!window.__metrolistDone) {
+                            MetrolistBridge.onTokenError('Token not found after ' + maxAttempts + ' fetch attempts');
+                        }
+                    });
             }
 
-            setTimeout(tryExtract, 2000);
+            setTimeout(tryFetchToken, 3000);
         })();
         """.trimIndent(),
         null,
@@ -425,6 +385,12 @@ private class SpotifyTokenBridge(
     var spKey: String = ""
 
     @Volatile
+    var capturedTokenUrl: String = ""
+
+    @Volatile
+    var webViewRef: WebView? = null
+
+    @Volatile
     private var tokenProcessed = false
 
     private val json = Json {
@@ -437,6 +403,17 @@ private class SpotifyTokenBridge(
         if (tokenProcessed) return
         tokenProcessed = true
         Timber.d("SpotifyLogin: received token response (${tokenJson.length} chars)")
+
+        // Kill the WebView immediately to stop the Spotify web player from
+        // making further API calls that eat into the rolling 30s rate limit.
+        scope.launch(Dispatchers.Main) {
+            webViewRef?.apply {
+                stopLoading()
+                loadUrl("about:blank")
+                Timber.d("SpotifyLogin: WebView stopped to free rate-limit budget")
+            }
+        }
+
         scope.launch(Dispatchers.IO) {
             try {
                 val token = json.decodeFromString<SpotifyInternalToken>(tokenJson)
@@ -448,20 +425,47 @@ private class SpotifyTokenBridge(
                 Timber.d("SpotifyLogin: access token obtained (anonymous=${token.isAnonymous})")
                 Spotify.accessToken = token.accessToken
 
+                // Save cookies now but NOT the access token yet.
+                // Saving the token triggers isSpotifyActive=true, which makes
+                // library screens call loadAll() — we need the WebView's rate
+                // limit budget to drain first.
                 context.dataStore.edit { prefs ->
                     prefs[SpotifySpDcKey] = spDc
                     prefs[SpotifySpKeyKey] = spKey
+                }
+
+                // Wait for the web player's in-flight requests to fall out of
+                // Spotify's rolling 30-second rate-limit window.
+                Timber.d("SpotifyLogin: waiting for rate-limit window to clear...")
+                delay(5000)
+
+                var profileFetched = false
+                for (attempt in 1..3) {
+                    Spotify.me().onSuccess { user ->
+                        Timber.d("SpotifyLogin: logged in as ${user.displayName} (${user.id})")
+                        context.dataStore.edit { prefs ->
+                            prefs[SpotifyUsernameKey] = user.displayName ?: user.id
+                            prefs[SpotifyUserIdKey] = user.id
+                        }
+                        profileFetched = true
+                    }.onFailure { e ->
+                        val is429 = e is Spotify.SpotifyException && e.statusCode == 429
+                        if (is429 && attempt < 3) {
+                            Timber.w("SpotifyLogin: me() got 429, retrying in ${attempt * 5}s")
+                            delay(attempt * 5000L)
+                        } else {
+                            Timber.e(e, "SpotifyLogin: failed to fetch user profile")
+                        }
+                    }
+                    if (profileFetched) break
+                }
+
+                // NOW persist the access token — this flips isSpotifyActive and
+                // triggers loadAll() in the library screens we navigate back to.
+                context.dataStore.edit { prefs ->
                     prefs[SpotifyAccessTokenKey] = token.accessToken
                     prefs[SpotifyTokenExpiryKey] = token.accessTokenExpirationTimestampMs
                 }
-
-                Spotify.me().onSuccess { user ->
-                    Timber.d("SpotifyLogin: logged in as ${user.displayName} (${user.id})")
-                    context.dataStore.edit { prefs ->
-                        prefs[SpotifyUsernameKey] = user.displayName ?: user.id
-                        prefs[SpotifyUserIdKey] = user.id
-                    }
-                }.onFailure { Timber.e(it, "SpotifyLogin: failed to fetch user profile") }
 
                 scope.launch(Dispatchers.Main) {
                     navController.navigateUp()
@@ -474,8 +478,14 @@ private class SpotifyTokenBridge(
     }
 
     @JavascriptInterface
+    fun getTokenUrl(): String = capturedTokenUrl
+
+    @JavascriptInterface
     fun onTokenError(errorMessage: String) {
-        if (errorMessage.startsWith("poll attempt") || errorMessage.startsWith("found BQ")) {
+        if (errorMessage.startsWith("poll attempt") ||
+            errorMessage.startsWith("fetch response") ||
+            errorMessage.startsWith("handleToken parse")
+        ) {
             Timber.d("SpotifyLogin: $errorMessage")
             return
         }
