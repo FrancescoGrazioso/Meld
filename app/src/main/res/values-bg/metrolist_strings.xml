@@ -234,4 +234,13 @@
     <string name="hide_video_songs">Скриване на видео</string>
     <string name="details_desc">Преглед на информацията за песента</string>
     <string name="edit_desc">Промяна на заглавието или изпълнителя</string>
+    <string name="download_playlist_desc">Изтеглете всички песни за възпроизвеждане офлайн</string>
+    <string name="remove_download_playlist_desc">Премахване на всички изтеглени песни от този плейлист</string>
+    <string name="download_in_progress_desc">Изтеглянето е в ход</string>
+    <string name="share_playlist_desc">Споделете плейлистата с други</string>
+    <string name="delete_playlist_desc">Изтрий за постоянно този плейлист</string>
+    <string name="enable_better_lyrics">Включване на Better Lyrics</string>
+    <string name="add_to_library_desc">Запазване в библиотеката</string>
+    <string name="download_desc">Направете достъпно офлайн</string>
+    <string name="share_desc">Споделете линк на този елемент</string>
 </resources>
