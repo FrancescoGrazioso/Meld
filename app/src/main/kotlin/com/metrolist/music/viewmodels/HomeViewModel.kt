@@ -54,6 +54,7 @@ import com.metrolist.music.ui.screens.wrapped.WrappedManager
 import com.metrolist.music.utils.SyncUtils
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.get
+import com.metrolist.music.playback.SpotifyProfileCache
 import com.metrolist.music.utils.reportException
 import com.metrolist.spotify.Spotify
 import com.metrolist.spotify.SpotifyAuth
@@ -475,46 +476,112 @@ class HomeViewModel @Inject constructor(
         val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
         val fromTimeStamp = System.currentTimeMillis() - 86400000L * 7 * 2
 
-        // Phase 1: Load essential sections in parallel — local DB (fast) + YouTube home page.
-        // isLoading is set to false as soon as all Phase 1 tasks complete so the UI appears quickly.
-        coroutineScope {
-            launch(Dispatchers.IO) { getQuickPicks() }
+        // Read Spotify preferences directly from DataStore to avoid StateFlow race condition
+        val prefs = context.dataStore.data.first()
+        val spotifyEnabled = prefs[EnableSpotifyKey] ?: false
+        val spotifyUseForHome = prefs[UseSpotifyHomeKey] ?: false
+        val spotifyHomeOnlyPref = prefs[SpotifyHomeOnlyKey] ?: false
+        val spotifyHasToken = (prefs[SpotifyAccessTokenKey] ?: "").isNotEmpty()
+        val isSpotifyHome = spotifyEnabled && spotifyUseForHome && spotifyHasToken
+        val isSpotifyOnly = isSpotifyHome && spotifyHomeOnlyPref
 
-            launch(Dispatchers.IO) {
-                forgottenFavorites.value = database.forgottenFavorites().first()
-                    .filterVideoSongs(hideVideoSongs).shuffled().take(20)
+        // Local play history — always loaded regardless of Spotify mode
+        recentlyPlayed.value = database.events().first()
+            .distinctBy { it.song.id }
+            .take(40)
+            .map { it.song }
+            .filterVideoSongs(hideVideoSongs)
+
+        // When Spotify-only mode is active, skip all YouTube-based content
+        if (!isSpotifyOnly) {
+            getQuickPicks()
+            getDailyDiscover()
+            getCommunityPlaylists()
+            forgottenFavorites.value = database.forgottenFavorites().first().filterVideoSongs(hideVideoSongs).shuffled().take(20)
+
+            val keepListeningSongs = database.mostPlayedSongs(fromTimeStamp, limit = 15, offset = 5).first().filterVideoSongs(hideVideoSongs).shuffled().take(10)
+            val keepListeningAlbums = database.mostPlayedAlbums(fromTimeStamp, limit = 8, offset = 2).first().filter { it.album.thumbnailUrl != null }.shuffled().take(5)
+            val keepListeningArtists = database.mostPlayedArtists(fromTimeStamp).first().filter { it.artist.isYouTubeArtist && it.artist.thumbnailUrl != null }.shuffled().take(5)
+            keepListening.value = (keepListeningSongs + keepListeningAlbums + keepListeningArtists).shuffled()
+
+            if (YouTube.cookie != null) {
+                loadAccountPlaylists()
             }
 
-            launch(Dispatchers.IO) {
-                val songs = database.mostPlayedSongs(fromTimeStamp, limit = 15, offset = 5).first()
-                    .filterVideoSongs(hideVideoSongs).shuffled().take(10)
-                val albums = database.mostPlayedAlbums(fromTimeStamp, limit = 8, offset = 2).first()
-                    .filter { it.album.thumbnailUrl != null }.shuffled().take(5)
-                val artists = database.mostPlayedArtists(fromTimeStamp).first()
-                    .filter { it.artist.isYouTubeArtist && it.artist.thumbnailUrl != null }.shuffled().take(5)
-                keepListening.value = (songs + albums + artists).shuffled()
-            }
-
-            launch(Dispatchers.IO) {
-                YouTube.home().onSuccess { page ->
-                    homePage.value = page.copy(
-                        sections = page.sections.mapNotNull { section ->
-                            val filtered = section.items
-                                .filterExplicit(hideExplicit)
-                                .filterVideoSongs(hideVideoSongs)
-                                .filterYoutubeShorts(hideYoutubeShorts)
-                            if (filtered.isEmpty()) null else section.copy(items = filtered)
+            val artistRecommendations = database.mostPlayedArtists(fromTimeStamp, limit = 15).first()
+                .filter { it.artist.isYouTubeArtist }
+                .shuffled().take(4)
+                .mapNotNull {
+                    val items = mutableListOf<YTItem>()
+                    YouTube.artist(it.id).onSuccess { page ->
+                        page.sections.takeLast(3).forEach { section ->
+                            items += section.items
                         }
+                    }
+                    SimilarRecommendation(
+                        title = it,
+                        items = items
+                            .distinctBy { item -> item.id }
+                            .filterExplicit(hideExplicit)
+                            .filterVideoSongs(hideVideoSongs)
+                            .shuffled()
+                            .take(12)
+                            .ifEmpty { return@mapNotNull null }
                     )
-                }.onFailure { reportException(it) }
-            }
+                }
 
-        similarRecommendations.value = (artistRecommendations + songRecommendations + albumRecommendations).shuffled()
+            val songRecommendations = database.mostPlayedSongs(fromTimeStamp, limit = 15).first()
+                .filter { it.album != null }
+                .shuffled().take(3)
+                .mapNotNull { song ->
+                    val endpoint = YouTube.next(WatchEndpoint(videoId = song.id)).getOrNull()?.relatedEndpoint ?: return@mapNotNull null
+                    val page = YouTube.related(endpoint).getOrNull() ?: return@mapNotNull null
+                    SimilarRecommendation(
+                        title = song,
+                        items = (page.songs.shuffled().take(10) +
+                                page.albums.shuffled().take(5) +
+                                page.artists.shuffled().take(3) +
+                                page.playlists.shuffled().take(3))
+                            .distinctBy { it.id }
+                            .filterExplicit(hideExplicit)
+                            .filterVideoSongs(hideVideoSongs)
+                            .shuffled()
+                            .ifEmpty { return@mapNotNull null }
+                    )
+                }
+
+            val albumRecommendations = database.mostPlayedAlbums(fromTimeStamp, limit = 10).first()
+                .filter { it.album.thumbnailUrl != null && !it.id.startsWith("spotify:") }
+                .shuffled().take(2)
+                .mapNotNull { album ->
+                    val items = mutableListOf<YTItem>()
+                    YouTube.album(album.id).onSuccess { page ->
+                        page.otherVersions.let { items += it }
+                    }
+                    album.artists.firstOrNull()?.id?.let { artistId ->
+                        YouTube.artist(artistId).onSuccess { page ->
+                            page.sections.lastOrNull()?.items?.let { items += it }
+                        }
+                    }
+                    SimilarRecommendation(
+                        title = album,
+                        items = items
+                            .distinctBy { it.id }
+                            .filterExplicit(hideExplicit)
+                            .filterVideoSongs(hideVideoSongs)
+                            .shuffled()
+                            .take(10)
+                            .ifEmpty { return@mapNotNull null }
+                    )
+                }
+
+            similarRecommendations.value = (artistRecommendations + songRecommendations + albumRecommendations).shuffled()
+        }
 
         // Load remote content: Spotify or YouTube depending on preference
-        if (useSpotifyHome.value && ensureSpotifyAuth()) {
+        if (isSpotifyHome && ensureSpotifyAuth()) {
             loadSpotifyHomeSections(hideExplicit)
-        } else {
+        } else if (!isSpotifyOnly) {
             spotifyHomeSections.value = null
 
             YouTube.home().onSuccess { page ->
@@ -537,8 +604,13 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-        allLocalItems.value = (quickPicks.value.orEmpty() + forgottenFavorites.value.orEmpty() + keepListening.value.orEmpty())
-            .filter { it is Song || it is Album }
+        if (!isSpotifyOnly) {
+            allLocalItems.value = (quickPicks.value.orEmpty() + forgottenFavorites.value.orEmpty() + keepListening.value.orEmpty())
+                .filter { it is Song || it is Album }
+            allYtItems.value = similarRecommendations.value?.flatMap { it.items }.orEmpty() +
+                    homePage.value?.sections?.flatMap { it.items }.orEmpty()
+        }
+
         isLoading.value = false
 
         // Phase 2: Heavy multi-request operations — run in background without blocking the UI.
@@ -629,21 +701,22 @@ class HomeViewModel @Inject constructor(
         val sections = mutableListOf<SpotifyHomeSection>()
 
         try {
-            // Section 1: Your Top Tracks (short term = last 4 weeks)
-            Spotify.topTracks(timeRange = "short_term", limit = 20).onSuccess { paging ->
-                val tracks = if (hideExplicit) paging.items.filter { !it.explicit } else paging.items
-                if (tracks.isNotEmpty()) {
-                    sections.add(SpotifyHomeSection(
-                        title = "spotify_top_tracks",
-                        type = SectionType.TRACKS,
-                        tracks = tracks,
-                    ))
-                }
+            // Fetch profile via hybrid cache (GQL + REST + local DB fallback)
+            val profileTracks = SpotifyProfileCache.getTopTracks(context, database, limit = 40)
+            val profileArtists = SpotifyProfileCache.getTopArtists(context, database, limit = 20)
+
+            // Section 1: Your Top Tracks
+            val topTracks = if (hideExplicit) profileTracks.filter { !it.explicit } else profileTracks
+            if (topTracks.isNotEmpty()) {
+                sections.add(SpotifyHomeSection(
+                    title = "spotify_top_tracks",
+                    type = SectionType.TRACKS,
+                    tracks = topTracks.take(20),
+                ))
             }
 
-            // Section 2: Your Top Artists (medium term = last 6 months)
-            val topArtists = Spotify.topArtists(timeRange = "medium_term", limit = 10)
-                .getOrNull()?.items ?: emptyList()
+            // Section 2: Your Top Artists
+            val topArtists = profileArtists.take(10)
             if (topArtists.isNotEmpty()) {
                 sections.add(SpotifyHomeSection(
                     title = "spotify_top_artists",
@@ -652,8 +725,7 @@ class HomeViewModel @Inject constructor(
                 ))
             }
 
-            // Section 3: "Because you like [Artist]" - top tracks from favorite artists
-            // (uses artistTopTracks which is still available)
+            // Section 3: "Because you like [Artist]" — uses GQL artistTopTracks (no rate limit)
             val artistsForDiscovery = topArtists.take(2)
             for (artist in artistsForDiscovery) {
                 Spotify.artistTopTracks(artist.id).onSuccess { response ->
@@ -668,19 +740,21 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
-            // Section 4: Long-term Favorites (different perspective from short-term)
-            Spotify.topTracks(timeRange = "long_term", limit = 20).onSuccess { paging ->
-                val tracks = if (hideExplicit) paging.items.filter { !it.explicit } else paging.items
-                if (tracks.isNotEmpty()) {
-                    sections.add(SpotifyHomeSection(
-                        title = "spotify_made_for_you",
-                        type = SectionType.TRACKS,
-                        tracks = tracks,
-                    ))
-                }
+            // Section 4: Made For You — second half of profile tracks for variety
+            val madeForYou = if (hideExplicit) {
+                profileTracks.drop(20).filter { !it.explicit }
+            } else {
+                profileTracks.drop(20)
+            }
+            if (madeForYou.isNotEmpty()) {
+                sections.add(SpotifyHomeSection(
+                    title = "spotify_made_for_you",
+                    type = SectionType.TRACKS,
+                    tracks = madeForYou,
+                ))
             }
 
-            // Section 5: Your Playlists
+            // Section 5: Your Playlists (GQL — no rate limit)
             Spotify.myPlaylists(limit = 10).onSuccess { paging ->
                 if (paging.items.isNotEmpty()) {
                     sections.add(SpotifyHomeSection(
@@ -691,7 +765,7 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
-            // Section 6: New Releases
+            // Section 6: New Releases (GQL — no rate limit)
             Spotify.newReleases(limit = 20).onSuccess { response ->
                 val albums = response.albums?.items ?: emptyList()
                 if (albums.isNotEmpty()) {
@@ -703,18 +777,15 @@ class HomeViewModel @Inject constructor(
                 }
             }
 
-            // Section 7: Discover (top artists from a different time range for variety)
-            Spotify.topArtists(timeRange = "long_term", limit = 10).onSuccess { paging ->
-                // Filter out artists already shown in short-term top
-                val shown = topArtists.map { it.id }.toSet()
-                val newArtists = paging.items.filter { it.id !in shown }
-                if (newArtists.isNotEmpty()) {
-                    sections.add(SpotifyHomeSection(
-                        title = "spotify_discover",
-                        type = SectionType.ARTISTS,
-                        artists = newArtists,
-                    ))
-                }
+            // Section 7: Discover — artists not in the top section
+            val shownArtistIds = topArtists.map { it.id }.toSet()
+            val discoverArtists = profileArtists.drop(10).filter { it.id !in shownArtistIds }
+            if (discoverArtists.isNotEmpty()) {
+                sections.add(SpotifyHomeSection(
+                    title = "spotify_discover",
+                    type = SectionType.ARTISTS,
+                    artists = discoverArtists.take(10),
+                ))
             }
         } catch (e: Exception) {
             Timber.e(e, "HomeVM: Failed to load Spotify home sections")
