@@ -637,4 +637,27 @@
     <string name="lyrics_romanize_hindi">Romaniser les paroles en hindi</string>
     <string name="lyrics_romanize_punjabi">Romaniser les paroles en pendjabi</string>
     <string name="lyrics_romanize_as_main">Afficher les paroles romanisées comme paroles principales</string>
+    <string name="credits_license_name">Licence publique générale GNU v3.0</string>
+    <string name="credits_license_desc">Software gratuit et open source. L\'utilisation, la recherche, le partage et les améliorations sont autorisés.</string>
+    <string name="credits_discord">Serveur Discord</string>
+    <string name="credits_telegram">Canal Telegram</string>
+    <string name="credits_website">Site internet</string>
+    <string name="credits_instagram">Instagram</string>
+    <string name="credits_github">GitHub</string>
+    <string name="credits_view_repo">Voir le Repository</string>
+    <string name="app_version_info">%1$s • %2$s</string>
+    <string name="metrolist">METROLIST</string>
+    <string name="no_account_found">Aucun compte trouvé</string>
+    <string name="checking_previous_account">Vérification d\'un compte antérieure…</string>
+    <string name="restore">Restaurer</string>
+    <string name="restore_account_warning">Vous devrez vous connecter a nouveau après la restauration. Ce compte sera déconnecté:</string>
+    <string name="restore_confirm_message">Ceci restaurera les données de la sauvegarde.</string>
+    <string name="restore_confirm_title">Restaurer la sauvegarde ?</string>
+    <plurals name="n_episode">
+        <item quantity="one">Épisode</item>
+        <item quantity="many">Épisodes</item>
+        <item quantity="other">Épisodes</item>
+    </plurals>
+    <string name="saved_to_library">Enregistré</string>
+    <string name="save_to_library">Enregistrer dans la librairie</string>
 </resources>
