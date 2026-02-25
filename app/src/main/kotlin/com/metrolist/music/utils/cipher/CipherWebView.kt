@@ -45,11 +45,13 @@ class CipherWebView private constructor(
         webView.addJavascriptInterface(this, JS_INTERFACE)
 
         webView.webChromeClient = object : WebChromeClient() {
+            private var jsErrorCount = 0
             override fun onConsoleMessage(m: ConsoleMessage): Boolean {
-                if (m.message().contains("Uncaught") && !m.message().contains("is not defined")) {
-                    Timber.tag(TAG).e("WebView JS error: ${m.message()} at ${m.sourceId()}:${m.lineNumber()}")
+                if (m.message().contains("Uncaught") && jsErrorCount < 5) {
+                    jsErrorCount++
+                    Timber.tag(TAG).w("WebView JS error (#$jsErrorCount): ${m.message()}")
                 }
-                return super.onConsoleMessage(m)
+                return true
             }
         }
     }
@@ -87,6 +89,21 @@ class CipherWebView private constructor(
 
         val html = """<!DOCTYPE html>
 <html><head><script>
+(function() {
+    var _frozen = false;
+    var _realSetTimeout = window.setTimeout;
+    var _id = 1;
+    window.requestAnimationFrame = function() { return _id++; };
+    window.cancelAnimationFrame = function() {};
+    window.setInterval = function() { return _id++; };
+    window.clearInterval = function() {};
+    window.setTimeout = function(fn, delay) {
+        if (_frozen) return _id++;
+        return _realSetTimeout.call(window, fn, delay);
+    };
+    window._freezeTimers = function() { _frozen = true; };
+})();
+
 function deobfuscateSig(funcName, constantArg, obfuscatedSig) {
     try {
         var func = window._cipherSigFunc;
@@ -179,6 +196,7 @@ function discoverAndInit() {
             info = "brute_force_error:" + e;
         }
     }
+    window._freezeTimers();
     CipherBridge.onNDiscoveryDone(nFuncName, info);
     CipherBridge.onPlayerJsLoaded();
 }
