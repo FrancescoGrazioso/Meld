@@ -594,6 +594,7 @@ fun HomeScreen(
 
     val spotifyHomeSections by viewModel.spotifyHomeSections.collectAsState()
     val isSpotifyHome by viewModel.useSpotifyHome.collectAsState()
+    val isSpotifyHomeOnly by viewModel.spotifyHomeOnly.collectAsState()
     val spotifyMapper = remember { SpotifyYouTubeMapper(database) }
 
     val isLoading: Boolean by viewModel.isLoading.collectAsState()
@@ -826,6 +827,7 @@ fun HomeScreen(
     val homeSections = remember(
         randomizeHomeOrder,
         randomSeed,
+        isSpotifyHomeOnly,
         speedDialItems,
         quickPicks,
         dailyDiscover,
@@ -839,16 +841,18 @@ fun HomeScreen(
     ) {
         val list = mutableListOf<HomeSection>()
 
-        if (speedDialItems.isNotEmpty()) list.add(HomeSection.SpeedDial)
-        if (quickPicks?.isNotEmpty() == true) list.add(HomeSection.QuickPicks)
-        if (communityPlaylists?.isNotEmpty() == true) list.add(HomeSection.FromTheCommunity)
-        if (dailyDiscover?.isNotEmpty() == true) list.add(HomeSection.DailyDiscover)
-        if (keepListening?.isNotEmpty() == true) list.add(HomeSection.KeepListening)
-        if (accountPlaylists?.isNotEmpty() == true) list.add(HomeSection.AccountPlaylists)
-        if (forgottenFavorites?.isNotEmpty() == true) list.add(HomeSection.ForgottenFavorites)
+        if (!isSpotifyHomeOnly) {
+            if (speedDialItems.isNotEmpty()) list.add(HomeSection.SpeedDial)
+            if (quickPicks?.isNotEmpty() == true) list.add(HomeSection.QuickPicks)
+            if (communityPlaylists?.isNotEmpty() == true) list.add(HomeSection.FromTheCommunity)
+            if (dailyDiscover?.isNotEmpty() == true) list.add(HomeSection.DailyDiscover)
+            if (keepListening?.isNotEmpty() == true) list.add(HomeSection.KeepListening)
+            if (accountPlaylists?.isNotEmpty() == true) list.add(HomeSection.AccountPlaylists)
+            if (forgottenFavorites?.isNotEmpty() == true) list.add(HomeSection.ForgottenFavorites)
 
-        similarRecommendations?.indices?.forEach { i ->
-            list.add(HomeSection.SimilarRecommendation(i))
+            similarRecommendations?.indices?.forEach { i ->
+                list.add(HomeSection.SimilarRecommendation(i))
+            }
         }
 
         homePage?.sections?.indices?.forEach { i ->
@@ -1864,6 +1868,8 @@ fun HomeScreen(
                                                 SpotifyQueue(
                                                     initialTrack = track,
                                                     mapper = spotifyMapper,
+                                                    context = viewModel.context,
+                                                    database = database,
                                                 )
                                             )
                                         },
@@ -1874,14 +1880,30 @@ fun HomeScreen(
                                 SectionType.ARTISTS -> {
                                     SpotifyArtistSectionRow(
                                         artists = section.artists,
-                                        onArtistClick = { },
+                                        onArtistClick = { artist ->
+                                            scope.launch(Dispatchers.IO) {
+                                                val ytResult = YouTube.search(
+                                                    artist.name,
+                                                    YouTube.SearchFilter.FILTER_ARTIST,
+                                                ).getOrNull()
+                                                val ytArtist = ytResult?.items
+                                                    ?.firstOrNull { it is ArtistItem }
+                                                if (ytArtist != null) {
+                                                    withContext(Dispatchers.Main) {
+                                                        navController.navigate("artist/${ytArtist.id}")
+                                                    }
+                                                }
+                                            }
+                                        },
                                         modifier = Modifier.animateItem(),
                                     )
                                 }
                                 SectionType.ALBUMS -> {
                                     SpotifyAlbumSectionRow(
                                         albums = section.albums,
-                                        onAlbumClick = { },
+                                        onAlbumClick = { album ->
+                                            navController.navigate("spotify_album/${album.id}")
+                                        },
                                         modifier = Modifier.animateItem(),
                                     )
                                 }

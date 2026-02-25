@@ -5,7 +5,9 @@
 
 package com.metrolist.music.playback.queues
 
+import android.content.Context
 import androidx.media3.common.MediaItem
+import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.models.MediaMetadata
 import com.metrolist.music.playback.SpotifyRecommendationEngine
 import com.metrolist.music.playback.SpotifyYouTubeMapper
@@ -16,6 +18,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 /**
@@ -37,11 +40,14 @@ import timber.log.Timber
 class SpotifyQueue(
     private val initialTrack: SpotifyTrack,
     private val mapper: SpotifyYouTubeMapper,
+    private val context: Context? = null,
+    private val database: MusicDatabase? = null,
     override val preloadItem: MediaMetadata? = null,
 ) : Queue {
 
     companion object {
         private const val RESOLVE_BATCH_SIZE = 10
+        private const val RECOMMENDATION_TIMEOUT_MS = 4000L
     }
 
     private val queuedTracks = mutableListOf<SpotifyTrack>()
@@ -60,18 +66,26 @@ class SpotifyQueue(
         }
 
         try {
-            // Use the recommendation engine for a personalized queue
-            val recommendations = SpotifyRecommendationEngine.getRecommendations(initialTrack)
+            val recommendations = withTimeoutOrNull(RECOMMENDATION_TIMEOUT_MS) {
+                SpotifyRecommendationEngine.getRecommendations(
+                    seedTrack = initialTrack,
+                    context = context,
+                    database = database,
+                )
+            }
 
-            if (recommendations.isNotEmpty()) {
+            if (recommendations != null && recommendations.isNotEmpty()) {
                 queuedTracks.addAll(recommendations)
                 Timber.d(
                     "SpotifyQueue: Engine produced ${recommendations.size} recommendations " +
                         "for '${initialTrack.name}'"
                 )
             } else {
-                // Engine returned nothing — fall back to basic queue
-                Timber.w("SpotifyQueue: Engine returned empty, falling back to basic queue")
+                if (recommendations == null) {
+                    Timber.w("SpotifyQueue: Engine timed out, falling back to basic queue")
+                } else {
+                    Timber.w("SpotifyQueue: Engine returned empty, falling back to basic queue")
+                }
                 buildFallbackQueue()
             }
         } catch (e: Exception) {
