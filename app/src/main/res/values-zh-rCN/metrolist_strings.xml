@@ -492,8 +492,6 @@
     <string name="listen_together_choose_server">选择服务器</string>
     <string name="listen_together_custom_server">自定义服务器</string>
     <string name="listen_together_use_custom_server">使用自定义服务器</string>
-    <string name="listen_together_auto_approval">自动批准加入请求</string>
-    <string name="listen_together_auto_approval_desc">自动批准加入请求，无需手动审核</string>
     <string name="copy_code">复制邀请码</string>
     <string name="manage_user">管理用户</string>
     <string name="permanently_kick_user">永久屏蔽</string>

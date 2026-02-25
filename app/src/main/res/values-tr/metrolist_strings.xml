@@ -499,8 +499,6 @@
     <string name="listen_together_custom_server">Özel sunucu</string>
     <string name="listen_together_choose_server">Sunucu seç</string>
     <string name="listen_together_sync_volume_desc">Misafirler sunucu sahibinin ses seviyesini takip eder</string>
-    <string name="listen_together_auto_approval_desc">Katılım isteklerini manuel olarak incelemek yerine otomatik olarak onaylayın</string>
-    <string name="listen_together_auto_approval">Katılım isteklerini otomatik olarak onayla</string>
     <string name="copy_code">Kodu kopyala</string>
     <string name="kick_user_desc">Bu kişiyi oturumdan kaldır</string>
     <string name="permanently_kick_user">Kalıcı Olarak Engelle</string>

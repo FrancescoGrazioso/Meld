@@ -481,8 +481,6 @@
     <string name="listen_together_choose_server">Escollir servidor</string>
     <string name="listen_together_custom_server">Servidor personalitzat</string>
     <string name="listen_together_use_custom_server">Utilitzar un servidor personalitzat</string>
-    <string name="listen_together_auto_approval">Aprovar automàticament les sol·licituds d\'ingrés</string>
-    <string name="listen_together_auto_approval_desc">Aprova automàticament les sol·licituds d\'ingrés a la sala en lloc de revisar-les manualment</string>
     <string name="listen_together_sync_volume">Sincronitzar volum de l\'amfitrió</string>
     <string name="listen_together_sync_volume_desc">Els convidats copien el nivell del volum de l\'amfitrió</string>
     <string name="reconnect">Reconnectar</string>

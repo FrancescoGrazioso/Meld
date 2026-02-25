@@ -501,8 +501,6 @@
     <string name="listen_together_choose_server">Scegli un server</string>
     <string name="listen_together_custom_server">Server personalizzato</string>
     <string name="listen_together_use_custom_server">Usa un server personalizzato</string>
-    <string name="listen_together_auto_approval">Approva automaticamente le richieste di adesione</string>
-    <string name="listen_together_auto_approval_desc">Approva automaticamente le richieste di adesione invece di esaminarle manualmente</string>
     <string name="listen_together_sync_volume">Sincronizza il volume dell\'ospitante</string>
     <string name="listen_together_sync_volume_desc">Gli ospiti seguono il livello del volume dell\'ospite</string>
     <string name="transfer_host">Trasferimento ospite</string>

@@ -431,8 +431,6 @@
     <string name="listen_together_view_logs_desc">ตรวจสอบการเชื่อมต่อและข้อความเพื่อแก้ไขปัญหา</string>
     <string name="listen_together_logs">บันทึกการเชื่อมต่อ</string>
     <string name="listen_together_no_logs">ยังไม่มีบันทึกการทำงาน</string>
-    <string name="listen_together_auto_approval">อนุมัติคำขอเข้าร่วมอัตโนมัติ</string>
-    <string name="listen_together_auto_approval_desc">อนุมัติคำขอเข้าร่วมโดยอัตโนมัติ แทนการตรวจสอบด้วยตนเอง</string>
     <string name="listen_together_sync_volume">ซิงก์ระดับเสียงกับโฮสต์</string>
     <string name="listen_together_sync_volume_desc">ผู้เข้าร่วมจะใช้ระดับเสียงเดียวกับโฮสต์</string>
     <string name="listen_together_in_top_bar">แสดง Listen Together บนแถบด้านบน</string>

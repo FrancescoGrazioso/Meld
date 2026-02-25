@@ -287,8 +287,6 @@
     <string name="listen_together_view_logs_desc">Gỡ lỗi kết nối và tin nhắn</string>
     <string name="listen_together_logs">Nhật ký kết nối</string>
     <string name="listen_together_no_logs">Chưa có nhật ký nào</string>
-    <string name="listen_together_auto_approval">Tự động duyệt yêu cầu tham gia</string>
-    <string name="listen_together_auto_approval_desc">Tự động duyệt yêu cầu tham gia thay vì xem xét thủ công</string>
     <string name="listen_together_sync_volume">Đồng bộ âm lượng của chủ phòng</string>
     <string name="listen_together_sync_volume_desc">Khách sẽ theo mức âm lượng của chủ phòng</string>
     <string name="listen_together_description">Nghe nhạc cùng bạn bè theo thời gian thực. Tạo phòng để làm chủ phòng hoặc tham gia phòng có sẵn bằng mã.</string>

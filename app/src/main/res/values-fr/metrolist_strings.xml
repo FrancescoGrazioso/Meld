@@ -502,8 +502,6 @@
     <string name="listen_together_choose_server">Choisir un serveur</string>
     <string name="listen_together_custom_server">Serveur personnalisé</string>
     <string name="listen_together_use_custom_server">Utiliser un serveur personnalisé</string>
-    <string name="listen_together_auto_approval">Approuver automatiquement les demandes d\'adhésion</string>
-    <string name="listen_together_auto_approval_desc">Approuver automatiquement les demandes d\'adhésion au lieu de les examiner manuellement</string>
     <string name="listen_together_sync_volume_desc">Les invités suivent le volume sonore indiqué par l\'hôte</string>
     <string name="listen_together_sync_volume">Synchroniser le volume hôte</string>
     <string name="transfer_host">Hôte de transfert</string>

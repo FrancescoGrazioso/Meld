@@ -438,7 +438,6 @@
     <string name="listen_together_join_requests">Pedidos para entrar</string>
     <string name="listen_together_view_logs">Ver registros</string>
     <string name="listen_together_logs">Registros de conexão</string>
-    <string name="listen_together_auto_approval">Auto-aceitar pedidos de entrada</string>
     <string name="enable_high_refresh_rate">Ativar alta taxa de atualização</string>
     <string name="enable_high_refresh_rate_desc">Forçar a exibição a rodar na maior taxa de atualização suportada (ex: 120Hz)</string>
     <string name="listening">Escutando…</string>
@@ -452,7 +451,6 @@
     <string name="re_listen">Ouvir novamente</string>
     <string name="hold_to_recognize">Segure o ícone de pesquisa para reconhecer música</string>
     <string name="play_on_app">Tocar no Metrolist</string>
-    <string name="listen_together_auto_approval_desc">Aprovar pedidos de entrada automaticamente, ao invés de analisá-los manualmente</string>
     <string name="listen_together_sync_volume">Sincronizar volume do anfitrião</string>
     <string name="listen_together_sync_volume_desc">Participantes seguem o nível de volume do anfitrião</string>
     <string name="listen_together_in_top_bar">Ouvir juntos na barra superior</string>

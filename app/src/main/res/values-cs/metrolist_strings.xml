@@ -507,8 +507,6 @@
     <string name="listen_together_choose_server">Vybrat server</string>
     <string name="listen_together_custom_server">Vlastní server</string>
     <string name="listen_together_use_custom_server">Použít vlastní server</string>
-    <string name="listen_together_auto_approval">Automaticky schvalovat žádosti o připojení</string>
-    <string name="listen_together_auto_approval_desc">Automaticky schvalovat žádosti o připojení namísto ručního schvalování</string>
     <string name="listen_together_sync_volume">Synchronizovat hlasitost s hostitelem</string>
     <string name="listen_together_sync_volume_desc">Hlasitost hostů se řídí hlasitostí hostitele</string>
     <string name="transfer_host">Předat roli hostitele</string>

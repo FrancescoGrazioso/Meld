@@ -497,8 +497,6 @@
     <string name="listen_together_choose_server">Pilih server</string>
     <string name="listen_together_custom_server">Server kustom</string>
     <string name="listen_together_use_custom_server">Gunakan server kustom</string>
-    <string name="listen_together_auto_approval">Setujui otomatis permintaan bergabung</string>
-    <string name="listen_together_auto_approval_desc">Setujui permintaan bergabung secara otomatis alih-alih meninjaunya secara manual</string>
     <string name="listen_together_sync_volume">Sinkronkan volume host</string>
     <string name="listen_together_sync_volume_desc">Tamu mengikuti tingkat volume host</string>
     <string name="reconnect">Sambungkan ulang</string>

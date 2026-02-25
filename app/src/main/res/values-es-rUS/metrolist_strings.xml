@@ -491,8 +491,6 @@
     <string name="listen_together_use_custom_server">Usar servidor personalizado</string>
     <string name="mute">Silenciar</string>
     <string name="unmute">Activar sonido</string>
-    <string name="listen_together_auto_approval">Aprobar automáticamente las solicitudes de ingreso</string>
-    <string name="listen_together_auto_approval_desc">Aprobar automáticamente las solicitudes de ingreso en lugar de revisarlas manualmente</string>
     <string name="listen_together_sync_volume">Sincronizar volumen del anfitrión</string>
     <string name="listen_together_sync_volume_desc">Los invitados siguen el nivel de volumen del anfitrión</string>
     <string name="listen_together_in_top_bar">Mover Escuchar Juntos a la barra superior</string>

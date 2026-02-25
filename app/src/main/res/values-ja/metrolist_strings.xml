@@ -481,8 +481,6 @@
     <string name="listen_together_view_logs_desc">接続とメッセージのデバッグ</string>
     <string name="listen_together_logs">接続ログ</string>
     <string name="listen_together_no_logs">ログはありません</string>
-    <string name="listen_together_auto_approval">参加リクエストを自動で承認</string>
-    <string name="listen_together_auto_approval_desc">参加リクエストを手動で確認せず、自動的に承認します</string>
     <string name="listen_together_sync_volume">ホストの音量と同期</string>
     <string name="cd_palette_item">%1$sパレット</string>
     <string name="listen_together_not_configured">Listen Togetherが設定されていません。”設定” ▶ ”連携” ▶ ”Listen Together” でサーバーURLを設定してください。</string>

@@ -496,8 +496,6 @@
     <string name="listen_together_use_custom_server">Folosește un server personalizat</string>
     <string name="mute">Mut</string>
     <string name="unmute">Scoate de pe mut</string>
-    <string name="listen_together_auto_approval">Aprobă automat cererile de alăturare</string>
-    <string name="listen_together_auto_approval_desc">Aprobă în mod automat cererile de alăturare în loc să le evaluezi manual</string>
     <string name="listen_together_sync_volume">Sincronizează volumul cu gazda</string>
     <string name="listen_together_sync_volume_desc">Invitații folosesc același nivel al volumului ca și gazda</string>
     <string name="transfer_host">Transferă rolul de gazdă</string>

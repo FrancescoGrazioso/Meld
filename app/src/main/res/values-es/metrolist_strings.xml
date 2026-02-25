@@ -506,8 +506,6 @@
     <string name="listen_together_choose_server">Elegir servidor</string>
     <string name="listen_together_custom_server">Servidor personalizado</string>
     <string name="listen_together_use_custom_server">Usar servidor personalizado</string>
-    <string name="listen_together_auto_approval">Aprobar automáticamente solicitudes de conexión</string>
-    <string name="listen_together_auto_approval_desc">Aprobar automáticamente solicitudes de conexión en lugar de revisarlas manualmente</string>
     <string name="listen_together_sync_volume">Sincronizar volumen del anfitrión</string>
     <string name="listen_together_sync_volume_desc">Los invitados siguen el nivel de volumen del anfitrión</string>
     <string name="transfer_host">Transferir anfitrión</string>

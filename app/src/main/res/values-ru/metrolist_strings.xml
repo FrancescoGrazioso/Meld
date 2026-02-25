@@ -507,8 +507,6 @@
     <string name="listen_together_choose_server">Выбрать сервер</string>
     <string name="listen_together_custom_server">Пользовательский сервер</string>
     <string name="listen_together_use_custom_server">Использовать пользовательский сервер</string>
-    <string name="listen_together_auto_approval">Автоодобрение запросов на вход</string>
-    <string name="listen_together_auto_approval_desc">Запросы на вход будут одобряться автоматически, без ручной проверки</string>
     <string name="listen_together_sync_volume">Синхронизация громкости хоста</string>
     <string name="listen_together_sync_volume_desc">У гостей будет та же громкость, что и у хоста</string>
     <string name="transfer_host">Передать хоста</string>

@@ -424,8 +424,6 @@
     <string name="cd_light_mode">Hellmodus</string>
     <string name="like">Like</string>
     <string name="listen_together_no_logs">Noch keine Protokolle</string>
-    <string name="listen_together_auto_approval">Automatische Genehmigung von Beitrittsanfragen</string>
-    <string name="listen_together_auto_approval_desc">Beitrittsanfragen automatisch genehmigen, anstatt sie manuell zu prüfen</string>
     <string name="listen_together_sync_volume">Lautstärke des Hosts synchronisieren</string>
     <string name="listen_together_sync_volume_desc">Gäste passen sich der Lautstärke des Hosts an</string>
     <string name="listen_together_description">Hören gemeinsam mit deinen Freunden Musik in Echtzeit. Erstelle einen Raum, um Gastgeber zu sein, oder trete mit einem Code einem bestehenden Raum bei.</string>
