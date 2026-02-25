@@ -97,6 +97,8 @@ Meld connects to your Spotify account through a built-in WebView login — no de
 
 > **Note:** No developer account, Client ID, or any external setup is required. Just log in with your regular Spotify account — free or Premium.
 
+> **Important:** For reliable playback, disable battery optimization for Meld in your phone settings (**Settings → Apps → Meld → Battery → Unrestricted**). Without this, Android may throttle the app and cause long delays before songs start playing.
+
 ### Building from source
 
 For GitHub Actions builds, add these secrets to your repository:
@@ -112,15 +114,17 @@ Go to the [latest release](https://github.com/FrancescoGrazioso/Meld/releases/la
 
 After logging in, make sure you've enabled **"Use Spotify for Home"** and/or **"Use Spotify for Search"** in **Settings → Integrations → Spotify**. These are off by default. Then go back to the home screen and **pull down to refresh**. The first load may take a few seconds; subsequent launches will be instant thanks to local caching.
 
-### Q: Songs aren't playing / playback isn't working
+### Q: Songs aren't playing / playback is very slow to start
 
-If songs aren't playing after tapping them, try the following:
-1. Wait a moment — the first playback after launch can take a few seconds while the player initializes
-2. Check your internet connection
-3. Try playing a different song
-4. Force-close and reopen the app
+If songs aren't playing or take a long time to start, try the following:
 
-In most cases, playback starts working on its own after a brief delay.
+1. **Disable battery optimization for Meld** — Go to your phone's **Settings → Apps → Meld → Battery → Unrestricted** (or "No restrictions"). This is the most common fix. Android aggressively throttles background network and CPU usage for battery-optimized apps, which directly impacts Meld's stream resolution pipeline. Without this setting, playback may take over a minute to start, especially when the screen is locked.
+2. Wait a moment — the first playback after a fresh launch requires initializing the streaming engine (signature verification, token generation). Subsequent plays are much faster.
+3. Check your internet connection
+4. Try playing a different song
+5. Force-close and reopen the app
+
+In general for the first time you play a song it's normal for it to take alonger time, the process to download metadata from spotify, look for a correspondent on youtube and match it can take time, for some song more than others! From the second time it will be stored in a local DB and this process won't need to be run again
 
 ### Q: Does Meld work with Bluetooth headphones / AirPods?
 
