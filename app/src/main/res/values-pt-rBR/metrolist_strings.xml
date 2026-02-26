@@ -13,7 +13,7 @@
     <string name="like_all">Favoritar tudo</string>
     <string name="sort_by_last_updated">Quando atualizado</string>
     <string name="lyrics">Letra</string>
-    <string name="already_in_playlist">Já está na lista:</string>
+    <string name="already_in_playlist">Já está na playlist:</string>
     <plurals name="n_element">
         <item quantity="one">%d elemento</item>
         <item quantity="many">%d de elementos</item>
@@ -81,7 +81,7 @@
     <string name="no_title">Nenhum título</string>
     <string name="unknown_artist">Artista desconhecido</string>
     <string name="unknown_item_type">Tipo do item desconhecido</string>
-    <string name="loading_charts">Carregando listas…</string>
+    <string name="loading_charts">Carregando paradas…</string>
     <string name="retry_button">Repetir</string>
     <string name="album_cover_desc">Arte do álbum</string>
     <string name="top_music_videos">Vídeos de música populares</string>
@@ -97,7 +97,7 @@
     <string name="secondary_color_style">Secundárias</string>
     <string name="auto_playlists">Playlists automáticas</string>
     <string name="show_downloaded_playlist">Mostrar playlist de \"Músicas Baixadas\"</string>
-    <string name="sync_playlist">Sincronizar lista</string>
+    <string name="sync_playlist">Sincronizar playlist</string>
     <string name="dislike_all">Desfavoritar tudo</string>
     <string name="show_liked_playlist">Mostrar playlist \"Curtidas\"</string>
     <string name="advanced_login">Login com token</string>
@@ -136,7 +136,7 @@
     <string name="lyrics_auto_scroll">Rolar letra automaticamente</string>
     <string name="import_online">Importar uma playlist \"m3u\"</string>
     <string name="import_csv">Importar uma playlist \"csv\"</string>
-    <string name="playlist_add_local_to_synced_note">Observação: Não há suporte para adicionar músicas locais em listas sincronizadas/remotas. Qualquer outra combinação é válida</string>
+    <string name="playlist_add_local_to_synced_note">Observação: Não há suporte para adicionar músicas locais em playlists sincronizadas/remotas. Qualquer outra combinação é válida</string>
     <string name="lyrics_romanize_japanese">Romanizar letras em Japonês</string>
     <string name="lyrics_romanize_korean">Romanizar letras em Coreano</string>
     <string name="yt_sync">Sincronizar automaticamente com a conta</string>
@@ -176,8 +176,8 @@
     <string name="settings_section_system">Sistema e informações</string>
     <string name="seek_seconds_addup">Avançar/retroceder progressivo</string>
     <string name="edit_playlist_cover">Editar capa da playlist</string>
-    <string name="edit_playlist_cover_note">Observação: A sua conta deve estar vinculada a um número de telefone e verificada no YouTube Music para alterar a capa da lista.</string>
-    <string name="edit_playlist_cover_note_wait">Ao selecionar uma imagem, aguarde um momento para que a capa nova apareça na sua lista.</string>
+    <string name="edit_playlist_cover_note">Observação: A sua conta deve estar vinculada a um número de telefone e verificada no YouTube Music para alterar a capa da playlist.</string>
+    <string name="edit_playlist_cover_note_wait">Ao selecionar uma imagem, aguarde um momento para que a capa nova apareça na sua playlist.</string>
     <string name="config_proxy">Configurar proxy</string>
     <string name="proxy_username">Nome do usuário da proxy</string>
     <string name="proxy_password">Senha da proxy</string>
@@ -224,10 +224,10 @@
     <string name="scrobble_min_track_duration">Fazer scrobble de músicas mais longas que</string>
     <string name="scrobble_delay_percent">Porcentagem do atraso de Scrobble</string>
     <string name="scrobble_delay_minutes">Minutos do atraso do Scrobble</string>
-    <string name="swipe_song_to_remove">Deslizar música para removê-la da lista</string>
+    <string name="swipe_song_to_remove">Deslizar música para removê-la da playlist</string>
     <string name="primary_color_style">Cor primária</string>
     <string name="tertiary_color_style">Cor terciária</string>
-    <string name="auto_scroll">Ressincronizar</string>
+    <string name="auto_scroll">Sincronizar</string>
     <string name="lyrics_romanize_chinese">Romanizar letras em Chinês</string>
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Habilitar transmissão de áudio para o Chromecast e outros dispositivos compatíveis</string>
@@ -242,7 +242,7 @@
     <string name="add_to_queue_desc">Adicionar ao fim da sua fila de reprodução</string>
     <string name="add_to_library_desc">Salvar na sua biblioteca</string>
     <string name="download_desc">Tornar disponível para reprodução offline</string>
-    <string name="add_to_playlist_desc">Adicionar a uma de suas listas de reprodução</string>
+    <string name="add_to_playlist_desc">Adicionar a uma de suas playlists</string>
     <string name="refetch_desc">Obter os metadados mais recentes do YouTube Music</string>
     <string name="share_desc">Compartilhar o link deste item</string>
     <string name="delete_desc">Remover permanentemente este item</string>
@@ -260,13 +260,13 @@
     <string name="download_playlist_desc">Baixar todas as músicas para reprodução offline</string>
     <string name="remove_download_playlist_desc">Remove todas as músicas baixadas desta playlist</string>
     <string name="download_in_progress_desc">Transferência está em andamento</string>
-    <string name="share_playlist_desc">Compartilhe esta lista de reprodução com outras pessoas</string>
-    <string name="delete_playlist_desc">Remover esta lista de reprodução permanentemente</string>
-    <string name="sync_playlist_desc">Sincronizar lista de reprodução com YouTube Music</string>
+    <string name="share_playlist_desc">Compartilhe esta playlist com outras pessoas</string>
+    <string name="delete_playlist_desc">Remover esta playlist permanentemente</string>
+    <string name="sync_playlist_desc">Sincronizar playlist com o YouTube Music</string>
     <string name="lyrics_glow_effect">Ativar o efeito de letras brilhantes</string>
     <string name="lyrics_glow_effect_desc">Adicionar animação brilhante e efeito de salto para letras ativas</string>
     <string name="enable_better_lyrics">Ativar Better Lyrics</string>
-    <string name="enable_better_lyrics_desc">Letras sincronizadas sílaba por sílaba para qualquer música, perfeitas para karaokê.</string>
+    <string name="enable_better_lyrics_desc">Letras sincronizadas sílaba por sílaba para qualquer música, perfeitas para karaokê</string>
     <string name="shuffle_playlist_first">Embaralhar playlist/álbum primeiro</string>
     <string name="shuffle_playlist_first_desc">Quando no aleatório, tocar todas as músicas da playlist/álbum original primeiro, depois tocar conteúdo similar</string>
     <string name="show_wrapped_card">Mostrar card do Wrapped</string>
@@ -283,7 +283,7 @@
     <string name="wrapped_total_albums_title">Você já ouviu</string>
     <string name="wrapped_total_albums_subtitle">álbuns únicos</string>
     <string name="wrapped_top_album_title">Seu álbum preferido é</string>
-    <string name="wrapped_playlist_ready">Sua lista pessoal está pronta</string>
+    <string name="wrapped_playlist_ready">Sua playlist pessoal está pronta</string>
     <string name="wrapped_top_5_albums_title">Seus 5 álbuns mais ouvidos</string>
     <string name="wrapped_album_listening_time">Você ouviu esse album por %d minutos</string>
     <string name="wrapped_no_data">Sem informações</string>
@@ -305,9 +305,9 @@
     <string name="wrapped_intro_subtitle">é hora de checar o que você tem ouvido</string>
     <string name="wrapped_intro_button">vamos lá!</string>
     <string name="wrapped_end_thanks">Obrigado por ouvir com o Metrolist!</string>
-    <string name="wrapped_end_create_playlist">Crie Sua Lista de Reprodução Embrulhada</string>
+    <string name="wrapped_end_create_playlist">Criar sua playlist de Retrospectiva</string>
     <string name="wrapped_end_creating_playlist">Criando...</string>
-    <string name="wrapped_end_playlist_saved">Lista de Reprodução Salva</string>
+    <string name="wrapped_end_playlist_saved">Playlist salva</string>
     <string name="wrapped_logo_content_description">Metrolist Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">SEU EMBRULHO ESTÁ PRONTO!</string>
@@ -316,11 +316,11 @@
     <string name="wrapped_special_thanks">Agradecimentos especiais ao MO Agamy por criar o Metrolist</string>
     <string name="wrapped_close">Feche o embrulho</string>
     <string name="wrapped_playlist_title">Seu %s Embrulhado</string>
-    <string name="wrapped_create_playlist">Criar lista de reprodução</string>
+    <string name="wrapped_create_playlist">Criar playlist</string>
     <string name="enable_wavy_slider">Ativar o controle deslizante flutuante</string>
     <string name="wavy">Ondulado</string>
     <string name="wrapped_album_listening_time_minutes">%d minutos</string>
-    <string name="wrapped_playlist_saved">Playlist salva</string>
+    <string name="wrapped_playlist_saved">Playlist de retrospectiva salva</string>
     <plurals name="profiles_count">
         <item quantity="one">%d Perfil</item>
         <item quantity="many">%d Perfis</item>
@@ -637,7 +637,7 @@
     <string name="lyrics_romanize_hindi">Romanizar letras em Hindi</string>
     <string name="lyrics_romanize_punjabi">Romanizar letras em Punjabi</string>
     <string name="lyrics_romanize_as_main">Mostrar letras romanizadas como principal</string>
-    <string name="enable_lrclib_desc">Biblioteca de letras sincronizadas feitos pela comunidade.</string>
+    <string name="enable_lrclib_desc">Biblioteca de letras sincronizadas feitos pela comunidade</string>
     <string name="enable_kugou_desc">Pega as letras do KuGou, uma plataforma de música Chinesa popular</string>
     <string name="youtube_music_lyrics_note">Observação: Letras do YouTube Music serão mostradas automaticamente quando não houver outras fontes disponíveis. As letras do YTM geralmente não são sincronizadas.</string>
     <string name="enable_lyricsplus">Ativar LyricsPlus</string>
@@ -740,4 +740,7 @@
     <string name="restore">Restaurar</string>
     <string name="checking_previous_account">Verificando se há uma conta anterior…</string>
     <string name="no_account_found">Nenhuma conta encontrada</string>
+    <string name="importing_playlist">Importando playlist</string>
+    <string name="restore_success">Restauração completa</string>
+    <string name="no_songs_found">Nenhuma música encontrada. Arquivo inválido ou nenhum resultado correspondente.</string>
 </resources>
