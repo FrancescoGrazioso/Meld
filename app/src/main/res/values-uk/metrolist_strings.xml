@@ -404,4 +404,9 @@
     <string name="decryption_library_newpipe_desc">Офіційна бібліотека TeamNewPipe. Найактуальніша з урахуванням змін YouTube. Рекомендована за замовчуванням. Автоматичне повернення до PipePipe API у разі невдачі.</string>
     <string name="decryption_library_pipepipe_api">PipePipe API</string>
     <string name="decryption_library_pipepipe_api_desc">Розшифровка на основі API за допомогою MetroExtractor. Швидша, але залежить від зовнішнього API. Автоматичне повернення до NewPipe у разі невдачі.</string>
+    <string name="enable">Увімкнути</string>
+    <string name="player_background_solid">Суцільний</string>
+    <string name="display_density">Щільність відображення</string>
+    <string name="restart">Перезапустити</string>
+    <string name="density_restart_message">Зміна щільності відображення почне діяти після перезапуску програми. Ви хочете перезапустити зараз?</string>
 </resources>
