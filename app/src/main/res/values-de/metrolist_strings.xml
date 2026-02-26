@@ -232,7 +232,7 @@
     <string name="primary_color_style">Primärfarbe</string>
     <string name="tertiary_color_style">Tertiärfarbe</string>
     <string name="enable_better_lyrics">Better Lyrics-Songtext-Anbieter aktivieren</string>
-    <string name="enable_better_lyrics_desc">Verwenden Sie den Anbieter „Better Lyrics“ für Wort-für-Wort synchronisierte Songtexte.</string>
+    <string name="enable_better_lyrics_desc">Silbensynchronisierte Songtexte für jeden Song, für Karaoke</string>
     <string name="auto_scroll">Neu synchronisieren</string>
     <string name="shuffle_playlist_first">Wiedergabeliste/Album zuerst mischen</string>
     <string name="shuffle_playlist_first_desc">Gib beim Mischen zuerst alle Songs der ursprünglichen Wiedergabeliste/des ursprünglichen Albums und dann ähnliche Inhalte wieder</string>
@@ -340,7 +340,7 @@
     <string name="error_file_open">Datei konnte nicht geöffnet werden: %1$s</string>
     <string name="import_error_title">Importfehler</string>
     <string name="enable_simpmusic">SimpMusic-Songtext-Anbieter aktivieren</string>
-    <string name="enable_simpmusic_desc">Verwenden Sie den Anbieter SimpMusic-Lyrics für synchronisierte Songtexte.</string>
+    <string name="enable_simpmusic_desc">Automatisch von Musixmatch und YouTube Transcript bezogene Songtexte</string>
     <plurals name="profiles_count">
         <item quantity="one">Equalizer-Benutzeroberfläche</item>
         <item quantity="other"/>
@@ -641,4 +641,11 @@
     <string name="daily_discover_for_fans_of">Für Fans von %1$s</string>
     <string name="from_the_community">Aus der Community</string>
     <string name="songs_count">%s Songs</string>
+    <string name="enable_lrclib_desc">Von der Community betriebene Datenbank für synchronisierte Songtexte</string>
+    <string name="enable_kugou_desc">Nimmt Songtexte von KuGou, einer beliebten chinesischen Musikplattform</string>
+    <string name="youtube_music_lyrics_note">HINWEIS: Songtexte von YouTube Music werden automatisch angezeigt, wenn keine anderen Songtexte verfügbar sind. Songtexte von YTM sind in der Regel nicht synchronisiert.</string>
+    <string name="enable_lyricsplus">LyricsPlus-Song-Text-Anbieter aktivieren</string>
+    <string name="enable_lyricsplus_desc">Synchronisierte Songtexte aus mehreren Quellen</string>
+    <string name="lyrics_provider_selection">Auswahl des Anbieters</string>
+    <string name="lyrics_provider_selection_desc">Wählen Sie aus, welche Anbieter von Songtexten aktiviert werden sollen.</string>
 </resources>
