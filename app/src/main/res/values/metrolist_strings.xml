@@ -528,6 +528,8 @@
     <string name="error_episode_remove">Failed to remove episode</string>
     <string name="error_podcast_subscribe">Failed to subscribe to podcast</string>
     <string name="error_podcast_unsubscribe">Failed to unsubscribe from podcast</string>
+    <string name="error_restricted_not_logged_in">Some tracks may not play due to age or country restrictions. Try logging into YouTube in Settings to resolve this issue.</string>
+    <string name="error_restricted_logged_in">This track is restricted (age or country) and cannot be played at this time.</string>
 
     <!-- Widget strings -->
     <string name="album_art">Album art</string>
