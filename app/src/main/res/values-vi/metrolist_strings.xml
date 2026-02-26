@@ -125,7 +125,7 @@
     <string name="unknown_item_type">Loại không xác định</string>
     <string name="player_background_style">Kiểu nền của trình phát</string>
     <string name="trending">Đang xu hướng</string>
-    <string name="share_lyrics">Chia sẻ lời</string>
+    <string name="share_lyrics">Chia sẻ lời bài hát</string>
     <string name="cached_playlist">Đã lưu vào bộ đệm</string>
     <string name="lyrics_romanize_japanese">Lời bài hát tiếng Nhật</string>
     <string name="lyrics_romanize_korean">Lời bài hát tiếng Hàn</string>
@@ -414,4 +414,26 @@
     <string name="delete_desc">Xóa vĩnh viễn vật này</string>
     <string name="advanced_desc">Đổi nhịp độ và cao độ của bài hát</string>
     <string name="equalizer_desc">Chỉnh độ cân bằng của âm thanh</string>
+    <string name="enable">Cho phép</string>
+    <string name="credits_instagram">Instagram</string>
+    <string name="save_episode_for_later">Lưu để nghe sau</string>
+    <string name="metrolist">METROLIST</string>
+    <string name="credits_license_name">GNU General Public License v3.0</string>
+    <string name="daily_discover_based_on">Dựa trên %1$s</string>
+    <string name="songs_count">%s bài</string>
+    <string name="logout_keep">Giữ lại</string>
+    <string name="logout_clear">Xoá bỏ</string>
+    <string name="credits_telegram">Kênh Telegram</string>
+    <string name="credits_website">Website</string>
+    <string name="credits_github">GitHub</string>
+    <string name="filter_podcasts">Podcasts</string>
+    <string name="view_podcast">Xem podcast</string>
+    <string name="subscribed_channels">Đã đăng ký</string>
+    <string name="no_account_found">Không tìm thấy tài khoản</string>
+    <string name="reconnect">Kết nối lại</string>
+    <string name="enter_room_code">Nhập mã phòng</string>
+    <string name="listen_together_settings_desc">Cấu hình server, username, và thêm nữa</string>
+    <string name="ai_lyrics_translation">AI dịch lời bài hát</string>
+    <string name="ai_translating_lyrics">Đang dịch lời...</string>
+    <string name="ai_lyrics_translated">Lời đã dịch xong</string>
 </resources>
