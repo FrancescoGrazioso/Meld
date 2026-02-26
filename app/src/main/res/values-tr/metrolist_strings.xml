@@ -348,7 +348,7 @@
     <string name="import_error_title">İçe Aktarma Hatası</string>
     <string name="pause_music_when_media_is_muted">Medya sesi kapatıldığında müziği duraklat</string>
     <string name="enable_simpmusic">SimpMusic\'in şarkı sözlerini etkinleştir</string>
-    <string name="enable_simpmusic_desc">Sözler Musixmatch ve YouTube Transkripti üzerinden alınır</string>
+    <string name="enable_simpmusic_desc">Şarkı sözleri Musixmatch ve YouTube Transcript üzerinden otomatik olarak sağlanmıştır</string>
     <string name="remember_shuffle_and_repeat">Karışık listeyi hatırla ve tekrarla</string>
     <string name="remember_shuffle_and_repeat_desc">Karışık listeyi hatırla ve uygulama yeniden başlatıldığında tekrarla</string>
     <string name="system_equalizer">Sistem Ekolayzeri</string>
@@ -728,10 +728,10 @@
         <item quantity="one">%d bölümü</item>
         <item quantity="other">%d bölümleri</item>
     </plurals>
-    <string name="restore_confirm_title">Yedeğiniz geri yüklensin mi?</string>
-    <string name="restore_confirm_message">Bu özellik uygulama verilerinizi yedeğe göre yeniden düzenleyecektir.</string>
-    <string name="restore_account_warning">Geri yüklemeden sonra yeniden giriş yapmalısınız. Altta belirtilmiş olan hesabınızdan çıkış yapılacaktır:</string>
+    <string name="restore_confirm_title">Yedekleme geri yüklensin mi?</string>
+    <string name="restore_confirm_message">Bu seçenekle uygulama verilerinizi yedekten geri yükleyebilirsiniz.</string>
+    <string name="restore_account_warning">Geri yükleme işleminden sonra tekrar giriş yapmanız gerekecek. Aşağıdaki hesaptan çıkış yapılacaktır:</string>
     <string name="restore">Geri yükle</string>
     <string name="checking_previous_account">Önceki hesap kontrol ediliyor…</string>
-    <string name="no_account_found">Herhangi bir hesap bulunamadı</string>
+    <string name="no_account_found">Hesap bulunamadı</string>
 </resources>
