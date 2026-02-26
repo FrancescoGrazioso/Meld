@@ -682,7 +682,7 @@
     <string name="listen_together_auto_approval_joins_desc">Запросы на вход будут одобряться автоматически, без ручной проверки</string>
     <string name="listen_together_auto_approval_suggestions">Автоодобрение предложений песен</string>
     <string name="listen_together_auto_approval_suggestions_desc">Предложения песен от гостей будут одобряться автоматически и добавляться в очередь</string>
-    <string name="importing_song">Импортируется %s</string>
+    <string name="importing_song">Импорт %s</string>
     <string name="speed_dial">Быстрый набор</string>
     <string name="pin_to_speed_dial">Закрепить в Быстром наборе</string>
     <string name="unpin_from_speed_dial">Открепить от Быстрого набора</string>
@@ -746,4 +746,7 @@
     <string name="restore">Восстановить</string>
     <string name="checking_previous_account">Проверка предыдущего аккаунта…</string>
     <string name="no_account_found">Аккаунт не найден</string>
+    <string name="importing_playlist">Импорт плейлиста</string>
+    <string name="restore_success">Восстановление успешно завершено</string>
+    <string name="no_songs_found">Треки не найдены. Недопустимый файл или совпадений не найдено.</string>
 </resources>
