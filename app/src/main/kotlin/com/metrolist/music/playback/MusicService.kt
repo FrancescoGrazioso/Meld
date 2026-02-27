@@ -1050,12 +1050,8 @@ class MusicService :
         audioFocusRequest?.let { request ->
             val result = audioManager.requestAudioFocus(request)
             hasAudioFocus = result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
-            if (!hasAudioFocus) {
-                Timber.tag(TAG).w("Audio focus request denied (result=$result)")
-            }
             return hasAudioFocus
         }
-        Timber.tag(TAG).w("Audio focus request skipped — audioFocusRequest is null")
         return false
     }
 
@@ -1711,8 +1707,6 @@ class MusicService :
         startRadioSeamlessly()
     }
 
-    private var loudnessEnhancerSessionId: Int = C.AUDIO_SESSION_ID_UNSET
-
     private fun setupLoudnessEnhancer() {
         val audioSessionId = player.audioSessionId
 
@@ -1721,16 +1715,10 @@ class MusicService :
             return
         }
 
-        // Recreate enhancer if session ID changed (e.g. after codec reclaim)
-        if (loudnessEnhancer != null && loudnessEnhancerSessionId != audioSessionId) {
-            Timber.tag(TAG).d("Audio session changed ($loudnessEnhancerSessionId -> $audioSessionId), recreating LoudnessEnhancer")
-            releaseLoudnessEnhancer()
-        }
-
+        // Create or recreate enhancer if needed
         if (loudnessEnhancer == null) {
             try {
                 loudnessEnhancer = LoudnessEnhancer(audioSessionId)
-                loudnessEnhancerSessionId = audioSessionId
                 Timber.tag(TAG).d("LoudnessEnhancer created for sessionId=$audioSessionId")
             } catch (e: Exception) {
                 reportException(e)
@@ -1804,7 +1792,6 @@ class MusicService :
             Timber.tag(TAG).e(e, "Error releasing LoudnessEnhancer: ${e.message}")
         } finally {
             loudnessEnhancer = null
-            loudnessEnhancerSessionId = C.AUDIO_SESSION_ID_UNSET
         }
     }
 
@@ -1983,8 +1970,6 @@ class MusicService :
                 val focusGranted = requestAudioFocus()
                 if (focusGranted) {
                     openAudioEffectSession()
-                } else {
-                    Timber.tag(TAG).w("Playback active but audio focus not granted — effects session skipped")
                 }
             } else {
                 closeAudioEffectSession()
@@ -3274,6 +3259,7 @@ class MusicService :
         const val ALBUM = "album"
         const val PLAYLIST = "playlist"
         const val YOUTUBE_PLAYLIST = "youtube_playlist"
+        const val SPOTIFY_PLAYLIST = "spotify_playlist"
         const val SEARCH = "search"
         const val SHUFFLE_ACTION = "__shuffle__"
 
