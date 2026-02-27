@@ -188,6 +188,7 @@ import kotlinx.coroutines.withContext
 sealed class HomeSection(val id: String, val baseWeight: Int) {
     data object SpeedDial : HomeSection("speed_dial", 100)
     data object QuickPicks : HomeSection("quick_picks", 90)
+    data object RecentlyPlayed : HomeSection("recently_played", 85)
     data object DailyDiscover : HomeSection("daily_discover", 80)
     data object KeepListening : HomeSection("keep_listening", 50)
     data object AccountPlaylists : HomeSection("account_playlists", 40)
@@ -580,6 +581,7 @@ fun HomeScreen(
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
 
     val quickPicks by viewModel.quickPicks.collectAsState()
+    val recentlyPlayed by viewModel.recentlyPlayed.collectAsState()
     val forgottenFavorites by viewModel.forgottenFavorites.collectAsState()
     val keepListening by viewModel.keepListening.collectAsState()
     val similarRecommendations by viewModel.similarRecommendations.collectAsState()
@@ -888,6 +890,7 @@ fun HomeScreen(
         isSpotifyHomeOnly,
         speedDialItems,
         quickPicks,
+        recentlyPlayed,
         dailyDiscover,
         keepListening,
         accountPlaylists,
@@ -899,6 +902,8 @@ fun HomeScreen(
     ) {
         val list = mutableListOf<HomeSection>()
         val chipActive = selectedChip != null
+
+        if (recentlyPlayed?.isNotEmpty() == true) list.add(HomeSection.RecentlyPlayed)
 
         if (!isSpotifyHomeOnly && !chipActive) {
             if (speedDialItems.isNotEmpty()) list.add(HomeSection.SpeedDial)
@@ -931,7 +936,8 @@ fun HomeScreen(
                 // All "main" sections start closer together
                 val base = when (section) {
                     HomeSection.SpeedDial, 
-                    HomeSection.QuickPicks, 
+                    HomeSection.QuickPicks,
+                    HomeSection.RecentlyPlayed,
                     HomeSection.DailyDiscover -> 500 // Top tier starts equal
                     
                     HomeSection.KeepListening,
@@ -947,6 +953,7 @@ fun HomeScreen(
                     // Range: [500-200, 500+400] = [300, 900]
                     HomeSection.SpeedDial, 
                     HomeSection.QuickPicks,
+                    HomeSection.RecentlyPlayed,
                     HomeSection.DailyDiscover -> sectionRandom.nextInt(-200, 400) 
 
                     // Middle tier: Can jump up to challenge top tier, or drop lower
@@ -966,6 +973,7 @@ fun HomeScreen(
              val defaultOrder = mapOf(
                  HomeSection.SpeedDial to 100,
                  HomeSection.QuickPicks to 90,
+                 HomeSection.RecentlyPlayed to 85,
                  HomeSection.FromTheCommunity to 80,
                  HomeSection.DailyDiscover to 70,
                  HomeSection.KeepListening to 60,
@@ -1990,9 +1998,249 @@ fun HomeScreen(
                                             }
                                         }
                                     }
-                                } else {
-                                    // Render mixed content as horizontal grid items (albums, playlists, artists, etc.)
-                                    item(key = "home_section_list_${section.index}") {
+                                }
+                            }
+                            HomeSection.RecentlyPlayed -> {
+                                recentlyPlayed?.takeIf { it.isNotEmpty() }?.let { songs ->
+                                    val recentTitle = viewModel.context.getString(R.string.recently_played)
+                                    item(key = "recently_played_title") {
+                                        NavigationTitle(
+                                            title = recentTitle,
+                                            modifier = Modifier.animateItem(),
+                                            onPlayAllClick = {
+                                                playerConnection.playQueue(
+                                                    ListQueue(
+                                                        title = recentTitle,
+                                                        items = songs.distinctBy { it.id }.map { it.toMediaItem() }
+                                                    )
+                                                )
+                                            }
+                                        )
+                                    }
+
+                                    item(key = "recently_played_list") {
+                                        val rows = if (songs.size > 6) 2 else 1
+                                        LazyHorizontalGrid(
+                                            state = rememberLazyGridState(),
+                                            rows = GridCells.Fixed(rows),
+                                            contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)
+                                                .asPaddingValues(),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(ListItemHeight * rows)
+                                                .animateItem()
+                                        ) {
+                                            items(
+                                                items = songs.distinctBy { it.id },
+                                                key = { "rp_${it.id}" }
+                                            ) { originalSong ->
+                                                val song by database.song(originalSong.id)
+                                                    .collectAsState(initial = originalSong)
+
+                                                SongListItem(
+                                                    song = song!!,
+                                                    showInLibraryIcon = true,
+                                                    isActive = song!!.id == mediaMetadata?.id,
+                                                    isPlaying = isPlaying,
+                                                    isSwipeable = false,
+                                                    trailingContent = {
+                                                        IconButton(
+                                                            onClick = {
+                                                                menuState.show {
+                                                                    SongMenu(
+                                                                        originalSong = song!!,
+                                                                        navController = navController,
+                                                                        onDismiss = menuState::dismiss
+                                                                    )
+                                                                }
+                                                            }
+                                                        ) {
+                                                            Icon(
+                                                                painter = painterResource(R.drawable.more_vert),
+                                                                contentDescription = null
+                                                            )
+                                                        }
+                                                    },
+                                                    modifier = Modifier
+                                                        .width(horizontalLazyGridItemWidth)
+                                                        .combinedClickable(
+                                                            onClick = {
+                                                                if (song!!.id == mediaMetadata?.id) {
+                                                                    playerConnection.togglePlayPause()
+                                                                } else {
+                                                                    playerConnection.playQueue(
+                                                                        ListQueue(
+                                                                            title = recentTitle,
+                                                                            items = songs.map { it.toMediaItem() },
+                                                                            startIndex = songs.indexOfFirst { it.id == song!!.id }.coerceAtLeast(0)
+                                                                        )
+                                                                    )
+                                                                }
+                                                            },
+                                                            onLongClick = {
+                                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                                menuState.show {
+                                                                    SongMenu(
+                                                                        originalSong = song!!,
+                                                                        navController = navController,
+                                                                        onDismiss = menuState::dismiss
+                                                                    )
+                                                                }
+                                                            }
+                                                        )
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            HomeSection.FromTheCommunity -> {
+                                communityPlaylists?.takeIf { it.isNotEmpty() }?.let { playlists ->
+                                    item(key = "community_playlists_title") {
+                                        NavigationTitle(
+                                            title = stringResource(R.string.from_the_community),
+                                            modifier = Modifier.animateItem()
+                                        )
+                                    }
+                                    
+                                    item(key = "community_playlists_content") {
+                                        LazyRow(
+                                            contentPadding = PaddingValues(horizontal = 16.dp),
+                                            horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                            modifier = Modifier.animateItem()
+                                        ) {
+                                            items(playlists) { item ->
+                                                CommunityPlaylistCard(
+                                                    item = item,
+                                                    onClick = {
+                                                        navController.navigate("online_playlist/${item.playlist.id.removePrefix("VL")}")
+                                                    },
+                                                    onSongClick = { song ->
+                                                        playerConnection.playQueue(
+                                                            YouTubeQueue(
+                                                                song.endpoint ?: WatchEndpoint(videoId = song.id),
+                                                                song.toMediaMetadata()
+                                                            )
+                                                        )
+                                                    }
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            HomeSection.DailyDiscover -> {
+                                dailyDiscover?.takeIf { it.isNotEmpty() }?.let { discoverList ->
+                                    item(key = "daily_discover_content") {
+                                         Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(340.dp)
+                                                .padding(horizontal = 16.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                             val carouselState = rememberCarouselState { discoverList.size }
+                                             HorizontalMultiBrowseCarousel(
+                                                state = carouselState,
+                                                preferredItemWidth = 320.dp,
+                                                itemSpacing = 16.dp,
+                                                 modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(320.dp)
+                                             ) { i ->
+                                                 val item = discoverList[i]
+                                                 DailyDiscoverCard(
+                                                     dailyDiscover = item,
+                                                     onClick = {
+                                                         val song = item.recommendation as? SongItem
+                                                         val mediaMetadata = song?.toMediaMetadata()
+                                                         if (mediaMetadata != null) {
+                                                             playerConnection.playQueue(
+                                                                 YouTubeQueue(
+                                                                     song.endpoint ?: WatchEndpoint(videoId = song.id),
+                                                                     mediaMetadata
+                                                                 )
+                                                             )
+                                                         }
+                                                     },
+                                                     navController = navController,
+                                                     modifier = Modifier.maskClip(MaterialTheme.shapes.extraLarge)
+                                                 )
+                                             }
+                                        }
+                                    }
+                                }
+                            }
+                            HomeSection.KeepListening -> {
+                                keepListening?.takeIf { it.isNotEmpty() }?.let { keepListening ->
+                                    item(key = "keep_listening_title") {
+                                        NavigationTitle(
+                                            title = stringResource(R.string.keep_listening),
+                                            modifier = Modifier.animateItem()
+                                        )
+                                    }
+
+                                    item(key = "keep_listening_list") {
+                                        val rows = if (keepListening.size > 6) 2 else 1
+                                        LazyHorizontalGrid(
+                                            state = rememberLazyGridState(),
+                                            rows = GridCells.Fixed(rows),
+                                            contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)
+                                                .asPaddingValues(),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height((currentGridHeight + with(LocalDensity.current) {
+                                                    MaterialTheme.typography.bodyLarge.lineHeight.toDp() * 2 +
+                                                            MaterialTheme.typography.bodyMedium.lineHeight.toDp() * 2
+                                                }) * rows)
+                                                .animateItem()
+                                        ) {
+                                            items(keepListening) {
+                                                localGridItem(it)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            HomeSection.AccountPlaylists -> {
+                                accountPlaylists?.takeIf { it.isNotEmpty() }?.let { accountPlaylists ->
+                                    item(key = "account_playlists_title") {
+                                        NavigationTitle(
+                                            label = stringResource(R.string.your_youtube_playlists),
+                                            title = accountName,
+                                            thumbnail = {
+                                                if (url != null) {
+                                                    AsyncImage(
+                                                        model = ImageRequest.Builder(LocalContext.current)
+                                                            .data(url)
+                                                            .diskCachePolicy(CachePolicy.ENABLED)
+                                                            .diskCacheKey(url)
+                                                            .crossfade(false)
+                                                            .build(),
+                                                        placeholder = painterResource(id = R.drawable.person),
+                                                        error = painterResource(id = R.drawable.person),
+                                                        contentDescription = null,
+                                                        contentScale = ContentScale.Crop,
+                                                        modifier = Modifier
+                                                            .size(ListThumbnailSize)
+                                                            .clip(CircleShape)
+                                                    )
+                                                } else {
+                                                    Icon(
+                                                        painter = painterResource(id = R.drawable.person),
+                                                        contentDescription = null,
+                                                        modifier = Modifier.size(ListThumbnailSize)
+                                                    )
+                                                }
+                                            },
+                                            onClick = {
+                                                navController.navigate("account")
+                                            },
+                                            modifier = Modifier.animateItem()
+                                        )
+                                    }
+
+                                    item(key = "account_playlists_list") {
                                         LazyRow(
                                             contentPadding = WindowInsets.systemBars
                                                 .only(WindowInsetsSides.Horizontal)
