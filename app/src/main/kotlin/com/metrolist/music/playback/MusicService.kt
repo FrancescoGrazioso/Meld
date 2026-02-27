@@ -499,6 +499,7 @@ class MusicService :
                     ),
                 ).setBitmapLoader(CoilBitmapLoader(this, scope))
                 .build()
+        mediaLibrarySessionCallback.mediaSession = mediaSession
         player.repeatMode = dataStore.get(RepeatModeKey, REPEAT_MODE_OFF)
 
         // Restore shuffle mode if remember option is enabled

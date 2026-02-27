@@ -36,7 +36,6 @@ import com.metrolist.innertube.models.filterVideoSongs
 import com.metrolist.music.R
 import com.metrolist.spotify.Spotify
 import com.metrolist.spotify.SpotifyMapper
-import com.metrolist.spotify.models.SpotifyPlaylist
 import com.metrolist.spotify.models.SpotifyTrack
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -75,17 +74,33 @@ constructor(
     val downloadUtil: DownloadUtil,
 ) : MediaLibrarySession.Callback {
     private val scope = CoroutineScope(Dispatchers.Main) + Job()
-    lateinit var service: MusicService
+    var mediaSession: MediaLibrarySession? = null
     var toggleLike: () -> Unit = {}
     var toggleStartRadio: () -> Unit = {}
     var toggleLibrary: () -> Unit = {}
 
     private val spotifyMapper by lazy { SpotifyYouTubeMapper(database) }
 
+    // In-memory caches with TTL for Android Auto responsiveness
+    private var spotifyPlaylistsCache: CachedData<List<MediaItem>>? = null
+    private val spotifyTracksCaches = mutableMapOf<String, CachedData<List<MediaItem>>>()
+    private var youtubePlaylistsCache: CachedData<List<MediaItem>>? = null
+
+    private data class CachedData<T>(
+        val data: T,
+        val timestamp: Long = System.currentTimeMillis(),
+    ) {
+        fun isValid(ttlMs: Long): Boolean = System.currentTimeMillis() - timestamp < ttlMs
+    }
+
     companion object {
         private const val TAG = "MediaLibraryCallback"
-        private const val SPOTIFY_RESOLVE_TIMEOUT_MS = 30_000L
+        private const val SPOTIFY_RESOLVE_TIMEOUT_MS = 20_000L
         private const val SPOTIFY_MAX_PLAYLIST_TRACKS = 100
+        private const val PLAYBACK_RESOLVE_WINDOW = 20
+        private const val PLAYLIST_CACHE_TTL_MS = 5 * 60 * 1000L
+        private const val TRACK_CACHE_TTL_MS = 10 * 60 * 1000L
+        private const val SOURCE_FETCH_TIMEOUT_MS = 8_000L
     }
 
     override fun onConnect(
@@ -231,18 +246,8 @@ constructor(
                     MusicService.PLAYLIST -> {
                         val likedSongCount = database.likedSongsCount().first()
                         val downloadedSongCount = downloadUtil.downloads.value.size
-                        val youtubePlaylists = try {
-                            YouTube.home().getOrNull()?.sections
-                                ?.flatMap { it.items }
-                                ?.filterIsInstance<PlaylistItem>()
-                                ?.take(10)
-                                ?: emptyList()
-                        } catch (e: Exception) {
-                            reportException(e)
-                            emptyList()
-                        }
-                        
-                        listOf(
+
+                        val localItems = listOf(
                             browsableMediaItem(
                                 "${MusicService.PLAYLIST}/${PlaylistEntity.LIKED_PLAYLIST_ID}",
                                 context.getString(R.string.liked_songs),
@@ -265,8 +270,7 @@ constructor(
                                 drawableUri(R.drawable.download),
                                 MediaMetadata.MEDIA_TYPE_PLAYLIST,
                             ),
-                        ) +
-                        database.playlistsByCreateDateAsc().first().map { playlist ->
+                        ) + database.playlistsByCreateDateAsc().first().map { playlist ->
                             browsableMediaItem(
                                 "${MusicService.PLAYLIST}/${playlist.id}",
                                 playlist.playlist.name,
@@ -278,17 +282,39 @@ constructor(
                                 playlist.thumbnails.firstOrNull()?.toUri(),
                                 MediaMetadata.MEDIA_TYPE_PLAYLIST,
                             )
-                        } +
-                        youtubePlaylists.map { ytPlaylist ->
-                            browsableMediaItem(
-                                "${MusicService.YOUTUBE_PLAYLIST}/${ytPlaylist.id}",
-                                ytPlaylist.title,
-                                ytPlaylist.author?.name ?: "YouTube Music",
-                                ytPlaylist.thumbnail?.toUri(),
-                                MediaMetadata.MEDIA_TYPE_PLAYLIST,
-                            )
-                        } +
-                        fetchSpotifyPlaylistItems()
+                        }
+
+                        val ytCached = youtubePlaylistsCache?.takeIf { it.isValid(PLAYLIST_CACHE_TTL_MS) }?.data
+                        val spCached = spotifyPlaylistsCache?.takeIf { it.isValid(PLAYLIST_CACHE_TTL_MS) }?.data
+                        val needsYtRefresh = ytCached == null
+                        val needsSpRefresh = spCached == null
+
+                        val (ytItems, spItems) = coroutineScope {
+                            val ytDeferred = if (needsYtRefresh) {
+                                async(Dispatchers.IO) { fetchYouTubePlaylistItems() }
+                            } else null
+                            val spDeferred = if (needsSpRefresh) {
+                                async(Dispatchers.IO) { fetchSpotifyPlaylistItems() }
+                            } else null
+
+                            val yt = if (ytDeferred != null) {
+                                withTimeoutOrNull(SOURCE_FETCH_TIMEOUT_MS) { ytDeferred.await() }
+                                    ?: (ytCached ?: emptyList())
+                            } else ytCached ?: emptyList()
+
+                            val sp = if (spDeferred != null) {
+                                withTimeoutOrNull(SOURCE_FETCH_TIMEOUT_MS) { spDeferred.await() }
+                                    ?: (spCached ?: emptyList())
+                            } else spCached ?: emptyList()
+
+                            Pair(yt, sp)
+                        }
+
+                        if (needsYtRefresh || needsSpRefresh) {
+                            schedulePlaylistRefresh()
+                        }
+
+                        localItems + ytItems + spItems
                     }
 
                     else ->
@@ -354,7 +380,17 @@ constructor(
 
                             parentId.startsWith("${MusicService.SPOTIFY_PLAYLIST}/") -> {
                                 val playlistId = parentId.removePrefix("${MusicService.SPOTIFY_PLAYLIST}/")
-                                fetchSpotifyPlaylistTracks(parentId, playlistId)
+                                val cached = spotifyTracksCaches[playlistId]
+                                    ?.takeIf { it.isValid(TRACK_CACHE_TTL_MS) }?.data
+                                if (cached != null) {
+                                    cached
+                                } else {
+                                    val tracks = fetchSpotifyPlaylistTracks(parentId, playlistId)
+                                    if (tracks.isNotEmpty()) {
+                                        spotifyTracksCaches[playlistId] = CachedData(tracks)
+                                    }
+                                    tracks
+                                }
                             }
 
                             parentId.startsWith("${MusicService.YOUTUBE_PLAYLIST}/") -> {
@@ -789,13 +825,39 @@ constructor(
             ).build()
     }
 
-    // ── Spotify playlist helpers ─────────────────────────────────────────
+    // ── Remote playlist helpers ────────────────────────────────────────
+
+    private suspend fun fetchYouTubePlaylistItems(): List<MediaItem> {
+        return try {
+            val playlists = YouTube.home().getOrNull()?.sections
+                ?.flatMap { it.items }
+                ?.filterIsInstance<PlaylistItem>()
+                ?.take(10)
+                ?: emptyList()
+
+            val items = playlists.map { ytPlaylist ->
+                browsableMediaItem(
+                    "${MusicService.YOUTUBE_PLAYLIST}/${ytPlaylist.id}",
+                    ytPlaylist.title,
+                    ytPlaylist.author?.name ?: "YouTube Music",
+                    ytPlaylist.thumbnail?.toUri(),
+                    MediaMetadata.MEDIA_TYPE_PLAYLIST,
+                )
+            }
+            youtubePlaylistsCache = CachedData(items)
+            Timber.tag(TAG).d("YouTube playlists cached: ${items.size}")
+            items
+        } catch (e: Exception) {
+            Timber.tag(TAG).w(e, "Failed to fetch YouTube playlists for Auto")
+            emptyList()
+        }
+    }
 
     private suspend fun fetchSpotifyPlaylistItems(): List<MediaItem> {
         if (!Spotify.isAuthenticated()) return emptyList()
         return try {
             val playlists = Spotify.myPlaylists(limit = 50).getOrNull()?.items ?: emptyList()
-            playlists.map { playlist ->
+            val items = playlists.map { playlist ->
                 browsableMediaItem(
                     "${MusicService.SPOTIFY_PLAYLIST}/${playlist.id}",
                     playlist.name,
@@ -804,9 +866,37 @@ constructor(
                     MediaMetadata.MEDIA_TYPE_PLAYLIST,
                 )
             }
+            spotifyPlaylistsCache = CachedData(items)
+            Timber.tag(TAG).d("Spotify playlists cached: ${items.size}")
+            items
         } catch (e: Exception) {
             Timber.tag(TAG).w(e, "Failed to fetch Spotify playlists for Auto")
             emptyList()
+        }
+    }
+
+    /**
+     * Triggers a background refresh of remote playlists and notifies
+     * Android Auto via [MediaLibrarySession.notifyChildrenChanged] so
+     * that the UI updates once fresh data is available.
+     */
+    private fun schedulePlaylistRefresh() {
+        scope.future(Dispatchers.IO) {
+            try {
+                val ytDeferred = async { fetchYouTubePlaylistItems() }
+                val spDeferred = async { fetchSpotifyPlaylistItems() }
+                ytDeferred.await()
+                spDeferred.await()
+                mediaSession?.notifyChildrenChanged(
+                    MusicService.PLAYLIST,
+                    (youtubePlaylistsCache?.data?.size ?: 0) +
+                        (spotifyPlaylistsCache?.data?.size ?: 0),
+                    null,
+                )
+                Timber.tag(TAG).d("Background playlist refresh complete, notified Auto")
+            } catch (e: Exception) {
+                Timber.tag(TAG).w(e, "Background playlist refresh failed")
+            }
         }
     }
 
@@ -853,6 +943,12 @@ constructor(
         }
     }
 
+    /**
+     * Resolves a window of Spotify tracks around the target for playback.
+     * Only resolves [PLAYBACK_RESOLVE_WINDOW] tracks instead of the whole
+     * playlist — this dramatically reduces the time before playback starts
+     * on Android Auto where long waits cause timeouts.
+     */
     private suspend fun resolveSpotifyPlaylistForPlayback(
         playlistId: String,
         trackId: String,
@@ -866,16 +962,36 @@ constructor(
             return null
         } ?: return null
 
-        val tracks = result.items.mapNotNull { it.track?.takeIf { t -> !t.isLocal } }
-        if (tracks.isEmpty()) return null
+        val allTracks = result.items.mapNotNull { it.track?.takeIf { t -> !t.isLocal } }
+        if (allTracks.isEmpty()) return null
 
         val isShuffle = trackId == MusicService.SHUFFLE_ACTION
-        val orderedTracks = if (isShuffle) tracks.shuffled() else tracks
+
+        val orderedTracks: List<SpotifyTrack>
+        val targetIndexInWindow: Int
+
+        if (isShuffle) {
+            orderedTracks = allTracks.shuffled().take(PLAYBACK_RESOLVE_WINDOW)
+            targetIndexInWindow = 0
+        } else {
+            val targetIdx = allTracks.indexOfFirst { it.id == trackId }.takeIf { it >= 0 } ?: 0
+            val windowStart = (targetIdx - PLAYBACK_RESOLVE_WINDOW / 2).coerceAtLeast(0)
+            val windowEnd = (windowStart + PLAYBACK_RESOLVE_WINDOW).coerceAtMost(allTracks.size)
+            orderedTracks = allTracks.subList(windowStart, windowEnd)
+            targetIndexInWindow = targetIdx - windowStart
+        }
+
+        Timber.tag(TAG).d(
+            "Spotify Auto playback: resolving window of ${orderedTracks.size} tracks " +
+                "(total ${allTracks.size}), target index $targetIndexInWindow"
+        )
 
         val resolved = withTimeoutOrNull(SPOTIFY_RESOLVE_TIMEOUT_MS) {
             coroutineScope {
                 orderedTracks.map { track ->
-                    async(Dispatchers.IO) { spotifyMapper.resolveToMediaItem(track)?.let { track.id to it } }
+                    async(Dispatchers.IO) {
+                        spotifyMapper.resolveToMediaItem(track)?.let { track.id to it }
+                    }
                 }.awaitAll().filterNotNull()
             }
         }
@@ -886,13 +1002,20 @@ constructor(
         }
 
         val mediaItems = resolved.map { it.second }
-        val targetIndex = if (isShuffle) {
+        val finalTargetIndex = if (isShuffle) {
             0
         } else {
             resolved.indexOfFirst { it.first == trackId }.takeIf { it >= 0 } ?: 0
         }
 
-        Timber.tag(TAG).d("Spotify Auto playback: resolved ${mediaItems.size}/${tracks.size} tracks")
-        return MediaItemsWithStartPosition(mediaItems, targetIndex, if (isShuffle) C.TIME_UNSET else startPositionMs)
+        Timber.tag(TAG).d(
+            "Spotify Auto playback: resolved ${mediaItems.size}/${orderedTracks.size} tracks, " +
+                "starting at index $finalTargetIndex"
+        )
+        return MediaItemsWithStartPosition(
+            mediaItems,
+            finalTargetIndex,
+            if (isShuffle) C.TIME_UNSET else startPositionMs,
+        )
     }
 }
