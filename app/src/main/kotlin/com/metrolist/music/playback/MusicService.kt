@@ -84,6 +84,7 @@ import com.metrolist.music.constants.AudioQualityKey
 import com.metrolist.music.constants.AutoDownloadOnLikeKey
 import com.metrolist.music.constants.AutoLoadMoreKey
 import com.metrolist.music.constants.AutoSkipNextOnErrorKey
+import com.metrolist.music.constants.CacheAfterSecondsKey
 import com.metrolist.music.constants.CrossfadeDurationKey
 import com.metrolist.music.constants.CrossfadeEnabledKey
 import com.metrolist.music.constants.CrossfadeGaplessKey
@@ -1920,18 +1921,7 @@ class MusicService :
         mediaItem: MediaItem?,
         reason: Int,
     ) {
-        // Force Repeat One if the player ignored it and auto-advanced
-        if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
-            val repeatMode = runBlocking { dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) }
-            if (repeatMode == REPEAT_MODE_ONE &&
-                previousMediaItemIndex != C.INDEX_UNSET &&
-                previousMediaItemIndex != player.currentMediaItemIndex
-            ) {
-
-                player.seekTo(previousMediaItemIndex, 0)
-            }
-        }
-        previousMediaItemIndex = player.currentMediaItemIndex
+        cacheEnabledMediaIds.clear()
 
         lastPlaybackSpeed = -1.0f // force update song
 
@@ -2018,6 +2008,7 @@ class MusicService :
             player.currentMediaItem?.mediaId?.let { mediaId ->
                 resetRetryCount(mediaId)
                 Timber.tag(TAG).d("Playback successful for $mediaId, reset retry count")
+                scheduleCacheForMedia(mediaId)
             }
             scheduleCrossfade()
         }
@@ -2703,6 +2694,8 @@ class MusicService :
         }
     }
 
+    private var cacheEnabledMediaIds = mutableSetOf<String>()
+
     private fun createCacheDataSource(): CacheDataSource.Factory =
         CacheDataSource
             .Factory()
@@ -2731,6 +2724,33 @@ class MusicService :
                     ),
             ).setCacheWriteDataSinkFactory(null)
             .setFlags(FLAG_IGNORE_CACHE_ON_ERROR)
+
+    private fun isCacheEnabledForMedia(mediaId: String): Boolean {
+        val cacheAfterSeconds = dataStore[CacheAfterSecondsKey] ?: 0
+        if (cacheAfterSeconds <= 0) return true
+        return mediaId in cacheEnabledMediaIds
+    }
+
+    private fun scheduleCacheForMedia(mediaId: String) {
+        val cacheAfterPercent = dataStore[CacheAfterSecondsKey] ?: 0
+        if (cacheAfterPercent <= 0) return
+
+        scope.launch {
+            while (player.currentMediaItem?.mediaId == mediaId && player.isPlaying) {
+                val duration = player.duration
+                if (duration > 0) {
+                    val cacheAfterMs = (duration * cacheAfterPercent / 100)
+                    delay(cacheAfterMs)
+                    if (player.currentMediaItem?.mediaId == mediaId && player.isPlaying) {
+                        cacheEnabledMediaIds.add(mediaId)
+                        Timber.tag(TAG).d("Enabled cache for $mediaId at $cacheAfterPercent% ($cacheAfterMs ms)")
+                    }
+                    break
+                }
+                delay(100)
+            }
+        }
+    }
 
     // Flag to prevent queue saving during silence skip operations
     private var isSilenceSkipping = false
@@ -2831,6 +2851,11 @@ class MusicService :
                     return@Factory dataSpec.withUri(localPath.toUri())
                 }
                 // fallback: URI already set to localPath in MediaItem
+                return@Factory dataSpec
+            }
+
+            // Check if caching is enabled for this media
+            if (!isCacheEnabledForMedia(mediaId)) {
                 return@Factory dataSpec
             }
 
