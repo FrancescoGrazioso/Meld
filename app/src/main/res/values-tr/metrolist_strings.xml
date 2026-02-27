@@ -734,4 +734,7 @@
     <string name="restore">Geri yükle</string>
     <string name="checking_previous_account">Önceki hesap kontrol ediliyor…</string>
     <string name="no_account_found">Hesap bulunamadı</string>
+    <string name="importing_playlist">Oynatma listesi içe aktarılıyor</string>
+    <string name="restore_success">Başarılı bir şekilde geri yüklenmiştir</string>
+    <string name="no_songs_found">Şarkılar bulunamadı. Dosya tanımsız olabilir, ya da bu konumda şarkı olabilecek dosya yoktur.</string>
 </resources>
