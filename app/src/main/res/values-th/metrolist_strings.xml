@@ -731,4 +731,22 @@
     <string name="no_account_found">ไม่พบบัญชี</string>
     <string name="restore_success">กู้คืนข้อมูลสำเร็จ</string>
     <string name="no_songs_found">ไม่พบเพลง อาจเป็นไฟล์ไม่ถูกต้อง หรือไม่พบเพลงที่ตรงกัน</string>
+    <string name="cache_at_percent">แคชเมื่อโหลดถึงกี่เปอร์เซ็นต์</string>
+    <string name="n_seconds">%d วินาที</string>
+    <string name="cache_after_seconds">แคชหลังจากผ่านไปกี่วินาที</string>
+    <string name="n_percent">%d%%</string>
+    <string name="widget_recognizer_name">ระบบค้นหาเพลง</string>
+    <string name="widget_recognizer_description">ระบุชื่อเพลงที่กำลังเล่นรอบตัวคุณได้จากหน้าจอหลักโดยตรง</string>
+    <string name="widget_recognizer_tap_to_search">แตะเพื่อค้นหาเพลง</string>
+    <string name="widget_recognizer_listening">กำลังฟัง…</string>
+    <string name="widget_recognizer_processing">กำลังระบุเพลง…</string>
+    <string name="widget_recognizer_no_match">ไม่พบเพลงที่ตรงกัน ลองใหม่อีกครั้ง</string>
+    <string name="widget_recognizer_error">การค้นหาเพลงล้มเหลว</string>
+    <string name="widget_recognizer_error_generic">เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง</string>
+    <string name="widget_recognizer_unknown_song">ไม่ทราบชื่อเพลง</string>
+    <string name="widget_recognizer_unknown_artist">ไม่ทราบชื่อศิลปิน</string>
+    <string name="widget_recognizer_mic_desc">ค้นหาเพลง</string>
+    <string name="widget_recognizer_channel_name">การค้นหาเพลง</string>
+    <string name="widget_recognizer_channel_desc">แสดงการแจ้งเตือนขณะกำลังค้นหาเพลงจากวิดเจ็ต</string>
+    <string name="widget_recognizer_notification_text">กำลังบันทึกเสียงเพื่อระบุเพลง…</string>
 </resources>
