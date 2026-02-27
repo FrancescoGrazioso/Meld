@@ -740,4 +740,7 @@
     <string name="saved_episode">Enregistré dans « Épisodes à venir »</string>
     <string name="remove_episode_from_saved">Supprimer des enregistrements</string>
     <string name="subscribe_to_podcast">Enregistrer le podcast dans la bibliothèque</string>
+    <string name="importing_playlist">Importer une playlist</string>
+    <string name="restore_success">Restauration terminée avec succès</string>
+    <string name="no_songs_found">Aucun titre trouvé. Fichier invalide ou aucune correspondance n\'a été trouvée.</string>
 </resources>
