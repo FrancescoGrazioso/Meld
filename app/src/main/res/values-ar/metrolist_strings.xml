@@ -615,7 +615,7 @@
     <string name="ai_provider_openrouter_help">تفضل بزيارة https://openrouter.ai للحصول على نماذج مجانية ومدفوعة</string>
     <string name="ai_provider_openai_help">زيارة\nhttps://platform.openai.com/api-keys</string>
     <string name="ai_provider_claude_help">زيارة\nhttps://console.anthropic.com/setti ngs/keys</string>
-    <string name="ai_provider_gemini_help">زيارة aistudio.google.com/apikey</string>
+    <string name="ai_provider_gemini_help">زيارة\nhttps://aistudio.google.com/apikey</string>
     <string name="ai_provider_perplexity_help">زيارة\nhttps://perplexity.ai/settings/api</string>
     <string name="ai_provider_xai_help">تفضل بزيارة https://console.x.ai</string>
     <string name="ai_provider_deepl_help">تفضل بزيارة https://deepl.com/pro-api للحصول على مفاتيح مجانية ومدفوعة</string>
@@ -711,4 +711,54 @@
     <string name="logout_keep">احتفظ</string>
     <string name="logout_clear">مسح</string>
     <string name="credits_lead_developer">مطور رئيسي</string>
+    <string name="importing_playlist">استيراد قائمة التشغيل</string>
+    <string name="credits_collaborator">متعاون</string>
+    <string name="credits_collaborators_section">المتعاونون</string>
+    <string name="credits_license_name">رخصة جنو العمومية الإصدار 3.0</string>
+    <string name="credits_license_desc">برنامج مجاني ومفتوح المصدر يمكنك استخدامه ودراسته ومشاركته وتحسينه.</string>
+    <string name="credits_discord">خادم ديسكورد</string>
+    <string name="credits_telegram">قناة تيليجرام</string>
+    <string name="credits_website">موقع ويب</string>
+    <string name="credits_instagram">انستغرام</string>
+    <string name="credits_github">جيت هاب</string>
+    <string name="credits_view_repo">عرض المستودع</string>
+    <string name="app_version_info">%1$s • %2$s</string>
+    <string name="like_what_i_do">هل يعجبك ما أفعله؟</string>
+    <string name="buy_mo_a_coffee">اشترِ لي قهوة</string>
+    <string name="community_and_info">المجتمع والمعلومات</string>
+    <string name="metrolist">METROLIST</string>
+    <string name="wanna_play_favorite_song">هل تريد تشغيل أغنيتهم المفضلة؟</string>
+    <string name="yeah">نعم</string>
+    <string name="stands_with_palestine">هذا المشروع يقف مع فلسطين 🇵🇸</string>
+    <string name="filter_podcasts">بودكاست</string>
+    <string name="view_podcast">عرض البودكاست</string>
+    <string name="podcast_channels">قنوات البودكاست</string>
+    <string name="latest_episodes">أحدث الحلقات</string>
+    <string name="your_shows">عروضك</string>
+    <string name="subscribed_channels">القنوات المشترك بها</string>
+    <string name="new_episodes">حلقات جديدة</string>
+    <string name="episodes_for_later">الحلقات لاحقًا</string>
+    <string name="save_episode_for_later">حفظ لوقت لاحق</string>
+    <string name="save_episode_for_later_desc">أضف إلى حلقاتك للمشاهدة لاحقًا قائمة التشغيل</string>
+    <string name="saved_episode">تم الحفظ في الحلقات للمشاهدة لاحقًا</string>
+    <string name="remove_episode_from_saved">إزالة من المحفوظات</string>
+    <string name="subscribe_to_podcast">حفظ البودكاست في المكتبة</string>
+    <string name="save_to_library">حفظ في المكتبة</string>
+    <string name="saved_to_library">محفوظ</string>
+    <plurals name="n_episode">
+        <item quantity="zero">%d حلقة</item>
+        <item quantity="one">%d حلقة</item>
+        <item quantity="two">%d حلقتان</item>
+        <item quantity="few">%d حلقات</item>
+        <item quantity="many">%d حلقة</item>
+        <item quantity="other">%d حلقة</item>
+    </plurals>
+    <string name="restore_confirm_title">استعادة النسخة الاحتياطية؟</string>
+    <string name="restore_confirm_message">سيؤدي هذا إلى استعادة بيانات تطبيقك من النسخة الاحتياطية.</string>
+    <string name="restore_account_warning">ستحتاج إلى تسجيل الدخول مرة أخرى بعد الاستعادة. سيتم تسجيل خروج الحساب التالي:</string>
+    <string name="restore">استعادة</string>
+    <string name="checking_previous_account">جارٍ التحقق من الحساب السابق…</string>
+    <string name="no_account_found">لم يتم العثور على حساب</string>
+    <string name="restore_success">اكتملت عملية الاستعادة بنجاح</string>
+    <string name="no_songs_found">لم يتم العثور على أي أغاني. ملف غير صالح، أو ربما لم يتم العثور على أي تطابقات للأغاني.</string>
 </resources>
