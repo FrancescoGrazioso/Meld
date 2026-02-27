@@ -4,10 +4,24 @@ description: Install protoc and generate protobuf files
 runs:
   using: composite
   steps:
+    - name: Cache protoc
+      id: cache-protoc
+      uses: actions/cache@v4
+      with:
+        path: ~/.local/bin/protoc
+        key: protoc-${{ runner.os }}-34.0
+
     - name: Install protoc
+      if: steps.cache-protoc.outputs.cache-hit != 'true'
       run: |
-        sudo apt-get update
-        sudo apt-get install -y protobuf-compiler
+        PROTOC_VERSION=34.0
+        curl -Lo protoc.zip https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/protoc-${PROTOC_VERSION}-linux-x86_64.zip
+        unzip protoc.zip -d ~/.local
+        chmod +x ~/.local/bin/protoc
+      shell: bash
+
+    - name: Add protoc to PATH
+      run: echo "$HOME/.local/bin" >> $GITHUB_PATH
       shell: bash
 
     - name: Generate protobuf files

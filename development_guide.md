@@ -2,12 +2,15 @@
 This file outlines the process of setting up a local dev environment for Meld.
 
 ## Prerequisites
-- Java JDK 21
-- Android platform tools
-- protobuf-compiler
-- Android NDK
+
+- JDK 21
+- Android platform tools (if you don't have a keystore already)
+- protobuf-compiler v3.21 or newer
 
 ## Basic setup
+
+This has been tested on Linux, but should work on other platforms with some adjustments.
+
 ```bash
 git clone https://github.com/FrancescoGrazioso/Meld
 cd Meld
@@ -15,8 +18,21 @@ git submodule update --init --recursive
 cd app
 bash generate_proto.sh
 cd ..
-bash app/src/main/cpp/vibrafp/third_party/build-fftw-android.sh --ndk ~/Android/Sdk/ndk/27.0.12077973 --out app/src/main/cpp/vibrafp/third_party/fftw-android
 [ ! -f "app/persistent-debug.keystore" ] && keytool -genkeypair -v -keystore app/persistent-debug.keystore -storepass android -keypass android -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US" || echo "Keystore already exists."
 ./gradlew :app:assembleuniversalFossDebug
 ls app/build/outputs/apk/universalFoss/debug/app-universal-foss-debug.apk
 ```
+
+### GitHub Secrets Configuration
+
+This project uses GitHub Secrets to securely store API keys for building releases. To set up the secrets:
+
+1. Go to your GitHub repository settings
+2. Navigate to **Settings** → **Secrets and variables** → **Actions**
+3. Add the following repository secrets:
+   - `LASTFM_API_KEY`: Your LastFM API key
+   - `LASTFM_SECRET`: Your LastFM secret key
+
+4. Get your LastFM API credentials from: https://www.last.fm/api/account/create
+
+**Note:** These secrets are automatically injected into the build process via GitHub Actions and are not visible in the source code.

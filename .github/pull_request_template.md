@@ -1,6 +1,5 @@
 ## Problem
-<!-- Describe the issue or limitation this PR addresses  
-DO NOT PR NEW FEATURES, WE'RE ON A FEATURE FREEZE!!! -->
+<!-- Describe the issue or limitation this PR addresses -->
 
 ## Cause
 <!-- Explain the root cause of the problem -->

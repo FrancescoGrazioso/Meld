@@ -95,16 +95,8 @@ jobs:
           cache-disabled: true
           cache-cleanup: on-success
 
-      - name: Install protoc
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y protobuf-compiler
-
-      - name: Generate protobuf files
-        run: |
-          cd app
-          bash generate_proto.sh
-
+      - name: Setup and Generate Protobuf
+        uses: ./.github/actions/setup-protobuf
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew

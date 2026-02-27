@@ -22,7 +22,9 @@ concurrentFutures = "1.3.0"
 activity = "1.12.3"
 browser = "1.8.0"
 hiltNavigation = "1.3.0"
-datastore = "1.2.0"
+# vvv This is done to keep 16KB page support
+#noinspection GradleDependency
+datastore = "1.1.1"
 composeReorderable = "3.0.0"
 shimmer = "1.3.3"
 palette = "1.0.0"
