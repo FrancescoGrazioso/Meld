@@ -743,4 +743,22 @@
     <string name="importing_playlist">Importer une playlist</string>
     <string name="restore_success">Restauration terminée avec succès</string>
     <string name="no_songs_found">Aucun titre trouvé. Fichier invalide ou aucune correspondance n\'a été trouvée.</string>
+    <string name="cache_after_seconds">Cache après quelques secondes</string>
+    <string name="cache_at_percent">Cache en pourcentage</string>
+    <string name="n_seconds">%d secondes</string>
+    <string name="n_percent">%d%%</string>
+    <string name="widget_recognizer_name">Reconnaissance Musicale</string>
+    <string name="widget_recognizer_description">Identifiez les titres diffusés autour de vous directement depuis votre écran d\'accueil</string>
+    <string name="widget_recognizer_tap_to_search">Appuyez pour identifier le titre</string>
+    <string name="widget_recognizer_listening">En cours d\'écoute…</string>
+    <string name="widget_recognizer_processing">Identification…</string>
+    <string name="widget_recognizer_no_match">Aucun résultat trouvé. Veuillez réessayer.</string>
+    <string name="widget_recognizer_error">Échec de la reconnaissance</string>
+    <string name="widget_recognizer_error_generic">Une erreur s\'est produite. Veuillez réessayer.</string>
+    <string name="widget_recognizer_unknown_song">Titre inconnu</string>
+    <string name="widget_recognizer_unknown_artist">Artiste inconnu</string>
+    <string name="widget_recognizer_mic_desc">Identifier un titre</string>
+    <string name="widget_recognizer_channel_name">Reconnaissance Musicale</string>
+    <string name="widget_recognizer_channel_desc">Affiche une notification lors de l\'identification d\'un titre à partir du widget</string>
+    <string name="widget_recognizer_notification_text">Enregistrement audio pour identifier le titre…</string>
 </resources>
