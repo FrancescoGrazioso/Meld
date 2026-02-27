@@ -70,7 +70,8 @@ data class HistoryPage(
                 libraryRemoveToken = libraryTokens.removeToken,
                 historyRemoveToken = renderer.menu?.menuRenderer?.items?.find {
                     it.menuServiceItemRenderer?.icon?.iconType == "REMOVE_FROM_HISTORY"
-                }?.menuServiceItemRenderer?.serviceEndpoint?.feedbackEndpoint?.feedbackToken
+                }?.menuServiceItemRenderer?.serviceEndpoint?.feedbackEndpoint?.feedbackToken,
+                isEpisode = renderer.isEpisode
             )
         }
     }

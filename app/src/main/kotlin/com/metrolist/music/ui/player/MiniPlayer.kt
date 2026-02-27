@@ -905,8 +905,10 @@ private fun FavoriteButton(songId: String) {
     val database = LocalDatabase.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val librarySong by database.song(songId).collectAsState(initial = null)
-    val isLiked = librarySong?.song?.liked == true
-    
+    // For episodes, show saved state (inLibrary); for songs, show liked state
+    val isEpisode = librarySong?.song?.isEpisode == true
+    val isLiked = if (isEpisode) librarySong?.song?.inLibrary != null else librarySong?.song?.liked == true
+
     val errorColor = MaterialTheme.colorScheme.error
     val outlineColor = MaterialTheme.colorScheme.outline
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface

@@ -14,6 +14,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metrolist.innertube.YouTube
+import com.metrolist.innertube.models.SongItem
 import com.metrolist.music.constants.AlbumFilter
 import com.metrolist.music.constants.AlbumFilterKey
 import com.metrolist.music.constants.AlbumSortDescendingKey
@@ -56,6 +57,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -373,6 +375,90 @@ constructor(
                     }
             }
         }
+    }
+}
+
+@HiltViewModel
+class LibraryPodcastsViewModel
+@Inject
+constructor(
+    @ApplicationContext context: Context,
+    database: MusicDatabase,
+    private val syncUtils: SyncUtils,
+) : ViewModel() {
+    // Saved podcast channels (Your Shows)
+    val subscribedChannels = database.subscribedPodcasts()
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    // New Episodes from official API (VLRDPN)
+    private val _newEpisodes = MutableStateFlow<List<SongItem>>(emptyList())
+    val newEpisodes: StateFlow<List<SongItem>> = _newEpisodes.asStateFlow()
+
+    private val _isLoadingNewEpisodes = MutableStateFlow(false)
+    val isLoadingNewEpisodes: StateFlow<Boolean> = _isLoadingNewEpisodes.asStateFlow()
+
+    // Episodes for Later - only show episodes that are saved (inLibrary != null)
+    val allPodcasts =
+        context.dataStore.data
+            .map {
+                Pair(
+                    it[SongSortTypeKey].toEnum(SongSortType.CREATE_DATE) to (it[SongSortDescendingKey] ?: true),
+                    it[HideExplicitKey] ?: false
+                )
+            }.distinctUntilChanged()
+            .flatMapLatest { (sortDesc, hideExplicit) ->
+                val (sortType, descending) = sortDesc
+                database.podcastEpisodes(sortType, descending).map { episodes ->
+                    episodes.filter { it.song.inLibrary != null }.filterExplicit(hideExplicit)
+                }
+            }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    init {
+        // Sync episodes for later when the screen is opened
+        viewModelScope.launch(Dispatchers.IO) {
+            syncUtils.syncEpisodesForLaterSuspend()
+        }
+        // Fetch new episodes from official API
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchNewEpisodes()
+        }
+    }
+
+    fun fetchNewEpisodes() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoadingNewEpisodes.value = true
+            YouTube.newEpisodes().onSuccess { episodes ->
+                _newEpisodes.value = episodes
+            }.onFailure {
+                timber.log.Timber.e(it, "Failed to fetch new episodes")
+            }
+            _isLoadingNewEpisodes.value = false
+        }
+    }
+
+    fun syncPodcastSubscriptions() {
+        viewModelScope.launch(Dispatchers.IO) {
+            syncUtils.syncPodcastSubscriptions()
+        }
+    }
+
+    fun syncEpisodesForLater() {
+        viewModelScope.launch(Dispatchers.IO) {
+            syncUtils.syncEpisodesForLater()
+        }
+    }
+
+    fun clearPodcastData() {
+        viewModelScope.launch(Dispatchers.IO) {
+            syncUtils.clearPodcastData()
+        }
+    }
+
+    suspend fun refreshAll() {
+        // Sync subscriptions first, then episodes, then fetch new episodes
+        syncUtils.syncPodcastSubscriptionsSuspend()
+        syncUtils.syncEpisodesForLaterSuspend()
+        fetchNewEpisodes()
     }
 }
 

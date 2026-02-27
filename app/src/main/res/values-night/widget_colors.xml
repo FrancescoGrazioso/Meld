@@ -12,4 +12,13 @@
     <!-- Play button colors (Low style) -->
     <color name="widget_play_button_low_bg">@color/widget_primary_container</color>
     <color name="widget_play_button_low_icon">@color/widget_on_primary_container</color>
+
+    <!-- Music Recognizer Widget colors (Dark) -->
+    <!-- Active mic button background – lighter accent for dark theme -->
+    <color name="widget_mic_active_bg">#9A82DB</color>
+    <!-- Pulse ring colors (opacity variants for outward ripple animation) -->
+    <color name="widget_mic_pulse_ring">#99EADDFF</color>
+    <color name="widget_mic_pulse_ring_mid">#66EADDFF</color>
+    <color name="widget_mic_pulse_ring_low">#33EADDFF</color>
+    <color name="widget_mic_pulse_ring_fade">#1AEADDFF</color>
 </resources>

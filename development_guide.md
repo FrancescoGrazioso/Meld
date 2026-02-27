@@ -3,10 +3,8 @@ This file outlines the process of setting up a local dev environment for Metroli
 
 ## Prerequisites
 - Java JDK 21
-- Android Studio (or VSCode with Kotlin extensions)
-- Go 1.20+
-- protoc
-- protoc-gen-go
+- Android platform tools
+- protobuf-compiler
 - Android NDK
 
 ## Basic setup

@@ -188,11 +188,45 @@ fun OnlinePlaylistScreen(
                     item(key = "loading_placeholder") {
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth()
+                                .fillParentMaxSize()
                                 .padding(32.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             ContainedLoadingIndicator()
+                        }
+                    }
+                } else if (error != null) {
+                    item(key = "error_placeholder") {
+                        Column(
+                            modifier = Modifier
+                                .fillParentMaxSize()
+                                .padding(32.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = error ?: stringResource(R.string.error_unknown),
+                                style = MaterialTheme.typography.bodyLarge,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            androidx.compose.material3.TextButton(onClick = { viewModel.retry() }) {
+                                Text(stringResource(R.string.retry))
+                            }
+                        }
+                    }
+                } else if (!isLoading && songs.isEmpty()) {
+                    item(key = "empty_placeholder") {
+                        Box(
+                            modifier = Modifier
+                                .fillParentMaxSize()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.playlist_is_empty),
+                                style = MaterialTheme.typography.bodyLarge
+                            )
                         }
                     }
                 }

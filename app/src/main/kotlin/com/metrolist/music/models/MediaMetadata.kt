@@ -6,6 +6,7 @@
 package com.metrolist.music.models
 
 import androidx.compose.runtime.Immutable
+import com.metrolist.innertube.models.EpisodeItem
 import com.metrolist.innertube.models.SongItem
 import com.metrolist.innertube.models.WatchEndpoint.WatchEndpointMusicSupportedConfigs.WatchEndpointMusicConfig.Companion.MUSIC_VIDEO_TYPE_ATV
 import com.metrolist.music.db.entities.Song
@@ -31,6 +32,7 @@ data class MediaMetadata(
     val libraryAddToken: String? = null,
     val libraryRemoveToken: String? = null,
     val suggestedBy: String? = null,
+    val isEpisode: Boolean = false,
 ) : Serializable {
     val isVideoSong: Boolean
         get() = musicVideoType != null && musicVideoType != MUSIC_VIDEO_TYPE_ATV
@@ -59,7 +61,8 @@ data class MediaMetadata(
             inLibrary = inLibrary,
             libraryAddToken = libraryAddToken,
             libraryRemoveToken = libraryRemoveToken,
-            isVideo = isVideoSong
+            isVideo = isVideoSong,
+            isEpisode = isEpisode
         )
 }
 
@@ -92,6 +95,7 @@ fun Song.toMediaMetadata() =
         // Use a non-ATV type if isVideo is true to indicate it's a video song
         musicVideoType = if (song.isVideo) "MUSIC_VIDEO_TYPE_OMV" else null,
         suggestedBy = null,
+        isEpisode = song.isEpisode,
     )
 
 fun SongItem.toMediaMetadata() =
@@ -119,5 +123,31 @@ fun SongItem.toMediaMetadata() =
         musicVideoType = musicVideoType,
         libraryAddToken = libraryAddToken,
         libraryRemoveToken = libraryRemoveToken,
-        suggestedBy = null
+        suggestedBy = null,
+        isEpisode = isEpisode
+    )
+
+fun EpisodeItem.toMediaMetadata() =
+    MediaMetadata(
+        id = id,
+        title = title,
+        artists = listOfNotNull(author).map {
+            MediaMetadata.Artist(
+                id = it.id,
+                name = it.name,
+            )
+        },
+        duration = duration ?: -1,
+        thumbnailUrl = thumbnail.resize(544, 544),
+        album = podcast?.let {
+            MediaMetadata.Album(
+                id = it.id,
+                title = it.name,
+            )
+        },
+        explicit = explicit,
+        suggestedBy = null,
+        isEpisode = true,
+        libraryAddToken = libraryAddToken,
+        libraryRemoveToken = libraryRemoveToken,
     )

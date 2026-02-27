@@ -504,12 +504,11 @@ fun LibraryPlaylistsScreen(
                                         id = "spotify_${spotifyPlaylist.id}",
                                         name = spotifyPlaylist.name,
                                         thumbnailUrl = thumbnailUrl,
-                                        remoteSongCount = spotifyPlaylist.tracks?.total,
                                     ),
-                                    songCount = spotifyPlaylist.tracks?.total ?: 0,
+                                    songCount = 0,
                                     songThumbnails = listOfNotNull(thumbnailUrl),
                                 ),
-                                autoPlaylist = false,
+                                autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
@@ -723,13 +722,12 @@ fun LibraryPlaylistsScreen(
                                         id = "spotify_${spotifyPlaylist.id}",
                                         name = spotifyPlaylist.name,
                                         thumbnailUrl = thumbnailUrl,
-                                        remoteSongCount = spotifyPlaylist.tracks?.total,
                                     ),
-                                    songCount = spotifyPlaylist.tracks?.total ?: 0,
+                                    songCount = 0,
                                     songThumbnails = listOfNotNull(thumbnailUrl),
                                 ),
                                 fillMaxWidth = true,
-                                autoPlaylist = false,
+                                autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {

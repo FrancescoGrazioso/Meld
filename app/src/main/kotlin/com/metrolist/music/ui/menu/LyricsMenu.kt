@@ -104,6 +104,10 @@ fun LyricsMenu(
     val deeplFormality by rememberPreference(DeeplFormalityKey, "default")
 
     val hasApiKey = if (aiProvider == "DeepL") deeplApiKey.isNotBlank() else openRouterApiKey.isNotBlank()
+    
+    // Observe the authoritative translation-active state from the singleton; this persists
+    // correctly across menu open/close cycles and avoids the lyricsProvider() race condition.
+    val hasTranslations by LyricsTranslationHelper.hasActiveTranslations.collectAsState()
 
     var showEditDialog by rememberSaveable {
         mutableStateOf(false)
@@ -430,7 +434,7 @@ fun LyricsMenu(
         item {
             Material3MenuGroup(
                 items = buildList {
-                    // Add "Translate with AI" option if API key is configured
+                    // Add translation toggle option if API key is configured
                     if (hasApiKey) {
                         add(
                             Material3MenuItemData(
@@ -442,9 +446,41 @@ fun LyricsMenu(
                                     )
                                 },
                                 onClick = {
-                                    onDismiss()
-                                    LyricsTranslationHelper.triggerManualTranslation()
+                                    if (hasTranslations) {
+                                        // Remove translations
+                                        lyricsProvider()?.let { lyrics ->
+                                            val clearedLyrics = LyricsTranslationHelper.clearTranslations(lyrics)
+                                            database.query {
+                                                upsert(clearedLyrics)
+                                            }
+                                            // Resets hasActiveTranslations and clears in-memory translations
+                                            LyricsTranslationHelper.triggerClearTranslations()
+                                        }
+                                    } else {
+                                        // Trigger translation
+                                        LyricsTranslationHelper.triggerManualTranslation()
+                                    }
                                 },
+                                trailingContent = {
+                                    Switch(
+                                        checked = hasTranslations,
+                                        onCheckedChange = { newCheckedState ->
+                                            if (newCheckedState) {
+                                                // Enable translations – hasActiveTranslations updates when done
+                                                LyricsTranslationHelper.triggerManualTranslation()
+                                            } else {
+                                                // Disable translations – triggerClearTranslations resets hasActiveTranslations
+                                                lyricsProvider()?.let { lyrics ->
+                                                    val clearedLyrics = LyricsTranslationHelper.clearTranslations(lyrics)
+                                                    database.query {
+                                                        upsert(clearedLyrics)
+                                                    }
+                                                    LyricsTranslationHelper.triggerClearTranslations()
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
                             )
                         )
                     }

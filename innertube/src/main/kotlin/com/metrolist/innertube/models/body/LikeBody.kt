@@ -8,11 +8,19 @@ data class LikeBody(
     val context: Context,
     val target: Target,
 ) {
+    /**
+     * Target for like/unlike operations.
+     * Note: Only one of videoId or playlistId should be set.
+     * Using a flat structure instead of sealed class to avoid type discriminator in serialization.
+     */
     @Serializable
-    sealed class Target {
-        @Serializable
-        data class VideoTarget(val videoId: String) : Target()
-        @Serializable
-        data class PlaylistTarget(val playlistId: String) : Target()
+    data class Target(
+        val videoId: String? = null,
+        val playlistId: String? = null,
+    ) {
+        companion object {
+            fun video(id: String) = Target(videoId = id)
+            fun playlist(id: String) = Target(playlistId = id)
+        }
     }
 }

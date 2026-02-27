@@ -34,7 +34,7 @@ import com.metrolist.music.extensions.toEnum
 import com.metrolist.music.extensions.toInetSocketAddress
 import com.metrolist.music.utils.CrashHandler
 import com.metrolist.music.utils.SpotifyTokenManager
-import com.metrolist.music.utils.cipher.CipherDeobfuscator
+import com.metrolist.music.utils.cipher.PlayerJsFetcher
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.reportException
 import dagger.hilt.android.HiltAndroidApp
@@ -67,8 +67,8 @@ class App : Application(), SingletonImageLoader.Factory {
         // Install crash handler first
         CrashHandler.install(this)
 
-        // Initialize cipher deobfuscator for WEB_REMIX streaming
-        CipherDeobfuscator.initialize(this)
+        // Initialize PlayerJsFetcher for n-transform solver
+        PlayerJsFetcher.initialize(this)
 
         Timber.plant(Timber.DebugTree())
 

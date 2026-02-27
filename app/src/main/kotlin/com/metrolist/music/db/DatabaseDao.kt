@@ -41,6 +41,7 @@ import com.metrolist.music.db.entities.Playlist
 import com.metrolist.music.db.entities.PlaylistEntity
 import com.metrolist.music.db.entities.PlaylistSong
 import com.metrolist.music.db.entities.PlaylistSongMap
+import com.metrolist.music.db.entities.PodcastEntity
 import com.metrolist.music.db.entities.RecognitionHistory
 import com.metrolist.music.db.entities.RelatedSongMap
 import com.metrolist.music.db.entities.SearchHistory
@@ -1111,6 +1112,56 @@ interface DatabaseDao {
     }.map { it.reversed(descending) }
 
     @Transaction
+    @Query("SELECT * FROM song WHERE isEpisode = 1 ORDER BY inLibrary")
+    fun podcastEpisodesByCreateDateAsc(): Flow<List<Song>>
+
+    @Transaction
+    @Query("SELECT * FROM song WHERE isEpisode = 1 ORDER BY title")
+    fun podcastEpisodesByNameAsc(): Flow<List<Song>>
+
+    @Transaction
+    @Query("SELECT * FROM song WHERE isEpisode = 1 ORDER BY totalPlayTime")
+    fun podcastEpisodesByPlayTimeAsc(): Flow<List<Song>>
+
+    @Transaction
+    @Query("SELECT * FROM song WHERE isEpisode = 1 ORDER BY rowId")
+    fun podcastEpisodesByRowIdAsc(): Flow<List<Song>>
+
+    fun podcastEpisodes(
+        sortType: SongSortType,
+        descending: Boolean,
+    ) = when (sortType) {
+        SongSortType.CREATE_DATE -> podcastEpisodesByCreateDateAsc()
+        SongSortType.NAME ->
+            podcastEpisodesByNameAsc().map { songs ->
+                val collator = Collator.getInstance(Locale.getDefault())
+                collator.strength = Collator.PRIMARY
+                songs.sortedWith(compareBy(collator) { it.song.title })
+            }
+
+        SongSortType.ARTIST ->
+            podcastEpisodesByRowIdAsc().map { songs ->
+                val collator = Collator.getInstance(Locale.getDefault())
+                collator.strength = Collator.PRIMARY
+                songs
+                    .sortedWith(
+                        compareBy(collator) { song ->
+                            song.artists.joinToString("") { it.name }
+                        },
+                    ).groupBy { it.album?.title }
+                    .flatMap { (_, songsByAlbum) ->
+                        songsByAlbum.sortedBy { album ->
+                            album.artists.joinToString(
+                                "",
+                            ) { it.name }
+                        }
+                    }
+            }
+
+        SongSortType.PLAY_TIME -> podcastEpisodesByPlayTimeAsc()
+    }.map { it.reversed(descending) }
+
+    @Transaction
     @Query("SELECT * FROM song WHERE title LIKE '%' || :query || '%' AND inLibrary IS NOT NULL LIMIT :previewSize")
     fun searchSongs(
         query: String,
@@ -1327,6 +1378,9 @@ interface DatabaseDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(playCountEntity: PlayCountEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insert(setVideoIdEntity: SetVideoIdEntity)
 
     @Transaction
     fun insert(
@@ -1611,10 +1665,33 @@ interface DatabaseDao {
         raw("PRAGMA wal_checkpoint(FULL)".toSQLiteQuery())
     }
 
+    // Podcast methods
+
+    @Query("SELECT * FROM podcast WHERE bookmarkedAt IS NOT NULL ORDER BY bookmarkedAt DESC")
+    fun subscribedPodcasts(): Flow<List<PodcastEntity>>
+
+    @Query("SELECT * FROM podcast WHERE id = :id")
+    fun podcast(id: String): Flow<PodcastEntity?>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insert(podcast: PodcastEntity): Long
+
+    @Update
+    fun update(podcast: PodcastEntity)
+
+    @Upsert
+    fun upsert(podcast: PodcastEntity)
+
+    @Delete
+    fun delete(podcast: PodcastEntity)
+
     // Spotify match cache
 
     @Query("SELECT * FROM spotify_match WHERE spotifyId = :spotifyId LIMIT 1")
     fun getSpotifyMatch(spotifyId: String): SpotifyMatchEntity?
+
+    @Query("SELECT * FROM spotify_match WHERE youtubeId = :youtubeId LIMIT 1")
+    fun getSpotifyMatchByYouTubeId(youtubeId: String): SpotifyMatchEntity?
 
     @Upsert
     fun upsertSpotifyMatch(match: SpotifyMatchEntity)
@@ -1624,4 +1701,7 @@ interface DatabaseDao {
 
     @Query("DELETE FROM spotify_match")
     fun clearAllSpotifyMatches()
+
+    @Query("DELETE FROM spotify_match WHERE spotifyId = :spotifyId")
+    fun deleteSpotifyMatch(spotifyId: String)
 }

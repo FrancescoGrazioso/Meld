@@ -135,10 +135,17 @@
     <string name="lyrics_auto_scroll">Auto scroll lyrics</string>
     <string name="lyrics_glow_effect">Enable glowing lyrics effect</string>
     <string name="lyrics_glow_effect_desc">Add glowing animation and bounce effect to active lyrics</string>
+    <string name="enable_lrclib_desc">Community-driven synchronized lyrics database</string>
+    <string name="enable_kugou_desc">Takes lyrics from KuGou, a popular Chinese music platform</string>
+    <string name="youtube_music_lyrics_note">NOTE: Lyrics from YouTube Music will be automatically shown when other lyrics are not available. Lyrics from YTM are usually not synchronized.</string>
     <string name="enable_better_lyrics">Enable Better Lyrics</string>
-    <string name="enable_better_lyrics_desc">Use Better Lyrics provider for word-by-word synced lyrics</string>
+    <string name="enable_better_lyrics_desc">Syllable-synced lyrics for any song, for karaoke</string>
     <string name="enable_simpmusic">Enable SimpMusic Lyrics</string>
-    <string name="enable_simpmusic_desc">Use SimpMusic Lyrics provider for synced lyrics</string>
+    <string name="enable_simpmusic_desc">Automatically sourced lyrics from Musixmatch and YouTube Transcript</string>
+    <string name="enable_lyricsplus">Enable LyricsPlus</string>
+    <string name="enable_lyricsplus_desc">Synchronized lyrics from multiple sources</string>
+    <string name="lyrics_provider_selection">Provider selection</string>
+    <string name="lyrics_provider_selection_desc">Choose which lyrics providers are enabled</string>
     <string name="auto_scroll">Re-sync</string>
     <string name="slim">Slim</string>
     <string name="slim_navbar">Slim bottom navigation bar</string>
@@ -187,6 +194,8 @@
     <string name="configure_supported_links">Configure supported links</string>
     <string name="intent_supported_links_not_found">Couldn\'t find supported links settings, please configure them manually</string>
     <string name="set_first_lyrics_provider">Preferred lyrics provider</string>
+    <string name="lyrics_provider_priority">Lyrics provider priority</string>
+    <string name="lyrics_provider_priority_desc">Drag to reorder providers by preference. Higher position -> higher priority.</string>
     <string name="config_proxy">Configure proxy</string>
     <string name="proxy_username">Proxy username</string>
     <string name="proxy_password">Proxy password</string>
@@ -230,6 +239,21 @@
     <string name="open_app_settings_error">Couldn\'t open app settings</string>
 
     <string name="release_notes">Release notes</string>
+    <string name="changelog">Changelog</string>
+    <string name="changelog_empty">No changelogs available</string>
+    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="list_bullet">•</string>
+    <string name="view_on_github">View on GitHub</string>
+    <string name="current_version">Current version</string>
+    <string name="version_format">Version: %s</string>
+    <string name="update_settings">Update settings</string>
+    <string name="check_for_updates_title">Check for updates</string>
+    <string name="checking_for_updates">Checking for updates…</string>
+    <string name="latest_version_format">Latest: %s</string>
+    <string name="check_for_updates_button">Check for updates</string>
+    <string name="hide_changelog">Hide changelog</string>
+    <string name="view_changelog">View changelog</string>
+    <string name="failed_to_check_updates">Failed to check for updates: %s</string>
 
     <string name="all_time">All time</string>
     <string name="past_24_hours">Past 24 hours</string>
@@ -255,6 +279,10 @@
         <item quantity="one">1 second</item>
         <item quantity="other">%d seconds</item>
     </plurals>
+
+    <!-- Sleep timer -->
+    <string name="set_as_default">Set as default</string>
+    <string name="sleep_timer_default_set">Sleep timer default set to %d min</string>
 
     <!-- Player Settings -->
     <string name="disable_load_more_when_repeat_all">Disable load more when repeat all</string>
@@ -379,6 +407,9 @@
     <string name="spotify_discover">More Artists You Love</string>
     <string name="spotify_your_playlists">Your Playlists</string>
     <string name="spotify_new_releases">New Releases</string>
+    <string name="new_releases_for_you">For You</string>
+    <string name="new_releases_following">Following</string>
+    <string name="new_releases_discover">Discover</string>
     <string name="spotify_because_you_like">Because you like %s</string>
 
     <string name="details_desc">View the song\'s information</string>
@@ -390,6 +421,15 @@
     <string name="download_desc">Make available for offline playback</string>
     <string name="add_to_playlist_desc">Add to one of your playlists</string>
     <string name="refetch_desc">Fetch the latest metadata from YouTube Music</string>
+    <string name="change_youtube_version">Change YouTube version</string>
+    <string name="change_youtube_version_desc">Pick a different YouTube match for this Spotify track</string>
+    <string name="select_youtube_match">Select the correct version</string>
+    <string name="current_match">Current match</string>
+    <string name="new_match">New match</string>
+    <string name="paste_youtube_url">Paste here the new YouTube URL</string>
+    <string name="video_not_found">Video not found</string>
+    <string name="fetch_video_error">Failed to fetch video info</string>
+    <string name="searching">Searching…</string>
     <string name="share_desc">Share a link to this item</string>
     <string name="delete_desc">Permanently remove this item</string>
     <string name="advanced_desc">Change the song\'s tempo and pitch</string>
@@ -497,6 +537,10 @@
     <string name="error_copied">Error info copied to clipboard</string>
     <string name="copy_error">Copy error</string>
     <string name="error_copy_hint">Copy error info to help developers debug the issue</string>
+    <string name="error_episode_save">Failed to save episode</string>
+    <string name="error_episode_remove">Failed to remove episode</string>
+    <string name="error_podcast_subscribe">Failed to subscribe to podcast</string>
+    <string name="error_podcast_unsubscribe">Failed to unsubscribe from podcast</string>
     <string name="error_restricted_not_logged_in">Some tracks may not play due to age or country restrictions. Try logging into YouTube in Settings to resolve this issue.</string>
     <string name="error_restricted_logged_in">This track is restricted (age or country) and cannot be played at this time.</string>
 
@@ -515,6 +559,22 @@
     <string name="turntable_widget_description">Circular music widget with play and like controls</string>
     <string name="widget_music_player">Music Player</string>
     <string name="widget_turntable">Turntable</string>
+
+    <!-- Music Recognizer Widget strings -->
+    <string name="widget_recognizer_name">Music Recognizer</string>
+    <string name="widget_recognizer_description">Identify songs playing around you directly from your home screen</string>
+    <string name="widget_recognizer_tap_to_search">Tap to identify song</string>
+    <string name="widget_recognizer_listening">Listening…</string>
+    <string name="widget_recognizer_processing">Identifying…</string>
+    <string name="widget_recognizer_no_match">No match found. Try again</string>
+    <string name="widget_recognizer_error">Recognition failed</string>
+    <string name="widget_recognizer_error_generic">An error occurred. Please try again</string>
+    <string name="widget_recognizer_unknown_song">Unknown song</string>
+    <string name="widget_recognizer_unknown_artist">Unknown artist</string>
+    <string name="widget_recognizer_mic_desc">Identify song</string>
+    <string name="widget_recognizer_channel_name">Music Recognition</string>
+    <string name="widget_recognizer_channel_desc">Shows a notification while identifying a song from the widget</string>
+    <string name="widget_recognizer_notification_text">Recording audio to identify the song…</string>
 
     <!-- Player Client Settings -->
     <string name="player_client">Player client</string>
@@ -559,8 +619,10 @@
     <string name="listen_together_view_logs_desc">Debug connection and messages</string>
     <string name="listen_together_logs">Connection logs</string>
     <string name="listen_together_no_logs">No logs yet</string>
-    <string name="listen_together_auto_approval">Auto-approve join requests</string>
-    <string name="listen_together_auto_approval_desc">Automatically approve join requests instead of reviewing them manually</string>
+    <string name="listen_together_auto_approval_joins">Auto-approve join requests</string>
+    <string name="listen_together_auto_approval_joins_desc">Automatically approve join requests instead of reviewing them manually</string>
+    <string name="listen_together_auto_approval_suggestions">Auto-approve song suggestions</string>
+    <string name="listen_together_auto_approval_suggestions_desc">Automatically approve and queue song suggestions from guests</string>
     <string name="listen_together_sync_volume">Sync host volume</string>
     <string name="listen_together_sync_volume_desc">Guests follow the host volume level</string>
     <string name="listen_together_in_top_bar">Listen Together in top bar</string>
@@ -649,13 +711,13 @@
     <string name="ai_error_unknown">Unknown error occurred</string>
     <string name="ai_error_translation_failed">Translation failed</string>
     <string name="ai_provider_help">Get API Keys</string>
-    <string name="ai_provider_openrouter_help">Visit openrouter.ai for free and paid models</string>
-    <string name="ai_provider_openai_help">Visit platform.openai.com/api-keys</string>
-    <string name="ai_provider_claude_help">Visit console.anthropic.com/settings/keys</string>
-    <string name="ai_provider_gemini_help">Visit aistudio.google.com/apikey</string>
-    <string name="ai_provider_perplexity_help">Visit perplexity.ai/settings/api</string>
-    <string name="ai_provider_xai_help">Visit console.x.ai</string>
-    <string name="ai_provider_deepl_help">Visit deepl.com/pro-api for free and paid keys</string>
+    <string name="ai_provider_openrouter_help">Visit https://openrouter.ai for free and paid models</string>
+    <string name="ai_provider_openai_help">Visit https://platform.openai.com/api-keys</string>
+    <string name="ai_provider_claude_help">Visit https://console.anthropic.com/settings/keys</string>
+    <string name="ai_provider_gemini_help">Visit https://aistudio.google.com/apikey</string>
+    <string name="ai_provider_perplexity_help">Visit https://perplexity.ai/settings/api</string>
+    <string name="ai_provider_xai_help">Visit https://console.x.ai</string>
+    <string name="ai_provider_deepl_help">Visit https://deepl.com/pro-api for free and paid keys</string>
     <string name="ai_deepl_formality">Formality</string>
     <string name="ai_deepl_formality_default">Default</string>
     <string name="ai_deepl_formality_more">More Formal</string>
@@ -729,6 +791,9 @@
     <string name="youtube_url_column">YouTube URL Column (Optional)</string>
     <string name="continue_action">Continue</string>
     <string name="importing_csv">Importing CSV</string>
+    <string name="importing_playlist">Importing Playlist</string>
+
+    <string name="importing_song">Importing %s</string>
     <string name="recently_converted">Recently Converted</string>
     <string name="column_label">Col %d</string>
     <string name="csv_import_failed">Failed to import CSV file</string>
@@ -779,4 +844,60 @@
     <string name="daily_discover_for_fans_of">For fans of %1$s</string>
     <string name="from_the_community">From the community</string>
     <string name="songs_count">%s songs</string>
+
+    <!-- Logout dialog -->
+    <string name="logout_dialog_title">Keep library data?</string>
+    <string name="logout_dialog_message">Do you want to keep your playlists and library data? Downloaded songs will be kept regardless.</string>
+    <string name="logout_keep">Keep</string>
+    <string name="logout_clear">Clear</string>
+    <!-- Credits / About Screen -->
+    <string name="credits_lead_developer">Lead Developer</string>
+    <string name="credits_collaborator">Collaborator</string>
+    <string name="credits_collaborators_section">Collaborators</string>
+    <string name="credits_license_name">GNU General Public License v3.0</string>
+    <string name="credits_license_desc">Free, open-source software. You may use, study, share and improve it.</string>
+    <string name="credits_discord">Discord Server</string>
+    <string name="credits_telegram">Telegram Channel</string>
+    <string name="credits_website">Website</string>
+    <string name="credits_instagram">Instagram</string>
+    <string name="credits_github">GitHub</string>
+    <string name="credits_view_repo">View Repository</string>
+    <string name="app_version_info">%1$s • %2$s</string>
+    <string name="like_what_i_do">Like what I do?</string>
+    <string name="buy_mo_a_coffee">Buy me a coffee</string>
+    <string name="community_and_info">Community &amp; Info</string>
+    <string name="metrolist">METROLIST</string>
+    <string name="wanna_play_favorite_song">Wanna play their favorite song?</string>
+    <string name="yeah">Yeah</string>
+    <string name="stands_with_palestine">This project stands with Palestine 🇵🇸</string>
+    <!-- Podcasts -->
+    <string name="filter_podcasts">Podcasts</string>
+    <string name="view_podcast">View podcast</string>
+    <string name="podcast_channels">Podcast Channels</string>
+    <string name="latest_episodes">Latest Episodes</string>
+    <string name="your_shows">Your Shows</string>
+    <string name="subscribed_channels">Subscribed Channels</string>
+    <string name="new_episodes">New Episodes</string>
+    <string name="episodes_for_later">Episodes for Later</string>
+    <string name="save_episode_for_later">Save for later</string>
+    <string name="save_episode_for_later_desc">Add to your Episodes for Later playlist</string>
+    <string name="saved_episode">Saved to Episodes for Later</string>
+    <string name="remove_episode_from_saved">Remove from saved</string>
+    <string name="subscribe_to_podcast">Save podcast to library</string>
+    <string name="save_to_library">Save to Library</string>
+    <string name="saved_to_library">Saved</string>
+    <plurals name="n_episode">
+        <item quantity="one">%d episode</item>
+        <item quantity="other">%d episodes</item>
+    </plurals>
+
+    <!-- Restore confirmation dialog -->
+    <string name="restore_confirm_title">Restore backup?</string>
+    <string name="restore_confirm_message">This will restore your app data from the backup.</string>
+    <string name="restore_account_warning">You will need to log in again after restore. The following account will be signed out:</string>
+    <string name="restore">Restore</string>
+    <string name="checking_previous_account">Checking for previous account…</string>
+    <string name="no_account_found">No account found</string>
+    <string name="restore_success">Restore completed successfully</string>
+    <string name="no_songs_found">No songs found. Invalid file, or perhaps no song matches were found.</string>
 </resources>

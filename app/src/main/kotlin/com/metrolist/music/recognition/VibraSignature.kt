@@ -1,24 +1,22 @@
 package com.metrolist.music.recognition
 
 /**
- * Native library interface for generating Shazam-compatible audio fingerprints.
- * Uses the vibra_fp library which implements the Shazam signature algorithm.
+ * Audio fingerprint generator for Shazam-compatible signatures.
+ *
+ * Pure Kotlin implementation — no native C++ or FFTW3 dependency required.
+ * Uses [ShazamSignatureGenerator] which ports the vibra algorithm to JVM.
  */
 object VibraSignature {
-
-    init {
-        System.loadLibrary("vibra_fp")
-    }
 
     const val REQUIRED_SAMPLE_RATE = 16_000
 
     /**
-     * Generates a Shazam signature from PCM audio data.
-     * 
-     * @param samples Raw PCM audio data (mono, 16-bit signed, 16kHz sample rate)
-     * @return The encoded signature string suitable for Shazam API
-     * @throws RuntimeException if signature generation fails
+     * Generates a Shazam signature from raw PCM audio data.
+     *
+     * @param samples Raw PCM audio data (mono, 16-bit signed little-endian, 16kHz)
+     * @return The encoded signature URI string suitable for the Shazam API
+     * @throws IllegalArgumentException if samples is empty or has odd length
      */
     @JvmStatic
-    external fun fromI16(samples: ByteArray): String
+    fun fromI16(samples: ByteArray): String = ShazamSignatureGenerator.fromI16(samples)
 }

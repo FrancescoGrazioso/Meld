@@ -68,7 +68,8 @@ data class ArtistItemsPage(
                 } != null,
                 endpoint = renderer.overlay?.musicItemThumbnailOverlayRenderer?.content?.musicPlayButtonRenderer?.playNavigationEndpoint?.watchEndpoint,
                 libraryAddToken = libraryTokens.addToken,
-                libraryRemoveToken = libraryTokens.removeToken
+                libraryRemoveToken = libraryTokens.removeToken,
+                isEpisode = renderer.isEpisode
             )
         }
 

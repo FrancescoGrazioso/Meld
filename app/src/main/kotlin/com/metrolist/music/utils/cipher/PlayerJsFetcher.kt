@@ -1,5 +1,6 @@
 package com.metrolist.music.utils.cipher
 
+import android.content.Context
 import com.metrolist.innertube.YouTube
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -14,6 +15,13 @@ object PlayerJsFetcher {
     private const val PLAYER_JS_URL_TEMPLATE = "https://www.youtube.com/s/player/%s/player_ias.vflset/en_GB/base.js"
     private const val CACHE_TTL_MS = 6 * 60 * 60 * 1000L // 6 hours
 
+    lateinit var appContext: Context
+        private set
+
+    fun initialize(context: Context) {
+        appContext = context.applicationContext
+    }
+
     private val httpClient = OkHttpClient.Builder()
         .proxy(YouTube.proxy)
         .build()
@@ -21,7 +29,7 @@ object PlayerJsFetcher {
     // Regex to extract player hash from iframe_api response
     private val PLAYER_HASH_REGEX = Regex("""\\?/s\\?/player\\?/([a-zA-Z0-9_-]+)\\?/""")
 
-    private fun getCacheDir(): File = File(CipherDeobfuscator.appContext.filesDir, "cipher_cache")
+    private fun getCacheDir(): File = File(appContext.filesDir, "cipher_cache")
 
     private fun getCacheFile(hash: String): File = File(getCacheDir(), "player_$hash.js")
 

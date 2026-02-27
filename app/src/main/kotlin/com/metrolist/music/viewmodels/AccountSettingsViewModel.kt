@@ -22,6 +22,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import javax.inject.Inject
 import androidx.datastore.preferences.core.edit
 
@@ -44,6 +45,27 @@ class AccountSettingsViewModel @Inject constructor(
             // Clear cookie in UI
             onCookieChange("")
         }
+    }
+
+    /**
+     * Clear all library data including songs, albums, artists, playlists, podcasts.
+     */
+    suspend fun clearAllLibraryData() {
+        Timber.d("[LOGOUT_CLEAR] ViewModel: clearAllLibraryData called")
+        syncUtils.clearAllLibraryData()
+        Timber.d("[LOGOUT_CLEAR] ViewModel: clearAllLibraryData completed")
+    }
+
+    /**
+     * Just logout without clearing library data
+     */
+    suspend fun logoutKeepData(context: Context, onCookieChange: (String) -> Unit) {
+        Timber.d("[LOGOUT_KEEP] ViewModel: logoutKeepData called")
+        withContext(Dispatchers.IO) {
+            App.forgetAccount(context)
+        }
+        Timber.d("[LOGOUT_KEEP] ViewModel: Account forgotten, clearing cookie in UI")
+        onCookieChange("")
     }
 
     /**

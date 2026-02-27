@@ -32,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -60,6 +61,7 @@ fun UpdaterScreen(
     val (checkForUpdates, onCheckForUpdatesChange) = rememberPreference(CheckForUpdatesKey, true)
     val (updateNotifications, onUpdateNotificationsChange) = rememberPreference(UpdateNotificationsEnabledKey, true)
     
+    val context = LocalContext.current
     var isChecking by remember { mutableStateOf(false) }
     var updateAvailable by remember { mutableStateOf(false) }
     var latestVersion by remember { mutableStateOf<String?>(null) }
@@ -81,7 +83,7 @@ fun UpdaterScreen(
                         changelogContent = releaseInfo.description
                     }
                 }.onFailure {
-                    checkError = "Failed to check for updates: ${it.message}"
+                    checkError = context.getString(R.string.failed_to_check_updates, it.message ?: "Unknown error")
                 }
             }
             isChecking = false
@@ -110,13 +112,12 @@ fun UpdaterScreen(
 
         Spacer(Modifier.height(4.dp))
 
-        // Current Version Info
         Material3SettingsGroup(
-            title = "Current Version",
+            title = stringResource(R.string.current_version),
             items = listOf(
                 Material3SettingsItem(
                     title = {
-                        Text("Version: ${BuildConfig.VERSION_NAME}")
+                        Text(stringResource(R.string.version_format, BuildConfig.VERSION_NAME))
                     },
                     description = {
                         val arch = BuildConfig.ARCHITECTURE
@@ -129,9 +130,8 @@ fun UpdaterScreen(
         
         Spacer(Modifier.height(16.dp))
 
-        // Auto Update Settings
         Material3SettingsGroup(
-            title = "Update Settings",
+            title = stringResource(R.string.update_settings),
             items = buildList {
                 add(
                     Material3SettingsItem(
@@ -167,19 +167,18 @@ fun UpdaterScreen(
 
         Spacer(Modifier.height(16.dp))
 
-        // Manual Check
         Material3SettingsGroup(
-            title = "Check for Updates",
+            title = stringResource(R.string.check_for_updates_title),
             items = listOf(
                 Material3SettingsItem(
                     icon = painterResource(R.drawable.refresh),
                     title = { 
                         if (isChecking) {
-                            Text("Checking for updates...")
+                            Text(stringResource(R.string.checking_for_updates))
                         } else if (latestVersion != null) {
-                            Text("Latest: $latestVersion")
+                            Text(stringResource(R.string.latest_version_format, latestVersion!!))
                         } else {
-                            Text("Check for Updates")
+                            Text(stringResource(R.string.check_for_updates_button))
                         }
                     },
                     trailingContent = {
@@ -191,7 +190,7 @@ fun UpdaterScreen(
                         } else if (updateAvailable) {
                             Icon(
                                 painter = painterResource(R.drawable.download),
-                                contentDescription = "Update available",
+                                contentDescription = stringResource(R.string.update_available_title),
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         }
@@ -219,7 +218,7 @@ fun UpdaterScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                Text(if (showChangelog) "Hide Changelog" else "View Changelog")
+                Text(if (showChangelog) stringResource(R.string.hide_changelog) else stringResource(R.string.view_changelog))
             }
 
             if (showChangelog && changelogContent != null) {

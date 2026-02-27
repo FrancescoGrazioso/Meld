@@ -493,6 +493,13 @@ fun Lyrics(
             }
         }
     }
+    
+    // Listen for clear translations trigger
+    LaunchedEffect(Unit) {
+        LyricsTranslationHelper.clearTranslationsTrigger.collect {
+            lines.forEach { it.translatedTextFlow.value = null }
+        }
+    }
 
     // Use Material 3 expressive accents and keep glow/text colors unified
     val expressiveAccent = when (playerBackground) {

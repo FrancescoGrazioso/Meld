@@ -38,6 +38,10 @@ class OnlinePlaylistViewModel @Inject constructor(
 ) : ViewModel() {
     private val playlistId = savedStateHandle.get<String>("playlistId")!!
 
+    // Check if this is a special podcast playlist (with or without VL prefix)
+    private val normalizedPlaylistId = playlistId.removePrefix("VL")
+    private val isPodcastPlaylist = normalizedPlaylistId == "RDPN" || normalizedPlaylistId == "SE"
+
     val playlist = MutableStateFlow<PlaylistItem?>(null)
     val playlistSongs = MutableStateFlow<List<SongItem>>(emptyList())
 
@@ -69,21 +73,82 @@ class OnlinePlaylistViewModel @Inject constructor(
             continuation = null
             proactiveLoadJob?.cancel() // Cancel any ongoing proactive load
 
-            YouTube.playlist(playlistId)
-                .onSuccess { playlistPage ->
-                    playlist.value = playlistPage.playlist
-                    playlistSongs.value = applySongFilters(playlistPage.songs)
-                    continuation = playlistPage.songsContinuation
-                    _isLoading.value = false
-                    if (continuation != null) {
-                        startProactiveBackgroundLoading()
-                    }
-                }.onFailure { throwable ->
-                    _error.value = throwable.message ?: "Failed to load playlist"
-                    _isLoading.value = false
-                    reportException(throwable)
-                }
+            if (isPodcastPlaylist) {
+                // Use special podcast playlist APIs
+                fetchPodcastPlaylist()
+            } else {
+                // Use regular playlist API
+                fetchRegularPlaylist()
+            }
         }
+    }
+
+    private suspend fun fetchPodcastPlaylist() {
+        when (normalizedPlaylistId) {
+            "RDPN" -> {
+                YouTube.newEpisodes()
+                    .onSuccess { episodes ->
+                        playlist.value = PlaylistItem(
+                            id = playlistId,
+                            title = "New Episodes",
+                            author = null,
+                            songCountText = "${episodes.size} episodes",
+                            thumbnail = episodes.firstOrNull()?.thumbnail ?: "",
+                            playEndpoint = null,
+                            shuffleEndpoint = null,
+                            radioEndpoint = null,
+                        )
+                        playlistSongs.value = applySongFilters(episodes)
+                        _isLoading.value = false
+                    }.onFailure { throwable ->
+                        _error.value = throwable.message ?: "Failed to load new episodes"
+                        _isLoading.value = false
+                        reportException(throwable)
+                    }
+            }
+            "SE" -> {
+                YouTube.episodesForLater()
+                    .onSuccess { episodes ->
+                        playlist.value = PlaylistItem(
+                            id = playlistId,
+                            title = "Episodes for Later",
+                            author = null,
+                            songCountText = "${episodes.size} episodes",
+                            thumbnail = episodes.firstOrNull()?.thumbnail ?: "",
+                            playEndpoint = null,
+                            shuffleEndpoint = null,
+                            radioEndpoint = null,
+                        )
+                        playlistSongs.value = applySongFilters(episodes)
+                        _isLoading.value = false
+                    }.onFailure { throwable ->
+                        _error.value = throwable.message ?: "Failed to load episodes for later"
+                        _isLoading.value = false
+                        reportException(throwable)
+                    }
+            }
+            else -> {
+                _error.value = "Unknown podcast playlist"
+                _isLoading.value = false
+            }
+        }
+    }
+
+    private suspend fun fetchRegularPlaylist() {
+        YouTube.playlist(playlistId)
+            .onSuccess { playlistPage ->
+                playlist.value = playlistPage.playlist
+                playlistSongs.value = applySongFilters(playlistPage.songs)
+                continuation = playlistPage.songsContinuation
+                _isLoading.value = false
+                if (continuation != null) {
+                    startProactiveBackgroundLoading()
+                }
+            }.onFailure { throwable ->
+                _error.value = throwable.message ?: "Failed to load playlist"
+                _isLoading.value = false
+                reportException(throwable)
+            }
     }
 
     private fun startProactiveBackgroundLoading() {

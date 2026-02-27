@@ -403,7 +403,7 @@ class InnerTube {
             setBody(
                 LikeBody(
                     context = client.toContext(locale, visitorData, dataSyncId),
-                    target = LikeBody.Target.VideoTarget(videoId)
+                    target = LikeBody.Target.video(videoId)
                 )
             )
         }
@@ -418,7 +418,7 @@ class InnerTube {
             setBody(
                 LikeBody(
                     context = client.toContext(locale, visitorData, dataSyncId),
-                    target = LikeBody.Target.VideoTarget(videoId)
+                    target = LikeBody.Target.video(videoId)
                 )
             )
         }
@@ -463,7 +463,7 @@ class InnerTube {
             setBody(
                 LikeBody(
                     context = client.toContext(locale, visitorData, dataSyncId),
-                    target = LikeBody.Target.PlaylistTarget(playlistId)
+                    target = LikeBody.Target.playlist(playlistId)
                 )
             )
         }
@@ -478,7 +478,7 @@ class InnerTube {
             setBody(
                 LikeBody(
                     context = client.toContext(locale, visitorData, dataSyncId),
-                    target = LikeBody.Target.PlaylistTarget(playlistId)
+                    target = LikeBody.Target.playlist(playlistId)
                 )
             )
         }

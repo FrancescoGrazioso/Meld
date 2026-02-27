@@ -501,11 +501,11 @@ fun LibraryMixScreen(
                                         id = "spotify_${spotifyPlaylist.id}",
                                         name = spotifyPlaylist.name,
                                         thumbnailUrl = thumbnailUrl,
-                                        remoteSongCount = spotifyPlaylist.tracks?.total,
                                     ),
-                                    songCount = spotifyPlaylist.tracks?.total ?: 0,
+                                    songCount = 0,
                                     songThumbnails = listOfNotNull(thumbnailUrl),
                                 ),
+                                autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
@@ -872,12 +872,12 @@ fun LibraryMixScreen(
                                         id = "spotify_${spotifyPlaylist.id}",
                                         name = spotifyPlaylist.name,
                                         thumbnailUrl = thumbnailUrl,
-                                        remoteSongCount = spotifyPlaylist.tracks?.total,
                                     ),
-                                    songCount = spotifyPlaylist.tracks?.total ?: 0,
+                                    songCount = 0,
                                     songThumbnails = listOfNotNull(thumbnailUrl),
                                 ),
                                 fillMaxWidth = true,
+                                autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {

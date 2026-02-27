@@ -28,22 +28,27 @@ fun ShimmerHost(
     modifier: Modifier = Modifier,
     horizontalAlignment: Alignment.Horizontal = Alignment.Start,
     verticalArrangement: Arrangement.Vertical = Arrangement.Top,
+    showGradient: Boolean = true,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val baseModifier = modifier
+        .shimmer()
+        .graphicsLayer(alpha = 0.99f)
+
     Column(
         horizontalAlignment = horizontalAlignment,
         verticalArrangement = verticalArrangement,
-        modifier =
-        modifier
-            .shimmer()
-            .graphicsLayer(alpha = 0.99f)
-            .drawWithContent {
+        modifier = if (showGradient) {
+            baseModifier.drawWithContent {
                 drawContent()
                 drawRect(
                     brush = Brush.verticalGradient(listOf(Color.Black, Color.Transparent)),
                     blendMode = BlendMode.DstIn,
                 )
-            },
+            }
+        } else {
+            baseModifier
+        },
         content = content,
     )
 }

@@ -87,6 +87,7 @@ import com.metrolist.music.utils.joinByBullet
 import com.metrolist.music.utils.makeTimeString
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -146,6 +147,7 @@ fun YouTubePlaylistMenu(
             if (playlist.id != "LM" && !playlist.isEditable) {
                 IconButton(
                     onClick = {
+                        val isCurrentlySaved = dbPlaylist?.playlist?.bookmarkedAt != null
                         if (dbPlaylist?.playlist == null) {
                             database.transaction {
                                 val playlistEntity = PlaylistEntity(
@@ -161,12 +163,23 @@ fun YouTubePlaylistMenu(
                                     radioEndpointParams = playlist.radioEndpoint?.params
                                 ).toggleLike()
                                 insert(playlistEntity)
-                                coroutineScope.launch(Dispatchers.IO) {
+                            }
+                        } else {
+                            database.transaction {
+                                val currentPlaylist = dbPlaylist!!.playlist
+                                update(currentPlaylist, playlist)
+                                update(currentPlaylist.toggleLike())
+                            }
+                        }
+                        coroutineScope.launch(Dispatchers.IO) {
+                            if (!isCurrentlySaved) {
+                                val playlistEntity = database.playlistByBrowseId(playlist.id).first()?.playlist
+                                if (playlistEntity != null) {
                                     songs.ifEmpty {
                                         YouTube.playlist(playlist.id).completed()
                                             .getOrNull()?.songs.orEmpty()
                                     }.map { it.toMediaMetadata() }
-                                        .onEach(::insert)
+                                        .onEach { database.transaction { insert(it) } }
                                         .mapIndexed { index, song ->
                                             PlaylistSongMap(
                                                 songId = song.id,
@@ -175,14 +188,24 @@ fun YouTubePlaylistMenu(
                                                 setVideoId = song.setVideoId
                                             )
                                         }
-                                        .forEach(::insert)
+                                        .forEach { database.transaction { insert(it) } }
                                 }
                             }
-                        } else {
-                            database.transaction {
-                                val currentPlaylist = dbPlaylist!!.playlist
-                                update(currentPlaylist, playlist)
-                                update(currentPlaylist.toggleLike())
+                            if (playlist.isPodcast) {
+                                YouTube.savePodcast(playlist.id, !isCurrentlySaved)
+                                    .onSuccess {
+                                        timber.log.Timber.d("[PODCAST_SAVE] savePodcast API success for ${playlist.id}")
+                                    }
+                                    .onFailure { e ->
+                                        timber.log.Timber.e(e, "[PODCAST_SAVE] savePodcast API failed for ${playlist.id}")
+                                        withContext(Dispatchers.Main) {
+                                            android.widget.Toast.makeText(
+                                                context,
+                                                if (isCurrentlySaved) R.string.error_podcast_unsubscribe else R.string.error_podcast_subscribe,
+                                                android.widget.Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
                             }
                         }
                     }

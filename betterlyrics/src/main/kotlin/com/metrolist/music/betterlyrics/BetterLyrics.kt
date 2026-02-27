@@ -33,6 +33,10 @@ object BetterLyrics {
 
             defaultRequest {
                 url("https://lyrics-api.boidu.dev")
+                headers {
+                    append("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+                    append("Accept", "application/json")
+                }
             }
 
             expectSuccess = false

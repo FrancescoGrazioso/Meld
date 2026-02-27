@@ -36,6 +36,7 @@ import com.metrolist.music.extensions.isSyncEnabled
 import com.metrolist.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.LocalDateTime
 import java.util.logging.Logger
 
@@ -79,7 +80,9 @@ fun CreatePlaylistDialog(
                     insert(playlistEntity)
                 }
 
-                onPlaylistCreated?.invoke(playlistEntity.id)
+                withContext(Dispatchers.Main) {
+                    onPlaylistCreated?.invoke(playlistEntity.id)
+                }
             }
         },
         extraContent = {

@@ -7,7 +7,6 @@ package com.metrolist.music.listentogether
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
 
 /**
  * Message types for Listen Together protocol
@@ -70,15 +69,6 @@ object PlaybackActions {
     const val SYNC_QUEUE = "sync_queue"
     const val SET_VOLUME = "set_volume"
 }
-
-/**
- * Base message structure
- */
-@Serializable
-data class Message(
-    val type: String,
-    val payload: JsonElement? = null
-)
 
 /**
  * Track information

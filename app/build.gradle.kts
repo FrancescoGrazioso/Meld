@@ -17,14 +17,13 @@ plugins {
 android {
     namespace = "com.metrolist.music"
     compileSdk = 36
-    ndkVersion = "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.meld.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 5
-        versionName = "0.3.0"
+        versionCode = 6
+        versionName = "0.4.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -36,19 +35,11 @@ android {
         buildConfigField("String", "LASTFM_API_KEY", "\"$lastFmKey\"")
         buildConfigField("String", "LASTFM_SECRET", "\"$lastFmSecret\"")
 
-        // NDK configuration for vibra_fp library
+        
         ndk {
             abiFilters += listOf("arm64-v8a", "armeabi-v7a", "x86_64", "x86")
         }
     }
-    
-    // TODO: Re-enable once FFTW3 prebuilt libraries are available
-    // externalNativeBuild {
-    //     cmake {
-    //         path("src/main/cpp/vibrafp/lib/CMakeLists.txt")
-    //         version = "3.22.1"
-    //     }
-    // }
 
     flavorDimensions += listOf("abi", "variant")
     productFlavors {
@@ -67,29 +58,22 @@ android {
         
         create("universal") {
             dimension = "abi"
-            ndk {
-                abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            }
             buildConfigField("String", "ARCHITECTURE", "\"universal\"")
         }
         create("arm64") {
             dimension = "abi"
-            ndk { abiFilters += "arm64-v8a" }
             buildConfigField("String", "ARCHITECTURE", "\"arm64\"")
         }
         create("armeabi") {
             dimension = "abi"
-            ndk { abiFilters += "armeabi-v7a" }
             buildConfigField("String", "ARCHITECTURE", "\"armeabi\"")
         }
         create("x86") {
             dimension = "abi"
-            ndk { abiFilters += "x86" }
             buildConfigField("String", "ARCHITECTURE", "\"x86\"")
         }
         create("x86_64") {
             dimension = "abi"
-            ndk { abiFilters += "x86_64" }
             buildConfigField("String", "ARCHITECTURE", "\"x86_64\"")
         }
     }
@@ -125,15 +109,6 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // TODO: Re-enable once FFTW3 prebuilt libraries are available
-            // externalNativeBuild {
-            //     cmake {
-            //         arguments += listOf(
-            //             "-DENABLE_LTO=ON",
-            //             "-DCMAKE_BUILD_TYPE=Release"
-            //         )
-            //     }
-            // }
             ndk {
                 debugSymbolLevel = "NONE"
             }
@@ -146,15 +121,6 @@ android {
             } else {
                 signingConfigs.getByName("persistentDebug")
             }
-            // TODO: Re-enable once FFTW3 prebuilt libraries are available
-            // externalNativeBuild {
-            //     cmake {
-            //         arguments += listOf(
-            //             "-DENABLE_LTO=OFF",
-            //             "-DCMAKE_BUILD_TYPE=Debug"
-            //         )
-            //     }
-            // }
             ndk {
                 debugSymbolLevel = "FULL"
             }
@@ -294,6 +260,8 @@ dependencies {
     implementation(project(":spotify"))
 
     implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.json)
 
     // Protobuf for message serialization (lite version for Android)

@@ -79,6 +79,7 @@ import androidx.navigation.NavController
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.R
 import com.metrolist.music.constants.ListenTogetherAutoApprovalKey
+import com.metrolist.music.constants.ListenTogetherAutoApproveSuggestionsKey
 import com.metrolist.music.constants.ListenTogetherServerUrlKey
 import com.metrolist.music.constants.ListenTogetherSyncVolumeKey
 import com.metrolist.music.constants.ListenTogetherUsernameKey
@@ -118,7 +119,8 @@ fun ListenTogetherSettings(
     val servers = remember { ListenTogetherServers.servers }
     var serverUrl by rememberPreference(ListenTogetherServerUrlKey, ListenTogetherServers.defaultServerUrl)
     var username by rememberPreference(ListenTogetherUsernameKey, "")
-    var autoApproval by rememberPreference(ListenTogetherAutoApprovalKey, false)
+    var autoApprovalJoins by rememberPreference(ListenTogetherAutoApprovalKey, false)
+    var autoApproveSuggestions by rememberPreference(ListenTogetherAutoApproveSuggestionsKey, false)
     var syncHostVolume by rememberPreference(ListenTogetherSyncVolumeKey, true)
     
     var showServerUrlDialog by rememberSaveable { mutableStateOf(false) }
@@ -398,20 +400,20 @@ fun ListenTogetherSettings(
                     ),
                     IntegrationCardItem(
                         icon = painterResource(R.drawable.done),
-                        title = { Text(stringResource(R.string.listen_together_auto_approval)) },
+                        title = { Text(stringResource(R.string.listen_together_auto_approval_joins)) },
                         description = {
-                            Text(stringResource(R.string.listen_together_auto_approval_desc))
+                            Text(stringResource(R.string.listen_together_auto_approval_joins_desc))
                         },
                         trailingContent = {
                             Switch(
-                                checked = autoApproval,
-                                onCheckedChange = { autoApproval = it },
+                                checked = autoApprovalJoins,
+                                onCheckedChange = { autoApprovalJoins = it },
                                 // Only disable for guests in a room (hosts can always change)
                                 enabled = roomState == null || role != RoomRole.GUEST,
                                 thumbContent = {
                                     Icon(
                                         painter = painterResource(
-                                            id = if (autoApproval) R.drawable.check else R.drawable.close
+                                            id = if (autoApprovalJoins) R.drawable.check else R.drawable.close
                                         ),
                                         contentDescription = null,
                                         modifier = Modifier.size(SwitchDefaults.IconSize),
@@ -420,7 +422,33 @@ fun ListenTogetherSettings(
                             )
                         },
                         // Allow clicking to see disabled state, but only change if enabled
-                        onClick = { if (roomState == null || role != RoomRole.GUEST) autoApproval = !autoApproval }
+                        onClick = { if (roomState == null || role != RoomRole.GUEST) autoApprovalJoins = !autoApprovalJoins }
+                    ),
+                    IntegrationCardItem(
+                        icon = painterResource(R.drawable.done),
+                        title = { Text(stringResource(R.string.listen_together_auto_approval_suggestions)) },
+                        description = {
+                            Text(stringResource(R.string.listen_together_auto_approval_suggestions_desc))
+                        },
+                        trailingContent = {
+                            Switch(
+                                checked = autoApproveSuggestions,
+                                onCheckedChange = { autoApproveSuggestions = it },
+                                // Only disable for guests in a room (hosts can always change)
+                                enabled = roomState == null || role != RoomRole.GUEST,
+                                thumbContent = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (autoApproveSuggestions) R.drawable.check else R.drawable.close
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
+                                }
+                            )
+                        },
+                        // Allow clicking to see disabled state, but only change if enabled
+                        onClick = { if (roomState == null || role != RoomRole.GUEST) autoApproveSuggestions = !autoApproveSuggestions }
                     ),
                     IntegrationCardItem(
                         icon = painterResource(R.drawable.volume_up),

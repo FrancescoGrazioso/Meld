@@ -53,7 +53,9 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.metrolist.innertube.models.AlbumItem
 import com.metrolist.innertube.models.ArtistItem
+import com.metrolist.innertube.models.EpisodeItem
 import com.metrolist.innertube.models.PlaylistItem
+import com.metrolist.innertube.models.PodcastItem
 import com.metrolist.innertube.models.SongItem
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalPlayerConnection
@@ -214,6 +216,22 @@ fun OnlineSearchScreen(
                                             onDismiss()
                                         }
                                     )
+                                    is PodcastItem -> YouTubePlaylistMenu(
+                                        playlist = item.asPlaylistItem(),
+                                        coroutineScope = scope,
+                                        onDismiss = {
+                                            menuState.dismiss()
+                                            onDismiss()
+                                        }
+                                    )
+                                    is EpisodeItem -> YouTubeSongMenu(
+                                        song = item.asSongItem(),
+                                        navController = navController,
+                                        onDismiss = {
+                                            menuState.dismiss()
+                                            onDismiss()
+                                        }
+                                    )
                                 }
                             }
                         }
@@ -250,6 +268,20 @@ fun OnlineSearchScreen(
                                     navController.navigate("online_playlist/${item.id}")
                                     onDismiss()
                                 }
+                                is PodcastItem -> {
+                                    navController.navigate("online_playlist/${item.id}")
+                                    onDismiss()
+                                }
+                                is EpisodeItem -> {
+                                    if (item.id == mediaMetadata?.id) {
+                                        playerConnection.togglePlayPause()
+                                    } else {
+                                        playerConnection.playQueue(
+                                            YouTubeQueue.radio(item.toMediaMetadata())
+                                        )
+                                        onDismiss()
+                                    }
+                                }
                             }
                         },
                         onLongClick = {
@@ -282,6 +314,22 @@ fun OnlineSearchScreen(
                                     is PlaylistItem -> YouTubePlaylistMenu(
                                         playlist = item,
                                         coroutineScope = coroutineScope,
+                                        onDismiss = {
+                                            menuState.dismiss()
+                                            onDismiss()
+                                        }
+                                    )
+                                    is PodcastItem -> YouTubePlaylistMenu(
+                                        playlist = item.asPlaylistItem(),
+                                        coroutineScope = coroutineScope,
+                                        onDismiss = {
+                                            menuState.dismiss()
+                                            onDismiss()
+                                        }
+                                    )
+                                    is EpisodeItem -> YouTubeSongMenu(
+                                        song = item.asSongItem(),
+                                        navController = navController,
                                         onDismiss = {
                                             menuState.dismiss()
                                             onDismiss()

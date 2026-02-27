@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,9 +31,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.metrolist.music.LocalPlayerAwareWindowInsets
@@ -96,6 +101,9 @@ fun AiSettings(
             "x-ai/grok-4.1-fast",
             "deepseek/deepseek-v3.1-terminus:exacto",
             "openai/gpt-4o-mini",
+            "meta-llama/llama-4-scout",
+            "openai/gpt-5-nano",
+            "openai/gpt-oss-120b",
             "google/gemini-3-flash-preview"
         ),
         "OpenAI" to listOf(
@@ -104,14 +112,16 @@ fun AiSettings(
             "gpt-4-turbo"
         ),
         "Claude" to listOf(
-            "claude-3-5-haiku-latest",
-            "claude-3-5-sonnet-latest",
-            "claude-3-opus-latest"
+            "claude-opus-4-6",
+            "claude-sonnet-4-6",
+            "claude-haiku-4-5-20251001"
         ),
         "Gemini" to listOf(
-            "gemini-2.5-flash-lite-latest",
-            "gemini-2.5-flash-latest",
-            "gemini-2.5-pro-latest"
+            "gemini-flash-lite-latest",
+            "gemini-2.5-flash-lite",
+            "gemini-flash-latest",
+            "gemini-2.5-flash",
+            "gemini-3-flash-preview",
         ),
         "Perplexity" to listOf(
             "sonar",
@@ -151,13 +161,58 @@ fun AiSettings(
             icon = { Icon(painterResource(R.drawable.info), null) },
             title = { Text(stringResource(R.string.ai_provider_help)) },
             text = { 
+                val uriHandler = LocalUriHandler.current
                 Column {
                     providerHelpText.forEach { (provider, help) ->
                         if (help.isNotEmpty()) {
-                            Text(
-                                text = "$provider: $help",
-                                style = MaterialTheme.typography.bodyMedium,
-                                modifier = Modifier.padding(vertical = 4.dp)
+                            val annotatedString = buildAnnotatedString {
+                                append("$provider: ")
+                                val startIdx = length
+                                // Extract URL from text
+                                val urlRegex = "https?://[^\\s]+".toRegex()
+                                val match = urlRegex.find(help)
+                                if (match != null) {
+                                    val url = match.value
+                                    val beforeUrl = help.substring(0, match.range.first)
+                                    val afterUrl = help.substring(match.range.last + 1)
+                                    
+                                    append(beforeUrl)
+                                    val linkStart = length
+                                    append(url)
+                                    val linkEnd = length
+                                    append(afterUrl)
+                                    
+                                    addStyle(
+                                        SpanStyle(
+                                            color = MaterialTheme.colorScheme.primary,
+                                            textDecoration = TextDecoration.Underline
+                                        ),
+                                        start = linkStart,
+                                        end = linkEnd
+                                    )
+                                    addStringAnnotation(
+                                        tag = "URL",
+                                        annotation = url,
+                                        start = linkStart,
+                                        end = linkEnd
+                                    )
+                                } else {
+                                    append(help)
+                                }
+                            }
+                            
+                            ClickableText(
+                                text = annotatedString,
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    color = MaterialTheme.colorScheme.onSurface
+                                ),
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                onClick = { offset ->
+                                    annotatedString.getStringAnnotations("URL", offset, offset)
+                                        .firstOrNull()?.let { annotation ->
+                                            uriHandler.openUri(annotation.item)
+                                        }
+                                }
                             )
                         }
                     }
@@ -459,16 +514,14 @@ fun AiSettings(
                             onClick = { showApiKeyDialog = true }
                         )
                     )
-                    if (aiProvider != "Custom") {
-                        add(
-                            Material3SettingsItem(
-                                icon = painterResource(R.drawable.discover_tune),
-                                title = { Text(stringResource(R.string.ai_model)) },
-                                description = { Text(openRouterModel.ifBlank { stringResource(R.string.not_set) }) },
-                                onClick = { showModelDialog = true }
-                            )
+                    add(
+                        Material3SettingsItem(
+                            icon = painterResource(R.drawable.discover_tune),
+                            title = { Text(stringResource(R.string.ai_model)) },
+                            description = { Text(openRouterModel.ifBlank { stringResource(R.string.not_set) }) },
+                            onClick = { showModelDialog = true }
                         )
-                    }
+                    )
                 }
             }
         )

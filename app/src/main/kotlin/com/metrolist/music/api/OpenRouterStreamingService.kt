@@ -120,7 +120,7 @@ Output MUST be a JSON array with EXACTLY $lineCount strings."""
                     }
                 }
                 .addHeader("Content-Type", "application/json")
-                .addHeader("HTTP-Referer", "https://github.com/CryptoLiveApp/Metrolist")
+                .addHeader("HTTP-Referer", "https://github.com/MetrolistGroup/Metrolist")
                 .addHeader("X-Title", "Metrolist")
                 .post(jsonBody.toString().toRequestBody(JSON))
                 .build()

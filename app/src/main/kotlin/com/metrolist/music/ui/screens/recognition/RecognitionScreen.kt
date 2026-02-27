@@ -100,9 +100,18 @@ fun RecognitionScreen(
     val database = LocalDatabase.current
     val coroutineScope = rememberCoroutineScope()
     
-    // Reset recognition status when entering the screen
+    // Reset recognition status when entering the screen, but only if there is no
+    // result already set (e.g. by the widget service running in the background).
+    // Resetting a Success/NoMatch/Error state here would discard the widget result
+    // before the UI has a chance to display it and save it to history.
     LaunchedEffect(Unit) {
-        com.metrolist.music.recognition.MusicRecognitionService.reset()
+        val current = com.metrolist.music.recognition.MusicRecognitionService.recognitionStatus.value
+        if (current is RecognitionStatus.Ready ||
+            current is RecognitionStatus.Listening ||
+            current is RecognitionStatus.Processing
+        ) {
+            com.metrolist.music.recognition.MusicRecognitionService.reset()
+        }
     }
     
     // Reset recognition status when leaving the screen
@@ -148,6 +157,8 @@ fun RecognitionScreen(
     }
 
     fun saveToHistory(result: RecognitionResult) {
+        // Skip if the widget service already persisted this result to avoid a duplicate entry
+        if (com.metrolist.music.recognition.MusicRecognitionService.resultSavedExternally) return
         coroutineScope.launch(Dispatchers.IO) {
             database.query {
                 insert(

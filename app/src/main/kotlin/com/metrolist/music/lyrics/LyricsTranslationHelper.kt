@@ -31,11 +31,27 @@ object LyricsTranslationHelper {
     private val _status = MutableStateFlow<TranslationStatus>(TranslationStatus.Idle)
     val status: StateFlow<TranslationStatus> = _status.asStateFlow()
 
+    // Single source of truth for whether translations are currently active in the UI
+    private val _hasActiveTranslations = MutableStateFlow(false)
+    val hasActiveTranslations: StateFlow<Boolean> = _hasActiveTranslations.asStateFlow()
+
     private val _manualTrigger = MutableSharedFlow<Unit>(
         extraBufferCapacity = 1,
         onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
     )
     val manualTrigger: SharedFlow<Unit> = _manualTrigger.asSharedFlow()
+    
+    private val _clearTranslationsTrigger = MutableSharedFlow<Unit>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+    )
+    val clearTranslationsTrigger: SharedFlow<Unit> = _clearTranslationsTrigger.asSharedFlow()
+    
+    private val _translationSaved = MutableSharedFlow<Unit>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+    )
+    val translationSaved: SharedFlow<Unit> = _translationSaved.asSharedFlow()
     
     private var translationJob: Job? = null
     private var isCompositionActive = true
@@ -125,6 +141,23 @@ object LyricsTranslationHelper {
         _manualTrigger.tryEmit(Unit)
     }
     
+    fun triggerClearTranslations() {
+        _hasActiveTranslations.value = false
+        _clearTranslationsTrigger.tryEmit(Unit)
+    }
+    
+    fun hasTranslations(lyricsEntity: LyricsEntity?): Boolean {
+        return !lyricsEntity?.translatedLyrics.isNullOrBlank()
+    }
+    
+    fun clearTranslations(lyricsEntity: LyricsEntity): LyricsEntity {
+        return lyricsEntity.copy(
+            translatedLyrics = "",
+            translationLanguage = "",
+            translationMode = ""
+        )
+    }
+    
     fun resetStatus() {
         _status.value = TranslationStatus.Idle
     }
@@ -152,9 +185,22 @@ object LyricsTranslationHelper {
         targetLanguage: String,
         mode: String
     ) {
-        if (lyricsEntity?.translatedLyrics.isNullOrBlank()) return
-        if (lyricsEntity.translationLanguage != targetLanguage) return
-        if (lyricsEntity.translationMode != mode) return
+        // Always clear translations first
+        lyrics.forEach { it.translatedTextFlow.value = null }
+        
+        // Only load if all conditions are met
+        if (lyricsEntity?.translatedLyrics.isNullOrBlank()) {
+            _hasActiveTranslations.value = false
+            return
+        }
+        if (lyricsEntity.translationLanguage != targetLanguage) {
+            _hasActiveTranslations.value = false
+            return
+        }
+        if (lyricsEntity.translationMode != mode) {
+            _hasActiveTranslations.value = false
+            return
+        }
         
         val translatedLines = lyricsEntity.translatedLyrics.lines()
         val nonEmptyEntries = lyrics.mapIndexedNotNull { index, entry ->
@@ -166,6 +212,13 @@ object LyricsTranslationHelper {
                 lyrics[originalIndex].translatedTextFlow.value = translatedLines[idx]
             }
         }
+        
+        // Also populate the cache with these translations so future re-translations don't need API calls
+        // This ensures translations persist through app restarts (loaded from DB) without wasting API calls
+        val lyricsText = lyrics.filter { it.text.isNotBlank() }.joinToString("\n") { it.text }
+        val cacheKey = getCacheKey(lyricsText, mode, targetLanguage)
+        translationCache[cacheKey] = translatedLines
+        _hasActiveTranslations.value = true
     }
 
     fun translateLyrics(
@@ -227,7 +280,31 @@ object LyricsTranslationHelper {
                             lyrics[originalIndex].translatedTextFlow.value = cachedTranslations[idx]
                         }
                     }
+                    _hasActiveTranslations.value = true
                     _status.value = TranslationStatus.Success
+
+                    // Persist cached translations to DB so loadTranslationsFromDatabase can't
+                    // overwrite them with a stale empty entity (e.g. after an untranslate race).
+                    if (songId.isNotBlank() && database != null) {
+                        try {
+                            val currentLyrics = database.lyrics(songId).first()
+                            if (currentLyrics != null && currentLyrics.translatedLyrics.isNullOrBlank()) {
+                                database.query {
+                                    upsert(
+                                        currentLyrics.copy(
+                                            translatedLyrics = cachedTranslations.joinToString("\n"),
+                                            translationLanguage = targetLanguage,
+                                            translationMode = mode
+                                        )
+                                    )
+                                }
+                                _translationSaved.tryEmit(Unit)
+                            }
+                        } catch (e: Exception) {
+                            Timber.e(e, "Failed to persist cached translations to database")
+                        }
+                    }
+
                     delay(3000)
                     if (_status.value is TranslationStatus.Success && isCompositionActive) {
                         _status.value = TranslationStatus.Idle
@@ -351,6 +428,8 @@ object LyricsTranslationHelper {
                                             )
                                         )
                                     }
+                                    // Signal that translations have been saved
+                                    _translationSaved.tryEmit(Unit)
                                 }
                             } catch (e: Exception) {
                                 timber.log.Timber.e(e, "Failed to save translated lyrics to database")
@@ -367,6 +446,7 @@ object LyricsTranslationHelper {
                             nonEmptyEntries.forEachIndexed { idx, (originalIndex, _) ->
                                 lyrics[originalIndex].translatedTextFlow.value = translatedLines[idx]
                             }
+                            _hasActiveTranslations.value = true
                             _status.value = TranslationStatus.Success
                         }
                         translatedLines.size < expectedCount -> {
@@ -377,6 +457,7 @@ object LyricsTranslationHelper {
                                     lyrics[originalIndex].translatedTextFlow.value = translation
                                 }
                             }
+                            _hasActiveTranslations.value = true
                             _status.value = TranslationStatus.Success
                         }
                         else -> {
