@@ -761,4 +761,22 @@
     <string name="no_account_found">لم يتم العثور على حساب</string>
     <string name="restore_success">اكتملت عملية الاستعادة بنجاح</string>
     <string name="no_songs_found">لم يتم العثور على أي أغاني. ملف غير صالح، أو ربما لم يتم العثور على أي تطابقات للأغاني.</string>
+    <string name="cache_after_seconds">‌التخزين المؤقت بعد ثوانٍ</string>
+    <string name="cache_at_percent">التخزين المؤقت بنسبة مئوية</string>
+    <string name="n_seconds">%d ثانية</string>
+    <string name="n_percent">%d%%</string>
+    <string name="widget_recognizer_name">التعرف على الموسيقى</string>
+    <string name="widget_recognizer_description">حدد الأغاني التي يتم تشغيلها من حولك مباشرة من شاشتك الرئيسية</string>
+    <string name="widget_recognizer_tap_to_search">انقر لتحديد الأغنية</string>
+    <string name="widget_recognizer_listening">جارٍ الاستماع…</string>
+    <string name="widget_recognizer_processing">جارٍ تحديد…</string>
+    <string name="widget_recognizer_no_match">لم يتم العثور على تطابق. حاول مرة أخرى</string>
+    <string name="widget_recognizer_error">فشل التعرّف</string>
+    <string name="widget_recognizer_error_generic">مرة أخرى حدث خطأ، يرجى المحاولة</string>
+    <string name="widget_recognizer_unknown_song">أغنية غير معروفة</string>
+    <string name="widget_recognizer_unknown_artist">فنان مجهول</string>
+    <string name="widget_recognizer_mic_desc">تحديد الأغنية</string>
+    <string name="widget_recognizer_channel_name">التعرف على الموسيقى</string>
+    <string name="widget_recognizer_channel_desc">يعرض إشعارًا أثناء تحديد أغنية من الأداة</string>
+    <string name="widget_recognizer_notification_text">تسجيل الصوت لتحديد الأغنية…</string>
 </resources>
