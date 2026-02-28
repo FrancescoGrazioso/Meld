@@ -735,4 +735,22 @@
     <string name="importing_playlist">Oynatma listesi içe aktarılıyor</string>
     <string name="restore_success">Başarılı bir şekilde geri yüklenmiştir</string>
     <string name="no_songs_found">Şarkılar bulunamadı. Dosya tanımsız olabilir, ya da bu konumda şarkı olabilecek dosya yoktur.</string>
+    <string name="widget_recognizer_notification_text"></string>
+    <string name="n_percent"></string>
+    <string name="widget_recognizer_error_generic"></string>
+    <string name="widget_recognizer_tap_to_search"></string>
+    <string name="n_seconds"></string>
+    <string name="widget_recognizer_description"></string>
+    <string name="cache_at_percent"></string>
+    <string name="widget_recognizer_unknown_song"></string>
+    <string name="widget_recognizer_error"></string>
+    <string name="widget_recognizer_unknown_artist"></string>
+    <string name="widget_recognizer_name"></string>
+    <string name="cache_after_seconds"></string>
+    <string name="widget_recognizer_no_match"></string>
+    <string name="widget_recognizer_channel_name"></string>
+    <string name="widget_recognizer_mic_desc"></string>
+    <string name="widget_recognizer_listening"></string>
+    <string name="widget_recognizer_processing"></string>
+    <string name="widget_recognizer_channel_desc"></string>
 </resources>
