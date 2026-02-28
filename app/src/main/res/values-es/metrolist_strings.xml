@@ -743,4 +743,22 @@
     <string name="no_account_found">No se encontró ninguna cuenta</string>
     <string name="restore_success">Restauración completada con éxito</string>
     <string name="no_songs_found">No se encontraron canciones. El archivo no es válido o no se encontraron coincidencias.</string>
+    <string name="cache_after_seconds">Caché después de segundos</string>
+    <string name="cache_at_percent">Caché al porcentaje</string>
+    <string name="n_seconds">%d segundos</string>
+    <string name="n_percent">%d%%</string>
+    <string name="widget_recognizer_name">Identificador de música</string>
+    <string name="widget_recognizer_description">Identifica canciones que suenan a tu alrededor directamente desde tu pantalla de inicio</string>
+    <string name="widget_recognizer_tap_to_search">Toca para identificar la canción</string>
+    <string name="widget_recognizer_listening">Escuchando…</string>
+    <string name="widget_recognizer_processing">Identificando…</string>
+    <string name="widget_recognizer_no_match">No se encontraron coincidencias. Inténtalo de nuevo</string>
+    <string name="widget_recognizer_error">Falló la identificación</string>
+    <string name="widget_recognizer_error_generic">Ocurrió un error. Inténtalo de nuevo</string>
+    <string name="widget_recognizer_unknown_song">Canción desconocida</string>
+    <string name="widget_recognizer_unknown_artist">Artista desconocido</string>
+    <string name="widget_recognizer_mic_desc">Identificar canción</string>
+    <string name="widget_recognizer_channel_name">Identificación de música</string>
+    <string name="widget_recognizer_channel_desc">Muestra una notificación mientras se identifica una canción desde el widget</string>
+    <string name="widget_recognizer_notification_text">Grabando audio para identificar la canción…</string>
 </resources>
