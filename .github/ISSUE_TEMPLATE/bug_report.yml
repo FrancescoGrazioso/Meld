@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        ## ⚠️ IMPORTANT WARNING
+        ## IMPORTANT WARNING
 
         **Duplicate or incomplete issues will be closed immediately without any response from developers.**
 
@@ -16,7 +16,7 @@ body:
   - type: checkboxes
     id: checklist
     attributes:
-      label: "⚠️ Checklist - Required"
+      label: "Checklist - Required"
       description: |
         **READ CAREFULLY:** You must complete these checks before submitting. Failing to do so will result in your issue being closed immediately without any response from developers.
 
