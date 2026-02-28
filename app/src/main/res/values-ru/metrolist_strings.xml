@@ -749,4 +749,22 @@
     <string name="importing_playlist">Импорт плейлиста</string>
     <string name="restore_success">Восстановление успешно завершено</string>
     <string name="no_songs_found">Треки не найдены. Недопустимый файл или совпадений не найдено.</string>
+    <string name="cache_after_seconds">Кэширование через секунды</string>
+    <string name="cache_at_percent">Кэширование по проценту</string>
+    <string name="n_seconds">%d секунд</string>
+    <string name="n_percent">%d%%</string>
+    <string name="widget_recognizer_name">Распознавание музыки</string>
+    <string name="widget_recognizer_description">Узнавайте, какая музыка играет рядом, прямо с главного экрана</string>
+    <string name="widget_recognizer_tap_to_search">Нажмите для распознавания трека</string>
+    <string name="widget_recognizer_listening">Слушаем…</string>
+    <string name="widget_recognizer_processing">Определяем…</string>
+    <string name="widget_recognizer_no_match">Совпадений не найдено. Попробуйте снова</string>
+    <string name="widget_recognizer_error">Не удалось распознать</string>
+    <string name="widget_recognizer_error_generic">Произошла ошибка. Пожалуйста, попробуйте снова</string>
+    <string name="widget_recognizer_unknown_song">Неизвестный трек</string>
+    <string name="widget_recognizer_unknown_artist">Неизвестный исполнитель</string>
+    <string name="widget_recognizer_mic_desc">Определить трек</string>
+    <string name="widget_recognizer_channel_name">Распознавание музыки</string>
+    <string name="widget_recognizer_channel_desc">Показывает уведомление при распознавании трека через виджет</string>
+    <string name="widget_recognizer_notification_text">Запись звука для распознавания трека…</string>
 </resources>
