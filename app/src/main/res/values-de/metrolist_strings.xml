@@ -741,16 +741,4 @@
     <string name="no_account_found">Kein Account gefunden</string>
     <string name="restore_success">Wiederherstellung erfolgreich abgeschlossen</string>
     <string name="no_songs_found">Keine Lieder gefunden. Ungültige Datei oder vielleicht wurden keine Lied-Übereinstimmungen gefunden.es wurden vielleicht keine übereinstimmenden Lieder gefunden.</string>
-    <string name="discord_activity_listening"></string>
-    <string name="discord_activity_competing"></string>
-    <string name="discord_watching_metrolist"></string>
-    <string name="discord_presence"></string>
-    <string name="error_podcast_unsubscribe"></string>
-    <string name="discord_activity_watching"></string>
-    <string name="remove_episode_from_saved"></string>
-    <string name="buy_mo_a_coffee"></string>
-    <string name="discord_rpc_preview"></string>
-    <string name="discord_competing_metrolist"></string>
-    <string name="sleep_timer_default_set"></string>
-    <string name="discord_playing_metrolist"></string>
 </resources>

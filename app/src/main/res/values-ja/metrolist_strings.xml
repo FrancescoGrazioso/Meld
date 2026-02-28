@@ -729,22 +729,4 @@
     <string name="no_account_found">アカウントが見つかりません</string>
     <string name="restore_success">復元が完了しました</string>
     <string name="no_songs_found">曲が見つかりません。ファイルが無効であるか、該当する曲が存在しない可能性があります。</string>
-    <string name="widget_recognizer_notification_text"></string>
-    <string name="n_percent"></string>
-    <string name="widget_recognizer_error_generic"></string>
-    <string name="widget_recognizer_tap_to_search"></string>
-    <string name="n_seconds"></string>
-    <string name="widget_recognizer_description"></string>
-    <string name="cache_at_percent"></string>
-    <string name="widget_recognizer_unknown_song"></string>
-    <string name="widget_recognizer_error"></string>
-    <string name="widget_recognizer_unknown_artist"></string>
-    <string name="widget_recognizer_name"></string>
-    <string name="cache_after_seconds"></string>
-    <string name="widget_recognizer_no_match"></string>
-    <string name="widget_recognizer_channel_name"></string>
-    <string name="widget_recognizer_mic_desc"></string>
-    <string name="widget_recognizer_listening"></string>
-    <string name="widget_recognizer_processing"></string>
-    <string name="widget_recognizer_channel_desc"></string>
 </resources>
