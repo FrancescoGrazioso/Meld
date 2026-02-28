@@ -545,7 +545,7 @@
     <string name="ai_error_unexpected">Résultat de traduction inattendu</string>
     <string name="ai_error_unknown">Une erreur inconnue s\'est produite</string>
     <string name="ai_error_translation_failed">Échec de la traduction</string>
-    <string name="play_all">Tout jouer</string>
+    <string name="play_all">Tout lire</string>
     <string name="recognize_music">Reconnaître la musique</string>
     <string name="youtube_url_column">Colonne URL YouTube (Facultatif)</string>
     <string name="re_listen">Réécouter</string>
@@ -759,4 +759,16 @@
     <string name="widget_recognizer_channel_name">Reconnaissance Musicale</string>
     <string name="widget_recognizer_channel_desc">Affiche une notification lors de l\'identification d\'un titre à partir du widget</string>
     <string name="widget_recognizer_notification_text">Enregistrement audio pour identifier le titre…</string>
+    <string name="filter_episodes">Épisodes</string>
+    <string name="filter_channels">Chaînes</string>
+    <string name="auto_playlist">Playlist Automatique</string>
+    <string name="downloaded_episodes">Épisodes téléchargés</string>
+    <string name="episodes_for_later_empty">Aucun épisode enregistré pour le moment</string>
+    <string name="no_subscribed_channels">Aucune chaîne abonnée</string>
+    <string name="no_downloaded_episodes">Aucun épisode téléchargé</string>
+    <plurals name="n_channel">
+        <item quantity="one">%d chaîne</item>
+        <item quantity="many">%d chaînes</item>
+        <item quantity="other">%d chaînes</item>
+    </plurals>
 </resources>
