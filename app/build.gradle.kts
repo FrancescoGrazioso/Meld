@@ -99,9 +99,6 @@ android {
         }
     }
 
-    // R8 optimization configuration for smaller DEX files
-    buildFeatures.aidl = false  // Disable AIDL if not used
-
     buildTypes {
         release {
             isMinifyEnabled = true
@@ -144,10 +141,6 @@ android {
         }
     }
 
-    composeCompiler {
-        includeSourceInformation = false
-    }
-
     buildFeatures {
         compose = true
         buildConfig = true
@@ -173,7 +166,8 @@ android {
         jniLibs {
             useLegacyPackaging = false
             keepDebugSymbols += listOf(
-                "**/libandroidx.graphics.path.so"
+                "**/libandroidx.graphics.path.so",
+                "**/libdatastore_shared_counter.so"
             )
         }
         resources {
