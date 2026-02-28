@@ -5,12 +5,12 @@
 
 package com.metrolist.music.ui.screens.library
 
+import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.asPaddingValues
@@ -21,10 +21,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -33,7 +32,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,7 +43,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,30 +51,42 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.compose.AsyncImage
-import timber.log.Timber
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import coil3.compose.AsyncImage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
 import com.metrolist.music.constants.CONTENT_TYPE_HEADER
 import com.metrolist.music.constants.CONTENT_TYPE_SONG
+import com.metrolist.music.constants.PodcastFilter
+import com.metrolist.music.constants.ThumbnailCornerRadius
+import com.metrolist.music.constants.PodcastFilterKey
 import com.metrolist.music.constants.SongSortDescendingKey
 import com.metrolist.music.constants.SongSortType
 import com.metrolist.music.constants.SongSortTypeKey
-import com.metrolist.innertube.models.SongItem
+import com.metrolist.music.db.MusicDatabase
+import com.metrolist.music.db.entities.PodcastEntity
+import com.metrolist.music.db.entities.SpeedDialItem
 import com.metrolist.music.extensions.toMediaItem
 import com.metrolist.music.playback.queues.ListQueue
+import com.metrolist.music.ui.component.ChipsRow
 import com.metrolist.music.ui.component.HideOnScrollFAB
 import com.metrolist.music.ui.component.LocalMenuState
+import com.metrolist.music.ui.component.Material3MenuGroup
+import com.metrolist.music.ui.component.Material3MenuItemData
 import com.metrolist.music.ui.component.SongListItem
 import com.metrolist.music.ui.component.SortHeader
 import com.metrolist.music.ui.menu.SongMenu
+import com.metrolist.music.utils.joinByBullet
+import com.metrolist.music.utils.makeTimeString
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.viewmodels.LibraryPodcastsViewModel
@@ -84,27 +95,31 @@ import com.metrolist.music.viewmodels.LibraryPodcastsViewModel
 @Composable
 fun LibraryPodcastsScreen(
     navController: NavController,
-    filterContent: @Composable () -> Unit,
+    onDeselect: () -> Unit,
     viewModel: LibraryPodcastsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val database = LocalDatabase.current
     val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
 
+    var podcastFilter by rememberEnumPreference(PodcastFilterKey, PodcastFilter.EPISODES)
+
     val (sortType, onSortTypeChange) = rememberEnumPreference(
         SongSortTypeKey,
-        SongSortType.CREATE_DATE
+        SongSortType.CREATE_DATE,
     )
     val (sortDescending, onSortDescendingChange) = rememberPreference(SongSortDescendingKey, true)
 
-    val podcasts by viewModel.allPodcasts.collectAsState()
     val subscribedChannels by viewModel.subscribedChannels.collectAsState()
-    val newEpisodes by viewModel.newEpisodes.collectAsState()
-    val isLoadingNewEpisodes by viewModel.isLoadingNewEpisodes.collectAsState()
+    val downloadedEpisodes by viewModel.downloadedEpisodes.collectAsState()
+    val sePlaylist by viewModel.sePlaylist.collectAsState()
+    val podcastChannels by viewModel.podcastChannels.collectAsState()
+    val rdpnPlaylist by viewModel.rdpnPlaylist.collectAsState()
 
-    Timber.d("[PODCAST_LIB] Subscribed channels: ${subscribedChannels.size}, episodes: ${podcasts.size}, new episodes: ${newEpisodes.size}")
+    Timber.d("[PODCAST_LIB] filter=$podcastFilter channels=${subscribedChannels.size} downloaded=${downloadedEpisodes.size} se=${sePlaylist?.id}")
 
     val lazyListState = rememberLazyListState()
 
@@ -119,328 +134,584 @@ fun LibraryPodcastsScreen(
         }
     }
 
-    // Pull to refresh
     var isRefreshing by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val pullToRefreshState = rememberPullToRefreshState()
 
-    PullToRefreshBox(
-        isRefreshing = isRefreshing,
-        onRefresh = {
-            isRefreshing = true
-            coroutineScope.launch {
-                viewModel.refreshAll()
-                isRefreshing = false
-            }
-        },
-        state = pullToRefreshState,
-        modifier = Modifier.fillMaxSize(),
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullToRefresh(
+                state = pullToRefreshState,
+                isRefreshing = isRefreshing,
+                onRefresh = {
+                    if (!isRefreshing) {
+                        isRefreshing = true
+                        coroutineScope.launch {
+                            viewModel.refreshAll()
+                            isRefreshing = false
+                        }
+                    }
+                },
+            ),
     ) {
-        LazyColumn(
-            state = lazyListState,
-            contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
-        ) {
-            item(
-                key = "filter",
-                contentType = CONTENT_TYPE_HEADER,
-            ) {
-                filterContent()
-            }
-
-            // Subscribed Channels Section
-            if (subscribedChannels.isNotEmpty()) {
-                item(
-                    key = "subscribed_channels_header",
-                    contentType = CONTENT_TYPE_HEADER,
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.subscribed_channels),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        Spacer(Modifier.weight(1f))
-                        IconButton(onClick = { viewModel.syncPodcastSubscriptions() }) {
-                            Icon(
-                                painter = painterResource(R.drawable.sync),
-                                contentDescription = stringResource(R.string.action_sync),
-                            )
-                        }
-                    }
-                }
-
-                item(
-                    key = "subscribed_channels_row",
-                    contentType = CONTENT_TYPE_HEADER,
-                ) {
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(
-                            items = subscribedChannels,
-                            key = { it.id }
-                        ) { podcast ->
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .width(100.dp)
-                                    .clickable {
-                                        Timber.d("[PODCAST_LIB] Navigating to podcast: ${podcast.id}")
-                                        navController.navigate("online_podcast/${podcast.id}")
-                                    }
-                                    .padding(4.dp)
-                            ) {
-                                AsyncImage(
-                                    model = podcast.thumbnailUrl,
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .size(80.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                )
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    text = podcast.title,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                    textAlign = TextAlign.Center,
-                                )
-                            }
-                        }
-                    }
-                }
-
-                item(
-                    key = "subscribed_channels_divider",
-                    contentType = CONTENT_TYPE_HEADER,
-                ) {
-                    Spacer(Modifier.height(8.dp))
-                }
-            }
-
-            // New Episodes Section (from official API)
-            if (newEpisodes.isNotEmpty() || isLoadingNewEpisodes) {
-                item(
-                    key = "new_episodes_header",
-                    contentType = CONTENT_TYPE_HEADER,
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                    ) {
-                        Text(
-                            text = stringResource(R.string.new_episodes),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        Spacer(Modifier.weight(1f))
-                        IconButton(onClick = { viewModel.fetchNewEpisodes() }) {
-                            Icon(
-                                painter = painterResource(R.drawable.sync),
-                                contentDescription = stringResource(R.string.action_sync),
-                            )
-                        }
-                    }
-                }
-
-                item(
-                    key = "new_episodes_row",
-                    contentType = CONTENT_TYPE_HEADER,
-                ) {
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 12.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        items(
-                            items = newEpisodes,
-                            key = { it.id }
-                        ) { episode ->
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier
-                                    .width(140.dp)
-                                    .clickable {
-                                        playerConnection.playQueue(
-                                            ListQueue(
-                                                title = episode.title,
-                                                items = listOf(episode.toMediaItem()),
-                                            ),
-                                        )
-                                    }
-                                    .padding(4.dp)
-                            ) {
-                                AsyncImage(
-                                    model = episode.thumbnail,
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier
-                                        .size(120.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                )
-                                Spacer(Modifier.height(4.dp))
-                                Text(
-                                    text = episode.title,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                    textAlign = TextAlign.Center,
-                                )
-                                Text(
-                                    text = episode.artists.joinToString { it.name },
-                                    style = MaterialTheme.typography.labelSmall,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    textAlign = TextAlign.Center,
-                                    color = MaterialTheme.colorScheme.secondary,
-                                )
-                            }
-                        }
-                    }
-                }
-
-                item(
-                    key = "new_episodes_divider",
-                    contentType = CONTENT_TYPE_HEADER,
-                ) {
-                    Spacer(Modifier.height(8.dp))
-                }
-            }
-
-            // Episodes for Later header
-            item(
-                key = "episodes_header",
-                contentType = CONTENT_TYPE_HEADER,
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp),
-                ) {
-                    Text(
-                        text = stringResource(R.string.episodes_for_later),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    Spacer(Modifier.weight(1f))
-                    IconButton(onClick = { viewModel.syncEpisodesForLater() }) {
+        // Chip row header — same pattern as LibrarySongsScreen
+        val chipsHeader = @Composable {
+            Row {
+                Spacer(Modifier.width(12.dp))
+                FilterChip(
+                    label = { Text(stringResource(R.string.filter_podcasts)) },
+                    selected = true,
+                    colors = FilterChipDefaults.filterChipColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                    ),
+                    onClick = onDeselect,
+                    shape = RoundedCornerShape(16.dp),
+                    border = null,
+                    leadingIcon = {
                         Icon(
-                            painter = painterResource(R.drawable.sync),
-                            contentDescription = stringResource(R.string.action_sync),
+                            painter = painterResource(R.drawable.close),
+                            contentDescription = null,
                         )
-                    }
-                }
-            }
-
-            item(
-                key = "header",
-                contentType = CONTENT_TYPE_HEADER,
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                ) {
-                    SortHeader(
-                        sortType = sortType,
-                        sortDescending = sortDescending,
-                        onSortTypeChange = onSortTypeChange,
-                        onSortDescendingChange = onSortDescendingChange,
-                        sortTypeText = { sortType ->
-                            when (sortType) {
-                                SongSortType.CREATE_DATE -> R.string.sort_by_create_date
-                                SongSortType.NAME -> R.string.sort_by_name
-                                SongSortType.ARTIST -> R.string.sort_by_artist
-                                SongSortType.PLAY_TIME -> R.string.sort_by_play_time
-                            }
-                        },
-                    )
-
-                    Spacer(Modifier.weight(1f))
-
-                    Text(
-                        text = pluralStringResource(
-                            R.plurals.n_episode,
-                            podcasts.size,
-                            podcasts.size
-                        ),
-                        style = MaterialTheme.typography.titleSmall,
-                        color = MaterialTheme.colorScheme.secondary,
-                    )
-                }
-            }
-
-            itemsIndexed(
-                items = podcasts,
-                key = { _, item -> item.song.id },
-                contentType = { _, _ -> CONTENT_TYPE_SONG },
-            ) { index, episode ->
-                SongListItem(
-                    song = episode,
-                    showInLibraryIcon = true,
-                    isActive = episode.id == mediaMetadata?.id,
-                    isPlaying = isPlaying,
-                    showLikedIcon = true,
-                    showDownloadIcon = true,
-                    trailingContent = {
-                        IconButton(
-                            onClick = {
-                                menuState.show {
-                                    SongMenu(
-                                        originalSong = episode,
-                                        navController = navController,
-                                        onDismiss = menuState::dismiss,
-                                    )
-                                }
-                            },
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.more_vert),
-                                contentDescription = null,
-                            )
-                        }
                     },
-                    modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            if (episode.id == mediaMetadata?.id) {
-                                playerConnection.togglePlayPause()
-                            } else {
-                                playerConnection.playQueue(
-                                    ListQueue(
-                                        title = context.getString(R.string.queue_all_songs),
-                                        items = podcasts.map { it.toMediaItem() },
-                                        startIndex = index,
-                                    ),
-                                )
-                            }
-                        }
-                        .animateItem(),
+                )
+                ChipsRow(
+                    chips = listOf(
+                        PodcastFilter.EPISODES to stringResource(R.string.filter_episodes),
+                        PodcastFilter.CHANNELS to stringResource(R.string.filter_channels),
+                        PodcastFilter.DOWNLOADED to stringResource(R.string.filter_downloaded),
+                    ),
+                    currentValue = podcastFilter,
+                    onValueUpdate = { podcastFilter = it },
+                    modifier = Modifier.weight(1f),
                 )
             }
         }
 
-        HideOnScrollFAB(
-            visible = podcasts.isNotEmpty(),
-            lazyListState = lazyListState,
-            icon = R.drawable.shuffle,
-            onClick = {
-                playerConnection.playQueue(
-                    ListQueue(
-                        title = context.getString(R.string.queue_all_songs),
-                        items = podcasts.shuffled().map { it.toMediaItem() },
-                    ),
+        when (podcastFilter) {
+            // ── EPISODES FOR LATER tab ────────────────────────────────────
+            PodcastFilter.EPISODES -> {
+                LazyColumn(
+                    state = lazyListState,
+                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+                ) {
+                    item(key = "filter", contentType = CONTENT_TYPE_HEADER) {
+                        chipsHeader()
+                    }
+
+                    // RDPN "New Episodes" auto-playlist card
+                    item(key = "rdpn_playlist", contentType = CONTENT_TYPE_HEADER) {
+                        AutoPlaylistCard(
+                            title = stringResource(R.string.new_episodes),
+                            thumbnailUrl = rdpnPlaylist?.thumbnail,
+                            episodeCount = rdpnPlaylist?.songCountText,
+                            onClick = { navController.navigate("online_playlist/RDPN") },
+                        )
+                    }
+
+                    // SE "Episodes for Later" playlist card — fetched from YT Music
+                    item(key = "se_playlist", contentType = CONTENT_TYPE_HEADER) {
+                        AutoPlaylistCard(
+                            title = stringResource(R.string.episodes_for_later),
+                            thumbnailUrl = sePlaylist?.thumbnail,
+                            episodeCount = sePlaylist?.songCountText,
+                            onClick = { navController.navigate("online_playlist/SE") },
+                        )
+                    }
+
+                    // Saved podcast shows (episode playlists) from YT Music library
+                    itemsIndexed(
+                        items = subscribedChannels,
+                        key = { _, item -> item.id },
+                        contentType = { _, _ -> CONTENT_TYPE_SONG },
+                    ) { _, podcast ->
+                        PodcastEpisodePlaylistItem(
+                            podcast = podcast,
+                            onClick = { navController.navigate("online_podcast/${podcast.id}") },
+                            onMenuClick = {
+                                menuState.show {
+                                    PodcastEpisodePlaylistMenu(
+                                        podcast = podcast,
+                                        database = database,
+                                        onDismiss = menuState::dismiss,
+                                    )
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .animateItem(),
+                        )
+                    }
+                }
+            }
+
+            // ── CHANNELS tab — podcast host artist pages from YT Music ───
+            PodcastFilter.CHANNELS -> {
+                LazyColumn(
+                    state = lazyListState,
+                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+                ) {
+                    item(key = "filter", contentType = CONTENT_TYPE_HEADER) {
+                        chipsHeader()
+                    }
+
+                    item(key = "channels_count", contentType = CONTENT_TYPE_HEADER) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 4.dp),
+                        ) {
+                            Text(
+                                text = pluralStringResource(
+                                    R.plurals.n_channel,
+                                    podcastChannels.size,
+                                    podcastChannels.size,
+                                ),
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.secondary,
+                            )
+                        }
+                    }
+
+                    itemsIndexed(
+                        items = podcastChannels,
+                        key = { _, item -> item.id },
+                        contentType = { _, _ -> CONTENT_TYPE_SONG },
+                    ) { _, channel ->
+                        PodcastArtistChannelItem(
+                            thumbnailUrl = channel.thumbnail,
+                            channelName = channel.title,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    navController.navigate("artist/${channel.id}")
+                                }
+                                .animateItem(),
+                        )
+                    }
+
+                    if (podcastChannels.isEmpty()) {
+                        item(key = "empty") {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 48.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.no_subscribed_channels),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ── DOWNLOADED tab ────────────────────────────────────────────
+            PodcastFilter.DOWNLOADED -> {
+                LazyColumn(
+                    state = lazyListState,
+                    contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
+                ) {
+                    item(key = "filter", contentType = CONTENT_TYPE_HEADER) {
+                        chipsHeader()
+                    }
+
+                    item(key = "sort_header", contentType = CONTENT_TYPE_HEADER) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                        ) {
+                            SortHeader(
+                                sortType = sortType,
+                                sortDescending = sortDescending,
+                                onSortTypeChange = onSortTypeChange,
+                                onSortDescendingChange = onSortDescendingChange,
+                                sortTypeText = { st ->
+                                    when (st) {
+                                        SongSortType.CREATE_DATE -> R.string.sort_by_create_date
+                                        SongSortType.NAME -> R.string.sort_by_name
+                                        SongSortType.ARTIST -> R.string.sort_by_artist
+                                        SongSortType.PLAY_TIME -> R.string.sort_by_play_time
+                                    }
+                                },
+                            )
+                            Spacer(Modifier.weight(1f))
+                            Text(
+                                text = pluralStringResource(
+                                    R.plurals.n_episode,
+                                    downloadedEpisodes.size,
+                                    downloadedEpisodes.size,
+                                ),
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.secondary,
+                            )
+                        }
+                    }
+
+                    itemsIndexed(
+                        items = downloadedEpisodes,
+                        key = { _, item -> item.song.id },
+                        contentType = { _, _ -> CONTENT_TYPE_SONG },
+                    ) { index, episode ->
+                        // Always show channel name: use artists if available,
+                        // else fall back to song.albumName (podcast show title stored during sync)
+                        val channelName = episode.artists.joinToString { it.name }
+                            .ifEmpty { episode.song.albumName ?: "" }
+                        val subtitle = joinByBullet(
+                            channelName,
+                            makeTimeString(episode.song.duration.toLong() * 1000L),
+                        )
+                        SongListItem(
+                            song = episode,
+                            showInLibraryIcon = false,
+                            isActive = episode.id == mediaMetadata?.id,
+                            isPlaying = isPlaying,
+                            showLikedIcon = false,
+                            showDownloadIcon = true,
+                            subtitleOverride = subtitle.ifEmpty { null },
+                            trailingContent = {
+                                IconButton(
+                                    onClick = {
+                                        menuState.show {
+                                            SongMenu(
+                                                originalSong = episode,
+                                                navController = navController,
+                                                onDismiss = menuState::dismiss,
+                                            )
+                                        }
+                                    },
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.more_vert),
+                                        contentDescription = null,
+                                    )
+                                }
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    if (episode.id == mediaMetadata?.id) {
+                                        playerConnection.togglePlayPause()
+                                    } else {
+                                        playerConnection.playQueue(
+                                            ListQueue(
+                                                title = context.getString(R.string.downloaded_episodes),
+                                                items = downloadedEpisodes.map { it.toMediaItem() },
+                                                startIndex = index,
+                                            ),
+                                        )
+                                    }
+                                }
+                                .animateItem(),
+                        )
+                    }
+
+                    if (downloadedEpisodes.isEmpty()) {
+                        item(key = "empty") {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 48.dp),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                Text(
+                                    text = stringResource(R.string.no_downloaded_episodes),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                    }
+                }
+
+                HideOnScrollFAB(
+                    visible = downloadedEpisodes.isNotEmpty(),
+                    lazyListState = lazyListState,
+                    icon = R.drawable.shuffle,
+                    onClick = {
+                        playerConnection.playQueue(
+                            ListQueue(
+                                title = context.getString(R.string.downloaded_episodes),
+                                items = downloadedEpisodes.shuffled().map { it.toMediaItem() },
+                            ),
+                        )
+                    },
                 )
-            },
+            }
+        }
+
+        Indicator(
+            isRefreshing = isRefreshing,
+            state = pullToRefreshState,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(LocalPlayerAwareWindowInsets.current.asPaddingValues()),
+        )
+    }
+}
+
+/** Auto-playlist card — mirrors YT Music design. Used for both SE and RDPN playlists. */
+@Composable
+private fun AutoPlaylistCard(
+    title: String,
+    thumbnailUrl: String?,
+    episodeCount: String?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(56.dp)
+                .clip(RoundedCornerShape(ThumbnailCornerRadius))
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (thumbnailUrl != null) {
+                AsyncImage(
+                    model = thumbnailUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(ThumbnailCornerRadius)),
+                )
+            } else {
+                Icon(
+                    painter = painterResource(R.drawable.queue_music),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(28.dp),
+                )
+            }
+        }
+
+        Spacer(Modifier.width(12.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = buildString {
+                    append(stringResource(R.string.auto_playlist))
+                    if (!episodeCount.isNullOrBlank()) {
+                        append(" • ")
+                        append(episodeCount)
+                    }
+                },
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+        }
+    }
+}
+
+/** Episode playlist row shown in the Episodes tab — represents a saved podcast show */
+@Composable
+private fun PodcastEpisodePlaylistItem(
+    podcast: PodcastEntity,
+    onClick: () -> Unit,
+    onMenuClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+    ) {
+        Box(
+            modifier = Modifier
+                .size(56.dp)
+                .clip(RoundedCornerShape(ThumbnailCornerRadius))
+                .background(MaterialTheme.colorScheme.primaryContainer),
+            contentAlignment = Alignment.Center,
+        ) {
+            if (podcast.thumbnailUrl != null) {
+                AsyncImage(
+                    model = podcast.thumbnailUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(ThumbnailCornerRadius)),
+                )
+            } else {
+                Icon(
+                    painter = painterResource(R.drawable.queue_music),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.size(28.dp),
+                )
+            }
+        }
+
+        Spacer(Modifier.width(12.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = podcast.title,
+                style = MaterialTheme.typography.bodyLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            if (!podcast.author.isNullOrBlank()) {
+                Text(
+                    text = podcast.author,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+
+        IconButton(onClick = onMenuClick) {
+            Icon(
+                painter = painterResource(R.drawable.more_vert),
+                contentDescription = null,
+            )
+        }
+    }
+}
+
+/** Menu shown when tapping the three-dot icon on an episode playlist */
+@Composable
+private fun PodcastEpisodePlaylistMenu(
+    podcast: PodcastEntity,
+    database: MusicDatabase,
+    onDismiss: () -> Unit,
+) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    val isPinned by database.speedDialDao.isPinned(podcast.id).collectAsState(initial = false)
+
+    val playlistId = podcast.id.removePrefix("MPSP")
+    val shareUrl = "https://music.youtube.com/playlist?list=$playlistId"
+
+    Spacer(Modifier.height(12.dp))
+    Material3MenuGroup(
+        items = listOf(
+                    Material3MenuItemData(
+                        title = { Text(text = stringResource(R.string.remove_from_library)) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.delete),
+                                contentDescription = null,
+                            )
+                        },
+                        onClick = {
+                            coroutineScope.launch(Dispatchers.IO) {
+                                database.query {
+                                    update(podcast.copy(bookmarkedAt = null))
+                                }
+                            }
+                            onDismiss()
+                        },
+                    ),
+                    Material3MenuItemData(
+                        title = { Text(text = stringResource(R.string.share)) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.share),
+                                contentDescription = null,
+                            )
+                        },
+                        onClick = {
+                            val intent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_TEXT, shareUrl)
+                            }
+                            context.startActivity(Intent.createChooser(intent, null))
+                            onDismiss()
+                        },
+                    ),
+                    Material3MenuItemData(
+                        title = {
+                            Text(
+                                text = stringResource(
+                                    if (isPinned) R.string.unpin_from_speed_dial
+                                    else R.string.pin_to_speed_dial,
+                                ),
+                            )
+                        },
+                        icon = {
+                            Icon(
+                                painter = painterResource(
+                                    if (isPinned) R.drawable.remove else R.drawable.add,
+                                ),
+                                contentDescription = null,
+                            )
+                        },
+                        onClick = {
+                            coroutineScope.launch(Dispatchers.IO) {
+                                if (isPinned) {
+                                    database.speedDialDao.delete(podcast.id)
+                                } else {
+                                    database.speedDialDao.insert(
+                                        SpeedDialItem(
+                                            id = podcast.id,
+                                            title = podcast.title,
+                                            subtitle = podcast.author,
+                                            thumbnailUrl = podcast.thumbnailUrl,
+                                            type = "PLAYLIST",
+                                        ),
+                                    )
+                                }
+                            }
+                            onDismiss()
+                        },
+                    ),
+        ),
+    )
+    Spacer(Modifier.height(12.dp))
+}
+
+/** Artist/channel page item shown in the Channels tab */
+@Composable
+private fun PodcastArtistChannelItem(
+    thumbnailUrl: String?,
+    channelName: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+    ) {
+        AsyncImage(
+            model = thumbnailUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(56.dp)
+                .clip(CircleShape),
+        )
+
+        Spacer(Modifier.width(12.dp))
+
+        Text(
+            text = channelName,
+            style = MaterialTheme.typography.bodyLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f),
         )
     }
 }

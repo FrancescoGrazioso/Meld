@@ -91,13 +91,11 @@ fun OnlineSearchScreen(
     val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current ?: return
 
-    val scope = rememberCoroutineScope()
+    val coroutineScope = rememberCoroutineScope()
 
     val haptic = LocalHapticFeedback.current
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
-
-    val coroutineScope = rememberCoroutineScope()
     val viewState by viewModel.viewState.collectAsState()
 
     val lazyListState = rememberLazyListState()
@@ -177,6 +175,7 @@ fun OnlineSearchScreen(
                 isActive = when (item) {
                     is SongItem -> mediaMetadata?.id == item.id
                     is AlbumItem -> mediaMetadata?.album?.id == item.id
+                    is EpisodeItem -> mediaMetadata?.id == item.id
                     else -> false
                 },
                 isPlaying = isPlaying,
@@ -210,7 +209,7 @@ fun OnlineSearchScreen(
                                     )
                                     is PlaylistItem -> YouTubePlaylistMenu(
                                         playlist = item,
-                                        coroutineScope = scope,
+                                        coroutineScope = coroutineScope,
                                         onDismiss = {
                                             menuState.dismiss()
                                             onDismiss()
@@ -218,7 +217,7 @@ fun OnlineSearchScreen(
                                     )
                                     is PodcastItem -> YouTubePlaylistMenu(
                                         playlist = item.asPlaylistItem(),
-                                        coroutineScope = scope,
+                                        coroutineScope = coroutineScope,
                                         onDismiss = {
                                             menuState.dismiss()
                                             onDismiss()
@@ -269,7 +268,7 @@ fun OnlineSearchScreen(
                                     onDismiss()
                                 }
                                 is PodcastItem -> {
-                                    navController.navigate("online_playlist/${item.id}")
+                                    navController.navigate("online_podcast/${item.id}")
                                     onDismiss()
                                 }
                                 is EpisodeItem -> {

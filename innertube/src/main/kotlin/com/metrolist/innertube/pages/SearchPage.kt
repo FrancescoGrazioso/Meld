@@ -4,6 +4,7 @@ import com.metrolist.innertube.models.Album
 import com.metrolist.innertube.models.AlbumItem
 import com.metrolist.innertube.models.Artist
 import com.metrolist.innertube.models.ArtistItem
+import com.metrolist.innertube.models.BrowseEndpoint.BrowseEndpointContextSupportedConfigs.BrowseEndpointContextMusicConfig.Companion.MUSIC_PAGE_TYPE_PODCAST_SHOW_DETAIL_PAGE
 import com.metrolist.innertube.models.EpisodeItem
 import com.metrolist.innertube.models.MusicResponsiveListItemRenderer
 import com.metrolist.innertube.models.PlaylistItem
@@ -30,8 +31,82 @@ object SearchPage {
                 ?.splitBySeparator()
                 ?: return null
         return when {
+            // CRITICAL: Check isEpisode BEFORE isSong — both can match isSong (watchEndpoint or
+            // null navigationEndpoint), so episodes must be identified first.
+            renderer.isEpisode -> {
+                val libraryTokens = PageHelper.extractLibraryTokensFromMenuItems(renderer.menu?.menuRenderer?.items)
+
+                // The subtitle line structure differs between filtered and unfiltered search:
+                //   Unfiltered: ["Episode", "·", "Jan 2025", "·", "Podcast Name", "·", "1:00:00"]
+                //     → secondaryLine = [["Episode"], ["Jan 2025"], ["Podcast Name"], ["1:00:00"]]
+                //   Filtered:   ["Jan 2025", "·", "Podcast Name"]
+                //     → secondaryLine = [["Jan 2025"], ["Podcast Name"]]
+                //
+                // Strategy: locate the podcast section by its PODCAST_SHOW_DETAIL_PAGE link;
+                // the date is in the section immediately before it.
+                val podcastSectionIndex = secondaryLine.indexOfFirst { section ->
+                    section.any { run ->
+                        run.navigationEndpoint?.browseEndpoint
+                            ?.browseEndpointContextSupportedConfigs
+                            ?.browseEndpointContextMusicConfig
+                            ?.pageType == MUSIC_PAGE_TYPE_PODCAST_SHOW_DETAIL_PAGE
+                    }
+                }
+
+                val podcast = if (podcastSectionIndex >= 0) {
+                    secondaryLine[podcastSectionIndex].firstOrNull()?.let { run ->
+                        Album(
+                            name = run.text,
+                            id = run.navigationEndpoint?.browseEndpoint?.browseId ?: return null,
+                        )
+                    }
+                } else null
+
+                val publishDateText = if (podcastSectionIndex > 0)
+                    secondaryLine.getOrNull(podcastSectionIndex - 1)?.firstOrNull()?.text
+                else null
+
+                EpisodeItem(
+                    // In filtered search, playlistItemData is absent; fall back to watchEndpoint.
+                    id = renderer.playlistItemData?.videoId
+                        ?: renderer.navigationEndpoint?.watchEndpoint?.videoId
+                        ?: return null,
+                    title =
+                        renderer.flexColumns
+                            .firstOrNull()
+                            ?.musicResponsiveListItemFlexColumnRenderer
+                            ?.text
+                            ?.runs
+                            ?.firstOrNull()
+                            ?.text ?: return null,
+                    author = null,
+                    podcast = podcast,
+                    duration =
+                        secondaryLine
+                            .lastOrNull()
+                            ?.firstOrNull()
+                            ?.text
+                            ?.parseTime(),
+                    publishDateText = publishDateText,
+                    thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
+                    explicit =
+                        renderer.badges?.find {
+                            it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
+                        } != null,
+                    // In filtered search the overlay play button may be absent; fall back to the
+                    // item's own watchEndpoint so the episode is always playable.
+                    endpoint = renderer.overlay
+                        ?.musicItemThumbnailOverlayRenderer
+                        ?.content
+                        ?.musicPlayButtonRenderer
+                        ?.playNavigationEndpoint
+                        ?.watchEndpoint
+                        ?: renderer.navigationEndpoint?.watchEndpoint,
+                    libraryAddToken = libraryTokens.addToken,
+                    libraryRemoveToken = libraryTokens.removeToken,
+                )
+            }
             renderer.isSong -> {
-                // Extract library tokens using the new method that properly handles multiple toggle items
                 val libraryTokens = PageHelper.extractLibraryTokensFromMenuItems(renderer.menu?.menuRenderer?.items)
 
                 SongItem(
@@ -102,6 +177,35 @@ object SearchPage {
                             ?.menuNavigationItemRenderer
                             ?.navigationEndpoint
                             ?.watchPlaylistEndpoint ?: return null,
+                )
+            }
+            renderer.isUserChannel -> {
+                ArtistItem(
+                    id = renderer.navigationEndpoint?.browseEndpoint?.browseId ?: return null,
+                    title =
+                        renderer.flexColumns
+                            .firstOrNull()
+                            ?.musicResponsiveListItemFlexColumnRenderer
+                            ?.text
+                            ?.runs
+                            ?.firstOrNull()
+                            ?.text
+                            ?: return null,
+                    thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
+                    shuffleEndpoint = renderer.menu
+                        ?.menuRenderer
+                        ?.items
+                        ?.find { it.menuNavigationItemRenderer?.icon?.iconType == "MUSIC_SHUFFLE" }
+                        ?.menuNavigationItemRenderer
+                        ?.navigationEndpoint
+                        ?.watchPlaylistEndpoint,
+                    radioEndpoint = renderer.menu
+                        ?.menuRenderer
+                        ?.items
+                        ?.find { it.menuNavigationItemRenderer?.icon?.iconType == "MIX" }
+                        ?.menuNavigationItemRenderer
+                        ?.navigationEndpoint
+                        ?.watchPlaylistEndpoint,
                 )
             }
             renderer.isAlbum -> {
@@ -244,60 +348,6 @@ object SearchPage {
                             ?.menuNavigationItemRenderer
                             ?.navigationEndpoint
                             ?.watchPlaylistEndpoint,
-                )
-            }
-            renderer.isEpisode -> {
-                val libraryTokens = PageHelper.extractLibraryTokensFromMenuItems(renderer.menu?.menuRenderer?.items)
-                EpisodeItem(
-                    id = renderer.playlistItemData?.videoId ?: return null,
-                    title =
-                        renderer.flexColumns
-                            .firstOrNull()
-                            ?.musicResponsiveListItemFlexColumnRenderer
-                            ?.text
-                            ?.runs
-                            ?.firstOrNull()
-                            ?.text ?: return null,
-                    author =
-                        secondaryLine.firstOrNull()?.firstOrNull()?.let {
-                            Artist(
-                                name = it.text,
-                                id = it.navigationEndpoint?.browseEndpoint?.browseId,
-                            )
-                        },
-                    podcast =
-                        secondaryLine.getOrNull(1)?.firstOrNull()?.takeIf {
-                            it.navigationEndpoint?.browseEndpoint != null
-                        }?.let {
-                            Album(
-                                name = it.text,
-                                id = it.navigationEndpoint?.browseEndpoint?.browseId!!,
-                            )
-                        },
-                    duration =
-                        secondaryLine
-                            .lastOrNull()
-                            ?.firstOrNull()
-                            ?.text
-                            ?.parseTime(),
-                    publishDateText =
-                        secondaryLine
-                            .getOrNull(2)
-                            ?.firstOrNull()
-                            ?.text,
-                    thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
-                    explicit =
-                        renderer.badges?.find {
-                            it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
-                        } != null,
-                    endpoint = renderer.overlay
-                        ?.musicItemThumbnailOverlayRenderer
-                        ?.content
-                        ?.musicPlayButtonRenderer
-                        ?.playNavigationEndpoint
-                        ?.watchEndpoint,
-                    libraryAddToken = libraryTokens.addToken,
-                    libraryRemoveToken = libraryTokens.removeToken,
                 )
             }
             else -> null

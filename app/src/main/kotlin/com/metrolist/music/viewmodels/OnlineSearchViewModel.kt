@@ -79,6 +79,24 @@ constructor(
      */
     val spotifyFilter = MutableStateFlow<String?>(null)
 
+    private suspend fun loadSummaryPage() {
+        if (summaryPage == null) {
+            YouTube
+                .searchSummary(query)
+                .onSuccess {
+                    val hideExplicit = context.dataStore.get(HideExplicitKey, false)
+                    val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+                    val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
+                    summaryPage =
+                        it.filterExplicit(hideExplicit)
+                          .filterVideoSongs(hideVideoSongs)
+                          .filterYoutubeShorts(hideYoutubeShorts)
+                }.onFailure {
+                    reportException(it)
+                }
+        }
+    }
+
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -105,20 +123,23 @@ constructor(
         viewModelScope.launch {
             filter.collect { filter ->
                 if (filter == null) {
-                    if (summaryPage == null) {
-                        YouTube
-                            .searchSummary(query)
-                            .onSuccess {
-                                val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-                                val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
-                                val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
-                                summaryPage =
-                                    it.filterExplicit(
-                                        hideExplicit,
-                                    ).filterVideoSongs(hideVideoSongs).filterYoutubeShorts(hideYoutubeShorts)
-                            }.onFailure {
-                                reportException(it)
-                            }
+                    loadSummaryPage()
+                } else if (filter == YouTube.SearchFilter.FILTER_EPISODE) {
+                    // The FILTER_EPISODE API returns episodes in a format that differs from the
+                    // summary search: playlistItemData is absent and the subtitle structure is
+                    // different, making reliable isEpisode detection fail for many items.
+                    // Reuse the "Episodes" section from the summary page instead — it is already
+                    // parsed correctly by fromMusicResponsiveListItemRenderer and guaranteed to
+                    // show the same results as the episodes section in the "All" filter.
+                    if (viewStateMap[filter.value] == null) {
+                        loadSummaryPage()
+                        summaryPage?.let { page ->
+                            val episodes = page.summaries
+                                .firstOrNull { it.title == "Episodes" }
+                                ?.items
+                                .orEmpty()
+                            viewStateMap[filter.value] = ItemsPage(episodes, null)
+                        }
                     }
                 } else {
                     if (viewStateMap[filter.value] == null) {
@@ -132,9 +153,7 @@ constructor(
                                     ItemsPage(
                                         result.items
                                             .distinctBy { it.id }
-                                            .filterExplicit(
-                                                hideExplicit,
-                                            )
+                                            .filterExplicit(hideExplicit)
                                             .filterVideoSongs(hideVideoSongs)
                                             .filterYoutubeShorts(hideYoutubeShorts),
                                         result.continuation,
@@ -273,26 +292,23 @@ constructor(
     }
 
     private fun loadMoreYouTube() {
-        val filter = filter.value?.value
+        val filterValue = filter.value?.value ?: return
         viewModelScope.launch {
-            if (filter == null) return@launch
-            val viewState = viewStateMap[filter] ?: return@launch
-            val continuation = viewState.continuation
-            if (continuation != null) {
-                val searchResult =
-                    YouTube.searchContinuation(continuation).getOrNull() ?: return@launch
-                val hideExplicit = context.dataStore.get(HideExplicitKey, false)
-                val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
-                val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
-                val newItems = searchResult.items
-                    .filterExplicit(hideExplicit)
-                    .filterVideoSongs(hideVideoSongs)
-                    .filterYoutubeShorts(hideYoutubeShorts)
-                viewStateMap[filter] = ItemsPage(
-                    (viewState.items + newItems).distinctBy { it.id },
-                    searchResult.continuation
-                )
-            }
+            val viewState = viewStateMap[filterValue] ?: return@launch
+            val continuation = viewState.continuation ?: return@launch
+            val searchResult =
+                YouTube.searchContinuation(continuation).getOrNull() ?: return@launch
+            val hideExplicit = context.dataStore.get(HideExplicitKey, false)
+            val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+            val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
+            val newItems = searchResult.items
+                .filterExplicit(hideExplicit)
+                .filterVideoSongs(hideVideoSongs)
+                .filterYoutubeShorts(hideYoutubeShorts)
+            viewStateMap[filterValue] = ItemsPage(
+                (viewState.items + newItems).distinctBy { it.id },
+                searchResult.continuation
+            )
         }
     }
 

@@ -14,7 +14,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metrolist.innertube.YouTube
-import com.metrolist.innertube.models.SongItem
+import com.metrolist.innertube.models.ArtistItem
+import com.metrolist.innertube.utils.completed
 import com.metrolist.music.constants.AlbumFilter
 import com.metrolist.music.constants.AlbumFilterKey
 import com.metrolist.music.constants.AlbumSortDescendingKey
@@ -386,19 +387,24 @@ constructor(
     database: MusicDatabase,
     private val syncUtils: SyncUtils,
 ) : ViewModel() {
-    // Saved podcast channels (Your Shows)
+    // Subscribed podcast channels synced from YT Music
     val subscribedChannels = database.subscribedPodcasts()
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    // New Episodes from official API (VLRDPN)
-    private val _newEpisodes = MutableStateFlow<List<SongItem>>(emptyList())
-    val newEpisodes: StateFlow<List<SongItem>> = _newEpisodes.asStateFlow()
+    // SE "Episodes for Later" playlist fetched from YT Music (like AccountScreen)
+    private val _sePlaylist = MutableStateFlow<com.metrolist.innertube.models.PlaylistItem?>(null)
+    val sePlaylist = _sePlaylist.asStateFlow()
 
-    private val _isLoadingNewEpisodes = MutableStateFlow(false)
-    val isLoadingNewEpisodes: StateFlow<Boolean> = _isLoadingNewEpisodes.asStateFlow()
+    // RDPN "New Episodes" playlist fetched from YouTube Music (real thumbnail + episode count)
+    private val _rdpnPlaylist = MutableStateFlow<com.metrolist.innertube.models.PlaylistItem?>(null)
+    val rdpnPlaylist = _rdpnPlaylist.asStateFlow()
 
-    // Episodes for Later - only show episodes that are saved (inLibrary != null)
-    val allPodcasts =
+    // Podcast host channels fetched from YT Music library/podcast_channels
+    private val _podcastChannels = MutableStateFlow<List<ArtistItem>>(emptyList())
+    val podcastChannels = _podcastChannels.asStateFlow()
+
+    // Downloaded podcast episodes
+    val downloadedEpisodes =
         context.dataStore.data
             .map {
                 Pair(
@@ -408,43 +414,50 @@ constructor(
             }.distinctUntilChanged()
             .flatMapLatest { (sortDesc, hideExplicit) ->
                 val (sortType, descending) = sortDesc
-                database.podcastEpisodes(sortType, descending).map { episodes ->
-                    episodes.filter { it.song.inLibrary != null }.filterExplicit(hideExplicit)
-                }
+                database.downloadedPodcastEpisodes(sortType, descending).map { it.filterExplicit(hideExplicit) }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
+    private suspend fun fetchSePlaylist() {
+        YouTube.library("FEmusic_liked_playlists").completed().onSuccess {
+            _sePlaylist.value = it.items
+                .filterIsInstance<com.metrolist.innertube.models.PlaylistItem>()
+                .find { it.id == "SE" }
+        }.onFailure {
+            timber.log.Timber.e(it, "[PODCAST] Failed to fetch SE playlist")
+        }
+    }
+
+    private suspend fun fetchPodcastChannels() {
+        YouTube.libraryPodcastChannels().onSuccess { page ->
+            val channels = page.items.filterIsInstance<ArtistItem>()
+            _podcastChannels.value = channels
+            timber.log.Timber.d("[PODCAST] Fetched ${channels.size} podcast channels from YT Music")
+        }.onFailure {
+            timber.log.Timber.e(it, "[PODCAST] Failed to fetch podcast channels")
+        }
+    }
+
+    private suspend fun fetchRdpnPlaylist() {
+        YouTube.newEpisodesPlaylistInfo().onSuccess { item ->
+            _rdpnPlaylist.value = item
+            timber.log.Timber.d("[PODCAST] RDPN playlist: ${item.title}, thumbnail: ${item.thumbnail}")
+        }.onFailure {
+            timber.log.Timber.e(it, "[PODCAST] Failed to fetch RDPN playlist info")
+        }
+    }
+
     init {
-        // Sync episodes for later when the screen is opened
         viewModelScope.launch(Dispatchers.IO) {
-            syncUtils.syncEpisodesForLaterSuspend()
+            fetchSePlaylist()
         }
-        // Fetch new episodes from official API
         viewModelScope.launch(Dispatchers.IO) {
-            fetchNewEpisodes()
+            fetchPodcastChannels()
         }
-    }
-
-    fun fetchNewEpisodes() {
         viewModelScope.launch(Dispatchers.IO) {
-            _isLoadingNewEpisodes.value = true
-            YouTube.newEpisodes().onSuccess { episodes ->
-                _newEpisodes.value = episodes
-            }.onFailure {
-                timber.log.Timber.e(it, "Failed to fetch new episodes")
-            }
-            _isLoadingNewEpisodes.value = false
+            fetchRdpnPlaylist()
         }
-    }
-
-    fun syncPodcastSubscriptions() {
         viewModelScope.launch(Dispatchers.IO) {
-            syncUtils.syncPodcastSubscriptions()
-        }
-    }
-
-    fun syncEpisodesForLater() {
-        viewModelScope.launch(Dispatchers.IO) {
-            syncUtils.syncEpisodesForLater()
+            syncUtils.syncPodcastSubscriptionsSuspend()
         }
     }
 
@@ -455,10 +468,11 @@ constructor(
     }
 
     suspend fun refreshAll() {
-        // Sync subscriptions first, then episodes, then fetch new episodes
+        fetchSePlaylist()
+        fetchPodcastChannels()
+        fetchRdpnPlaylist()
         syncUtils.syncPodcastSubscriptionsSuspend()
         syncUtils.syncEpisodesForLaterSuspend()
-        fetchNewEpisodes()
     }
 }
 
