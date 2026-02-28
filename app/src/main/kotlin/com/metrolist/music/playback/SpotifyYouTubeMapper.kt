@@ -7,6 +7,7 @@ package com.metrolist.music.playback
 
 import com.metrolist.innertube.YouTube
 import com.metrolist.innertube.models.SongItem
+import com.metrolist.innertube.models.WatchEndpoint.WatchEndpointMusicSupportedConfigs.WatchEndpointMusicConfig.Companion.MUSIC_VIDEO_TYPE_ATV
 import com.metrolist.innertube.pages.SearchSummaryPage
 import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.db.entities.SpotifyMatchEntity
@@ -120,7 +121,7 @@ class SpotifyYouTubeMapper(
             .filterIsInstance<SongItem>()
 
         for (song in songs) {
-            val score = SpotifyMapper.matchScore(
+            val rawScore = SpotifyMapper.matchScore(
                 spotifyTitle = spotifyTrack.name,
                 spotifyArtist = spotifyArtist,
                 spotifyDurationMs = spotifyTrack.durationMs,
@@ -128,6 +129,9 @@ class SpotifyYouTubeMapper(
                 candidateArtist = song.artists.firstOrNull()?.name ?: "",
                 candidateDurationSec = song.duration,
             )
+            // Prefer official audio tracks (ATV) over live versions, music videos, or UGC
+            val atvBonus = if (song.musicVideoType == MUSIC_VIDEO_TYPE_ATV) ATV_SCORE_BONUS else 0.0
+            val score = rawScore + atvBonus
             candidates.add(
                 MatchCandidate(
                     id = song.id,
@@ -190,5 +194,10 @@ class SpotifyYouTubeMapper(
 
     companion object {
         private const val MIN_MATCH_THRESHOLD = 0.35
+
+        // Bonus applied to official audio tracks (MUSIC_VIDEO_TYPE_ATV) during scoring.
+        // Ensures studio recordings are preferred over live versions and user-generated content
+        // when title/artist/duration scores are otherwise similar.
+        private const val ATV_SCORE_BONUS = 0.05
     }
 }
