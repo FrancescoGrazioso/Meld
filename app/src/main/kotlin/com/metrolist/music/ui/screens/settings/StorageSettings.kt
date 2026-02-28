@@ -50,7 +50,6 @@ import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
 import com.metrolist.music.constants.MaxImageCacheSizeKey
 import com.metrolist.music.constants.MaxSongCacheSizeKey
-import com.metrolist.music.constants.CacheAfterSecondsKey
 import com.metrolist.music.extensions.tryOrNull
 import com.metrolist.music.ui.component.ActionPromptDialog
 import com.metrolist.music.ui.component.IconButton
@@ -90,10 +89,6 @@ fun StorageSettings(
     val (maxSongCacheSize, onMaxSongCacheSizeChange) = rememberPreference(
         key = MaxSongCacheSizeKey,
         defaultValue = 1024
-    )
-    val (cacheAfterSeconds, onCacheAfterSecondsChange) = rememberPreference(
-        key = CacheAfterSecondsKey,
-        defaultValue = 0
     )
 
     var clearDownloads by remember { mutableStateOf(false) }
@@ -378,30 +373,6 @@ fun StorageSettings(
                     title = { Text(stringResource(R.string.clear_song_cache)) },
                     onClick = {
                         clearCacheDialog = true
-                    }
-                ),
-                Material3SettingsItem(
-                    icon = painterResource(R.drawable.timer),
-                    title = { Text(stringResource(R.string.cache_at_percent)) },
-                    description = {
-                        Column {
-                            Text(
-                                text = if (cacheAfterSeconds == 0) {
-                                    stringResource(R.string.disable)
-                                } else {
-                                    stringResource(R.string.n_percent, cacheAfterSeconds)
-                                }
-                            )
-                            val cacheAfterPercentValues = remember { listOf(0, 25, 50, 75, 90) }
-                            Slider(
-                                value = cacheAfterPercentValues.indexOf(cacheAfterSeconds).takeIf { it >= 0 }?.toFloat() ?: 0f,
-                                onValueChange = {
-                                    onCacheAfterSecondsChange(cacheAfterPercentValues[it.roundToInt()])
-                                },
-                                steps = cacheAfterPercentValues.size - 2,
-                                valueRange = 0f..(cacheAfterPercentValues.size - 1).toFloat()
-                            )
-                        }
                     }
                 )
             )
