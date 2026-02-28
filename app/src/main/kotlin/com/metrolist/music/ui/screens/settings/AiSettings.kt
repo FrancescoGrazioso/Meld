@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,10 +30,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextDecoration
@@ -160,14 +160,13 @@ fun AiSettings(
             },
             icon = { Icon(painterResource(R.drawable.info), null) },
             title = { Text(stringResource(R.string.ai_provider_help)) },
-            text = { 
-                val uriHandler = LocalUriHandler.current
+            text = {
                 Column {
                     providerHelpText.forEach { (provider, help) ->
                         if (help.isNotEmpty()) {
+                            val primaryColor = MaterialTheme.colorScheme.primary
                             val annotatedString = buildAnnotatedString {
                                 append("$provider: ")
-                                val startIdx = length
                                 // Extract URL from text
                                 val urlRegex = "https?://[^\\s]+".toRegex()
                                 val match = urlRegex.find(help)
@@ -175,24 +174,23 @@ fun AiSettings(
                                     val url = match.value
                                     val beforeUrl = help.substring(0, match.range.first)
                                     val afterUrl = help.substring(match.range.last + 1)
-                                    
+
                                     append(beforeUrl)
                                     val linkStart = length
                                     append(url)
                                     val linkEnd = length
                                     append(afterUrl)
-                                    
-                                    addStyle(
-                                        SpanStyle(
-                                            color = MaterialTheme.colorScheme.primary,
-                                            textDecoration = TextDecoration.Underline
+
+                                    addLink(
+                                        LinkAnnotation.Url(
+                                            url = url,
+                                            styles = TextLinkStyles(
+                                                style = SpanStyle(
+                                                    color = primaryColor,
+                                                    textDecoration = TextDecoration.Underline
+                                                )
+                                            )
                                         ),
-                                        start = linkStart,
-                                        end = linkEnd
-                                    )
-                                    addStringAnnotation(
-                                        tag = "URL",
-                                        annotation = url,
                                         start = linkStart,
                                         end = linkEnd
                                     )
@@ -200,19 +198,13 @@ fun AiSettings(
                                     append(help)
                                 }
                             }
-                            
-                            ClickableText(
+
+                            Text(
                                 text = annotatedString,
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     color = MaterialTheme.colorScheme.onSurface
                                 ),
                                 modifier = Modifier.padding(vertical = 4.dp),
-                                onClick = { offset ->
-                                    annotatedString.getStringAnnotations("URL", offset, offset)
-                                        .firstOrNull()?.let { annotation ->
-                                            uriHandler.openUri(annotation.item)
-                                        }
-                                }
                             )
                         }
                     }

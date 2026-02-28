@@ -1057,7 +1057,7 @@ fun Lyrics(
                         val romanizedText = romanizedTextState
                         val isRomanizedAvailable = romanizedText != null
                         
-                        val mainText = if (romanizeAsMain && isRomanizedAvailable) romanizedText!! else item.text
+                        val mainText = if (romanizeAsMain && isRomanizedAvailable) romanizedText else item.text
                         val subText = if (romanizeAsMain && isRomanizedAvailable) item.text else romanizedText
                         
                         val hasWordTimings = if (romanizeAsMain && isRomanizedAvailable) false else item.words?.isNotEmpty() == true
@@ -1102,7 +1102,7 @@ fun Lyrics(
                                     withStyle(style = SpanStyle(color = wordColor, fontWeight = wordWeight)) {
                                         append(word.text)
                                     }
-                                    if (wordIndex < (item.words.size ?: 0) - 1) append(" ")
+                                    if (wordIndex < item.words.size - 1) append(" ")
                                 }
                             }
                             Text(
@@ -1159,7 +1159,7 @@ fun Lyrics(
                                     withStyle(style = SpanStyle(color = wordColor, fontWeight = wordWeight, shadow = wordShadow)) {
                                         append(word.text)
                                     }
-                                    if (wordIndex < (item.words.size ?: 0) - 1) append(" ")
+                                    if (wordIndex < item.words.size - 1) append(" ")
                                 }
                             }
                             Text(
@@ -1206,7 +1206,7 @@ fun Lyrics(
                                     withStyle(style = SpanStyle(color = wordColor, fontWeight = wordWeight, shadow = wordShadow)) {
                                         append(word.text)
                                     }
-                                    if (wordIndex < (item.words.size ?: 0) - 1) append(" ")
+                                    if (wordIndex < item.words.size - 1) append(" ")
                                 }
                             }
                             Text(
@@ -1262,7 +1262,7 @@ fun Lyrics(
                                             append(word.text)
                                         }
                                     }
-                                    if (wordIndex < (item.words.size ?: 0) - 1) append(" ")
+                                    if (wordIndex < item.words.size - 1) append(" ")
                                 }
                             }
                             Text(text = styledText, fontSize = lyricsTextSize.sp, textAlign = alignment, lineHeight = (lyricsTextSize * lyricsLineSpacing).sp)
@@ -1329,7 +1329,7 @@ fun Lyrics(
                                             append(word.text)
                                         }
                                     }
-                                    if (wordIndex < (item.words.size ?: 0) - 1) append(" ")
+                                    if (wordIndex < item.words.size - 1) append(" ")
                                 }
                             }
                             Text(text = styledText, fontSize = lyricsTextSize.sp, textAlign = alignment, lineHeight = (lyricsTextSize * lyricsLineSpacing).sp)
@@ -1383,7 +1383,7 @@ fun Lyrics(
                                     withStyle(style = SpanStyle(color = wordColor, fontWeight = wordWeight, shadow = wordShadow)) {
                                         append(word.text)
                                     }
-                                    if (wordIndex < (item.words.size ?: 0) - 1) append(" ")
+                                    if (wordIndex < item.words.size - 1) append(" ")
                                 }
                             }
                             Text(text = styledText, fontSize = lyricsTextSize.sp, textAlign = alignment, lineHeight = (lyricsTextSize * lyricsLineSpacing).sp)

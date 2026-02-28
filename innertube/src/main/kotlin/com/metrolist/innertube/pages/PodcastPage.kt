@@ -33,7 +33,7 @@ data class PodcastPage(
                 publishDateText = subtitleRuns?.firstOrNull()?.firstOrNull()?.text,
                 thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
                 explicit = false,
-                endpoint = renderer.onTap?.watchEndpoint,
+                endpoint = renderer.onTap.watchEndpoint,
                 libraryAddToken = libraryTokens.addToken,
                 libraryRemoveToken = libraryTokens.removeToken,
             )

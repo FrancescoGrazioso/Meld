@@ -94,9 +94,9 @@ data class HomePage(
 
                 return Section(
                     title = title,
-                    label = renderer.header?.musicCarouselShelfBasicHeaderRenderer?.strapline?.runs?.firstOrNull()?.text,
-                    thumbnail = renderer.header?.musicCarouselShelfBasicHeaderRenderer?.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl(),
-                    endpoint = renderer.header?.musicCarouselShelfBasicHeaderRenderer?.moreContentButton?.buttonRenderer?.navigationEndpoint?.browseEndpoint,
+                    label = renderer.header.musicCarouselShelfBasicHeaderRenderer.strapline?.runs?.firstOrNull()?.text,
+                    thumbnail = renderer.header.musicCarouselShelfBasicHeaderRenderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl(),
+                    endpoint = renderer.header.musicCarouselShelfBasicHeaderRenderer.moreContentButton?.buttonRenderer?.navigationEndpoint?.browseEndpoint,
                     items = items
                 )
             }
@@ -114,7 +114,7 @@ data class HomePage(
                     publishDateText = subtitleRuns?.firstOrNull()?.firstOrNull()?.text,
                     thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
                     explicit = false,
-                    endpoint = renderer.onTap?.watchEndpoint,
+                    endpoint = renderer.onTap.watchEndpoint,
                     libraryAddToken = libraryTokens.addToken,
                     libraryRemoveToken = libraryTokens.removeToken,
                 )
@@ -348,9 +348,9 @@ data class HomePage(
                                 it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
                             } == true,
                             endpoint = renderer.thumbnailOverlay
-                                ?.musicItemThumbnailOverlayRenderer?.content
-                                ?.musicPlayButtonRenderer?.playNavigationEndpoint
-                                ?.watchEndpoint,
+                                .musicItemThumbnailOverlayRenderer.content
+                                .musicPlayButtonRenderer.playNavigationEndpoint
+                                .watchEndpoint,
                             libraryAddToken = libraryTokens.addToken,
                             libraryRemoveToken = libraryTokens.removeToken,
                         )

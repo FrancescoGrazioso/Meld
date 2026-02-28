@@ -128,7 +128,7 @@ object SearchSuggestionPage {
                             id = it.navigationEndpoint?.browseEndpoint?.browseId,
                         )
                     } ?: return null,
-                    songCountText = secondaryLine?.lastOrNull()?.firstOrNull()?.text,
+                    songCountText = secondaryLine.lastOrNull()?.firstOrNull()?.text,
                     thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
                     playEndpoint = renderer.overlay
                         ?.musicItemThumbnailOverlayRenderer
@@ -143,8 +143,8 @@ object SearchSuggestionPage {
                         ?.menuNavigationItemRenderer
                         ?.navigationEndpoint
                         ?.watchPlaylistEndpoint ?: return null,
-                    radioEndpoint = renderer.menu?.menuRenderer?.items
-                        ?.find { it.menuNavigationItemRenderer?.icon?.iconType == "MIX" }
+                    radioEndpoint = renderer.menu.menuRenderer.items
+                        .find { it.menuNavigationItemRenderer?.icon?.iconType == "MIX" }
                         ?.menuNavigationItemRenderer
                         ?.navigationEndpoint
                         ?.watchPlaylistEndpoint ?: return null,
