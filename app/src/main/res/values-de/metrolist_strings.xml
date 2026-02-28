@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="explore">Entdecken</string>
-    <string name="liked">Liked</string>
+    <string name="liked">Mag ich</string>
     <string name="offline">Heruntergeladen</string>
     <string name="my_top">Meine Top</string>
     <string name="select">Alles auswählen</string>
@@ -28,7 +28,7 @@
     <string name="advanced_login">Mit Token anmelden</string>
     <string name="token_hidden">Tippen, um Token anzuzeigen</string>
     <string name="token_shown">Tippen, um zu kopieren oder zu bearbeiten</string>
-    <string name="token_adv_login_description">Dies ist eine erweiterte Anmeldemethode. Als Alternative zum Webportal können Sie hier Ihr Anmeldetoken direkt eingeben oder aktualisieren. Dies kann beispielsweise die Anmeldung auf mehreren Geräten beschleunigen. Bitte beachten Sie, dass ungültige Token-Formate, die die App nicht verarbeiten kann, nicht akzeptiert werden</string>
+    <string name="token_adv_login_description">Dies ist eine FORTGESCHRITTENE Anmeldemethode. Als Alternative zum Webportal können Sie hier Ihr Anmeldetoken direkt eingeben oder aktualisieren. Dies kann beispielsweise die Anmeldung auf mehreren Geräten beschleunigen. Bitte beachten Sie, dass ungültige Token-Formate, die die App nicht verarbeiten kann, nicht akzeptiert werden</string>
     <string name="ytm_sync">Automatische Synchronisierung mit Ihrem YouTube Music-Account</string>
     <string name="general">Allgemein</string>
     <string name="proxy">Proxy</string>
@@ -239,14 +239,14 @@
     <string name="show_wrapped_card">Wrapped-Tab anzeigen</string>
     <string name="lyrics_romanize_chinese">Chinesische Liedtexte romanisieren</string>
     <string name="google_cast">Google Cast</string>
-    <string name="google_cast_description">Aktivieren Sie die Audioübertragung auf Chromecast und andere Cast-fähige Geräte.</string>
+    <string name="google_cast_description">Audioübertragung auf Chromecast und andere Cast-fähige Geräte aktivieren</string>
     <string name="last_fm_send_likes">Likes/Dislikes senden</string>
-    <string name="last_fm_send_likes_description">Lieder bei Last.fm als „Gefällt mir“/„Gefällt mir nicht“ markieren, wenn sie in Metrolist als „Gefällt mir“/„Gefällt mir nicht“ markiert werden.</string>
+    <string name="last_fm_send_likes_description">Lieder bei Last.fm als „Gefällt mir“/„Gefällt mir nicht“ markieren, wenn sie in Metrolist als „Gefällt mir“/„Gefällt mir nicht“ markiert werden</string>
     <string name="logging_in">Anmelden…</string>
     <string name="hide_video_songs">Videosongs ausblenden</string>
     <string name="details_desc">Informationen zum Song anzeigen</string>
     <string name="edit_desc">Ändern Sie den Titel oder Interpreten</string>
-    <string name="start_radio_desc">Erstelle ein Radio basierend auf diesem Song.</string>
+    <string name="start_radio_desc">Ein Radio basierend auf diesem Song erstellen</string>
     <string name="play_next_desc">Als nächstes abspielen</string>
     <string name="add_to_queue_desc">Zum Ende Ihrer Warteschlange hinzufügen</string>
     <string name="add_to_library_desc">In Ihrer Bibliothek speichern</string>
@@ -255,7 +255,7 @@
     <string name="refetch_desc">Die aktuellen Metadaten von YouTube Music abrufen</string>
     <string name="share_desc">Link zum teilen</string>
     <string name="delete_desc">Diese Playlist dauerhaft entfernen</string>
-    <string name="advanced_desc">Ändere das Tempo und die Tonhöhe des Songs.</string>
+    <string name="advanced_desc">Tempo und Tonhöhe des Lieds ändern</string>
     <string name="equalizer_desc">Den Audio-Equalizer einstellen</string>
     <string name="enable_dynamic_icon">Dynamische Symbole aktivieren</string>
     <string name="mini_player">Mini-Player</string>
@@ -284,19 +284,19 @@
     <string name="wrapped_top_5_songs_title">Deine Top-Songs des Jahres</string>
     <string name="wrapped_total_albums_title">Du hast dir angehört</string>
     <string name="wrapped_total_albums_subtitle">einzigartige Alben</string>
-    <string name="wrapped_playlist_ready">Deine persönliche Playlist ist fertig.</string>
+    <string name="wrapped_playlist_ready">Deine persönliche Playlist ist fertig</string>
     <string name="wrapped_top_5_albums_title">Deine Top 5 Alben</string>
-    <string name="wrapped_album_listening_time">Du hast dieses Album %d Minuten lang angehört.</string>
+    <string name="wrapped_album_listening_time">Du hast dieses Album %d Minuten lang angehört</string>
     <string name="wrapped_top_artist_title">Dein Top-Künstler des Jahres ist</string>
-    <string name="wrapped_top_artist_listening_time">Du hast dir diesen Künstler %d Minuten lang angehört.</string>
+    <string name="wrapped_top_artist_listening_time">Du hast dir diesen Künstler %d Minuten lang angehört</string>
     <string name="wrapped_top_song_title">Dein meistgespielter Song ist</string>
-    <string name="wrapped_top_song_listening_time">Du hast dir diesen Song %d Minuten lang angehört.</string>
+    <string name="wrapped_top_song_listening_time">Du hast dir diesen Song %d Minuten lang angehört</string>
     <string name="wrapped_total_artists_subtitle">einzigartige Künstler</string>
     <string name="wrapped_total_artists_title">Du hast dir angehört</string>
     <string name="wrapped_total_songs_title">Du hast dir angehört</string>
     <string name="wrapped_total_songs_subtitle">einzigartige Lieder</string>
     <string name="wrapped_intro_title">METROLIST</string>
-    <string name="wrapped_intro_subtitle">Es ist an der Zeit, herauszufinden, was du dir angehört hast.</string>
+    <string name="wrapped_intro_subtitle">Es ist an der Zeit, herauszufinden, was du dir angehört hast</string>
     <string name="wrapped_intro_button">Auf geht\'s!</string>
     <string name="wrapped_end_thanks">Danke für dein Musikerlebnis mit Metrolist!</string>
     <string name="wrapped_end_create_playlist">Erstelle deine Wrapped-Playlist</string>
@@ -305,7 +305,7 @@
     <string name="wrapped_ready_title">Dein Wrapped ist bereit!</string>
     <string name="wrapped_ready_subtitle">Zeit, einen Blick auf die Highlights des Jahres zu werfen.</string>
     <string name="wrapped_thank_you">Danke fürs Zuhören</string>
-    <string name="wrapped_special_thanks">Besonderer Dank gilt MO Agamy für die Erstellung von Metrolist.</string>
+    <string name="wrapped_special_thanks">Besonderer Dank gilt MO Agamy für die Erstellung von Metrolist</string>
     <string name="wrapped_close">Wrapped schließen</string>
     <string name="wrapped_playlist_title">Dein %s Wrapped</string>
     <string name="wrapped_create_playlist">Playlist erstellen</string>
@@ -353,13 +353,13 @@
     <string name="next">Weiter</string>
     <string name="widget_description">Musikplayer-Widget mit Wiedergabesteuerung</string>
     <plurals name="band_count">
-        <item quantity="one">%d band</item>
-        <item quantity="other">%d bands</item>
+        <item quantity="one">%d Band</item>
+        <item quantity="other">%d Bänder</item>
     </plurals>
     <string name="album_art">Albumcover</string>
     <string name="turntable_widget_description">Kreisförmiges Musik-Widget mit Wiedergabe- und Like-Steuerung</string>
     <string name="queue_widget_description">Musikplayer mit Warteschlangenvorschau</string>
-    <string name="remember_shuffle_and_repeat_desc">Behalte den Shuffle- und Wiederholungsmodus beim Neustart der App bei.</string>
+    <string name="remember_shuffle_and_repeat_desc">Zufallswiedergabe- und Wiederholungsmodus beim Neustart der App beibehalten</string>
     <string name="remember_shuffle_and_repeat">Behalte den Shuffle- und Wiederholungsmodus</string>
     <string name="about_artist">Über</string>
     <string name="show_more">Mehr anzeigen</string>
@@ -378,7 +378,7 @@
     <string name="error_eq_apply_failed">EQ-Profil konnte nicht angewendet werden: %1$s</string>
     <string name="error_playback_failed">Wiedergabe fehlgeschlagen</string>
     <string name="error_copied">Fehlerinformation in die Zwischenablage kopiert</string>
-    <string name="error_copy_hint">Kopieren Sie die Fehlerinformationen, um den Entwicklern bei der Fehlerbehebung zu helfen.</string>
+    <string name="error_copy_hint">Fehlerinformationen kopieren, um den Entwicklern bei der Fehlerbehebung zu helfen</string>
     <string name="player_client_android_vr_desc">Schnellste Option. Direkte Stream-URLs ohne Entschlüsselung der Signatur. Für die meisten Benutzer empfohlen.</string>
     <string name="player_client_web_remix">Web-Remix</string>
     <string name="player_client_web_remix_desc">Langsamer, unterstützt jedoch Premium-Formate. Verwendet JavaScript-Signaturentschlüsselung, wodurch sich der Start der Wiedergabe um ca. 5–10 Sekunden verzögert.</string>
@@ -391,7 +391,7 @@
     <string name="decryption_library">Bibliothek Entschlüsselung</string>
     <string name="decryption_library_newpipe">NewPipe Extraktor (offiziell)</string>
     <string name="decryption_library_newpipe_desc">Offizielle TeamNewPipe-Bibliothek. Entspricht den aktuellsten Änderungen bei YouTube. Als Standard empfohlen. Automatisches ausweichen auf PipePipe-API bei Fehlern.</string>
-    <string name="decryption_library_pipepipe_api">PipePipe API</string>
+    <string name="decryption_library_pipepipe_api">PipePipe-API</string>
     <string name="decryption_library_pipepipe_api_desc">API-basierte Entschlüsselung mit MetroExtractor. Schneller, hängt jedoch von einer externen API ab. Automatisches ausweichen auf NewPipe bei Fehlern.</string>
     <string name="listen_together">Gemeinsam hören</string>
     <string name="listen_together_desc">Höre Musik mit Freunden in Echtzeit</string>
@@ -422,7 +422,7 @@
     <string name="cd_system_mode">Systemmodus</string>
     <string name="cd_dark_mode">Dunkler Modus</string>
     <string name="cd_light_mode">Hellmodus</string>
-    <string name="like">Like</string>
+    <string name="like">Mag ich</string>
     <string name="listen_together_no_logs">Noch keine Protokolle</string>
     <string name="listen_together_sync_volume">Lautstärke des Hosts synchronisieren</string>
     <string name="listen_together_sync_volume_desc">Gäste passen sich der Lautstärke des Hosts an</string>
@@ -491,7 +491,7 @@
     <string name="crash_no_log">Kein Absturzprotokoll verfügbar</string>
     <string name="palette_dynamic">Dynamisch</string>
     <string name="palette_crimson">Purpurrot</string>
-    <string name="palette_rose">Rose</string>
+    <string name="palette_rose">Rosa</string>
     <string name="palette_purple">Violett</string>
     <string name="palette_deep_purple">Tiefes Violett</string>
     <string name="palette_indigo">Indigo</string>
@@ -512,11 +512,11 @@
     <string name="cd_palette_item">%1$s Palette</string>
     <string name="not_playing">Es wird kein Lied abgespielt</string>
     <string name="tap_to_play">Tippen Sie hier, um Metrolist zu öffnen</string>
-    <string name="widget_music_player">Music Player</string>
+    <string name="widget_music_player">Musik-Player</string>
     <string name="widget_turntable">Drehscheibe</string>
     <string name="together">Gemeinsam</string>
     <string name="reconnect">Wiederverbinden</string>
-    <string name="enter_room_code">Gebe den Raum-Code ein.</string>
+    <string name="enter_room_code">Raum-Code eingeben</string>
     <string name="listen_together_settings_desc">Server, Benutzernamen und mehr konfigurieren</string>
     <string name="ai_lyrics_translation">KI-Song-Text-Übersetzung</string>
     <string name="ai_translating_lyrics">Songtexte übersetzen...</string>
@@ -531,12 +531,12 @@
     <string name="ai_translation_literal">Übersetzung</string>
     <string name="ai_translation_transcribed">Transkription</string>
     <string name="ai_api_key_required">API-Schlüssel erforderlich</string>
-    <string name="ai_error_api_key_required">Ein API-Schlüssel ist erforderlich.</string>
+    <string name="ai_error_api_key_required">Ein API-Schlüssel ist erforderlich</string>
     <string name="ai_error_no_lyrics">Keine Songtexte zum Übersetzen</string>
     <string name="ai_error_lyrics_empty">Die Songtexte sind leer</string>
     <string name="ai_error_language_required">Die Zielsprache wird benötigt</string>
     <string name="ai_error_unexpected">Unerwartetes Übersetzungsergebnis</string>
-    <string name="ai_error_unknown">Es ist ein unbekannter Fehler aufgetreten.</string>
+    <string name="ai_error_unknown">Es ist ein unbekannter Fehler aufgetreten</string>
     <string name="ai_error_translation_failed">Übersetzung fehlgeschlagen</string>
     <string name="palette_amber">Bernstein</string>
     <string name="play_all">Alle abspielen</string>
@@ -555,7 +555,7 @@
     <string name="column_label">Spalte %d</string>
     <string name="palette_lime">Limette</string>
     <string name="recognition_error">Erkennungsfehler</string>
-    <string name="enable_high_refresh_rate_desc">Erzwinge, dass das Display mit der höchsten unterstützten Bildwiederholfrequenz (z. B. 120 Hz) läuft.</string>
+    <string name="enable_high_refresh_rate_desc">Erzwinge, dass das Display mit der höchsten unterstützten Bildwiederholfrequenz (z. B. 120 Hz) läuft</string>
     <string name="first_row_is_header">Die erste Zeile ist die Kopfzeile</string>
     <string name="try_again">Versuche es erneut</string>
     <string name="tap_to_recognize">Zum Erkennen antippen</string>
@@ -569,7 +569,7 @@
     <string name="play_on_app">Auf Metrolist abspielen</string>
     <string name="listening">Hören…</string>
     <string name="continue_action">Weitermachen</string>
-    <string name="hold_to_recognize">Halten Sie das Suchsymbol gedrückt, um Musik zu erkennen.</string>
+    <string name="hold_to_recognize">Das Suchsymbol gedrückt halten, um Musik zu erkennen</string>
     <string name="enable">Aktivieren</string>
     <string name="crossfade">Song-Überblendung (Crossfade)</string>
     <string name="crossfade_desc">Überblendung zwischen Liedern</string>
@@ -578,13 +578,13 @@
     <string name="crossfade_gapless_desc">Nicht Überblenden, wenn das Album lückenlos ist</string>
     <string name="crossfade_beta_title">Beta-Funktion</string>
     <string name="crossfade_beta_message">Song-Überblendung (Crossfade) ist eine neue Funktion und kann Fehler enthalten. Sollten Sie Probleme feststellen, melden Sie diese bitte.\n\nDiese Funktion deaktiviert die Audioauslagerung aus technischen Gründen.</string>
-    <string name="audio_offload_disabled_by_crossfade">Deaktiviert, da Song-Überblendung (Crossfade) aktiv ist.</string>
+    <string name="audio_offload_disabled_by_crossfade">Deaktiviert, da Song-Überblendung (Crossfade) aktiv ist</string>
     <string name="hide_youtube_shorts">YouTube Shorts ausblenden</string>
     <string name="listen_together_in_top_bar">Gemeinsam hören in der oberen Leiste anzeigen</string>
     <string name="listen_together_in_top_bar_desc">Gemeinsam hören in der oberen App-Leiste anstelle der Navigationsleiste anzeigen</string>
     <string name="player_background_solid">Einfärbig</string>
     <string name="prevent_duplicate_tracks_in_queue">Doppelte Songs in der Warteschlange vermeiden</string>
-    <string name="prevent_duplicate_tracks_in_queue_desc">Wird ein Titel zur Warteschlange hinzugefügt, wird er von seiner vorherigen Position entfernt, falls er bereits existiert.</string>
+    <string name="prevent_duplicate_tracks_in_queue_desc">Wird ein Titel zur Warteschlange hinzugefügt, ihn von seiner vorherigen Position entfernen, falls er bereits vorhanden ist</string>
     <string name="resume_on_bluetooth_connect">Bei Bluetooth-Verbindung fortsetzen</string>
     <string name="lyrics_romanize_hindi">Hindi-Texte romanisieren</string>
     <string name="lyrics_romanize_punjabi">Punjabi-Texte romanisieren</string>
@@ -609,7 +609,7 @@
     <string name="discord_integration_settings">Discord-Integration</string>
     <string name="discord_status">Status</string>
     <string name="discord_status_online">Online</string>
-    <string name="discord_status_idle">Idle</string>
+    <string name="discord_status_idle">Inaktiv</string>
     <string name="discord_status_dnd">Bitte nicht stören</string>
     <string name="discord_buttons">Schaltflächen</string>
     <string name="discord_button_1">Schaltfläche 1</string>
@@ -741,4 +741,23 @@
     <string name="no_account_found">Kein Account gefunden</string>
     <string name="restore_success">Wiederherstellung erfolgreich abgeschlossen</string>
     <string name="no_songs_found">Keine Lieder gefunden. Ungültige Datei oder vielleicht wurden keine Lied-Übereinstimmungen gefunden.es wurden vielleicht keine übereinstimmenden Lieder gefunden.</string>
+    <string name="sleep_timer_default_set">Einschlaf-Timer standardmäßig auf %d Min eingestellt</string>
+    <string name="error_podcast_unsubscribe">Podcast-Abo kündigen fehlgeschlagen</string>
+    <string name="discord_activity_listening"></string>
+    <string name="discord_rpc_preview">Rich Presence Vorschau</string>
+    <string name="discord_playing_metrolist">Spielt Metrolist</string>
+    <string name="discord_watching_metrolist">Schaut Metrolist an</string>
+    <string name="discord_competing_metrolist">Im Wettkampf in Metrolist</string>
+    <string name="remove_episode_from_saved">Von gespeicherten Episoden entfernen</string>
+    <string name="filter_episodes">Episoden</string>
+    <string name="filter_channels">Kanäle</string>
+    <string name="auto_playlist">Auto-Playlist</string>
+    <string name="downloaded_episodes">Heruntergeladene Episoden</string>
+    <string name="episodes_for_later_empty">Noch keine gespeicherten Episoden</string>
+    <string name="no_subscribed_channels">Keine abonnierten Kanäle</string>
+    <string name="no_downloaded_episodes">Keine heruntergeladenen Episoden</string>
+    <plurals name="n_channel">
+        <item quantity="one">%d Kanal</item>
+        <item quantity="other">%d Kanäle</item>
+    </plurals>
 </resources>
