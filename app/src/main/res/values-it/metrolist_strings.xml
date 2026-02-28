@@ -755,4 +755,8 @@
     <string name="widget_recognizer_channel_name">Riconoscimento di musica</string>
     <string name="widget_recognizer_channel_desc">Mostra una notifica mentre stai identificando un brano dal widget</string>
     <string name="widget_recognizer_notification_text">Registrazione dell\'audio per identificare il brano…</string>
+    <string name="your_shows"></string>
+    <string name="speed_dial"></string>
+    <string name="unpin_from_speed_dial"></string>
+    <string name="pin_to_speed_dial"></string>
 </resources>
