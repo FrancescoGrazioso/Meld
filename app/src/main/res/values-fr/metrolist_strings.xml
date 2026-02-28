@@ -652,7 +652,7 @@
     <string name="restore">Restaurer</string>
     <string name="restore_account_warning">Vous devrez vous reconnecter après la restauration. Le compte suivant sera déconnecté :</string>
     <string name="restore_confirm_message">Cela restaurera les données de votre application à partir de la sauvegarde.</string>
-    <string name="restore_confirm_title">Restaurer la sauvegarde ?</string>
+    <string name="restore_confirm_title">Restaurer la sauvegarde ?</string>
     <plurals name="n_episode">
         <item quantity="one">%d épisode</item>
         <item quantity="many">%d épisodes</item>
