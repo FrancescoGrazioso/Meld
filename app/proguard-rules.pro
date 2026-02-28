@@ -92,6 +92,10 @@
 -keep class jdk.dynalink.** { *; }
 -dontwarn jdk.dynalink.**
 
+## Listen Together Protobuf
+-keep class com.metrolist.music.listentogether.proto.** { *; }
+-keepclassmembers class com.metrolist.music.listentogether.proto.** { *; }
+
 ## Logging (does not affect Timber)
 -assumenosideeffects class android.util.Log {
     public static boolean isLoggable(java.lang.String, int);
