@@ -663,8 +663,6 @@
     <string name="error_episode_remove">เกิดข้อผิดพลาดในการลบตอน</string>
     <string name="error_podcast_subscribe">เกิดข้อผิดพลาดในการติดตามพอดแคสต์</string>
     <string name="error_podcast_unsubscribe">เกิดข้อผิดพลาดในการเลิกติดตามพอดแคสต์</string>
-    <string name="listen_together_auto_approval_joins">อนุมัติคำขอเข้าร่วมอัตโนมัติ</string>
-    <string name="listen_together_auto_approval_joins_desc">อนุมัติคำขอเข้าร่วมโดยอัตโนมัติแทนการตรวจสอบและอนุมัติด้วยตนเอง</string>
     <string name="listen_together_auto_approval_suggestions">อนุมัติคำแนะนำเพลงอัตโนมัติ</string>
     <string name="listen_together_auto_approval_suggestions_desc">อนุมัติและเพิ่มเพลงที่ผู้เข้าร่วมแนะนำเข้าสู่คิวโดยอัตโนมัติ</string>
     <string name="importing_playlist">กำลังนำเข้าเพลย์ลิสต์</string>

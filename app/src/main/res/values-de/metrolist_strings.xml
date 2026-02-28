@@ -688,8 +688,6 @@
     <string name="widget_recognizer_name">Musik-Erkennung</string>
     <string name="widget_recognizer_channel_desc">Zeigt eine Benachrichtigung an, während ein Lied vom Widget erkannt wird</string>
     <string name="widget_recognizer_notification_text">Audio aufnehmen, um Lied zu erkennen …</string>
-    <string name="listen_together_auto_approval_joins">Beitrittsanfragen automatisch akzeptieren</string>
-    <string name="listen_together_auto_approval_joins_desc">Beitrittsanfragen automatisch akzeptieren statt sie manuell zu prüfen</string>
     <string name="listen_together_auto_approval_suggestions">Lied-Vorschläge automatisch akzeptieren</string>
     <string name="listen_together_auto_approval_suggestions_desc">Lied-Vorschläge von Gästen automatisch akzeptieren und der Warteschlange hinzufügen</string>
     <string name="importing_playlist">Playlist importieren</string>

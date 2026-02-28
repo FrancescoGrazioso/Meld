@@ -676,8 +676,6 @@
     <string name="error_episode_remove">エピソードの削除に失敗しました</string>
     <string name="error_podcast_subscribe">ポッドキャストの登録に失敗しました</string>
     <string name="error_podcast_unsubscribe">ポッドキャストの登録解除に失敗しました</string>
-    <string name="listen_together_auto_approval_joins">参加リクエストを自動で承認</string>
-    <string name="listen_together_auto_approval_joins_desc">参加リクエストを手動で確認せず、自動的に承認します</string>
     <string name="listen_together_auto_approval_suggestions">楽曲リクエストを自動で承認</string>
     <string name="listen_together_auto_approval_suggestions_desc">ゲストからの楽曲リクエストを自動で承認し、キューに追加します</string>
     <string name="importing_playlist">プレイリストをインポート中</string>

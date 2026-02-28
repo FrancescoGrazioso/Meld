@@ -673,8 +673,6 @@
     <string name="error_episode_remove">Falha ao remover episódio</string>
     <string name="error_podcast_subscribe">Falha ao se inscrever no podcast</string>
     <string name="error_podcast_unsubscribe">Falha ao se desinscrever do podcast</string>
-    <string name="listen_together_auto_approval_joins">Aprovar solicitações de entrada automaticamente</string>
-    <string name="listen_together_auto_approval_joins_desc">Aprovar pedidos de participação automaticamente em vez de revisá-los manualmente</string>
     <string name="listen_together_auto_approval_suggestions">Aprovar automaticamente sugestões de músicas</string>
     <string name="listen_together_auto_approval_suggestions_desc">Aprovar e enfileirar sugestões de convidados automaticamente</string>
     <string name="importing_song">Importando %s</string>

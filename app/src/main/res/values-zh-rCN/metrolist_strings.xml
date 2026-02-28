@@ -731,8 +731,6 @@
     <string name="no_songs_found">未找到歌曲。文件无效，或者可能没有找到匹配的歌曲。</string>
     <string name="cache_after_seconds">缓存延迟（秒）</string>
     <string name="cache_at_percent">缓存百分比</string>
-    <string name="listen_together_auto_approval_joins">自动批准加入请求</string>
-    <string name="listen_together_auto_approval_joins_desc">自动批准加入请求，无需手动审核</string>
     <string name="listen_together_auto_approval_suggestions">自动批准歌曲推荐</string>
     <string name="listen_together_auto_approval_suggestions_desc">自动批准访客的歌曲推荐并加入播放队列</string>
     <string name="plays">播放量</string>

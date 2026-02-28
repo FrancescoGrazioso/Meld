@@ -668,8 +668,6 @@
     <string name="error_episode_remove">Bölüm kaldırılamadı</string>
     <string name="error_podcast_subscribe">Podcast\'e abone olma işlemi başarısız oldu</string>
     <string name="error_podcast_unsubscribe">Podcast aboneliğinden çıkma işlemi başarısız oldu</string>
-    <string name="listen_together_auto_approval_joins">Katılım isteklerini otomatik olarak onayla</string>
-    <string name="listen_together_auto_approval_joins_desc">Katılım isteklerini manuel olarak incelemek yerine otomatik olarak onaylayın</string>
     <string name="listen_together_auto_approval_suggestions">Şarkı önerilerini otomatik olarak onayla</string>
     <string name="listen_together_auto_approval_suggestions_desc">Konuklardan gelen şarkı önerilerini otomatik olarak onaylayın ve sıraya alın</string>
     <string name="importing_song">%s içe aktarılıyor</string>

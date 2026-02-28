@@ -674,8 +674,6 @@
     <string name="checking_for_updates">Controllo di aggiornamenti…</string>
     <string name="latest_version_format">Ultima: %s</string>
     <string name="error_podcast_unsubscribe">Errore nel disiscriversi dal podcast</string>
-    <string name="listen_together_auto_approval_joins">Approva automaticamente le richieste di ingresso</string>
-    <string name="listen_together_auto_approval_joins_desc">Approva automaticamente le richieste di ingresso invece di accettarle manualmente</string>
     <string name="listen_together_auto_approval_suggestions">Approva automaticamente i suggerimenti di brani</string>
     <string name="listen_together_auto_approval_suggestions_desc">Approva automaticamente e inserisci in coda le richieste di brani da parte degli ospiti</string>
     <string name="importing_playlist">Importazione della playlist</string>

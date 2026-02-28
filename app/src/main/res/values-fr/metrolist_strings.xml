@@ -696,8 +696,6 @@
     <string name="error_episode_remove">Impossible de supprimer l\'épisode</string>
     <string name="error_podcast_subscribe">Impossible de s\'abonner au podcast</string>
     <string name="error_podcast_unsubscribe">Impossible de se désabonner du podcast</string>
-    <string name="listen_together_auto_approval_joins">Approuver automatiquement les demandes d\'adhésion</string>
-    <string name="listen_together_auto_approval_joins_desc">Approuver automatiquement les demandes d\'adhésion au lieu de les examiner manuellement</string>
     <string name="listen_together_auto_approval_suggestions">Approuver automatiquement les suggestions de titres</string>
     <string name="listen_together_auto_approval_suggestions_desc">Approuver automatiquement et mettre en file d\'attente les suggestions de titres des invités</string>
     <string name="importing_song">Importation de %s</string>

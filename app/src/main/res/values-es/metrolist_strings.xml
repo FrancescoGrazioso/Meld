@@ -686,8 +686,6 @@
     <string name="error_episode_remove">Error al eliminar el episodio</string>
     <string name="error_podcast_subscribe">Error al suscribirse al pódcast</string>
     <string name="error_podcast_unsubscribe">Error al cancelar la suscripción al pódcast</string>
-    <string name="listen_together_auto_approval_joins">Aprobar automáticamente las solicitudes para unirse</string>
-    <string name="listen_together_auto_approval_joins_desc">Aprobar automáticamente las solicitudes para unirse en lugar de revisarlas manualmente</string>
     <string name="listen_together_auto_approval_suggestions">Aprobar automáticamente las sugerencias de canciones</string>
     <string name="listen_together_auto_approval_suggestions_desc">Aprobar automáticamente y añadir a la cola las sugerencias de canciones de invitados</string>
     <string name="importing_playlist">Importando lista de reproducción</string>

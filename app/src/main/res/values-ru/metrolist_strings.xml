@@ -678,8 +678,6 @@
     <string name="error_episode_remove">Не удалось удалить выпуск</string>
     <string name="error_podcast_subscribe">Не удалось подписаться на подкаст</string>
     <string name="error_podcast_unsubscribe">Не удалось отписаться от подкаста</string>
-    <string name="listen_together_auto_approval_joins">Автоодобрение запросов на вход</string>
-    <string name="listen_together_auto_approval_joins_desc">Запросы на вход будут одобряться автоматически, без ручной проверки</string>
     <string name="listen_together_auto_approval_suggestions">Автоодобрение предложений песен</string>
     <string name="listen_together_auto_approval_suggestions_desc">Предложения песен от гостей будут одобряться автоматически и добавляться в очередь</string>
     <string name="importing_song">Импорт %s</string>
