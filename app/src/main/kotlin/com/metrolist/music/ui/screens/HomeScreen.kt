@@ -597,6 +597,7 @@ fun HomeScreen(
     val allLocalItems by viewModel.allLocalItems.collectAsState()
     val allYtItems by viewModel.allYtItems.collectAsState()
     val speedDialItems by viewModel.speedDialItems.collectAsState()
+    val pinnedSpeedDialItems by viewModel.pinnedSpeedDialItems.collectAsState()
     val selectedChip by viewModel.selectedChip.collectAsState()
 
     // Official podcast API data
