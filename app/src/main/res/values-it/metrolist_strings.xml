@@ -739,4 +739,22 @@
     <string name="no_account_found">Nessun account trovato</string>
     <string name="restore_success">Ripristino completato con successo</string>
     <string name="no_songs_found">Nessun brano trovato. File non valido o forse nessun riscontro di brani è stato trovato.</string>
+    <string name="cache_after_seconds">In cache dopo secondi</string>
+    <string name="cache_at_percent">In cache dopo percentuale</string>
+    <string name="n_seconds">%d secondi</string>
+    <string name="n_percent">%d%%</string>
+    <string name="widget_recognizer_name">Riconoscitore di musica</string>
+    <string name="widget_recognizer_description">Identifica brani che senti attorno a te direttamente dalla tua home</string>
+    <string name="widget_recognizer_tap_to_search">Premi per identificare il brano</string>
+    <string name="widget_recognizer_listening">In ascolto…</string>
+    <string name="widget_recognizer_processing">Identificazione…</string>
+    <string name="widget_recognizer_no_match">Nessun riscontro trovato. Prova di nuovo</string>
+    <string name="widget_recognizer_error">Riconoscimento fallito</string>
+    <string name="widget_recognizer_error_generic">C\'è stato un errore. Prova di nuovo</string>
+    <string name="widget_recognizer_unknown_song">Brano sconosciuto</string>
+    <string name="widget_recognizer_unknown_artist">Artista sconosciuto</string>
+    <string name="widget_recognizer_mic_desc">Identifica brano</string>
+    <string name="widget_recognizer_channel_name">Riconoscimento di musica</string>
+    <string name="widget_recognizer_channel_desc">Mostra una notifica mentre stai identificando un brano dal widget</string>
+    <string name="widget_recognizer_notification_text">Registrazione dell\'audio per identificare il brano…</string>
 </resources>
