@@ -767,4 +767,8 @@
     <string name="pin_to_speed_dial">Fissa nella selezione rapida</string>
     <string name="unpin_from_speed_dial">Togli dalla selezione rapida</string>
     <string name="your_shows">I tuoi show</string>
+    <string name="cache_after_seconds">In cache dopo secondi</string>
+    <string name="cache_at_percent">In cache dopo percentuale</string>
+    <string name="n_seconds">%d secondi</string>
+    <string name="n_percent">%d%%</string>
 </resources>
