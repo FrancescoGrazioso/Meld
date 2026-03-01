@@ -24,7 +24,11 @@ jobs:
 
     strategy:
       matrix:
-        variant: ["foss", "gms"]
+        include:
+          - variant: foss
+            variantName: Foss
+          - variant: gms
+            variantName: Gms
 
     steps:
       - uses: actions/checkout@v6
@@ -50,8 +54,8 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Universal Release APK and Run Lint
-        run: ./gradlew --console=plain assembleUniversal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}Release :app:lintUniversal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}Release --warning-mode summary
+      - name: Build Release APK and Run Lint
+        run: ./gradlew --console=plain assemble${{ matrix.variantName }}Release :app:lint${{ matrix.variantName }}Release --warning-mode summary
         env:
           PULL_REQUEST: "false"
           GITHUB_EVENT_NAME: ${{ github.event_name }}
@@ -61,7 +65,7 @@ jobs:
       - name: Sign APK
         uses: ilharp/sign-android-release@v2.0.0
         with:
-          releaseDir: app/build/outputs/apk/universal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}/release/
+          releaseDir: app/build/outputs/apk/${{ matrix.variant }}/release/
           signingKey: ${{ secrets.KEYSTORE }}
           keyAlias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEYSTORE_PASSWORD }}
@@ -70,7 +74,7 @@ jobs:
 
       - name: Move signed APK
         run: |
-          OUTPUT_DIR="app/build/outputs/apk/universal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}/release"
+          OUTPUT_DIR="app/build/outputs/apk/${{ matrix.variant }}/release"
           mkdir -p "$OUTPUT_DIR/out"
           if [ "${{ matrix.variant }}" = "gms" ]; then
             TARGET_NAME="app-universal-with-Google-Cast.apk"
@@ -82,8 +86,8 @@ jobs:
       - name: Upload Signed APK
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ matrix.variant == 'gms' && 'app-universal-with-Google-Cast' || 'app-universal-release' }}
-          path: app/build/outputs/apk/universal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}/release/out/*
+          name: ${{ matrix.variant == 'gms' && 'app-with-Google-Cast' || 'app-release' }}
+          path: app/build/outputs/apk/${{ matrix.variant }}/release/out/*
 
   build_debug:
     name: Build Debug (${{ matrix.variant }})
@@ -92,7 +96,11 @@ jobs:
 
     strategy:
       matrix:
-        variant: ["foss", "gms"]
+        include:
+          - variant: foss
+            variantName: Foss
+          - variant: gms
+            variantName: Gms
 
     steps:
       - uses: actions/checkout@v6
@@ -122,8 +130,8 @@ jobs:
         run: |
           echo "${{ secrets.DEBUG_KEYSTORE }}" | base64 -d > ./app/persistent-debug.keystore
 
-      - name: Build Universal Debug APK and Run Lint
-        run: ./gradlew --console=plain assembleUniversal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}Debug :app:lintUniversal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}Debug --warning-mode summary
+      - name: Build Debug APK and Run Lint
+        run: ./gradlew --console=plain assemble${{ matrix.variantName }}Debug :app:lint${{ matrix.variantName }}Debug --warning-mode summary
         env:
           PULL_REQUEST: "false"
           GITHUB_EVENT_NAME: ${{ github.event_name }}
@@ -133,5 +141,5 @@ jobs:
       - name: Upload Debug APK
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ matrix.variant == 'gms' && 'app-universal-debug-gms' || 'app-universal-debug' }}
-          path: app/build/outputs/apk/universal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}/debug/*.apk
+          name: ${{ matrix.variant == 'gms' && 'app-debug-gms' || 'app-debug' }}
+          path: app/build/outputs/apk/${{ matrix.variant }}/debug/*.apk
