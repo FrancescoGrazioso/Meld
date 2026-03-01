@@ -737,10 +737,6 @@
     <string name="no_account_found">Nessun account trovato</string>
     <string name="restore_success">Ripristino completato con successo</string>
     <string name="no_songs_found">Nessun brano trovato. File non valido o forse nessun riscontro di brani è stato trovato.</string>
-    <string name="cache_after_seconds">In cache dopo secondi</string>
-    <string name="cache_at_percent">In cache dopo percentuale</string>
-    <string name="n_seconds">%d secondi</string>
-    <string name="n_percent">%d%%</string>
     <string name="widget_recognizer_name">Riconoscitore di musica</string>
     <string name="widget_recognizer_description">Identifica brani che senti attorno a te direttamente dalla tua home</string>
     <string name="widget_recognizer_tap_to_search">Premi per identificare il brano</string>

@@ -735,10 +735,6 @@
     <string name="importing_playlist">Oynatma listesi içe aktarılıyor</string>
     <string name="restore_success">Başarılı bir şekilde geri yüklenmiştir</string>
     <string name="no_songs_found">Şarkılar bulunamadı. Dosya tanımsız olabilir, ya da bu konumda şarkı olabilecek dosya yoktur.</string>
-    <string name="cache_after_seconds">Saniye sonra önbelleğe al</string>
-    <string name="cache_at_percent">Yüzde önbellek</string>
-    <string name="n_seconds">%d saniye</string>
-    <string name="n_percent">%d%%</string>
     <string name="widget_recognizer_name">Müzik Tanıyıcı</string>
     <string name="widget_recognizer_description">Çevrenizde çalan şarkıları doğrudan ana ekranınızdan tanımlayın</string>
     <string name="widget_recognizer_tap_to_search">Şarkıyı tanımlamak için dokunun</string>

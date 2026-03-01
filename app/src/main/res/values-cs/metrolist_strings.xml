@@ -753,8 +753,6 @@
     <string name="error_podcast_subscribe">Nepodařilo se přihlásit k odběru podcastu</string>
     <string name="error_episode_save">Nepodařilo se uložit epizodu</string>
     <string name="error_episode_remove">Nepodařilo se odebrat epizodu</string>
-    <string name="n_percent">%d %%</string>
-    <string name="n_seconds">%d sekund</string>
     <string name="youtube_music_lyrics_note">UPOZORNĚNÍ: Texty z YouTube Music budou automaticky zobrazeny, když nejsou dostupné texty z jiných zdrojů. Texty z YTM obvykle nejsou synchronizovány.</string>
     <string name="enable_lyricsplus">Povolit LyricsPlus</string>
     <string name="enable_lyricsplus_desc">Synchronizované texty z několika zdrojů</string>
@@ -762,8 +760,6 @@
     <string name="lyrics_provider_selection_desc">Vyberte, kteří poskytovatelé textů jsou povoleni</string>
     <string name="lyrics_provider_priority">Priorita poskytovatelů textů</string>
     <string name="lyrics_provider_priority_desc">Přesuňte pro změnu pořadí poskytovatelů. Vyšší pozice = vyšší priorita.</string>
-    <string name="cache_after_seconds">Mezipaměť po sekundách</string>
-    <string name="cache_at_percent">Mezipaměť v procentech</string>
     <string name="widget_recognizer_name">Rozpoznávání hudby</string>
     <string name="widget_recognizer_description">Identifikuje skladby hrající kolem vás přímo z vaší domovské obrazovky</string>
     <string name="widget_recognizer_tap_to_search">Klepněte pro identifikaci skladby</string>

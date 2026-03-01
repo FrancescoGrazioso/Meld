@@ -729,10 +729,6 @@
     <string name="no_account_found">アカウントが見つかりません</string>
     <string name="restore_success">復元が完了しました</string>
     <string name="no_songs_found">曲が見つかりません。ファイルが無効であるか、該当する曲が存在しない可能性があります。</string>
-    <string name="cache_after_seconds">キャッシュ開始までの時間</string>
-    <string name="cache_at_percent">キャッシュ開始割合</string>
-    <string name="n_seconds">%d秒</string>
-    <string name="n_percent">%d%%</string>
     <string name="widget_recognizer_name">音楽認識</string>
     <string name="widget_recognizer_description">ホーム画面から直接、周囲で再生中の楽曲を識別できます</string>
     <string name="widget_recognizer_tap_to_search">タップして開始</string>

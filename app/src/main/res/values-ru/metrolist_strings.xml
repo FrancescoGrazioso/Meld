@@ -747,10 +747,6 @@
     <string name="importing_playlist">Импорт плейлиста</string>
     <string name="restore_success">Восстановление успешно завершено</string>
     <string name="no_songs_found">Треки не найдены. Недопустимый файл или совпадений не найдено.</string>
-    <string name="cache_after_seconds">Кэширование через секунды</string>
-    <string name="cache_at_percent">Кэширование по проценту</string>
-    <string name="n_seconds">%d секунд</string>
-    <string name="n_percent">%d%%</string>
     <string name="widget_recognizer_name">Распознавание музыки</string>
     <string name="widget_recognizer_description">Узнавайте, какая музыка играет рядом, прямо с главного экрана</string>
     <string name="widget_recognizer_tap_to_search">Нажмите для распознавания трека</string>

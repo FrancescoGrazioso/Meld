@@ -729,10 +729,6 @@
     <string name="no_account_found">ไม่พบบัญชี</string>
     <string name="restore_success">กู้คืนข้อมูลสำเร็จ</string>
     <string name="no_songs_found">ไม่พบเพลง อาจเป็นไฟล์ไม่ถูกต้อง หรือไม่พบเพลงที่ตรงกัน</string>
-    <string name="cache_at_percent">แคชเมื่อโหลดถึงกี่เปอร์เซ็นต์</string>
-    <string name="n_seconds">%d วินาที</string>
-    <string name="cache_after_seconds">แคชหลังจากผ่านไปกี่วินาที</string>
-    <string name="n_percent">%d%%</string>
     <string name="widget_recognizer_name">ระบบค้นหาเพลง</string>
     <string name="widget_recognizer_description">ระบุชื่อเพลงที่กำลังเล่นรอบตัวคุณได้จากหน้าจอหลักโดยตรง</string>
     <string name="widget_recognizer_tap_to_search">แตะเพื่อค้นหาเพลง</string>

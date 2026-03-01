@@ -650,10 +650,6 @@
     <string name="lyrics_provider_selection_desc">Wählen Sie aus, welche Anbieter von Songtexten aktiviert werden sollen</string>
     <string name="lyrics_provider_priority">Liedtext-Anbieter-Priorität</string>
     <string name="lyrics_provider_priority_desc">Ziehen, um die Anbieter neu anzuordnen. Höhere Position -&gt; höhere Priorität.</string>
-    <string name="cache_after_seconds">Sekunden vor Zwischenspeicherung</string>
-    <string name="cache_at_percent">Prozent vor Zwischenspeicherung</string>
-    <string name="n_seconds">%d Sekunden</string>
-    <string name="n_percent">%d %%</string>
     <string name="changelog">Änderungsprotokoll</string>
     <string name="changelog_empty">Kein Änderungsprotokoll verfügbar</string>
     <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>

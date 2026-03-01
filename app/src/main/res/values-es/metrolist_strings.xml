@@ -741,10 +741,6 @@
     <string name="no_account_found">No se encontró ninguna cuenta</string>
     <string name="restore_success">Restauración completada con éxito</string>
     <string name="no_songs_found">No se encontraron canciones. El archivo no es válido o no se encontraron coincidencias.</string>
-    <string name="cache_after_seconds">Caché después de segundos</string>
-    <string name="cache_at_percent">Caché al porcentaje</string>
-    <string name="n_seconds">%d segundos</string>
-    <string name="n_percent">%d%%</string>
     <string name="widget_recognizer_name">Identificador de música</string>
     <string name="widget_recognizer_description">Identifica canciones que suenan a tu alrededor directamente desde tu pantalla de inicio</string>
     <string name="widget_recognizer_tap_to_search">Toca para identificar la canción</string>

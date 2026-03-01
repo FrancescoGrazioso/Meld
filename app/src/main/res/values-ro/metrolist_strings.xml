@@ -650,10 +650,6 @@
     <string name="lyrics_provider_selection_desc">Alege ce furnizori de versuri sunt activați</string>
     <string name="lyrics_provider_priority">Prioritatea furnizorilor de versuri</string>
     <string name="lyrics_provider_priority_desc">Trage pentru a reordona furnizorii după preferințe. Cu cât este mai înaltă poziția, cu atât prioritatea este mai înaltă.</string>
-    <string name="cache_after_seconds">Adaugă în cache după un anumit număr de secunde</string>
-    <string name="cache_at_percent">Adaugă în cache după un procent</string>
-    <string name="n_seconds">%d (de) secunde</string>
-    <string name="n_percent">%d%%</string>
     <string name="changelog">Jurnal de modificări</string>
     <string name="changelog_empty">Niciun jurnal de modificări disponibil</string>
     <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
