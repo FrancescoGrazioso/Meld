@@ -183,7 +183,7 @@ object YouTube {
                                 is EpisodeItem -> "Episodes"
                                 is PodcastItem -> "Podcasts"
                                 is AlbumItem -> "Albums"
-                                is ArtistItem -> "Artists"
+                                is ArtistItem -> if (item.isProfile) "Profiles" else "Artists"
                                 is PlaylistItem -> "Playlists"
                                 is SongItem -> when {
                                     item.isEpisode -> "Episodes"
@@ -194,7 +194,7 @@ object YouTube {
                         }
 
                         // Add each group as a separate section in a logical order
-                        val sectionOrder = listOf("Songs", "Videos", "Albums", "Artists", "Playlists", "Podcasts", "Episodes", YouTubeConstants.DEFAULT_OTHER_RESULTS)
+                        val sectionOrder = listOf("Songs", "Videos", "Albums", "Artists", "Playlists", "Podcasts", "Episodes", "Profiles", YouTubeConstants.DEFAULT_OTHER_RESULTS)
                         sectionOrder.forEach { sectionName ->
                             grouped[sectionName]?.let { groupItems ->
                                 if (groupItems.isNotEmpty()) {
@@ -226,7 +226,8 @@ object YouTube {
                     "Playlists" -> 5
                     "Podcasts" -> 6
                     "Episodes" -> 7
-                    else -> 8
+                    "Profiles" -> 8
+                    else -> 9
                 }
             }
 
@@ -1869,6 +1870,7 @@ object YouTube {
             val FILTER_COMMUNITY_PLAYLIST = SearchFilter("EgeKAQQoAEABagoQAxAEEAoQCRAF")
             val FILTER_PODCAST = SearchFilter("EgWKAQJQAWoKEAkQChAFEAMQBA%3D%3D")
             val FILTER_EPISODE = SearchFilter("EgWKAQJYAWoKEAkQChAFEAMQBA%3D%3D")
+            val FILTER_PROFILE = SearchFilter("EgWKAQJYAWoSEAUQCRADEAQQEBAVEAoQDhAR")
         }
     }
 

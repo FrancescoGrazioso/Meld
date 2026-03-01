@@ -68,6 +68,7 @@ import com.metrolist.innertube.YouTube.SearchFilter.Companion.FILTER_COMMUNITY_P
 import com.metrolist.innertube.YouTube.SearchFilter.Companion.FILTER_EPISODE
 import com.metrolist.innertube.YouTube.SearchFilter.Companion.FILTER_FEATURED_PLAYLIST
 import com.metrolist.innertube.YouTube.SearchFilter.Companion.FILTER_PODCAST
+import com.metrolist.innertube.YouTube.SearchFilter.Companion.FILTER_PROFILE
 import com.metrolist.innertube.YouTube.SearchFilter.Companion.FILTER_SONG
 import com.metrolist.innertube.YouTube.SearchFilter.Companion.FILTER_VIDEO
 import com.metrolist.innertube.models.AlbumItem
@@ -476,6 +477,7 @@ fun OnlineSearchResult(
                             FILTER_FEATURED_PLAYLIST to stringResource(R.string.filter_featured_playlists),
                             FILTER_PODCAST to stringResource(R.string.filter_podcasts),
                             FILTER_EPISODE to stringResource(R.string.filter_episodes),
+                            FILTER_PROFILE to stringResource(R.string.filter_profiles),
                         ),
                         currentValue = searchFilter,
                         onValueUpdate = {

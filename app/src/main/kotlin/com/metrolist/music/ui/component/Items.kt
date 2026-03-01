@@ -523,7 +523,7 @@ fun ArtistListItem(
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) = ListItem(
     title = artist.artist.name,
-    subtitle = pluralStringResource(R.plurals.n_song, artist.songCount, artist.songCount),
+    subtitle = if (artist.songCount > 0) pluralStringResource(R.plurals.n_song, artist.songCount, artist.songCount) else null,
     badges = badges,
     thumbnailContent = {
         AsyncImage(
@@ -555,7 +555,7 @@ fun ArtistGridItem(
     fillMaxWidth: Boolean = false,
 ) = GridItem(
     title = artist.artist.name,
-    subtitle = pluralStringResource(R.plurals.n_song, artist.songCount, artist.songCount),
+    subtitle = if (artist.songCount > 0) pluralStringResource(R.plurals.n_song, artist.songCount, artist.songCount) else "",
     badges = badges,
     thumbnailContent = {
         AsyncImage(

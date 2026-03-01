@@ -929,6 +929,7 @@
         <item quantity="other">%d episodes</item>
     </plurals>
     <string name="filter_episodes">Episodes</string>
+    <string name="filter_profiles">Profiles</string>
     <string name="filter_channels">Channels</string>
     <string name="auto_playlist">Auto playlist</string>
     <string name="downloaded_episodes">Downloaded episodes</string>

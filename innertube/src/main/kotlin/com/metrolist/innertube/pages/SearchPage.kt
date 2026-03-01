@@ -206,6 +206,7 @@ object SearchPage {
                         ?.menuNavigationItemRenderer
                         ?.navigationEndpoint
                         ?.watchPlaylistEndpoint,
+                    isProfile = true,
                 )
             }
             renderer.isAlbum -> {
