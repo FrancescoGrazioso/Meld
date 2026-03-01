@@ -581,7 +581,7 @@
     <string name="prevent_duplicate_tracks_in_queue_desc">เมื่อเพิ่มแทร็กลงในคิว หากมีอยู่แล้วให้ลบออกจากตำแหน่งเดิม</string>
     <string name="ai_translation_literal_desc">แปลความหมายเป็นภาษาปลายทาง</string>
     <string name="ai_translation_transcribed_desc">แปลงเสียงอ่านเป็นอักษรของภาษาปลายทาง</string>
-    <string name="ai_provider_help">ขอ API Key</string>
+    <string name="ai_provider_help">รับ API Key</string>
     <string name="ai_provider_openrouter_help">ไปที่ https://openrouter.ai เพื่อดูโมเดลแบบฟรีและแบบชำระเงิน</string>
     <string name="ai_provider_openai_help">ไปที่ https://platform.openai.com/api-keys</string>
     <string name="ai_provider_claude_help">ไปที่ https://console.anthropic.com/settings/keys</string>
@@ -753,4 +753,8 @@
     <plurals name="n_channel">
         <item quantity="other">%d ช่อง</item>
     </plurals>
+    <string name="cache_after_seconds">แคชหลังจากวินาที</string>
+    <string name="cache_at_percent">แคชเมื่อถึงเปอร์เซ็นต์</string>
+    <string name="n_seconds">%d วินาที</string>
+    <string name="n_percent">%d%%</string>
 </resources>
