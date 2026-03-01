@@ -759,4 +759,16 @@
     <string name="widget_recognizer_channel_name">Identificación de música</string>
     <string name="widget_recognizer_channel_desc">Muestra una notificación mientras se identifica una canción desde el widget</string>
     <string name="widget_recognizer_notification_text">Grabando audio para identificar la canción…</string>
+    <string name="filter_episodes">Episodios</string>
+    <string name="filter_channels">Canales</string>
+    <string name="auto_playlist">Lista de reproducción automática</string>
+    <string name="downloaded_episodes">Episodios descargados</string>
+    <string name="episodes_for_later_empty">Aún no hay episodios guardados</string>
+    <string name="no_subscribed_channels">No hay canales suscritos</string>
+    <string name="no_downloaded_episodes">No hay episodios descargados</string>
+    <plurals name="n_channel">
+        <item quantity="one">%d canal</item>
+        <item quantity="many">%d canales</item>
+        <item quantity="other">%d canales</item>
+    </plurals>
 </resources>
