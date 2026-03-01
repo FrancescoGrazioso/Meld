@@ -774,4 +774,8 @@
         <item quantity="many">%d каналов</item>
         <item quantity="other">%d каналов</item>
     </plurals>
+    <string name="cache_after_seconds">Кэшировать через секунды</string>
+    <string name="cache_at_percent">Кэшировать на процентах</string>
+    <string name="n_seconds">%d секунд</string>
+    <string name="n_percent">%d%%</string>
 </resources>
