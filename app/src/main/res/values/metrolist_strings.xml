@@ -963,4 +963,10 @@
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>
     </plurals>
+
+    <!-- Cache settings -->
+    <string name="cache_after_seconds">Cache after seconds</string>
+    <string name="cache_at_percent">Cache at percent</string>
+    <string name="n_seconds">%d seconds</string>
+    <string name="n_percent">%d%%</string>
 </resources>
