@@ -48,12 +48,12 @@
     <string name="min_playback_duration_description">La durée minimale d\'un titre qui doit être lu avant qu\'il soit considéré comme « lu »</string>
     <string name="open_app_settings_error">Impossible d\'ouvrir les paramètres de l\'application</string>
     <string name="local_history">Locale</string>
-    <string name="charts">Graphiques</string>
+    <string name="charts">Classements</string>
     <string name="back_button_desc">Retour</string>
-    <string name="no_title">Sans titre</string>
+    <string name="no_title">Aucun titre</string>
     <string name="unknown_artist">Artiste inconnu</string>
     <string name="unknown_item_type">Type d\'élément inconnu</string>
-    <string name="loading_charts">Chargement des graphiques…</string>
+    <string name="loading_charts">Chargement des classements…</string>
     <string name="retry_button">Réessayer</string>
     <string name="album_cover_desc">Pochette d\'album</string>
     <string name="trending">Tendance</string>
@@ -78,7 +78,7 @@
     <string name="player_background_blur">Flou</string>
     <string name="player_buttons_style">Couleurs des boutons du lecteur</string>
     <string name="default_style">Défaut</string>
-    <string name="secondary_color_style">Secondaire</string>
+    <string name="secondary_color_style">Couleur secondaire</string>
     <string name="enable_swipe_thumbnail">Activer le glissement pour changer de titre</string>
     <string name="lyrics_click_change">Changer les paroles avec un clic</string>
     <string name="slim">Subtil</string>
@@ -98,7 +98,7 @@
     <string name="open_supported_links">Ouvrir les liens supportés par défaut</string>
     <string name="configure_supported_links">Configurer les liens supportés</string>
     <string name="set_first_lyrics_provider">Fournisseur de paroles préférées</string>
-    <string name="audio_quality_max">Max (beta)</string>
+    <string name="audio_quality_max">Max (bêta)</string>
     <string name="enable_similar_content">Activer le contenu similaire</string>
     <string name="similar_content_desc">Ajoutez automatiquement d\'autres titres similaires lorsque la fin de la file d\'attente est atteinte</string>
     <string name="min_playback_duration_title">Durée minimum de lecture</string>
@@ -116,7 +116,7 @@
     <string name="numbers">Nombres</string>
     <string name="subscribers">Abonné·es</string>
     <string name="views">Vues</string>
-    <string name="likes">J\'aimes</string>
+    <string name="likes">J\'aime</string>
     <string name="dislikes">Je n\'aime pas</string>
     <string name="cancel">Annuler</string>
     <string name="share_lyrics">Partager les paroles</string>
@@ -255,7 +255,7 @@
     <string name="cache_size_warning_confirm">Continuer</string>
     <string name="tertiary_color_style">Couleur tertiaire</string>
     <string name="logging_in">Connexion…</string>
-    <string name="top_result">Meilleurs résultats</string>
+    <string name="top_result">Meilleurs Résultats</string>
     <string name="other_results">Autre</string>
     <string name="download_playlist_desc">Télécharger tous les titres pour une écoute hors ligne</string>
     <string name="remove_download_playlist_desc">Supprimer tous les titres téléchargés de cette playlist</string>
@@ -517,7 +517,7 @@
     <string name="listen_together_no_blocked_users">Aucun utilisateur bloqué</string>
     <string name="unblock">Débloquer</string>
     <string name="user_blocked_by_host">Utilisateur bloqué par l\'hôte</string>
-    <string name="not_playing">Aucune chanson en cours de lecture</string>
+    <string name="not_playing">Aucun titre en cours de lecture</string>
     <string name="tap_to_play">Appuyez pour ouvrir Metrolist</string>
     <string name="widget_music_player">Lecteur de Musique</string>
     <string name="widget_turntable">Platine vinyle</string>
@@ -616,8 +616,8 @@
     <string name="login_successful">Connexion réussie !</string>
     <string name="discord_information_warning">Cette fonctionnalité utilise la bibliothèque KizzyRPC pour se connecter à la passerelle Discord et définir votre statut Rich Presence. Bien qu\'aucune suspension de compte n\'ait été signalée suite à une utilisation similaire, cette méthode n\'est pas officiellement prise en charge par Discord et peut être considérée comme une violation des conditions d\'utilisation. Votre jeton est extrait localement et n\'est jamais envoyé à des serveurs tiers. Procédez à votre propre discrétion.</string>
     <string name="discord_activity_type">Type d\'activité</string>
-    <string name="discord_activity_playing">Jouer</string>
-    <string name="discord_activity_listening">Écoute</string>
+    <string name="discord_activity_playing">Lire</string>
+    <string name="discord_activity_listening">Écouter</string>
     <string name="discord_activity_watching">Regarder</string>
     <string name="discord_activity_competing">En compétition</string>
     <string name="discord_customization">Personnalisation</string>
@@ -625,8 +625,8 @@
     <string name="discord_rpc_preview">Aperçu de la présence enrichie</string>
     <string name="discord_presence">Présence</string>
     <string name="discord_connect_description">Connectez-vous avec Discord pour partager ce que vous écoutez</string>
-    <string name="discord_playing_metrolist">Jouer à Metrolist</string>
-    <string name="discord_watching_metrolist">Regarder Metrolist</string>
+    <string name="discord_playing_metrolist">Lire sur Metrolist</string>
+    <string name="discord_watching_metrolist">Regarder sur Metrolist</string>
     <string name="discord_competing_metrolist">En compétition dans Metrolist</string>
     <string name="discord_activity_name">Nom de l\'activité</string>
     <string name="discord_activity_name_description">Nom personnalisé pour l\'activité (laisser vide pour utiliser le nom par défaut)</string>
@@ -644,7 +644,7 @@
     <string name="credits_website">Site internet</string>
     <string name="credits_instagram">Instagram</string>
     <string name="credits_github">GitHub</string>
-    <string name="credits_view_repo">Voir le Repository</string>
+    <string name="credits_view_repo">Consulter le dépôt</string>
     <string name="app_version_info">%1$s • %2$s</string>
     <string name="metrolist">METROLIST</string>
     <string name="no_account_found">Aucun compte trouvé</string>
@@ -767,4 +767,8 @@
         <item quantity="many">%d chaînes</item>
         <item quantity="other">%d chaînes</item>
     </plurals>
+    <string name="cache_after_seconds">Cache après quelques secondes</string>
+    <string name="cache_at_percent">Cache en pourcentage</string>
+    <string name="n_seconds">%d secondes</string>
+    <string name="n_percent">%d%%</string>
 </resources>
