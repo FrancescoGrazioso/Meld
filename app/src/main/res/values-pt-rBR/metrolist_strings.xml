@@ -741,4 +741,16 @@
     <string name="importing_playlist">Importando playlist</string>
     <string name="restore_success">Restauração completa</string>
     <string name="no_songs_found">Nenhuma música encontrada. Arquivo inválido ou nenhum resultado correspondente.</string>
+    <string name="widget_recognizer_name">Reconhecedor de música</string>
+    <string name="widget_recognizer_description">Identifique músicas tocando ao seu redor diretamente da sua tela inicial</string>
+    <string name="widget_recognizer_tap_to_search">Toque para identificar música</string>
+    <string name="widget_recognizer_listening">Escutando…</string>
+    <string name="widget_recognizer_processing">Identificando…</string>
+    <string name="widget_recognizer_no_match">Nenhuma correspondência encontrada. Tente novamente</string>
+    <string name="widget_recognizer_error">Reconhecimento falhou</string>
+    <string name="widget_recognizer_error_generic">Um erro ocorreu. Por favor, tente novamente</string>
+    <string name="widget_recognizer_unknown_song">Música desconhecida</string>
+    <string name="widget_recognizer_unknown_artist">Artista desconhecido</string>
+    <string name="widget_recognizer_mic_desc">Identificar música</string>
+    <string name="widget_recognizer_channel_name">Reconhecimento de música</string>
 </resources>
