@@ -99,7 +99,7 @@
     <string name="show_downloaded_playlist">Mostrar playlist de \"Músicas Baixadas\"</string>
     <string name="sync_playlist">Sincronizar playlist</string>
     <string name="dislike_all">Desfavoritar tudo</string>
-    <string name="show_liked_playlist">Mostrar playlist \"Curtidas\"</string>
+    <string name="show_liked_playlist">Mostrar playlist para \"Curtidas\"</string>
     <string name="advanced_login">Login com token</string>
     <string name="token_hidden">Toque para mostrar o token</string>
     <string name="token_shown">Toque novamente para copiar ou editar</string>
@@ -204,7 +204,7 @@
     <string name="audio_offload_description">Usar o caminho de descarga de áudio para a reprodução de áudio. Ao desativar isto, o consumo de energia aumenta, mas pode ser útil se ter problemas com reprodução de áudio ou pós-processamento</string>
     <string name="uploaded_playlist">Enviada</string>
     <string name="filter_uploaded">Enviado</string>
-    <string name="show_uploaded_playlist">Mostrar playlist \"Músicas enviadas\"</string>
+    <string name="show_uploaded_playlist">Mostrar playlist de \"Músicas enviadas\"</string>
     <string name="updater">Atualizador</string>
     <string name="check_for_updates">Conferir se há atualizações automaticamente</string>
     <string name="lyrics_romanize_macedonian">Romanizar letras em Macedônio</string>
@@ -242,7 +242,7 @@
     <string name="add_to_queue_desc">Adicionar ao fim da sua fila de reprodução</string>
     <string name="add_to_library_desc">Salvar na sua biblioteca</string>
     <string name="download_desc">Tornar disponível para reprodução offline</string>
-    <string name="add_to_playlist_desc">Adicionar a uma de suas playlists</string>
+    <string name="add_to_playlist_desc">Adicionar à uma de suas playlists</string>
     <string name="refetch_desc">Obter os metadados mais recentes do YouTube Music</string>
     <string name="share_desc">Compartilhar o link deste item</string>
     <string name="delete_desc">Remover permanentemente este item</string>
@@ -258,7 +258,7 @@
     <string name="top_result">Melhor resultado</string>
     <string name="other_results">Outro</string>
     <string name="download_playlist_desc">Baixar todas as músicas para reprodução offline</string>
-    <string name="remove_download_playlist_desc">Remove todas as músicas baixadas desta playlist</string>
+    <string name="remove_download_playlist_desc">Remover todas as músicas baixadas desta playlist</string>
     <string name="download_in_progress_desc">Transferência está em andamento</string>
     <string name="share_playlist_desc">Compartilhe esta playlist com outras pessoas</string>
     <string name="delete_playlist_desc">Remover esta playlist permanentemente</string>
@@ -721,7 +721,7 @@
     <string name="new_episodes">Novos episódios</string>
     <string name="episodes_for_later">Episódios para depois</string>
     <string name="save_episode_for_later">Guarde para mais tarde</string>
-    <string name="save_episode_for_later_desc">Adicionar aos seus \"Episódios para mais tarde\"</string>
+    <string name="save_episode_for_later_desc">Adicionar à sua playlist de Episódios para mais tarde</string>
     <string name="saved_episode">Salvo em \"Episódios para mais tarde\"</string>
     <string name="remove_episode_from_saved">Remover dos salvos</string>
     <string name="subscribe_to_podcast">Salvar podcast na biblioteca</string>
@@ -753,4 +753,18 @@
     <string name="widget_recognizer_unknown_artist">Artista desconhecido</string>
     <string name="widget_recognizer_mic_desc">Identificar música</string>
     <string name="widget_recognizer_channel_name">Reconhecimento de música</string>
+    <string name="widget_recognizer_channel_desc">Mostra uma notificação enquanto identifica uma música do widget</string>
+    <string name="widget_recognizer_notification_text">Gravando áudio para identificar a música…</string>
+    <string name="filter_episodes">Episódios</string>
+    <string name="filter_channels">Canais</string>
+    <string name="auto_playlist">Playlist automática</string>
+    <string name="downloaded_episodes">Episódios baixados</string>
+    <string name="episodes_for_later_empty">Ainda não há episódios salvos</string>
+    <string name="no_subscribed_channels">Sem canais inscritos</string>
+    <string name="no_downloaded_episodes">Sem episódios baixados</string>
+    <plurals name="n_channel">
+        <item quantity="one">%d canal</item>
+        <item quantity="many">%d canais</item>
+        <item quantity="other">%d canais</item>
+    </plurals>
 </resources>
