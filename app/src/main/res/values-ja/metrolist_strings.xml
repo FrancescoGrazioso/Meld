@@ -634,7 +634,7 @@
     <string name="speed_dial">クイック再生</string>
     <string name="pin_to_speed_dial">クイック再生にピン留め</string>
     <string name="unpin_from_speed_dial">クイック再生のピン留めを解除</string>
-    <string name="randomize_home_order">ホーム画面の順序をランダム化</string>
+    <string name="randomize_home_order">ホーム画面の表示順をランダムにする</string>
     <string name="randomize_home_order_desc">ホーム画面の各項目をランダムに並び替えます</string>
     <string name="daily_discover_sounds_like">%1$sに似たおすすめ</string>
     <string name="your_daily_discover">今日のおすすめ</string>
@@ -702,7 +702,7 @@
     <string name="metrolist">METROLIST</string>
     <string name="wanna_play_favorite_song">お気に入りの曲を再生しますか？</string>
     <string name="yeah">はい</string>
-    <string name="stands_with_palestine">このプロジェクトはパレスチナを支持します 🇵🇸</string>
+    <string name="stands_with_palestine">このプロジェクトはパレスチナを支持しています 🇵🇸</string>
     <string name="filter_podcasts">ポッドキャスト</string>
     <string name="view_podcast">ポッドキャストを表示</string>
     <string name="podcast_channels">ポッドキャストチャンネル</string>
