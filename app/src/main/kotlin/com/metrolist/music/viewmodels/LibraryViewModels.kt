@@ -49,6 +49,7 @@ import com.metrolist.music.extensions.filterVideoSongs
 import com.metrolist.music.extensions.filterYoutubeShorts
 import com.metrolist.music.extensions.toEnum
 import com.metrolist.music.playback.DownloadUtil
+import com.metrolist.music.utils.PodcastRefreshTrigger
 import com.metrolist.music.utils.SyncUtils
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.reportException
@@ -459,6 +460,14 @@ constructor(
         viewModelScope.launch(Dispatchers.IO) {
             syncUtils.syncPodcastSubscriptionsSuspend()
         }
+        // Observe refresh trigger for auto-refresh after subscribe/unsubscribe
+        viewModelScope.launch(Dispatchers.IO) {
+            PodcastRefreshTrigger.refreshFlow.collect {
+                // Small delay to allow YouTube's backend to update
+                kotlinx.coroutines.delay(1500)
+                fetchPodcastChannels()
+            }
+        }
     }
 
     fun clearPodcastData() {
@@ -473,6 +482,15 @@ constructor(
         fetchRdpnPlaylist()
         syncUtils.syncPodcastSubscriptionsSuspend()
         syncUtils.syncEpisodesForLaterSuspend()
+    }
+
+    /**
+     * Force refresh podcast channels. Called when screen becomes visible.
+     */
+    fun refreshChannels() {
+        viewModelScope.launch(Dispatchers.IO) {
+            fetchPodcastChannels()
+        }
     }
 }
 

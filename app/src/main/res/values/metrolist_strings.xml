@@ -578,6 +578,10 @@
     <string name="error_podcast_unsubscribe">Failed to unsubscribe from podcast</string>
     <string name="error_restricted_not_logged_in">Some tracks may not play due to age or country restrictions. Try logging into YouTube in Settings to resolve this issue.</string>
     <string name="error_restricted_logged_in">This track is restricted (age or country) and cannot be played at this time.</string>
+    <string name="subscribed_to_channel">Subscribed to channel</string>
+    <string name="unsubscribed_from_channel">Unsubscribed from channel</string>
+    <string name="error_subscribe_channel">Failed to update channel subscription</string>
+    <string name="view_channel">View Channel</string>
 
     <!-- Widget strings -->
     <string name="album_art">Album art</string>
