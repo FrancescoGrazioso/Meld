@@ -743,7 +743,6 @@
     <string name="no_songs_found">Keine Lieder gefunden. Ungültige Datei oder vielleicht wurden keine Lied-Übereinstimmungen gefunden.es wurden vielleicht keine übereinstimmenden Lieder gefunden.</string>
     <string name="sleep_timer_default_set">Einschlaf-Timer standardmäßig auf %d Min eingestellt</string>
     <string name="error_podcast_unsubscribe">Podcast-Abo kündigen fehlgeschlagen</string>
-    <string name="discord_activity_listening"></string>
     <string name="discord_rpc_preview">Rich Presence Vorschau</string>
     <string name="discord_playing_metrolist">Spielt Metrolist</string>
     <string name="discord_watching_metrolist">Schaut Metrolist an</string>
