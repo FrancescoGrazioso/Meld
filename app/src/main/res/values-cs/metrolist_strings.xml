@@ -774,4 +774,8 @@
     <string name="widget_recognizer_channel_name">Rozpoznání hudby</string>
     <string name="widget_recognizer_channel_desc">Zobrazit oznámení během identifikace skladby z widgetu</string>
     <string name="widget_recognizer_notification_text">Nahrávání zvuku pro identifikaci skladby…</string>
+    <string name="cache_after_seconds">Mezipaměť po sekundách</string>
+    <string name="cache_at_percent">Mezipaměť v procentech</string>
+    <string name="n_seconds">%d sekund</string>
+    <string name="n_percent">%d%%</string>
 </resources>
