@@ -729,4 +729,32 @@
     <string name="no_account_found">アカウントが見つかりません</string>
     <string name="restore_success">復元が完了しました</string>
     <string name="no_songs_found">曲が見つかりません。ファイルが無効であるか、該当する曲が存在しない可能性があります。</string>
+    <string name="cache_after_seconds">キャッシュ開始までの時間</string>
+    <string name="cache_at_percent">キャッシュ開始割合</string>
+    <string name="n_seconds">%d秒</string>
+    <string name="n_percent">%d%%</string>
+    <string name="widget_recognizer_name">音楽認識</string>
+    <string name="widget_recognizer_description">ホーム画面から直接、周囲で再生中の楽曲を識別できます</string>
+    <string name="widget_recognizer_tap_to_search">タップして開始</string>
+    <string name="widget_recognizer_listening">聴き取り中…</string>
+    <string name="widget_recognizer_processing">認識中…</string>
+    <string name="widget_recognizer_no_match">一致する曲が見つかりませんでした。もう一度お試しください</string>
+    <string name="widget_recognizer_error">認識に失敗しました</string>
+    <string name="widget_recognizer_error_generic">エラーが発生しました。もう一度お試しください</string>
+    <string name="widget_recognizer_unknown_song">不明な曲</string>
+    <string name="widget_recognizer_unknown_artist">不明なアーティスト</string>
+    <string name="widget_recognizer_mic_desc">曲を認識します</string>
+    <string name="widget_recognizer_channel_name">楽曲認識</string>
+    <string name="widget_recognizer_channel_desc">ウィジェットから曲を認識している間、通知を表示します</string>
+    <string name="widget_recognizer_notification_text">音声を録音中…</string>
+    <string name="filter_episodes">エピソード</string>
+    <string name="filter_channels">チャンネル</string>
+    <string name="auto_playlist">自動プレイリスト</string>
+    <string name="downloaded_episodes">ダウンロード済みのエピソード</string>
+    <string name="episodes_for_later_empty">保存済みのエピソードはありません</string>
+    <string name="no_subscribed_channels">登録済みのチャンネルはありません</string>
+    <string name="no_downloaded_episodes">ダウンロード済みのエピソードはありません</string>
+    <plurals name="n_channel">
+        <item quantity="other">%dチャンネル</item>
+    </plurals>
 </resources>
