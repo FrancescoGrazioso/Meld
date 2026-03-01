@@ -767,4 +767,8 @@
         <item quantity="many">%d canais</item>
         <item quantity="other">%d canais</item>
     </plurals>
+    <string name="cache_after_seconds">Armazenar em cache após segundos</string>
+    <string name="cache_at_percent">Cache em porcento</string>
+    <string name="n_seconds">%d segundos</string>
+    <string name="n_percent">%d%%</string>
 </resources>
