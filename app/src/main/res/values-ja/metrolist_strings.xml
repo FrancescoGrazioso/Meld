@@ -757,4 +757,9 @@
     <string name="cache_at_percent">キャッシュを開始する位置</string>
     <string name="n_seconds">%d秒</string>
     <string name="n_percent">%d%%</string>
+    <string name="subscribed_to_channel">チャンネルを登録しました</string>
+    <string name="unsubscribed_from_channel">チャンネルの登録を解除しました</string>
+    <string name="error_subscribe_channel">チャンネル登録の更新に失敗しました</string>
+    <string name="view_channel">チャンネルを表示</string>
+    <string name="filter_profiles">プロフィール</string>
 </resources>
