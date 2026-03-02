@@ -771,4 +771,9 @@
     <string name="cache_at_percent">Cache en pourcentage</string>
     <string name="n_seconds">%d secondes</string>
     <string name="n_percent">%d%%</string>
+    <string name="subscribed_to_channel">Abonné à la chaîne</string>
+    <string name="unsubscribed_from_channel">Désabonné de la chaîne</string>
+    <string name="error_subscribe_channel">Impossible de mettre à jour l\'abonnement à la chaîne</string>
+    <string name="view_channel">Voir la chaîne</string>
+    <string name="filter_profiles">Profils</string>
 </resources>
