@@ -7,7 +7,6 @@ package com.metrolist.music.ui.menu
 
 import android.content.Intent
 import android.content.res.Configuration
-import android.widget.Toast
 import java.time.LocalDateTime
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -65,6 +64,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.media3.exoplayer.offline.Download
 import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
+import android.widget.Toast
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.metrolist.innertube.YouTube
@@ -82,7 +82,6 @@ import com.metrolist.music.db.entities.PodcastEntity
 import com.metrolist.music.db.entities.SpeedDialItem
 import com.metrolist.music.db.entities.PlaylistSong
 import com.metrolist.music.db.entities.Song
-import timber.log.Timber
 import com.metrolist.music.extensions.toMediaItem
 import com.metrolist.music.models.toMediaMetadata
 import com.metrolist.music.playback.ExoDownloadService
@@ -101,6 +100,7 @@ import com.metrolist.music.viewmodels.CachePlaylistViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 @Composable
 fun SongMenu(
@@ -376,7 +376,10 @@ fun SongMenu(
                         // Episode: toggle save for later (same pattern as songs)
                         val isCurrentlySaved = song.song.inLibrary != null
                         database.query {
-                            update(song.song.copy(inLibrary = if (isCurrentlySaved) null else LocalDateTime.now()))
+                            update(song.song.copy(
+                                inLibrary = if (isCurrentlySaved) null else LocalDateTime.now(),
+                                isEpisode = true
+                            ))
                         }
                         coroutineScope.launch(Dispatchers.IO) {
                             if (isCurrentlySaved) {
@@ -650,41 +653,19 @@ fun SongMenu(
                                 },
                                 onClick = {
                                     coroutineScope.launch(Dispatchers.IO) {
-                                        if (isEpisodeSaved) {
-                                            // Remove from Episodes for Later
-                                            // Optimistic UI update - remove immediately
-                                            database.query {
-                                                update(song.song.copy(inLibrary = null))
-                                            }
-                                            val setVideoIdEntity = database.getSetVideoId(song.id)
-                                            val setVideoId = setVideoIdEntity?.setVideoId
-                                            if (setVideoId != null) {
-                                                YouTube.removeEpisodeFromSavedEpisodes(song.id, setVideoId).onSuccess {
-                                                    Timber.d("[EPISODE_SAVE] Removed episode from Episodes for Later: ${song.id}")
-                                                }.onFailure { e ->
-                                                    Timber.e(e, "[EPISODE_SAVE] Failed to remove episode: ${song.id}")
-                                                    withContext(Dispatchers.Main) {
-                                                        Toast.makeText(context, R.string.error_episode_remove, Toast.LENGTH_SHORT).show()
-                                                    }
-                                                }
-                                            } else {
-                                                Timber.w("[EPISODE_SAVE] No setVideoId found for ${song.id}")
-                                            }
-                                        } else {
-                                            // Add to Episodes for Later
-                                            // Optimistic UI update - add immediately
-                                            database.query {
-                                                update(song.song.copy(inLibrary = LocalDateTime.now()))
-                                            }
-                                            YouTube.addEpisodeToSavedEpisodes(song.id).onSuccess {
-                                                Timber.d("[EPISODE_SAVE] Saved episode to Episodes for Later: ${song.id}")
-                                            }.onFailure { e ->
-                                                Timber.e(e, "[EPISODE_SAVE] Failed to save episode: ${song.id}")
-                                                withContext(Dispatchers.Main) {
-                                                    Toast.makeText(context, R.string.error_episode_save, Toast.LENGTH_SHORT).show()
-                                                }
-                                            }
+                                        val shouldBeSaved = !isEpisodeSaved
+
+                                        // Update local database first (optimistic update)
+                                        database.query {
+                                            update(song.song.copy(
+                                                inLibrary = if (shouldBeSaved) LocalDateTime.now() else null,
+                                                isEpisode = true
+                                            ))
                                         }
+
+                                        // Sync with YouTube (handles login check internally)
+                                        val setVideoId = if (isEpisodeSaved) database.getSetVideoId(song.id)?.setVideoId else null
+                                        syncUtils.saveEpisode(song.id, shouldBeSaved, setVideoId)
                                     }
                                     onDismiss()
                                 }

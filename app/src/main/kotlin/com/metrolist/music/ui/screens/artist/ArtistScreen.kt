@@ -343,7 +343,7 @@ fun ArtistScreen(
                                     // Subscribe Button
                                     OutlinedButton(
                                         onClick = {
-                                            viewModel.toggleChannelSubscription(context)
+                                            viewModel.toggleChannelSubscription()
                                         },
                                         colors = ButtonDefaults.outlinedButtonColors(
                                             containerColor = if (isChannelSubscribed)

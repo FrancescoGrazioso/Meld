@@ -174,11 +174,11 @@ fun OnlinePodcastScreen(
                                 podcast = podcastItem,
                                 episodeCount = episodes.size,
                                 inLibrary = libraryPodcast?.inLibrary == true,
-                                onLibraryClick = { viewModel.toggleLibrary(context) },
+                                onLibraryClick = { viewModel.toggleLibrary() },
                                 onViewChannelClick = {
                                     val channelId = podcastItem.channelId ?: podcastItem.author?.id
                                     if (channelId != null) {
-                                        navController.navigate("artist/$channelId")
+                                        navController.navigate("artist/$channelId?isPodcastChannel=true")
                                     }
                                 }
                             )

@@ -584,6 +584,8 @@
     <string name="unsubscribed_from_channel">Unsubscribed from channel</string>
     <string name="error_subscribe_channel">Failed to update channel subscription</string>
     <string name="view_channel">View Channel</string>
+    <string name="saved_locally">Account not detected, saving locally</string>
+    <string name="removed_locally">Account not detected, removing locally</string>
 
     <!-- Widget strings -->
     <string name="album_art">Album art</string>

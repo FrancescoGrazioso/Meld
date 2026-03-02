@@ -66,6 +66,7 @@ import kotlinx.coroutines.launch
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.LocalPlayerConnection
+import com.metrolist.music.LocalSyncUtils
 import com.metrolist.music.R
 import com.metrolist.music.constants.CONTENT_TYPE_HEADER
 import com.metrolist.music.constants.CONTENT_TYPE_SONG
@@ -118,6 +119,7 @@ fun LibraryPodcastsScreen(
 
     val subscribedChannels by viewModel.subscribedChannels.collectAsState()
     val downloadedEpisodes by viewModel.downloadedEpisodes.collectAsState()
+    val savedEpisodes by viewModel.savedEpisodes.collectAsState()
     val sePlaylist by viewModel.sePlaylist.collectAsState()
     val podcastChannels by viewModel.podcastChannels.collectAsState()
     val rdpnPlaylist by viewModel.rdpnPlaylist.collectAsState()
@@ -225,12 +227,14 @@ fun LibraryPodcastsScreen(
                         )
                     }
 
-                    // SE "Episodes for Later" playlist card — fetched from YT Music
-                    item(key = "se_playlist", contentType = CONTENT_TYPE_HEADER) {
+                    // Episodes for Later - card/folder (works both logged in and out)
+                    item(key = "episodes_for_later", contentType = CONTENT_TYPE_HEADER) {
                         AutoPlaylistCard(
                             title = stringResource(R.string.episodes_for_later),
-                            thumbnailUrl = sePlaylist?.thumbnail,
-                            episodeCount = sePlaylist?.songCountText,
+                            thumbnailUrl = sePlaylist?.thumbnail ?: savedEpisodes.firstOrNull()?.song?.thumbnailUrl,
+                            episodeCount = sePlaylist?.songCountText ?: if (savedEpisodes.isNotEmpty()) {
+                                pluralStringResource(R.plurals.n_episode, savedEpisodes.size, savedEpisodes.size)
+                            } else null,
                             onClick = { navController.navigate("online_playlist/SE") },
                         )
                     }
@@ -616,6 +620,7 @@ private fun PodcastEpisodePlaylistMenu(
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val syncUtils = LocalSyncUtils.current
     val isPinned by database.speedDialDao.isPinned(podcast.id).collectAsState(initial = false)
 
     val playlistId = podcast.id.removePrefix("MPSP")
@@ -634,9 +639,12 @@ private fun PodcastEpisodePlaylistMenu(
                         },
                         onClick = {
                             coroutineScope.launch(Dispatchers.IO) {
+                                // Update local database
                                 database.query {
                                     update(podcast.copy(bookmarkedAt = null))
                                 }
+                                // Sync with YouTube (unsave podcast only, don't unsubscribe channel)
+                                syncUtils.savePodcast(podcast.id, false)
                             }
                             onDismiss()
                         },

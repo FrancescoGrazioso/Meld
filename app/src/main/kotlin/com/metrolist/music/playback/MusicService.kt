@@ -1801,29 +1801,21 @@ class MusicService :
 
     private suspend fun toggleEpisodeSaveForLater(songEntity: com.metrolist.music.db.entities.SongEntity) {
         val isCurrentlySaved = songEntity.inLibrary != null
-        // Update database first, then sync with YouTube
+        val shouldBeSaved = !isCurrentlySaved
+
+        // Update database first (optimistic update)
+        // Also ensure isEpisode = true so it appears in saved episodes list
         database.query {
-            update(songEntity.copy(inLibrary = if (isCurrentlySaved) null else java.time.LocalDateTime.now()))
+            update(songEntity.copy(
+                inLibrary = if (isCurrentlySaved) null else java.time.LocalDateTime.now(),
+                isEpisode = true
+            ))
         }
         currentMediaMetadata.value = player.currentMetadata
 
-        // Sync with YouTube in background
-        if (isCurrentlySaved) {
-            val setVideoId = database.getSetVideoId(songEntity.id)?.setVideoId
-            if (setVideoId != null) {
-                YouTube.removeEpisodeFromSavedEpisodes(songEntity.id, setVideoId)
-                    .onFailure { e ->
-                        Timber.e(e, "[EPISODE_SAVE] Failed to remove: ${songEntity.id}")
-                        android.widget.Toast.makeText(this, R.string.error_episode_remove, android.widget.Toast.LENGTH_SHORT).show()
-                    }
-            }
-        } else {
-            YouTube.addEpisodeToSavedEpisodes(songEntity.id)
-                .onFailure { e ->
-                    Timber.e(e, "[EPISODE_SAVE] Failed to save: ${songEntity.id}")
-                    android.widget.Toast.makeText(this, R.string.error_episode_save, android.widget.Toast.LENGTH_SHORT).show()
-                }
-        }
+        // Sync with YouTube (handles login check internally)
+        val setVideoId = if (isCurrentlySaved) database.getSetVideoId(songEntity.id)?.setVideoId else null
+        syncUtils.saveEpisode(songEntity.id, shouldBeSaved, setVideoId)
     }
 
     fun toggleStartRadio() {
