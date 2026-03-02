@@ -283,6 +283,26 @@
     <!-- Sleep timer -->
     <string name="set_as_default">Set as default</string>
     <string name="sleep_timer_default_set">Sleep timer default set to %d min</string>
+    <string name="enable_automatic_sleeptimer">Enable automatic sleep timer</string>
+    <string name="sleeptimer_description">Enables the sleep timer automatically with the default value by a custom time</string>
+    <string name="sleep_timer_repeat_description">Set a custom day and time when the sleep timer should automatically activate</string>
+    <string name="sleep_timer_activate">Sleep timer activates automatically when you play a song between start time and end time</string>
+    <string name="sleep_timer_repeat">Repeat</string>
+    <string name="sleep_timer_daily">Daily</string>
+    <string name="sleep_timer_weekdays">Monday to Friday</string>
+    <string name="sleep_timer_weekdays_weekends">Weekdays / Weekends</string>
+    <string name="sleep_timer_weekends">Weekends (Sat–Sun)</string>
+    <string name="sleep_timer_custom">Custom</string>
+    <string name="sleep_timer_start_time">Start time</string>
+    <string name="sleep_timer_end_time">End time</string>
+    <string name="sleep_timer_select_days">Select days</string>
+    <string name="sleep_timer_monday">Monday</string>
+    <string name="sleep_timer_tuesday">Tuesday</string>
+    <string name="sleep_timer_wednesday">Wednesday</string>
+    <string name="sleep_timer_thursday">Thursday</string>
+    <string name="sleep_timer_friday">Friday</string>
+    <string name="sleep_timer_saturday">Saturday</string>
+    <string name="sleep_timer_sunday">Sunday</string>
     <string name="sleep_timer_stop_after_current_song">Stop at end of current song when timer ends</string>
     <string name="sleep_timer_fade_out">Fade out in final minute</string>
 

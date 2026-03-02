@@ -34,6 +34,19 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import com.metrolist.music.constants.SleepTimerEnabledKey
+import com.metrolist.music.constants.SleepTimerRepeatKey
+import com.metrolist.music.constants.SleepTimerCustomDaysKey
+import com.metrolist.music.constants.SleepTimerDefaultKey
+import com.metrolist.music.constants.SleepTimerEndTimeKey
+import com.metrolist.music.constants.SleepTimerStartTimeKey
+import com.metrolist.music.constants.SleepTimerDayTimesKey
+import com.metrolist.music.utils.dataStore
+import com.metrolist.music.utils.get
+import java.time.LocalTime
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PlayerConnection(
@@ -49,7 +62,7 @@ class PlayerConnection(
 
     val service = binder.service
     private val playerReadinessFlow = service.isPlayerReady
-    
+
     /**
      * Safe player accessor checks readiness & handles errors.
      * Should be used by all player access within this class.
@@ -79,20 +92,20 @@ class PlayerConnection(
     val playbackState: MutableStateFlow<Int>
     private val playWhenReady: MutableStateFlow<Boolean>
     val isPlaying: kotlinx.coroutines.flow.StateFlow<Boolean>
-    
+
     init {
         Timber.tag(TAG).d("PlayerConnection init: playerReady=${playerReadinessFlow.value}")
-        
+
         // Initialize with player state or safe defaults if player not ready
         val initialState = try {
             val initialPlayer = getPlayerSafe()
-            Triple(initialPlayer.playbackState, initialPlayer.playWhenReady, 
-                   initialPlayer.playWhenReady && initialPlayer.playbackState != STATE_ENDED)
+            Triple(initialPlayer.playbackState, initialPlayer.playWhenReady,
+                initialPlayer.playWhenReady && initialPlayer.playbackState != STATE_ENDED)
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "Error during PlayerConnection initialization, using defaults")
             Triple(Player.STATE_IDLE, false, false)
         }
-        
+
         playbackState = MutableStateFlow(initialState.first)
         playWhenReady = MutableStateFlow(initialState.second)
         isPlaying = combine(playbackState, playWhenReady) { state, ready ->
@@ -102,7 +115,7 @@ class PlayerConnection(
             SharingStarted.Lazily,
             initialState.third
         )
-        
+
         // Track service readiness changes in background.
         scope.launch {
             playerReadinessFlow.collect { ready ->
@@ -112,10 +125,10 @@ class PlayerConnection(
                 }
             }
         }
-        
+
         Timber.tag(TAG).d("PlayerConnection state flows initialized successfully")
     }
-    
+
     // Effective playing state, considers Cast when active
     val isEffectivelyPlaying = combine(
         isPlaying,
@@ -128,7 +141,7 @@ class PlayerConnection(
         SharingStarted.Lazily,
         player.playbackState != STATE_ENDED && player.playWhenReady
     )
-    
+
     val mediaMetadata = MutableStateFlow(player.currentMetadata)
     val currentSong =
         mediaMetadata.flatMapLatest {
@@ -157,10 +170,8 @@ class PlayerConnection(
     val isMuted = service.isMuted
 
     val waitingForNetworkConnection = service.waitingForNetworkConnection
-    
     // Callback to check if playback changes should be blocked (e.g., Listen Together guest)
     var shouldBlockPlaybackChanges: (() -> Boolean)? = null
-    
     // Flag to allow internal sync operations to bypass blocking (set by ListenTogetherManager)
     @Volatile
     var allowInternalSync: Boolean = false
@@ -180,10 +191,9 @@ class PlayerConnection(
                     }
                 }
             }
-            
             // Initial setup if flow hasn't emitted yet but service is ready
             if (attachedPlayer == null && service.isPlayerReady.value) {
-                 updateAttachedPlayer(player)
+                updateAttachedPlayer(player)
             }
 
             Timber.tag(TAG).d("PlayerConnection flow observer registered")
@@ -198,7 +208,6 @@ class PlayerConnection(
         attachedPlayer?.removeListener(this)
         attachedPlayer = newPlayer
         newPlayer.addListener(this)
-        
         // Refresh all state from new player
         playbackState.value = newPlayer.playbackState
         playWhenReady.value = newPlayer.playWhenReady
@@ -209,7 +218,6 @@ class PlayerConnection(
         currentMediaItemIndex.value = newPlayer.currentMediaItemIndex
         shuffleModeEnabled.value = newPlayer.shuffleModeEnabled
         repeatMode.value = newPlayer.repeatMode
-        
         Timber.tag(TAG).d("Attached to new player instance: $newPlayer")
     }
 
@@ -317,7 +325,6 @@ class PlayerConnection(
             Timber.tag(TAG).e(e, "Error in togglePlayPause")
         }
     }
-    
     /**
      * Start playback - handles Cast when active
      */
@@ -336,7 +343,6 @@ class PlayerConnection(
             Timber.tag(TAG).e(e, "Error in play")
         }
     }
-    
     /**
      * Pause playback - handles Cast when active
      */
@@ -422,6 +428,107 @@ class PlayerConnection(
         }
     }
 
+    /** Parses "0=09:00-23:00;1=22:00-06:00" into Map<dayIndex, Pair<start, end>>. */
+    private fun parseDayTimes(raw: String): Map<Int, Pair<String, String>> {
+        if (raw.isBlank()) return emptyMap()
+        return raw.split(";").mapNotNull { entry ->
+            val parts = entry.split("=")
+            if (parts.size != 2) return@mapNotNull null
+            val dayIndex = parts[0].toIntOrNull() ?: return@mapNotNull null
+            val times = parts[1].split("-")
+            if (times.size != 2) return@mapNotNull null
+            dayIndex to (times[0] to times[1])
+        }.toMap()
+    }
+
+    private fun checkAndStartAutomaticSleepTimer(): Boolean {
+        return try {
+            val sleepTimerEnabled = service.applicationContext.dataStore.get(SleepTimerEnabledKey) ?: false
+            Timber.tag(TAG).d("✓ Sleep Timer Check: enabled=$sleepTimerEnabled")
+
+            if (!sleepTimerEnabled) {
+                Timber.tag(TAG).d("✗ Sleep Timer disabled - skipping")
+                return false
+            }
+
+            if (service.sleepTimer.isActive) {
+                Timber.tag(TAG).d("✗ Sleep Timer already active - skipping")
+                return false
+            }
+
+            val sleepTimerRepeat = service.applicationContext.dataStore.get(SleepTimerRepeatKey) ?: "daily"
+            val sleepTimerStartTime = service.applicationContext.dataStore.get(SleepTimerStartTimeKey) ?: "09:00"
+            val sleepTimerEndTime = service.applicationContext.dataStore.get(SleepTimerEndTimeKey) ?: "23:00"
+            val sleepTimerDefaultMinutes = (service.applicationContext.dataStore.get(SleepTimerDefaultKey) ?: 30f).roundToInt()
+            val sleepTimerCustomDaysStr = service.applicationContext.dataStore.get(SleepTimerCustomDaysKey) ?: "0,1,2,3,4"
+            val sleepTimerDayTimesStr = service.applicationContext.dataStore.get(SleepTimerDayTimesKey) ?: ""
+
+            Timber.tag(TAG).d("Sleep Timer Config: repeat=$sleepTimerRepeat start=$sleepTimerStartTime end=$sleepTimerEndTime default=$sleepTimerDefaultMinutes custom=$sleepTimerCustomDaysStr")
+
+            val currentTime = LocalTime.now()
+            val today = LocalDate.now()
+            val dayOfWeek = today.dayOfWeek.value % 7
+            val adjustedDayOfWeek = if (dayOfWeek == 0) 6 else dayOfWeek - 1
+
+            Timber.tag(TAG).d("Current: time=$currentTime dayOfWeek=$adjustedDayOfWeek")
+
+            val isDayAllowed = when (sleepTimerRepeat) {
+                "daily"             -> true
+                "weekdays"          -> adjustedDayOfWeek in 0..4
+                "weekends"          -> adjustedDayOfWeek in 5..6
+                "weekdays_weekends" -> true  // both groups active; per-day time handles the distinction
+                "custom" -> {
+                    val customDays = sleepTimerCustomDaysStr.split(",").mapNotNull { it.trim().toIntOrNull() }
+                    Timber.tag(TAG).d("Custom days: $customDays, adjustedDayOfWeek=$adjustedDayOfWeek")
+                    adjustedDayOfWeek in customDays
+                }
+                else -> false
+            }
+
+            if (!isDayAllowed) {
+                Timber.tag(TAG).d("✗ Day not allowed for Sleep Timer")
+                return false
+            }
+
+// "daily" uses the single global time window.
+// All other modes store per-day times in the dayTimes map so that
+// e.g. weekdays and weekends can have different windows.
+            val timeFormatter = DateTimeFormatter.ofPattern("HH:mm")
+            val usesDayTimesMap = sleepTimerRepeat != "daily"
+            val (startStr, endStr) = if (usesDayTimesMap) {
+                parseDayTimes(sleepTimerDayTimesStr)[adjustedDayOfWeek]
+                    ?: (sleepTimerStartTime to sleepTimerEndTime)
+            } else {
+                sleepTimerStartTime to sleepTimerEndTime
+            }
+
+            val startTime = LocalTime.parse(startStr, timeFormatter)
+            val endTime   = LocalTime.parse(endStr, timeFormatter)
+
+            // Support overnight ranges (e.g. 22:00–06:00) in addition to normal ranges
+            val isTimeInRange = if (endTime.isAfter(startTime)) {
+                currentTime.isAfter(startTime) && currentTime.isBefore(endTime)
+            } else {
+                currentTime.isAfter(startTime) || currentTime.isBefore(endTime)
+            }
+
+            Timber.tag(TAG).d("Time check: $currentTime between $startStr-$endStr? $isTimeInRange")
+
+            if (isTimeInRange) {
+                Timber.tag(TAG).i("AUTO SLEEP TIMER STARTED: $sleepTimerDefaultMinutes minutes")
+                service.sleepTimer.start(sleepTimerDefaultMinutes)
+                return true
+            }
+
+            Timber.tag(TAG).d("✗ Time not in range")
+            return false
+
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Sleep Timer error")
+            return false
+        }
+    }
+
     override fun onPlaybackStateChanged(state: Int) {
         playbackState.value = state
         error.value = player.playerError
@@ -431,7 +538,13 @@ class PlayerConnection(
         newPlayWhenReady: Boolean,
         reason: Int,
     ) {
+        val wasPlaying = playWhenReady.value
         playWhenReady.value = newPlayWhenReady
+
+        // Central sleep timer trigger: fires on every paused -> playing transition,
+        if (newPlayWhenReady && !wasPlaying) {
+            checkAndStartAutomaticSleepTimer()
+        }
     }
 
     override fun onMediaItemTransition(
