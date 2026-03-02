@@ -760,4 +760,12 @@
         <item quantity="one">%d kanal</item>
         <item quantity="other">%d kanal</item>
     </plurals>
+    <string name="subscribed_to_channel">Kanala abone olundu</string>
+    <string name="unsubscribed_from_channel">Kanal aboneliği kaldırıldı</string>
+    <string name="view_channel">Kanalı görüntüle</string>
+    <string name="filter_profiles">Profiller</string>
+    <string name="cache_after_seconds">Şu kadar saniye sonra önbelleğe al</string>
+    <string name="cache_at_percent">Şu yüzdede önbelleğe al</string>
+    <string name="n_seconds">%d saniye</string>
+    <string name="error_subscribe_channel">Abonelik bilgileri tazelenemedi</string>
 </resources>
