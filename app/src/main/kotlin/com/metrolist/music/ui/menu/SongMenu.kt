@@ -33,6 +33,7 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -86,6 +87,7 @@ import com.metrolist.music.extensions.toMediaItem
 import com.metrolist.music.models.toMediaMetadata
 import com.metrolist.music.playback.ExoDownloadService
 import com.metrolist.music.playback.queues.YouTubeQueue
+import com.metrolist.music.ui.component.DefaultDialog
 import com.metrolist.music.ui.component.ListDialog
 import com.metrolist.music.ui.component.LocalBottomSheetPageState
 import com.metrolist.music.ui.component.Material3MenuGroup
@@ -315,6 +317,93 @@ fun SongMenu(
 
     var showSelectArtistDialog by rememberSaveable {
         mutableStateOf(false)
+    }
+
+    var showDeleteUploadedDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var isDeleting by remember { mutableStateOf(false) }
+
+    if (showDeleteUploadedDialog) {
+        DefaultDialog(
+            onDismiss = { if (!isDeleting) showDeleteUploadedDialog = false },
+            icon = {
+                Icon(
+                    painter = painterResource(R.drawable.delete),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error,
+                )
+            },
+            title = { Text(stringResource(R.string.delete_uploaded_song)) },
+            buttons = {
+                TextButton(
+                    onClick = { showDeleteUploadedDialog = false },
+                    enabled = !isDeleting
+                ) {
+                    Text(stringResource(R.string.cancel))
+                }
+                TextButton(
+                    onClick = {
+                        val entityId = song.song.uploadEntityId
+                        if (entityId == null) {
+                            Toast.makeText(
+                                context,
+                                R.string.delete_uploaded_song_failed,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            showDeleteUploadedDialog = false
+                            return@TextButton
+                        }
+                        isDeleting = true
+                        coroutineScope.launch(Dispatchers.IO) {
+                            YouTube.deleteUploadedSong(entityId).onSuccess {
+                                database.query {
+                                    delete(song.song)
+                                }
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        R.string.delete_uploaded_song_success,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    isDeleting = false
+                                    showDeleteUploadedDialog = false
+                                    onDismiss()
+                                }
+                            }.onFailure {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        R.string.delete_uploaded_song_failed,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    isDeleting = false
+                                    showDeleteUploadedDialog = false
+                                }
+                            }
+                        }
+                    },
+                    enabled = !isDeleting
+                ) {
+                    if (isDeleting) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(16.dp),
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(
+                            text = stringResource(R.string.delete),
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
+                }
+            }
+        ) {
+            Text(
+                text = stringResource(R.string.delete_uploaded_song_confirm),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 
     if (showSelectArtistDialog) {
@@ -778,6 +867,23 @@ fun SongMenu(
                                 onClick = {
                                     onDismiss()
                                     cacheViewModel.removeSongFromCache(song.id)
+                                }
+                            )
+                        )
+                    }
+                    // Delete uploaded song option
+                    if (song.song.isUploaded) {
+                        add(
+                            Material3MenuItemData(
+                                title = { Text(text = stringResource(R.string.delete_uploaded_song)) },
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.delete),
+                                        contentDescription = null,
+                                    )
+                                },
+                                onClick = {
+                                    showDeleteUploadedDialog = true
                                 }
                             )
                         )

@@ -978,4 +978,23 @@
     <string name="cache_at_percent">Cache at percent</string>
     <string name="n_seconds">%d seconds</string>
     <string name="n_percent">%d%%</string>
+
+    <!-- Upload songs -->
+    <string name="upload_songs">Upload songs</string>
+    <string name="uploading">Uploading…</string>
+    <string name="uploading_song">Uploading %1$s</string>
+    <string name="upload_progress">%1$d of %2$d</string>
+    <string name="upload_complete">Upload complete</string>
+    <string name="upload_failed">Upload failed</string>
+    <string name="upload_file_too_large">File too large (max 300MB)</string>
+    <string name="upload_unsupported_format">Unsupported format. Use mp3, m4a, wma, flac, or ogg</string>
+    <string name="select_songs_to_upload">Select songs to upload</string>
+    <string name="delete_uploaded_song">Delete uploaded song</string>
+    <string name="delete_uploaded_song_confirm">Are you sure you want to delete this uploaded song? This cannot be undone.</string>
+    <string name="delete_uploaded_song_success">Uploaded song deleted</string>
+    <string name="delete_uploaded_song_failed">Failed to delete uploaded song</string>
+    <string name="delete_uploaded_songs">Delete uploaded songs</string>
+    <string name="delete_uploaded_songs_confirm">Are you sure you want to delete %1$d uploaded songs? This cannot be undone.</string>
+    <string name="deleted_n_songs">Deleted %1$d songs</string>
+    <string name="deleting">Deleting…</string>
 </resources>
