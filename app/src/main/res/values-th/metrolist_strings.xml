@@ -757,4 +757,9 @@
     <string name="cache_at_percent">แคชเมื่อถึงเปอร์เซ็นต์</string>
     <string name="n_seconds">%d วินาที</string>
     <string name="n_percent">%d%%</string>
+    <string name="subscribed_to_channel">ติดตามช่องแล้ว</string>
+    <string name="unsubscribed_from_channel">ยกเลิกการติดตามช่องแล้ว</string>
+    <string name="error_subscribe_channel">ไม่สามารถอัปเดตการติดตามช่องได้</string>
+    <string name="view_channel">ดูช่อง</string>
+    <string name="filter_profiles">โปรไฟล์</string>
 </resources>
