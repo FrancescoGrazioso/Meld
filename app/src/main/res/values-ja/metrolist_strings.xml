@@ -753,4 +753,8 @@
     <plurals name="n_channel">
         <item quantity="other">%dチャンネル</item>
     </plurals>
+    <string name="cache_after_seconds">キャッシュを開始するまでの時間</string>
+    <string name="cache_at_percent">キャッシュを開始する位置</string>
+    <string name="n_seconds">%d秒</string>
+    <string name="n_percent">%d%%</string>
 </resources>
