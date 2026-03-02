@@ -771,4 +771,9 @@
     <string name="cache_at_percent">In cache dopo percentuale</string>
     <string name="n_seconds">%d secondi</string>
     <string name="n_percent">%d%%</string>
+    <string name="subscribed_to_channel">Sottoscritto al canale</string>
+    <string name="unsubscribed_from_channel">Disiscritto al canale</string>
+    <string name="error_subscribe_channel">Errore nell\'aggiornamento della sottoscrizione al canale</string>
+    <string name="view_channel">Vedi canale</string>
+    <string name="filter_profiles">Profili</string>
 </resources>
