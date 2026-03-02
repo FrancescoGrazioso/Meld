@@ -718,16 +718,16 @@
     <string name="yeah">Да</string>
     <string name="stands_with_palestine">Этот проект поддерживает Палестину 🇵🇸</string>
     <string name="filter_podcasts">Подкасты</string>
-    <string name="view_podcast">Открыть подкаст</string>
+    <string name="view_podcast">Перейти к подкасту</string>
     <string name="podcast_channels">Каналы подкастов</string>
     <string name="latest_episodes">Последние выпуски</string>
     <string name="your_shows">Ваши шоу</string>
     <string name="subscribed_channels">Подписанные каналы</string>
     <string name="new_episodes">Новые выпуски</string>
-    <string name="episodes_for_later">Выпуски на потом</string>
+    <string name="episodes_for_later">Сохраненные выпуски</string>
     <string name="save_episode_for_later">Сохранить на потом</string>
-    <string name="save_episode_for_later_desc">Добавить в плейлист «Выпуски на потом»</string>
-    <string name="saved_episode">Сохранено в «Выпуски на потом»</string>
+    <string name="save_episode_for_later_desc">Добавить в плейлист «Сохраненные выпуски»</string>
+    <string name="saved_episode">Сохранено в «Сохраненные выпуски»</string>
     <string name="remove_episode_from_saved">Удалить из сохранённых</string>
     <string name="subscribe_to_podcast">Сохранить подкаст в библиотеку</string>
     <string name="save_to_library">Сохранить в библиотеку</string>
@@ -778,4 +778,9 @@
     <string name="cache_at_percent">Кэшировать на процентах</string>
     <string name="n_seconds">%d секунд</string>
     <string name="n_percent">%d%%</string>
+    <string name="subscribed_to_channel">Вы подписались на канал</string>
+    <string name="unsubscribed_from_channel">Вы отписались от канала</string>
+    <string name="error_subscribe_channel">Не удалось обновить подписку на канал</string>
+    <string name="view_channel">Перейти к каналу</string>
+    <string name="filter_profiles">Профили</string>
 </resources>
