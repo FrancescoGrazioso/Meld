@@ -753,4 +753,8 @@
     <plurals name="n_channel">
         <item quantity="other">%d 个频道</item>
     </plurals>
+    <string name="cache_after_seconds">缓存时间（秒）</string>
+    <string name="cache_at_percent">缓存百分比</string>
+    <string name="n_seconds">%d 秒</string>
+    <string name="n_percent">%d%%</string>
 </resources>
