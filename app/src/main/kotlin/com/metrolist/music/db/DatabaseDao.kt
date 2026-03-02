@@ -1101,6 +1101,15 @@ interface DatabaseDao {
     @Query("SELECT COUNT(*) FROM song WHERE isLocal = 1 AND localPath IS NOT NULL")
     fun localSongsCount(): Flow<Int>
 
+    @Query("UPDATE song SET playbackPosition = :position WHERE id = :songId")
+    fun updatePlaybackPosition(songId: String, position: Long?)
+
+    @Query("SELECT playbackPosition FROM song WHERE id = :songId")
+    fun getPlaybackPosition(songId: String): Long?
+
+    @Query("SELECT playbackPosition FROM song WHERE id = :songId")
+    fun playbackPositionFlow(songId: String): Flow<Long?>
+
     @Transaction
     @Query("SELECT * FROM song WHERE isUploaded = 1 ORDER BY dateDownload")
     fun uploadedSongsByCreateDateAsc(): Flow<List<Song>>

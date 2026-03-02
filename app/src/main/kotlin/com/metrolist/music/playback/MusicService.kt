@@ -952,9 +952,15 @@ class MusicService :
         // Save queue periodically to prevent queue loss from crash or force kill
         scope.launch {
             while (isActive) {
-                delay(30.seconds)
+                delay(15.seconds)
                 if (dataStore.get(PersistentQueueKey, true)) {
                     saveQueueToDisk()
+                }
+                // Also save episode position periodically
+                val currentMetadata = player.currentMediaItem?.metadata
+                if (currentMetadata?.isEpisode == true && player.isPlaying && player.currentPosition > 0) {
+                    previousEpisodePosition = player.currentPosition
+                    saveEpisodePosition(currentMetadata.id, player.currentPosition)
                 }
             }
         }
@@ -1940,11 +1946,64 @@ class MusicService :
     }
 
     private var previousMediaItemIndex = C.INDEX_UNSET
+    private var previousEpisodeId: String? = null
+    private var previousEpisodePosition: Long = 0L
+
+    /**
+     * Save podcast episode playback position to database.
+     * Only saves if the item is an episode and position is meaningful (> 3 seconds).
+     */
+    private fun saveEpisodePosition(episodeId: String, positionMs: Long) {
+        if (positionMs < 3000) return // Don't save if less than 3 seconds played
+        scope.launch(Dispatchers.IO + SilentHandler) {
+            database.updatePlaybackPosition(episodeId, positionMs)
+            Timber.tag(TAG).d("Saved episode position: $episodeId at ${positionMs}ms")
+        }
+    }
+
+    /**
+     * Restore podcast episode playback position from database.
+     * Seeks to saved position if available.
+     */
+    private fun restoreEpisodePosition(episodeId: String) {
+        scope.launch(Dispatchers.IO + SilentHandler) {
+            val savedPosition = database.getPlaybackPosition(episodeId)
+            if (savedPosition != null && savedPosition > 0) {
+                withContext(Dispatchers.Main) {
+                    // Only seek if we're still on the same episode
+                    if (player.currentMediaItem?.mediaId == episodeId) {
+                        player.seekTo(savedPosition)
+                        Timber.tag(TAG).d("Restored episode position: $episodeId to ${savedPosition}ms")
+                    }
+                }
+            }
+        }
+    }
 
     override fun onMediaItemTransition(
         mediaItem: MediaItem?,
         reason: Int,
     ) {
+        // Save previous episode position if it was an episode
+        previousEpisodeId?.let { episodeId ->
+            if (previousEpisodePosition > 0) {
+                saveEpisodePosition(episodeId, previousEpisodePosition)
+            }
+        }
+        previousEpisodeId = null
+        previousEpisodePosition = 0L
+
+        // Check if new item is an episode and restore its position
+        val newMetadata = mediaItem?.metadata
+        if (newMetadata?.isEpisode == true) {
+            previousEpisodeId = newMetadata.id
+            // Delay restoration to let playback start
+            scope.launch {
+                delay(100)
+                restoreEpisodePosition(newMetadata.id)
+            }
+        }
+
         // Force Repeat One if the player ignored it and auto-advanced
         if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
             val repeatMode = runBlocking { dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) }
@@ -2066,6 +2125,15 @@ class MusicService :
 
             if (!playWhenReady && !isPausedByVolumeMute) {
                 wasPlayingBeforeVolumeMute = false
+            }
+        }
+
+        // Save episode position when pausing
+        if (!playWhenReady) {
+            val currentMetadata = player.currentMediaItem?.metadata
+            if (currentMetadata?.isEpisode == true && player.currentPosition > 0) {
+                saveEpisodePosition(currentMetadata.id, player.currentPosition)
+                previousEpisodePosition = player.currentPosition
             }
         }
 
@@ -3113,6 +3181,14 @@ class MusicService :
 
     override fun onDestroy() {
         isRunning = false
+
+        // Save episode position before destroying
+        val currentMetadata = player.currentMediaItem?.metadata
+        if (currentMetadata?.isEpisode == true && player.currentPosition > 0) {
+            runBlocking(Dispatchers.IO) {
+                database.updatePlaybackPosition(currentMetadata.id, player.currentPosition)
+            }
+        }
 
         try {
             unregisterReceiver(screenStateReceiver)
