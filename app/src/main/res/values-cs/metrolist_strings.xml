@@ -778,4 +778,9 @@
     <string name="cache_at_percent">Mezipaměť v procentech</string>
     <string name="n_seconds">%d sekund</string>
     <string name="n_percent">%d%%</string>
+    <string name="subscribed_to_channel">Kanál odebírán</string>
+    <string name="unsubscribed_from_channel">Odběr kanálu zrušen</string>
+    <string name="error_subscribe_channel">Nepodařilo se změnit odběr kanálu</string>
+    <string name="view_channel">Zobrazit kanál</string>
+    <string name="filter_profiles">Profily</string>
 </resources>
