@@ -298,19 +298,33 @@ class MusicService :
 
     lateinit var playerVolume: MutableStateFlow<Float>
     val isMuted = MutableStateFlow(false)
+    private val sleepTimerVolumeMultiplier = MutableStateFlow(1f)
+    private val audioFocusVolumeMultiplier = MutableStateFlow(1f)
 
     fun toggleMute() {
         val newMutedState = !isMuted.value
         isMuted.value = newMutedState
-        // Immediately update player volume to ensure it takes effect
-        player.volume = if (newMutedState) 0f else playerVolume.value
+        applyEffectiveVolume()
     }
 
     fun setMuted(muted: Boolean) {
         isMuted.value = muted
-        // Immediately update player volume to ensure it takes effect
-        // This handles cases where the player reference may have changed
-        player.volume = if (muted) 0f else playerVolume.value
+        applyEffectiveVolume()
+    }
+
+    private fun calculateEffectiveVolume(
+        volume: Float = playerVolume.value,
+        muted: Boolean = isMuted.value,
+        sleepTimerMultiplier: Float = sleepTimerVolumeMultiplier.value,
+        focusMultiplier: Float = audioFocusVolumeMultiplier.value,
+    ): Float {
+        if (muted) return 0f
+        return (volume * sleepTimerMultiplier * focusMultiplier).coerceIn(0f, 1f)
+    }
+
+    private fun applyEffectiveVolume() {
+        if (!::player.isInitialized || isCrossfading) return
+        player.volume = calculateEffectiveVolume()
     }
 
 
@@ -491,7 +505,9 @@ class MusicService :
         )
         player = createExoPlayer()
         player.addListener(this@MusicService)
-        sleepTimer = SleepTimer(scope, player)
+        sleepTimer = SleepTimer(scope, player) { multiplier ->
+            sleepTimerVolumeMultiplier.value = multiplier
+        }
         player.addListener(sleepTimer)
 
         // Mark player as initialized after successful creation
@@ -644,10 +660,22 @@ class MusicService :
                 }
         }
 
-        combine(playerVolume, isMuted) { volume, muted ->
-            if (muted) 0f else volume
+        combine(
+            playerVolume,
+            isMuted,
+            sleepTimerVolumeMultiplier,
+            audioFocusVolumeMultiplier,
+        ) { volume, muted, timerMultiplier, focusMultiplier ->
+            calculateEffectiveVolume(
+                volume = volume,
+                muted = muted,
+                sleepTimerMultiplier = timerMultiplier,
+                focusMultiplier = focusMultiplier,
+            )
         }.collectLatest(scope) {
-            player.volume = it
+            if (!isCrossfading) {
+                player.volume = it
+            }
         }
 
         playerVolume.debounce(1000).collect(scope) { volume ->
@@ -1010,6 +1038,7 @@ class MusicService :
             AudioManager.AUDIOFOCUS_GAIN,
             AudioManager.AUDIOFOCUS_GAIN_TRANSIENT -> {
                 hasAudioFocus = true
+                audioFocusVolumeMultiplier.value = 1f
 
                 if (wasPlayingBeforeAudioFocusLoss && !player.isPlaying && !reentrantFocusGain) {
                     reentrantFocusGain = true
@@ -1026,12 +1055,13 @@ class MusicService :
                     }
                 }
 
-                player.volume = if (isMuted.value) 0f else playerVolume.value
+                applyEffectiveVolume()
                 lastAudioFocusState = focusChange
             }
 
             AudioManager.AUDIOFOCUS_LOSS -> {
                 hasAudioFocus = false
+                audioFocusVolumeMultiplier.value = 1f
                 wasPlayingBeforeAudioFocusLoss = player.isPlaying
                 if (player.isPlaying) {
                     player.pause()
@@ -1042,6 +1072,7 @@ class MusicService :
 
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> {
                 hasAudioFocus = false
+                audioFocusVolumeMultiplier.value = 1f
                 wasPlayingBeforeAudioFocusLoss = player.isPlaying
                 if (player.isPlaying) {
                     player.pause()
@@ -1051,16 +1082,18 @@ class MusicService :
 
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
                 hasAudioFocus = false
+                audioFocusVolumeMultiplier.value = 0.2f
                 wasPlayingBeforeAudioFocusLoss = player.isPlaying
                 if (player.isPlaying) {
-                    player.volume = if (isMuted.value) 0f else (playerVolume.value * 0.2f)
+                    applyEffectiveVolume()
                 }
                 lastAudioFocusState = focusChange
             }
 
             AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK -> {
                 hasAudioFocus = true
-                player.volume = if (isMuted.value) 0f else playerVolume.value
+                audioFocusVolumeMultiplier.value = 1f
+                applyEffectiveVolume()
                 lastAudioFocusState = focusChange
             }
         }
@@ -3039,7 +3072,7 @@ class MusicService :
                 playWhenReady = player.playWhenReady,
                 repeatMode = player.repeatMode,
                 shuffleModeEnabled = player.shuffleModeEnabled,
-                volume = player.volume,
+                volume = playerVolume.value,
                 currentPosition = player.currentPosition,
                 currentMediaItemIndex = player.currentMediaItemIndex,
                 playbackState = player.playbackState
@@ -3424,6 +3457,7 @@ class MusicService :
         fadingPlayer?.release()
         fadingPlayer = null
         isCrossfading = false
+        applyEffectiveVolume()
         sleepTimer.notifySongTransition()
     }
 

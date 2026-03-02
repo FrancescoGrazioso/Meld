@@ -283,6 +283,8 @@
     <!-- Sleep timer -->
     <string name="set_as_default">Set as default</string>
     <string name="sleep_timer_default_set">Sleep timer default set to %d min</string>
+    <string name="sleep_timer_stop_after_current_song">Stop at end of current song when timer ends</string>
+    <string name="sleep_timer_fade_out">Fade out in final minute</string>
 
     <!-- Player Settings -->
     <string name="disable_load_more_when_repeat_all">Disable load more when repeat all</string>
