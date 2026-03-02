@@ -767,4 +767,13 @@
         <item quantity="many">%d canales</item>
         <item quantity="other">%d canales</item>
     </plurals>
+    <string name="subscribed_to_channel">Suscrito al canal</string>
+    <string name="unsubscribed_from_channel">Suscripción al canal cancelada</string>
+    <string name="error_subscribe_channel">Error al actualizar la suscripción al canal</string>
+    <string name="view_channel">Ver canal</string>
+    <string name="filter_profiles">Perfiles</string>
+    <string name="cache_after_seconds">Almacenar en caché después de segundos</string>
+    <string name="cache_at_percent">Caché en porcentaje</string>
+    <string name="n_seconds">%d segundos</string>
+    <string name="n_percent">%d%%</string>
 </resources>
