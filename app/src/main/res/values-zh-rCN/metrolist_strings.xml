@@ -757,4 +757,9 @@
     <string name="cache_at_percent">缓存百分比</string>
     <string name="n_seconds">%d 秒</string>
     <string name="n_percent">%d%%</string>
+    <string name="subscribed_to_channel">已订阅频道</string>
+    <string name="unsubscribed_from_channel">已取消订阅频道</string>
+    <string name="error_subscribe_channel">无法更新频道订阅</string>
+    <string name="view_channel">查看频道</string>
+    <string name="filter_profiles">用户资料</string>
 </resources>
