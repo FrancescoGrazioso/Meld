@@ -814,4 +814,7 @@
     <string name="delete_uploaded_songs_confirm">Sei sicuro di voler eliminare %1$d brani caricati? Questa azione non può essere annullata.</string>
     <string name="deleted_n_songs">Elimina %1$d brani</string>
     <string name="deleting">Eliminazione…</string>
+    <string name="enable_automatic_sleeptimer">Attiva timer per lo spegnimento automatico</string>
+    <string name="sleeptimer_description">Attiva lo spegnimento automatico con un valore temporale personalizzato</string>
+    <string name="sleep_timer_repeat_description">Imposta um giorno e un orario personalizzati per quando lo spegnimento automatico si deve attivare</string>
 </resources>
