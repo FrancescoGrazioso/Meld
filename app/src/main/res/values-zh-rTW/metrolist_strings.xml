@@ -300,4 +300,10 @@
     <string name="tap_to_open">點擊開啟 Metrolist</string>
     <string name="persistent_shuffle_desc">在開始播放新歌曲或播放清單時，仍維持隨機播放狀態</string>
     <string name="persistent_shuffle_title">固定隨機播放</string>
+    <string name="enable">啟用</string>
+    <string name="crop_album_art">裁切專輯封面</string>
+    <string name="crop_album_art_desc">透過裁切影片縮圖強制使用正方形寬高比</string>
+    <string name="player_background_solid">純色</string>
+    <string name="display_density">顯示密度</string>
+    <string name="restart">重新啟動</string>
 </resources>
