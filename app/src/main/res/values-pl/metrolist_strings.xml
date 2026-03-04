@@ -113,7 +113,7 @@
     <string name="open_supported_links">Otwórz obsługiwane łącze domyślnie</string>
     <string name="configure_supported_links">Skonfiguruj obsługiwane łącza</string>
     <string name="intent_supported_links_not_found">Nie można znaleźć obsługiwanych ustawień linków, skonfiguruj je ręcznie</string>
-    <string name="set_first_lyrics_provider">Preferowany dostawca tekstów piosenek</string>
+    <string name="set_first_lyrics_provider">Preferowany dostawca tekstów utworów</string>
     <string name="enable_similar_content">Włącz podobną zawartość</string>
     <string name="min_playback_duration_title">Minimalny czas odtwarzania</string>
     <string name="minimum_playback_duration">Minimalny czas odtwarzania</string>
@@ -267,7 +267,7 @@
     <string name="lyrics_glow_effect">Włącz efekt podświetlenia tekstu</string>
     <string name="lyrics_glow_effect_desc">Dodaj efekty podświetlenia i odbicia do aktywnego tekstu</string>
     <string name="enable_better_lyrics">Włącz \"Better Lyrics\"</string>
-    <string name="enable_better_lyrics_desc">Używaj dostawcy \"Better Lyrics\" do synchronizacji tekstów słowo w słowo</string>
+    <string name="enable_better_lyrics_desc">Tekst piosenki zsynchronizowany na poziomie sylab, idealny do karaoke.</string>
     <string name="shuffle_playlist_first">Najpierw odtwórz losowo playlistę/album</string>
     <string name="shuffle_playlist_first_desc">Podczas odtwarzania losowego najpierw odtwarzaj wszystkie utwory z oryginalnej playlisty/albumu, a potem podobne utwory</string>
     <string name="show_wrapped_card">Wyświetl kartę Wrapped</string>
@@ -404,4 +404,37 @@
     <string name="decryption_library_newpipe_desc">Oficjalna biblioteka TeamNewPipe. Najlepiej dostosowana do zmian na YouTube. Zalecana jako domyślna. W razie błędu automatycznie przełącza się na PipePipe API.</string>
     <string name="decryption_library_pipepipe_api">PipePipe API</string>
     <string name="decryption_library_pipepipe_api_desc">Deszyfrowanie oparte na API przy użyciu MetroExtractor. Szybsze, ale zależne od zewnętrznego serwera. W razie błędu automatycznie przełącza się na NewPipe.</string>
+    <string name="deleting">Usuwanie…</string>
+    <string name="deleted_n_songs">Usunięto %1$d piosenek</string>
+    <string name="filter_profiles">Profile</string>
+    <string name="filter_channels">Kanały</string>
+    <string name="auto_playlist">Automatyczna playlista</string>
+    <string name="downloaded_episodes">Pobrane odcinki</string>
+    <string name="episodes_for_later_empty">Nie zapisano żadnych odcinków</string>
+    <string name="no_downloaded_episodes">Brak pobranych odcinków</string>
+    <string name="no_subscribed_channels">Brak zasubskrybowanych kanałów</string>
+    <plurals name="n_channel">
+        <item quantity="one">%d kanał</item>
+        <item quantity="few">%d kanały</item>
+        <item quantity="many">%d kanałów</item>
+        <item quantity="other">%d kanałów</item>
+    </plurals>
+    <string name="restore_confirm_title">Przywrócić kopię?</string>
+    <string name="enable">Włącz</string>
+    <string name="player_background_solid">Jednolity</string>
+    <string name="display_density">Gęstość wyświetlania</string>
+    <string name="restart">Uruchom ponownie</string>
+    <string name="restart_required">Wymagane ponowne uruchomienie</string>
+    <string name="density_restart_message">Zmiana gęstości wyświetlania zacznie obowiązywać po ponownym uruchomieniu aplikacji. Uruchomić ją ponownie teraz?</string>
+    <string name="enable_lyricsplus">Włącz LyricsPlus</string>
+    <string name="enable_lyricsplus_desc">Synchronizuje teksty piosenek z różnych zródeł</string>
+    <string name="lyrics_provider_selection">Wybór dostawcy tekstów utworów</string>
+    <string name="lyrics_provider_selection_desc">Wybierz, których dostawców tekstów utworów chcesz używać</string>
+    <string name="prevent_duplicate_tracks_in_queue">Zapobiegaj duplikatom utworów w kolejce</string>
+    <string name="prevent_duplicate_tracks_in_queue_desc">Gdy dodajesz utwór do kolejki, usuwa jego wcześniejszą pozycję, jeśli był już w niej obecny</string>
+    <string name="lyrics_provider_priority_desc">Przeciągnij, aby zmienić kolejność dostawców tekstów utworów. Wyższa pozycja -&gt; wyższy priorytet.</string>
+    <string name="enable_lrclib_desc">Synchronizowana baza danych tekstów utworów tworzona przez społeczność</string>
+    <string name="enable_kugou_desc">Pobiera teksty utworów z KuGou, popularnej chińskiej platformy muzycznej</string>
+    <string name="youtube_music_lyrics_note">UWAGA: Teksty z YouTube Music będą wyświetlane automatycznie, gdy inne teksty nie są dostępne. Teksty z YTM zwykle nie są synchronizowane.</string>
+    <string name="lyrics_provider_priority">Kolejność dostawców tekstów utworów</string>
 </resources>
