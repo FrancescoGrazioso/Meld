@@ -755,4 +755,16 @@
         <item quantity="one">%d Kanal</item>
         <item quantity="other">%d Kanäle</item>
     </plurals>
+    <string name="sleep_timer_daily">Täglich</string>
+    <string name="sleep_timer_weekdays">Montag bis Freitag</string>
+    <string name="sleep_timer_weekends">Am Wochenende (Sa.–So.)</string>
+    <string name="sleep_timer_start_time">Startzeit</string>
+    <string name="sleep_timer_end_time">Endzeit</string>
+    <string name="sleep_timer_monday">Montags</string>
+    <string name="sleep_timer_tuesday">Dienstags</string>
+    <string name="sleep_timer_wednesday">Mittwochs</string>
+    <string name="sleep_timer_thursday">Donnerstags</string>
+    <string name="sleep_timer_friday">Freitags</string>
+    <string name="sleep_timer_saturday">Samstags</string>
+    <string name="sleep_timer_sunday">Sontags</string>
 </resources>
