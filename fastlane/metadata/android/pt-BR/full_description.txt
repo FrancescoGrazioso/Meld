@@ -18,6 +18,6 @@ Recursos:
 - Gerenciamento de listas locais
 - Reordene as músicas em uma lista ou fila
 - Temas claro, escuro, preto, e dinâmico
-- Timer para dormir
+- Temporizador de sono
 - Material 3
 - entre outros.
