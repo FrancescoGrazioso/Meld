@@ -66,9 +66,11 @@ object PlaylistExporter {
                         val song = playlistSong.song.song
                         val artists = playlistSong.song.artists
                         append("#EXTINF:${song.duration},")
-                        append("${artists.joinToString(";") { it.name }} - ${song.title}")
+                        append("${artists.joinToString(" - ") { it.name }} - ${song.title}")
                         append("\n")
-                        append("https://youtube.com/watch?v=${song.id}\n")
+                        // For M3U, we would typically include a URL, but since we don't have direct URLs,
+                        // we'll use a placeholder that indicates this is a YouTube Music track
+                        append("#YTM:${song.id}\n")
                     }
                 }
 

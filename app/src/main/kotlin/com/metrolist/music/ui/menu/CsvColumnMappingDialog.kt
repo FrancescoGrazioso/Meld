@@ -66,12 +66,13 @@ fun CsvColumnMappingDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(24.dp)
-                .verticalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .fillMaxWidth(0.95f)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(24.dp)
+                    .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
@@ -83,11 +84,12 @@ fun CsvColumnMappingDialog(
             // Preview rows
             if (csvState.previewRows.isNotEmpty()) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(12.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
@@ -97,31 +99,32 @@ fun CsvColumnMappingDialog(
                     )
 
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(rememberScrollState()),
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                     ) {
                         csvState.previewRows.take(5).forEachIndexed { rowIndex, row ->
                             Column(
-                                modifier = Modifier.verticalScroll(rememberScrollState()),
+                                modifier = Modifier,
                                 verticalArrangement = Arrangement.spacedBy(4.dp),
                             ) {
                                 row.forEachIndexed { colIndex, cell ->
                                     Box(
-                                        modifier = Modifier
-                                            .width(120.dp)
-                                            .clip(RoundedCornerShape(4.dp))
-                                            .background(
-                                                when {
-                                                    rowIndex == 0 && hasHeader -> MaterialTheme.colorScheme.primaryContainer
-                                                    colIndex == artistColumnIndex -> MaterialTheme.colorScheme.tertiaryContainer
-                                                    colIndex == titleColumnIndex -> MaterialTheme.colorScheme.secondaryContainer
-                                                    colIndex == urlColumnIndex && urlColumnIndex >= 0 -> MaterialTheme.colorScheme.tertiaryContainer
-                                                    else -> MaterialTheme.colorScheme.background
-                                                },
-                                            )
-                                            .padding(6.dp),
+                                        modifier =
+                                            Modifier
+                                                .width(120.dp)
+                                                .clip(RoundedCornerShape(4.dp))
+                                                .background(
+                                                    when {
+                                                        rowIndex == 0 && hasHeader -> MaterialTheme.colorScheme.primaryContainer
+                                                        colIndex == artistColumnIndex -> MaterialTheme.colorScheme.tertiaryContainer
+                                                        colIndex == titleColumnIndex -> MaterialTheme.colorScheme.secondaryContainer
+                                                        colIndex == urlColumnIndex && urlColumnIndex >= 0 -> MaterialTheme.colorScheme.tertiaryContainer
+                                                        else -> MaterialTheme.colorScheme.background
+                                                    },
+                                                ).padding(6.dp),
                                     ) {
                                         Text(
                                             text = cell.take(18),
@@ -181,9 +184,10 @@ fun CsvColumnMappingDialog(
 
             // Buttons
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             ) {
                 OutlinedButton(onClick = onDismiss) {
@@ -198,7 +202,7 @@ fun CsvColumnMappingDialog(
                                 titleColumnIndex = titleColumnIndex,
                                 urlColumnIndex = urlColumnIndex,
                                 hasHeader = hasHeader,
-                            )
+                            ),
                         )
                     },
                 ) {
@@ -228,9 +232,10 @@ private fun ColumnSelector(
         )
 
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             if (allowNone) {
@@ -292,11 +297,12 @@ fun CsvImportProgressDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false, dismissOnBackPress = false, dismissOnClickOutside = false),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth(0.85f)
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(24.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth(0.85f)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
             Text(
@@ -307,10 +313,11 @@ fun CsvImportProgressDialog(
 
             LinearProgressIndicator(
                 progress = { progress / 100f },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(RoundedCornerShape(4.dp)),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(RoundedCornerShape(4.dp)),
             )
 
             Text(
@@ -321,11 +328,12 @@ fun CsvImportProgressDialog(
 
             if (recentLogs.isNotEmpty()) {
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(12.dp),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant)
+                            .padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     Text(
@@ -336,11 +344,12 @@ fun CsvImportProgressDialog(
 
                     recentLogs.forEach { log ->
                         Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(MaterialTheme.colorScheme.background)
-                                .padding(8.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(4.dp))
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .padding(8.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp),
                         ) {
                             Text(
