@@ -10,14 +10,14 @@ Recursos:
 - Pesquise por músicas, álbuns, artistas, vídeos e playlists
 - Letra sincronizada
 - Suporte a login com a conta do YouTube Music
-- Sincronização de músicas, artistas, álbuns, e listas, de e para a sua conta
+- Sincronização de músicas, artistas, álbuns, e playlists, de e para a sua conta
 - Pular silêncio
-- Importar listas
+- Importar playlists
 - Normalização de áudio
 - Ajuste a velocidade e tonalidade do áudio
-- Gerenciamento de listas locais
-- Reordene as músicas em uma lista ou fila
+- Gerenciamento de playlists locais
+- Reordene as músicas em uma playlist ou fila
 - Temas claro, escuro, preto, e dinâmico
-- Temporizador de sono
+- Timer para soneca
 - Material 3
 - entre outros.
