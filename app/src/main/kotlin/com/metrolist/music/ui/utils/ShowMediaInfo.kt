@@ -5,15 +5,21 @@
 
 package com.metrolist.music.ui.utils
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.text.format.Formatter
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.metrolist.innertube.YouTube
@@ -38,6 +45,8 @@ import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
 import com.metrolist.music.db.entities.FormatEntity
 import com.metrolist.music.db.entities.Song
+import com.metrolist.music.ui.component.Material3SettingsGroup
+import com.metrolist.music.ui.component.Material3SettingsItem
 import com.metrolist.music.ui.component.shimmer.ShimmerHost
 import com.metrolist.music.ui.component.shimmer.TextPlaceholder
 
@@ -82,7 +91,6 @@ fun ShowMediaInfo(videoId: String) {
                 windowInsets
                     .asPaddingValues()
             )
-            .padding(horizontal = 4.dp)
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
@@ -139,39 +147,65 @@ fun ShowMediaInfo(videoId: String) {
                         emptyList()
                     }
 
-                    Text(
-                        text = "General",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(bottom = 8.dp, top = 8.dp)
-                    )
+                    val cardsBaseList = mutableListOf<Material3SettingsItem>()
+                    val cardsExtendedList = mutableListOf<Material3SettingsItem>()
+                    val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
                     baseList.forEachIndexed { index, (label, text) ->
                         val displayText = text ?: stringResource(R.string.unknown)
-                        MediaInfoCard(
-                            label = label,
-                            displayText = displayText,
-                            iconsList = baseIconsList[index],
-                            context = context
+                        cardsBaseList += Material3SettingsItem(
+                            title = { Text(label) },
+                            description = { Text(displayText) },
+                            icon = painterResource(baseIconsList[index]),
+                            onClick = {
+                                cm.setPrimaryClip(ClipData.newPlainText("text", displayText))
+                                Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
+                            },
                         )
                     }
-
-                    Text(
-                        text = "More information",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.padding(bottom = 8.dp, top = 8.dp)
-                    )
 
                     extendedList.forEachIndexed { index, (label, text) ->
                         val displayText = text ?: stringResource(R.string.unknown)
-                        MediaInfoCard(
-                            label = label,
-                            displayText = displayText,
-                            iconsList = iconsList[index],
-                            context = context
+                        cardsExtendedList += Material3SettingsItem(
+                            title = { Text(label) },
+                            description = { Text(displayText) },
+                            icon = painterResource(iconsList[index]),
+                            onClick = {
+                                cm.setPrimaryClip(ClipData.newPlainText("text", displayText))
+                                Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
+                            },
                         )
                     }
+
+                    Material3SettingsGroup(
+                        title = stringResource(R.string.general),
+                        items = cardsBaseList
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Material3SettingsGroup(
+                        title = stringResource(R.string.information),
+                        items = cardsExtendedList
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    val descriptionText = info?.description ?: stringResource(R.string.unknown)
+
+                    Material3SettingsGroup(
+                        title = stringResource(R.string.description),
+                        items = listOf(
+                            Material3SettingsItem(
+                                title = { Text(stringResource(R.string.description)) },
+                                description = { Text(descriptionText) },
+                                onClick = {
+                                    cm.setPrimaryClip(ClipData.newPlainText("text", descriptionText))
+                                    Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        )
+                    )
                 }
             }
         } else {
