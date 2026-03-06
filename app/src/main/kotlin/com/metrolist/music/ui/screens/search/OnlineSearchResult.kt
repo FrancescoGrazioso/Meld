@@ -82,6 +82,7 @@ import com.metrolist.innertube.models.YTItem
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
+import com.metrolist.music.constants.HideVideoSongsKey
 import com.metrolist.music.constants.MiniPlayerBottomSpacing
 import com.metrolist.music.constants.MiniPlayerHeight
 import com.metrolist.music.constants.NavigationBarHeight
@@ -91,8 +92,8 @@ import com.metrolist.music.models.toMediaMetadata
 import com.metrolist.music.playback.queues.SpotifyQueue
 import com.metrolist.music.playback.queues.YouTubeQueue
 import com.metrolist.music.ui.component.ChipsRow
-import com.metrolist.music.ui.component.HideOnScrollFAB
 import com.metrolist.music.ui.component.EmptyPlaceholder
+import com.metrolist.music.ui.component.HideOnScrollFAB
 import com.metrolist.music.ui.component.LocalMenuState
 import com.metrolist.music.ui.component.NavigationTitle
 import com.metrolist.music.ui.component.YouTubeListItem
@@ -118,7 +119,7 @@ import java.net.URLEncoder
 fun OnlineSearchResult(
     navController: NavController,
     viewModel: OnlineSearchViewModel = hiltViewModel(),
-    pureBlack: Boolean = false
+    pureBlack: Boolean = false,
 ) {
     val database = LocalDatabase.current
     val menuState = LocalMenuState.current
@@ -136,6 +137,7 @@ fun OnlineSearchResult(
     val isSpotifySearch by viewModel.isSpotifySearch.collectAsState()
 
     val pauseSearchHistory by rememberPreference(PauseSearchHistoryKey, defaultValue = false)
+    val hideVideoSongs by rememberPreference(HideVideoSongsKey, defaultValue = false)
 
     BackHandler(enabled = isSearchFocused) {
         isSearchFocused = false
@@ -144,45 +146,53 @@ fun OnlineSearchResult(
 
     // Extract query from navigation arguments
     val encodedQuery = navController.currentBackStackEntry?.arguments?.getString("query") ?: ""
-    val decodedQuery = remember(encodedQuery) {
-        try {
-            URLDecoder.decode(encodedQuery, "UTF-8")
-        } catch (e: Exception) {
-            encodedQuery
+    val decodedQuery =
+        remember(encodedQuery) {
+            try {
+                URLDecoder.decode(encodedQuery, "UTF-8")
+            } catch (e: Exception) {
+                encodedQuery
+            }
         }
-    }
 
     var query by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(decodedQuery, TextRange(decodedQuery.length)))
     }
 
+    val onSearch: (String) -> Unit =
+        remember {
+            { searchQuery ->
+                if (searchQuery.isNotEmpty()) {
+                    isSearchFocused = false
+                    focusManager.clearFocus()
 
-    val onSearch: (String) -> Unit = remember {
-        { searchQuery ->
-            if (searchQuery.isNotEmpty()) {
-                isSearchFocused = false
-                focusManager.clearFocus()
+                    navController.navigate("search/${URLEncoder.encode(searchQuery, "UTF-8")}") {
+                        popUpTo("search/${URLEncoder.encode(decodedQuery, "UTF-8")}") {
+                            inclusive = true
+                        }
 
-                navController.navigate("search/${URLEncoder.encode(searchQuery, "UTF-8")}") {
-                    popUpTo("search/${URLEncoder.encode(decodedQuery, "UTF-8")}") {
-                        inclusive = true
-                    }
-
-                    if (!pauseSearchHistory) {
-                        coroutineScope.launch(Dispatchers.IO) {
-                            database.query {
-                                insert(SearchHistory(query = searchQuery))
+                        if (!pauseSearchHistory) {
+                            coroutineScope.launch(Dispatchers.IO) {
+                                database.query {
+                                    insert(SearchHistory(query = searchQuery))
+                                }
                             }
                         }
                     }
                 }
             }
         }
-    }
 
     // Update query when decodedQuery changes
     LaunchedEffect(decodedQuery) {
         query = TextFieldValue(decodedQuery, TextRange(decodedQuery.length))
+    }
+
+    // Clear video filter if hideVideoSongs setting is enabled and filter is set to FILTER_VIDEO
+    LaunchedEffect(hideVideoSongs) {
+        if (hideVideoSongs && viewModel.filter.value == FILTER_VIDEO) {
+            viewModel.filter.value = null
+        }
     }
 
     val searchFilter by viewModel.filter.collectAsState()
@@ -199,10 +209,6 @@ fun OnlineSearchResult(
         }
     }
 
-    // Determine active filter state for display
-    val hasActiveFilter = if (isSpotifySearch) spotifyFilterValue != null else searchFilter != null
-
-
     LaunchedEffect(lazyListState) {
         snapshotFlow {
             lazyListState.layoutInfo.visibleItemsInfo.any { it.key == "loading" }
@@ -217,58 +223,64 @@ fun OnlineSearchResult(
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
             menuState.show {
                 when (item) {
-                    is SongItem ->
+                    is SongItem -> {
                         YouTubeSongMenu(
                             song = item,
                             navController = navController,
                             onDismiss = menuState::dismiss,
                         )
+                    }
 
-                    is AlbumItem ->
+                    is AlbumItem -> {
                         YouTubeAlbumMenu(
                             albumItem = item,
                             navController = navController,
                             onDismiss = menuState::dismiss,
                         )
+                    }
 
-                    is ArtistItem ->
+                    is ArtistItem -> {
                         YouTubeArtistMenu(
                             artist = item,
                             onDismiss = menuState::dismiss,
                         )
+                    }
 
-                    is PlaylistItem ->
+                    is PlaylistItem -> {
                         YouTubePlaylistMenu(
                             playlist = item,
                             coroutineScope = coroutineScope,
                             onDismiss = menuState::dismiss,
                         )
+                    }
 
-                    is PodcastItem ->
+                    is PodcastItem -> {
                         YouTubePlaylistMenu(
                             playlist = item.asPlaylistItem(),
                             coroutineScope = coroutineScope,
                             onDismiss = menuState::dismiss,
                         )
+                    }
 
-                    is EpisodeItem ->
+                    is EpisodeItem -> {
                         YouTubeSongMenu(
                             song = item.asSongItem(),
                             navController = navController,
                             onDismiss = menuState::dismiss,
                         )
+                    }
                 }
             }
         }
         YouTubeListItem(
             item = item,
             isActive =
-            when (item) {
-                is SongItem -> mediaMetadata?.id == item.id
-                is AlbumItem -> mediaMetadata?.album?.id == item.id
-                is EpisodeItem -> mediaMetadata?.id == item.id
-                else -> false
-            },
+                when (item) {
+                    is SongItem -> mediaMetadata?.id == item.id
+                    is AlbumItem -> mediaMetadata?.album?.id == item.id
+                    is EpisodeItem -> mediaMetadata?.id == item.id
+                    else -> false
+                },
             isPlaying = isPlaying,
             trailingContent = {
                 IconButton(
@@ -281,94 +293,100 @@ fun OnlineSearchResult(
                 }
             },
             modifier =
-            Modifier
-                .combinedClickable(
-                    onClick = {
-                        when (item) {
-                            is SongItem -> {
-                                if (item.id == mediaMetadata?.id) {
-                                    playerConnection.togglePlayPause()
-                                } else if (item.id.isSpotifyId()) {
-                                    // Spotify search result: create SpotifyQueue
-                                    val spotifyTrack = item.toSpotifyTrackStub()
-                                    if (spotifyTrack != null) {
-                                        playerConnection.playQueue(
-                                            SpotifyQueue(
-                                                initialTrack = spotifyTrack,
-                                                mapper = viewModel.spotifyYouTubeMapper,
+                Modifier
+                    .combinedClickable(
+                        onClick = {
+                            when (item) {
+                                is SongItem -> {
+                                    if (item.id == mediaMetadata?.id) {
+                                        playerConnection.togglePlayPause()
+                                    } else if (item.id.isSpotifyId()) {
+                                        // Spotify search result: create SpotifyQueue
+                                        val spotifyTrack = item.toSpotifyTrackStub()
+                                        if (spotifyTrack != null) {
+                                            playerConnection.playQueue(
+                                                SpotifyQueue(
+                                                    initialTrack = spotifyTrack,
+                                                    mapper = viewModel.spotifyYouTubeMapper,
+                                                )
                                             )
+                                        }
+                                    } else {
+                                        playerConnection.playQueue(
+                                            YouTubeQueue(
+                                                WatchEndpoint(videoId = item.id),
+                                                item.toMediaMetadata(),
+                                            ),
                                         )
                                     }
-                                } else {
-                                    playerConnection.playQueue(
-                                        YouTubeQueue(
-                                            WatchEndpoint(videoId = item.id),
-                                            item.toMediaMetadata()
-                                        )
-                                    )
                                 }
-                            }
 
-                            is AlbumItem -> {
-                                if (item.id.isSpotifyId()) {
-                                    coroutineScope.launch {
-                                        val searchQuery = "${item.title} ${item.artists?.firstOrNull()?.name.orEmpty()}"
-                                        val ytResult = YouTube.search(searchQuery, YouTube.SearchFilter.FILTER_ALBUM).getOrNull()
-                                        val ytAlbum = ytResult?.items?.firstOrNull { it is AlbumItem }
-                                        if (ytAlbum != null) {
-                                            navController.navigate("album/${ytAlbum.id}")
+                                is AlbumItem -> {
+                                    if (item.id.isSpotifyId()) {
+                                        coroutineScope.launch {
+                                            val searchQuery = "${item.title} ${item.artists?.firstOrNull()?.name.orEmpty()}"
+                                            val ytResult = YouTube.search(searchQuery, YouTube.SearchFilter.FILTER_ALBUM).getOrNull()
+                                            val ytAlbum = ytResult?.items?.firstOrNull { it is AlbumItem }
+                                            if (ytAlbum != null) {
+                                                navController.navigate("album/${ytAlbum.id}")
+                                            }
                                         }
+                                    } else {
+                                        navController.navigate("album/${item.id}")
                                     }
-                                } else {
-                                    navController.navigate("album/${item.id}")
                                 }
-                            }
-                            is ArtistItem -> {
-                                if (item.id.isSpotifyId()) {
-                                    coroutineScope.launch {
-                                        val ytResult = YouTube.search(item.title, YouTube.SearchFilter.FILTER_ARTIST).getOrNull()
-                                        val ytArtist = ytResult?.items?.firstOrNull { it is ArtistItem }
-                                        if (ytArtist != null) {
-                                            navController.navigate("artist/${ytArtist.id}")
+
+                                is ArtistItem -> {
+                                    if (item.id.isSpotifyId()) {
+                                        coroutineScope.launch {
+                                            val ytResult = YouTube.search(item.title, YouTube.SearchFilter.FILTER_ARTIST).getOrNull()
+                                            val ytArtist = ytResult?.items?.firstOrNull { it is ArtistItem }
+                                            if (ytArtist != null) {
+                                                navController.navigate("artist/${ytArtist.id}")
+                                            }
                                         }
+                                    } else {
+                                        navController.navigate("artist/${item.id}")
                                     }
-                                } else {
-                                    navController.navigate("artist/${item.id}")
                                 }
-                            }
-                            is PlaylistItem -> {
-                                if (item.id.isSpotifyId()) {
-                                    navController.navigate("spotify_playlist/${item.id.stripSpotifyPrefix()}")
-                                } else {
-                                    navController.navigate("online_playlist/${item.id}")
+
+                                is PlaylistItem -> {
+                                    if (item.id.isSpotifyId()) {
+                                        navController.navigate("spotify_playlist/${item.id.stripSpotifyPrefix()}")
+                                    } else {
+                                        navController.navigate("online_playlist/${item.id}")
+                                    }
                                 }
-                            }
-                            is PodcastItem -> navController.navigate("online_podcast/${item.id}")
-                            is EpisodeItem -> {
-                                if (item.id == mediaMetadata?.id) {
-                                    playerConnection.togglePlayPause()
-                                } else {
-                                    playerConnection.playQueue(
-                                        YouTubeQueue(
-                                            WatchEndpoint(videoId = item.id),
-                                            item.toMediaMetadata()
+
+                                is PodcastItem -> {
+                                    navController.navigate("online_podcast/${item.id}")
+                                }
+
+                                is EpisodeItem -> {
+                                    if (item.id == mediaMetadata?.id) {
+                                        playerConnection.togglePlayPause()
+                                    } else {
+                                        playerConnection.playQueue(
+                                            YouTubeQueue(
+                                                WatchEndpoint(videoId = item.id),
+                                                item.toMediaMetadata(),
+                                            ),
                                         )
-                                    )
+                                    }
                                 }
                             }
-                        }
-                    },
-                    onLongClick = longClick,
-                )
-                .animateItem(),
+                        },
+                        onLongClick = longClick,
+                    ).animateItem(),
         )
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background)
-            .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.background)
+                .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top)),
     ) {
         // Google-style SearchBar with Material 3 design
         OutlinedTextField(
@@ -380,17 +398,17 @@ fun OnlineSearchResult(
                 Text(
                     text = if (isSpotifySearch) stringResource(R.string.search) else stringResource(R.string.search_yt_music),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             },
             leadingIcon = {
                 IconButton(
-                    onClick = { navController.navigateUp() }
+                    onClick = { navController.navigateUp() },
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.arrow_back),
                         contentDescription = stringResource(R.string.dismiss),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
             },
@@ -399,53 +417,61 @@ fun OnlineSearchResult(
                     IconButton(
                         onClick = {
                             query = TextFieldValue("")
-                        }
+                        },
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.close),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
             },
-            keyboardOptions = KeyboardOptions(
-                imeAction = ImeAction.Search
-            ),
-            keyboardActions = KeyboardActions(
-                onSearch = {
-                    onSearch(query.text)
-                }
-            ),
+            keyboardOptions =
+                KeyboardOptions(
+                    imeAction = ImeAction.Search,
+                ),
+            keyboardActions =
+                KeyboardActions(
+                    onSearch = {
+                        onSearch(query.text)
+                    },
+                ),
             singleLine = true,
             shape = RoundedCornerShape(28.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = if (pureBlack)
-                    MaterialTheme.colorScheme.surface
-                else
-                    MaterialTheme.colorScheme.surfaceContainerHigh,
-                unfocusedContainerColor = if (pureBlack)
-                    MaterialTheme.colorScheme.surface
-                else
-                    MaterialTheme.colorScheme.surfaceContainerHigh,
-                focusedBorderColor = Color.Transparent,
-                unfocusedBorderColor = Color.Transparent
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .focusRequester(focusRequester)
-                .onFocusChanged { focusState ->
-                    if (focusState.isFocused) {
-                        isSearchFocused = true
-                    }
-                }
+            colors =
+                OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor =
+                        if (pureBlack) {
+                            MaterialTheme.colorScheme.surface
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerHigh
+                        },
+                    unfocusedContainerColor =
+                        if (pureBlack) {
+                            MaterialTheme.colorScheme.surface
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerHigh
+                        },
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                ),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused) {
+                            isSearchFocused = true
+                        }
+                    },
         )
 
         // Main content area below search bar
         Box(modifier = Modifier.weight(1f)) {
             Column(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 if (isSpotifySearch) {
                     ChipsRow(
@@ -463,14 +489,21 @@ fun OnlineSearchResult(
                                 lazyListState.animateScrollToItem(0)
                             }
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 } else {
-                    ChipsRow(
-                        chips = listOf(
+                    val visibleChips =
+                        listOf(
                             null to stringResource(R.string.filter_all),
                             FILTER_SONG to stringResource(R.string.filter_songs),
-                            FILTER_VIDEO to stringResource(R.string.filter_videos),
+                        ).let { baseChips ->
+                            if (!hideVideoSongs) {
+                                baseChips + (FILTER_VIDEO to stringResource(R.string.filter_videos))
+                            } else {
+                                baseChips
+                            }
+                        } +
+                        listOf(
                             FILTER_ALBUM to stringResource(R.string.filter_albums),
                             FILTER_ARTIST to stringResource(R.string.filter_artists),
                             FILTER_COMMUNITY_PLAYLIST to stringResource(R.string.filter_community_playlists),
@@ -478,7 +511,10 @@ fun OnlineSearchResult(
                             FILTER_PODCAST to stringResource(R.string.filter_podcasts),
                             FILTER_EPISODE to stringResource(R.string.filter_episodes),
                             FILTER_PROFILE to stringResource(R.string.filter_profiles),
-                        ),
+                        )
+
+                    ChipsRow(
+                        chips = visibleChips,
                         currentValue = searchFilter,
                         onValueUpdate = {
                             if (viewModel.filter.value != it) {
@@ -488,77 +524,77 @@ fun OnlineSearchResult(
                                 lazyListState.animateScrollToItem(0)
                             }
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
 
-            LazyColumn(
-                state = lazyListState,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                if (!hasActiveFilter) {
-                    searchSummary?.summaries?.forEach { summary ->
-                        item {
-                            NavigationTitle(summary.title)
-                        }
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    if (searchFilter == null) {
+                        searchSummary?.summaries?.forEach { summary ->
+                            item {
+                                NavigationTitle(summary.title)
+                            }
 
-                        items(
-                            items = summary.items,
-                            key = { "${summary.title}/${it.id}/${summary.items.indexOf(it)}" },
-                            itemContent = ytItemContent,
-                        )
-                    }
-
-                    if (searchSummary?.summaries?.isEmpty() == true) {
-                        item {
-                            EmptyPlaceholder(
-                                icon = R.drawable.search,
-                                text = stringResource(R.string.no_results_found),
+                            items(
+                                items = summary.items,
+                                key = { "${summary.title}/${it.id}/${summary.items.indexOf(it)}" },
+                                itemContent = ytItemContent,
                             )
                         }
-                    }
-                } else {
-                    items(
-                        items = itemsPage?.items.orEmpty().distinctBy { it.id },
-                        key = { "filtered_${it.id}" },
-                        itemContent = ytItemContent,
-                    )
 
-                    if (itemsPage?.continuation != null) {
-                        item(key = "loading") {
+                        if (searchSummary?.summaries?.isEmpty() == true) {
+                            item {
+                                EmptyPlaceholder(
+                                    icon = R.drawable.search,
+                                    text = stringResource(R.string.no_results_found),
+                                )
+                            }
+                        }
+                    } else {
+                        items(
+                            items = itemsPage?.items.orEmpty().distinctBy { it.id },
+                            key = { "filtered_${it.id}" },
+                            itemContent = ytItemContent,
+                        )
+
+                        if (itemsPage?.continuation != null) {
+                            item(key = "loading") {
+                                ShimmerHost {
+                                    repeat(3) {
+                                        ListItemPlaceHolder()
+                                    }
+                                }
+                            }
+                        }
+
+                        if (itemsPage?.items?.isEmpty() == true) {
+                            item {
+                                EmptyPlaceholder(
+                                    icon = R.drawable.search,
+                                    text = stringResource(R.string.no_results_found),
+                                )
+                            }
+                        }
+                    }
+
+                    if (searchFilter == null && searchSummary == null || searchFilter != null && itemsPage == null) {
+                        item {
                             ShimmerHost {
-                                repeat(3) {
+                                repeat(8) {
                                     ListItemPlaceHolder()
                                 }
                             }
                         }
                     }
 
-                    if (itemsPage?.items?.isEmpty() == true) {
-                        item {
-                            EmptyPlaceholder(
-                                icon = R.drawable.search,
-                                text = stringResource(R.string.no_results_found),
-                            )
-                        }
+                    item(key = "bottom_spacer") {
+                        Spacer(modifier = Modifier.height(MiniPlayerHeight + MiniPlayerBottomSpacing + NavigationBarHeight))
                     }
-                }
-
-                if (!hasActiveFilter && searchSummary == null || hasActiveFilter && itemsPage == null) {
-                    item {
-                        ShimmerHost {
-                            repeat(8) {
-                                ListItemPlaceHolder()
-                            }
-                        }
-                    }
-                }
-
-                item(key = "bottom_spacer") {
-                    Spacer(modifier = Modifier.height(MiniPlayerHeight + MiniPlayerBottomSpacing + NavigationBarHeight))
                 }
             }
-        }
             if (isSearchFocused) {
                 OnlineSearchScreen(
                     query = query.text,
@@ -569,13 +605,13 @@ fun OnlineSearchResult(
                         isSearchFocused = false
                         focusManager.clearFocus()
                     },
-                    pureBlack = pureBlack
+                    pureBlack = pureBlack,
                 )
             }
             HideOnScrollFAB(
                 lazyListState = lazyListState,
                 icon = R.drawable.mic,
-                onClick = { navController.navigate("recognition") }
+                onClick = { navController.navigate("recognition") },
             )
         }
     }
