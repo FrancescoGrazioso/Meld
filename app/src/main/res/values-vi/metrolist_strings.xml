@@ -551,4 +551,5 @@
     <string name="cache_at_percent">Phần trăm bộ nhớ đệm</string>
     <string name="n_seconds">%d giây</string>
     <string name="n_percent">%d%%</string>
+    <string name="enable_automatic_sleeptimer">Kích hoạt hẹn giờ ngủ tự động</string>
 </resources>
