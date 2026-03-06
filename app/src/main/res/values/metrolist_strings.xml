@@ -853,6 +853,7 @@
     <string name="hold_to_recognize">Hold search icon to recognize music</string>
     <string name="play_on_app">Play on Meld</string>
     <string name="recognized_track">Recognized Track</string>
+    <string name="qs_tile_music_recognizer">Recognize Music</string>
 
     <!-- CSV Import Strings -->
     <string name="map_csv_columns">Map CSV Columns</string>

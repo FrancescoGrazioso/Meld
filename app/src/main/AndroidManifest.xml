@@ -318,6 +318,18 @@
             android:exported="false"
             android:foregroundServiceType="microphone" />
 
+        <!-- Music Recognizer Quick Settings Tile -->
+        <service
+            android:name=".quicksettings.MusicRecognizerTileService"
+            android:label="@string/qs_tile_music_recognizer"
+            android:icon="@drawable/mic"
+            android:exported="true"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
     </application>
 
 </manifest>

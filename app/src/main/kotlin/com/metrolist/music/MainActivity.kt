@@ -132,8 +132,8 @@ import com.metrolist.music.constants.DefaultOpenTabKey
 import com.metrolist.music.constants.DisableScreenshotKey
 import com.metrolist.music.constants.DynamicThemeKey
 import com.metrolist.music.constants.EnableHighRefreshRateKey
-import com.metrolist.music.constants.ListenTogetherInTopBarKey
 import com.metrolist.music.constants.LastSeenVersionKey
+import com.metrolist.music.constants.ListenTogetherInTopBarKey
 import com.metrolist.music.constants.ListenTogetherUsernameKey
 import com.metrolist.music.constants.SpotifyAccessTokenKey
 import com.metrolist.music.constants.MiniPlayerBottomSpacing
@@ -216,6 +216,7 @@ class MainActivity : ComponentActivity() {
         private const val ACTION_SEARCH = "com.metrolist.music.action.SEARCH"
         private const val ACTION_LIBRARY = "com.metrolist.music.action.LIBRARY"
         const val ACTION_RECOGNITION = "com.metrolist.music.action.RECOGNITION"
+        const val EXTRA_AUTO_START_RECOGNITION = "auto_start_recognition"
     }
 
     @Inject
@@ -236,37 +237,41 @@ class MainActivity : ComponentActivity() {
 
     private var playerConnection by mutableStateOf<PlayerConnection?>(null)
 
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            if (service is MusicBinder) {
-                try {
-                    playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
-                    Timber.tag("MainActivity").d("PlayerConnection created successfully")
-                    // Connect Listen Together manager to player
-                    listenTogetherManager.setPlayerConnection(playerConnection)
-                } catch (e: Exception) {
-                    Timber.tag("MainActivity").e(e, "Failed to create PlayerConnection")
-                    // Retry after a delay of 500ms
-                    lifecycleScope.launch {
-                        delay(500)
-                        try {
-                            playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
-                            listenTogetherManager.setPlayerConnection(playerConnection)
-                        } catch (e2: Exception) {
-                            Timber.tag("MainActivity").e(e2, "Failed to create PlayerConnection on retry")
+    private val serviceConnection =
+        object : ServiceConnection {
+            override fun onServiceConnected(
+                name: ComponentName?,
+                service: IBinder?,
+            ) {
+                if (service is MusicBinder) {
+                    try {
+                        playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
+                        Timber.tag("MainActivity").d("PlayerConnection created successfully")
+                        // Connect Listen Together manager to player
+                        listenTogetherManager.setPlayerConnection(playerConnection)
+                    } catch (e: Exception) {
+                        Timber.tag("MainActivity").e(e, "Failed to create PlayerConnection")
+                        // Retry after a delay of 500ms
+                        lifecycleScope.launch {
+                            delay(500)
+                            try {
+                                playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
+                                listenTogetherManager.setPlayerConnection(playerConnection)
+                            } catch (e2: Exception) {
+                                Timber.tag("MainActivity").e(e2, "Failed to create PlayerConnection on retry")
+                            }
                         }
                     }
                 }
             }
-        }
 
-        override fun onServiceDisconnected(name: ComponentName?) {
-            // Disconnect Listen Together manager
-            listenTogetherManager.setPlayerConnection(null)
-            playerConnection?.dispose()
-            playerConnection = null
+            override fun onServiceDisconnected(name: ComponentName?) {
+                // Disconnect Listen Together manager
+                listenTogetherManager.setPlayerConnection(null)
+                playerConnection?.dispose()
+                playerConnection = null
+            }
         }
-    }
 
     override fun onStart() {
         super.onStart()
@@ -283,7 +288,7 @@ class MainActivity : ComponentActivity() {
         bindService(
             Intent(this, MusicService::class.java),
             serviceConnection,
-            BIND_AUTO_CREATE
+            BIND_AUTO_CREATE,
         )
     }
 
@@ -324,10 +329,11 @@ class MainActivity : ComponentActivity() {
         listenTogetherManager.initialize()
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            val locale = dataStore[AppLanguageKey]
-                ?.takeUnless { it == SYSTEM_DEFAULT }
-                ?.let { Locale.forLanguageTag(it) }
-                ?: Locale.getDefault()
+            val locale =
+                dataStore[AppLanguageKey]
+                    ?.takeUnless { it == SYSTEM_DEFAULT }
+                    ?.let { Locale.forLanguageTag(it) }
+                    ?: Locale.getDefault()
             setAppLocale(this, locale)
         }
 
@@ -387,20 +393,24 @@ class MainActivity : ComponentActivity() {
                                 if (downloadUrl != null) {
                                     val intent = Intent(Intent.ACTION_VIEW, downloadUrl.toUri())
 
-                                    val flags = PendingIntent.FLAG_UPDATE_CURRENT or
-                                        (PendingIntent.FLAG_IMMUTABLE)
+                                    val flags =
+                                        PendingIntent.FLAG_UPDATE_CURRENT or
+                                            (PendingIntent.FLAG_IMMUTABLE)
                                     val pending = PendingIntent.getActivity(this@MainActivity, 1001, intent, flags)
 
-                                    val notif = NotificationCompat.Builder(this@MainActivity, "updates")
-                                        .setSmallIcon(R.drawable.update)
-                                        .setContentTitle(getString(R.string.update_available_title))
-                                        .setContentText(releaseInfo.versionName)
-                                        .setContentIntent(pending)
-                                        .setAutoCancel(true)
-                                        .build()
+                                    val notif =
+                                        NotificationCompat
+                                            .Builder(this@MainActivity, "updates")
+                                            .setSmallIcon(R.drawable.update)
+                                            .setContentTitle(getString(R.string.update_available_title))
+                                            .setContentText(releaseInfo.versionName)
+                                            .setContentIntent(pending)
+                                            .setAutoCancel(true)
+                                            .build()
 
                                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-                                        ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+                                        ContextCompat.checkSelfPermission(this@MainActivity, Manifest.permission.POST_NOTIFICATIONS) ==
+                                        PackageManager.PERMISSION_GRANTED
                                     ) {
                                         NotificationManagerCompat.from(this@MainActivity).notify(1001, notif)
                                     }
@@ -425,8 +435,9 @@ class MainActivity : ComponentActivity() {
                     layoutParams.preferredDisplayModeId = 0
                 } else {
                     val modes = window.windowManager.defaultDisplay.supportedModes
-                    val mode60 = modes.firstOrNull { kotlin.math.abs(it.refreshRate - 60f) < 1f }
-                        ?: modes.minByOrNull { kotlin.math.abs(it.refreshRate - 60f) }
+                    val mode60 =
+                        modes.firstOrNull { kotlin.math.abs(it.refreshRate - 60f) < 1f }
+                            ?: modes.minByOrNull { kotlin.math.abs(it.refreshRate - 60f) }
 
                     if (mode60 != null) {
                         layoutParams.preferredDisplayModeId = mode60.modeId
@@ -446,18 +457,20 @@ class MainActivity : ComponentActivity() {
 
         val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
         val isSystemInDarkTheme = isSystemInDarkTheme()
-        val useDarkTheme = remember(darkTheme, isSystemInDarkTheme) {
-            if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
-        }
+        val useDarkTheme =
+            remember(darkTheme, isSystemInDarkTheme) {
+                if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
+            }
 
         LaunchedEffect(useDarkTheme) {
             setSystemBarAppearance(useDarkTheme)
         }
 
         val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
-        val pureBlack = remember(pureBlackEnabled, useDarkTheme) {
-            pureBlackEnabled && useDarkTheme
-        }
+        val pureBlack =
+            remember(pureBlackEnabled, useDarkTheme) {
+                pureBlackEnabled && useDarkTheme
+            }
 
         val (selectedThemeColorInt) = rememberPreference(SelectedThemeColorKey, defaultValue = DefaultThemeColor.toArgb())
         val selectedThemeColor = Color(selectedThemeColorInt)
@@ -485,16 +498,18 @@ class MainActivity : ComponentActivity() {
                 if (song?.thumbnailUrl != null) {
                     withContext(Dispatchers.IO) {
                         try {
-                            val result = imageLoader.execute(
-                                ImageRequest.Builder(this@MainActivity)
-                                    .data(song.thumbnailUrl)
-                                    .allowHardware(false)
-                                    .memoryCachePolicy(CachePolicy.ENABLED)
-                                    .diskCachePolicy(CachePolicy.ENABLED)
-                                    .networkCachePolicy(CachePolicy.ENABLED)
-                                    .crossfade(false)
-                                    .build()
-                            )
+                            val result =
+                                imageLoader.execute(
+                                    ImageRequest
+                                        .Builder(this@MainActivity)
+                                        .data(song.thumbnailUrl)
+                                        .allowHardware(false)
+                                        .memoryCachePolicy(CachePolicy.ENABLED)
+                                        .diskCachePolicy(CachePolicy.ENABLED)
+                                        .networkCachePolicy(CachePolicy.ENABLED)
+                                        .crossfade(false)
+                                        .build(),
+                                )
                             themeColor = result.image?.toBitmap()?.extractThemeColor() ?: selectedThemeColor
                         } catch (e: Exception) {
                             // Fallback to default on error
@@ -513,9 +528,10 @@ class MainActivity : ComponentActivity() {
             themeColor = themeColor,
         ) {
             BoxWithConstraints(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface)
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface),
             ) {
                 val focusManager = LocalFocusManager.current
                 val density = LocalDensity.current
@@ -544,54 +560,60 @@ class MainActivity : ComponentActivity() {
                 val (previousTab, setPreviousTab) = rememberSaveable { mutableStateOf("home") }
 
                 val (listenTogetherInTopBar) = rememberPreference(ListenTogetherInTopBarKey, defaultValue = true)
-                val navigationItems = remember(listenTogetherInTopBar) { 
-                    if (listenTogetherInTopBar) {
-                        Screens.MainScreens.filter { it != Screens.ListenTogether }
-                    } else {
-                        Screens.MainScreens
+                val navigationItems =
+                    remember(listenTogetherInTopBar) {
+                        if (listenTogetherInTopBar) {
+                            Screens.MainScreens.filter { it != Screens.ListenTogether }
+                        } else {
+                            Screens.MainScreens
+                        }
                     }
-                }
                 val (slimNav) = rememberPreference(SlimNavBarKey, defaultValue = false)
                 val (useNewMiniPlayerDesign) = rememberPreference(UseNewMiniPlayerDesignKey, defaultValue = true)
-                val defaultOpenTab = remember {
-                    dataStore[DefaultOpenTabKey].toEnum(defaultValue = NavigationTab.HOME)
-                }
-                val tabOpenedFromShortcut = remember {
-                    when (intent?.action) {
-                        ACTION_SEARCH -> NavigationTab.LIBRARY
-                        ACTION_LIBRARY -> NavigationTab.SEARCH
-                        else -> null
+                val defaultOpenTab =
+                    remember {
+                        dataStore[DefaultOpenTabKey].toEnum(defaultValue = NavigationTab.HOME)
                     }
-                }
+                val tabOpenedFromShortcut =
+                    remember {
+                        when (intent?.action) {
+                            ACTION_SEARCH -> NavigationTab.LIBRARY
+                            ACTION_LIBRARY -> NavigationTab.SEARCH
+                            else -> null
+                        }
+                    }
 
-                val topLevelScreens = remember {
-                    listOf(
-                        Screens.Home.route,
-                        Screens.Library.route,
-                        Screens.ListenTogether.route,
-                        "settings",
-                    )
-                }
+                val topLevelScreens =
+                    remember {
+                        listOf(
+                            Screens.Home.route,
+                            Screens.Library.route,
+                            Screens.ListenTogether.route,
+                            "settings",
+                        )
+                    }
 
-                val (query, onQueryChange) = rememberSaveable(stateSaver = TextFieldValue.Saver) {
-                    mutableStateOf(TextFieldValue())
-                }
+                val (query, onQueryChange) =
+                    rememberSaveable(stateSaver = TextFieldValue.Saver) {
+                        mutableStateOf(TextFieldValue())
+                    }
 
-                val onSearch: (String) -> Unit = remember {
-                    { searchQuery ->
-                        if (searchQuery.isNotEmpty()) {
-                            navController.navigate("search/${URLEncoder.encode(searchQuery, "UTF-8")}")
+                val onSearch: (String) -> Unit =
+                    remember {
+                        { searchQuery ->
+                            if (searchQuery.isNotEmpty()) {
+                                navController.navigate("search/${URLEncoder.encode(searchQuery, "UTF-8")}")
 
-                            if (dataStore[PauseSearchHistoryKey] != true) {
-                                lifecycleScope.launch(Dispatchers.IO) {
-                                    database.query {
-                                        insert(SearchHistory(query = searchQuery))
+                                if (dataStore[PauseSearchHistoryKey] != true) {
+                                    lifecycleScope.launch(Dispatchers.IO) {
+                                        database.query {
+                                            insert(SearchHistory(query = searchQuery))
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-                }
 
                 val currentRoute by remember {
                     derivedStateOf { navBackStackEntry?.destination?.route }
@@ -600,25 +622,28 @@ class MainActivity : ComponentActivity() {
                 val inSearchScreen by remember {
                     derivedStateOf { currentRoute?.startsWith("search/") == true }
                 }
-                val navigationItemRoutes = remember(navigationItems) {
-                    navigationItems.map { it.route }.toSet()
-                }
+                val navigationItemRoutes =
+                    remember(navigationItems) {
+                        navigationItems.map { it.route }.toSet()
+                    }
 
-                val shouldShowNavigationBar = remember(currentRoute, navigationItemRoutes) {
-                    currentRoute == null ||
-                        navigationItemRoutes.contains(currentRoute) ||
-                        currentRoute!!.startsWith("search/")
-                }
+                val shouldShowNavigationBar =
+                    remember(currentRoute, navigationItemRoutes) {
+                        currentRoute == null ||
+                            navigationItemRoutes.contains(currentRoute) ||
+                            currentRoute!!.startsWith("search/")
+                    }
 
                 val isLandscape = configuration.containerDpSize.width > configuration.containerDpSize.height
 
                 val showRail = isLandscape && !inSearchScreen
 
-                val navPadding = if (shouldShowNavigationBar && !showRail) {
-                    if (slimNav) SlimNavBarHeight else NavigationBarHeight
-                } else {
-                    0.dp
-                }
+                val navPadding =
+                    if (shouldShowNavigationBar && !showRail) {
+                        if (slimNav) SlimNavBarHeight else NavigationBarHeight
+                    } else {
+                        0.dp
+                    }
 
                 val navigationBarHeight by animateDpAsState(
                     targetValue = if (shouldShowNavigationBar && !showRail) NavigationBarHeight else 0.dp,
@@ -626,60 +651,65 @@ class MainActivity : ComponentActivity() {
                     label = "navBarHeight",
                 )
 
-                val playerBottomSheetState = rememberBottomSheetState(
-                    dismissedBound = 0.dp,
-                    collapsedBound = bottomInset +
-                        (if (!showRail && shouldShowNavigationBar) navPadding else 0.dp) +
-                        (if (useNewMiniPlayerDesign) MiniPlayerBottomSpacing else 0.dp) +
-                        MiniPlayerHeight,
-                    expandedBound = maxHeight,
-                )
+                val playerBottomSheetState =
+                    rememberBottomSheetState(
+                        dismissedBound = 0.dp,
+                        collapsedBound =
+                            bottomInset +
+                                (if (!showRail && shouldShowNavigationBar) navPadding else 0.dp) +
+                                (if (useNewMiniPlayerDesign) MiniPlayerBottomSpacing else 0.dp) +
+                                MiniPlayerHeight,
+                        expandedBound = maxHeight,
+                    )
 
-                val playerAwareWindowInsets = remember(
-                    bottomInset,
-                    shouldShowNavigationBar,
-                    playerBottomSheetState.isDismissed,
-                    showRail,
-                ) {
-                    var bottom = bottomInset
-                    if (shouldShowNavigationBar && !showRail) {
-                        bottom += NavigationBarHeight
+                val playerAwareWindowInsets =
+                    remember(
+                        bottomInset,
+                        shouldShowNavigationBar,
+                        playerBottomSheetState.isDismissed,
+                        showRail,
+                    ) {
+                        var bottom = bottomInset
+                        if (shouldShowNavigationBar && !showRail) {
+                            bottom += NavigationBarHeight
+                        }
+                        if (!playerBottomSheetState.isDismissed) bottom += MiniPlayerHeight
+                        windowsInsets
+                            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                            .add(WindowInsets(top = AppBarHeight, bottom = bottom))
                     }
-                    if (!playerBottomSheetState.isDismissed) bottom += MiniPlayerHeight
-                    windowsInsets
-                        .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
-                        .add(WindowInsets(top = AppBarHeight, bottom = bottom))
-                }
                 appBarScrollBehavior(
-                    canScroll = {
-                        !inSearchScreen &&
-                            (playerBottomSheetState.isCollapsed || playerBottomSheetState.isDismissed)
-                    }
-                )
-
-                val topAppBarScrollBehavior = appBarScrollBehavior(
                     canScroll = {
                         !inSearchScreen &&
                             (playerBottomSheetState.isCollapsed || playerBottomSheetState.isDismissed)
                     },
                 )
 
+                val topAppBarScrollBehavior =
+                    appBarScrollBehavior(
+                        canScroll = {
+                            !inSearchScreen &&
+                                (playerBottomSheetState.isCollapsed || playerBottomSheetState.isDismissed)
+                        },
+                    )
+
                 // Navigation tracking
                 LaunchedEffect(navBackStackEntry) {
                     if (inSearchScreen) {
-                        val searchQuery = withContext(Dispatchers.IO) {
-                            val rawQuery = navBackStackEntry?.arguments?.getString("query")!!
-                            try {
-                                URLDecoder.decode(rawQuery, "UTF-8")
-                            } catch (e: IllegalArgumentException) {
-                                rawQuery
+                        val searchQuery =
+                            withContext(Dispatchers.IO) {
+                                val rawQuery = navBackStackEntry?.arguments?.getString("query")!!
+                                try {
+                                    URLDecoder.decode(rawQuery, "UTF-8")
+                                } catch (e: IllegalArgumentException) {
+                                    rawQuery
+                                }
                             }
-                        }
                         onQueryChange(
                             TextFieldValue(
                                 searchQuery,
-                                TextRange(searchQuery.length)
-                            )
+                                TextRange(searchQuery.length),
+                            ),
                         )
                     } else if (navigationItems.fastAny { it.route == navBackStackEntry?.destination?.route }) {
                         onQueryChange(TextFieldValue())
@@ -715,19 +745,20 @@ class MainActivity : ComponentActivity() {
 
                 DisposableEffect(playerConnection, playerBottomSheetState) {
                     val player = playerConnection?.player ?: return@DisposableEffect onDispose { }
-                    val listener = object : Player.Listener {
-                        override fun onMediaItemTransition(
-                            mediaItem: MediaItem?,
-                            reason: Int,
-                        ) {
-                            if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED &&
-                                mediaItem != null &&
-                                playerBottomSheetState.isDismissed
+                    val listener =
+                        object : Player.Listener {
+                            override fun onMediaItemTransition(
+                                mediaItem: MediaItem?,
+                                reason: Int,
                             ) {
-                                playerBottomSheetState.collapseSoft()
+                                if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_PLAYLIST_CHANGED &&
+                                    mediaItem != null &&
+                                    playerBottomSheetState.isDismissed
+                                ) {
+                                    playerBottomSheetState.collapseSoft()
+                                }
                             }
                         }
-                    }
                     player.addListener(listener)
                     onDispose {
                         player.removeListener(listener)
@@ -738,8 +769,9 @@ class MainActivity : ComponentActivity() {
 
                 LaunchedEffect(navBackStackEntry, listenTogetherInTopBar) {
                     val currentRoute = navBackStackEntry?.destination?.route
-                    val isListenTogetherScreen = currentRoute == Screens.ListenTogether.route || 
-                        currentRoute == "listen_together_from_topbar"
+                    val isListenTogetherScreen =
+                        currentRoute == Screens.ListenTogether.route ||
+                            currentRoute == "listen_together_from_topbar"
                     shouldShowTopBar = currentRoute in topLevelScreens &&
                         currentRoute != "settings" &&
                         !(isListenTogetherScreen && listenTogetherInTopBar)
@@ -763,32 +795,35 @@ class MainActivity : ComponentActivity() {
                 }
 
                 DisposableEffect(Unit) {
-                    val listener = Consumer<Intent> { intent ->
-                        handleRecognitionIntent(intent, navController)
-                        handleDeepLinkIntent(intent, navController)
-                    }
+                    val listener =
+                        Consumer<Intent> { intent ->
+                            handleRecognitionIntent(intent, navController)
+                            handleDeepLinkIntent(intent, navController)
+                        }
 
                     addOnNewIntentListener(listener)
                     onDispose { removeOnNewIntentListener(listener) }
                 }
 
-                val currentTitleRes = remember(navBackStackEntry) {
-                    when (navBackStackEntry?.destination?.route) {
-                        Screens.Home.route -> R.string.home
-                        Screens.Search.route -> R.string.search
-                        Screens.Library.route -> R.string.filter_library
-                        Screens.ListenTogether.route -> R.string.together
-                        else -> null
+                val currentTitleRes =
+                    remember(navBackStackEntry) {
+                        when (navBackStackEntry?.destination?.route) {
+                            Screens.Home.route -> R.string.home
+                            Screens.Search.route -> R.string.search
+                            Screens.Library.route -> R.string.filter_library
+                            Screens.ListenTogether.route -> R.string.together
+                            else -> null
+                        }
                     }
-                }
 
                 var showAccountDialog by remember { mutableStateOf(false) }
 
                 val pauseListenHistory by rememberPreference(PauseListenHistoryKey, defaultValue = false)
                 val eventCount by database.eventCount().collectAsState(initial = 0)
-                val showHistoryButton = remember(pauseListenHistory, eventCount) {
-                    !(pauseListenHistory && eventCount == 0)
-                }
+                val showHistoryButton =
+                    remember(pauseListenHistory, eventCount) {
+                        !(pauseListenHistory && eventCount == 0)
+                    }
 
                 val baseBg = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer
 
@@ -803,7 +838,6 @@ class MainActivity : ComponentActivity() {
                     LocalListenTogetherManager provides listenTogetherManager,
                     LocalChangelogState provides showChangelog,
                 ) {
-
                     if (showChangelog.value) {
                         ChangelogScreen(onDismiss = { showChangelog.value = false })
                     }
@@ -814,7 +848,7 @@ class MainActivity : ComponentActivity() {
                             AnimatedVisibility(
                                 visible = shouldShowTopBar,
                                 enter = fadeIn(animationSpec = tween(durationMillis = 300)),
-                                exit = fadeOut(animationSpec = tween(durationMillis = 200))
+                                exit = fadeOut(animationSpec = tween(durationMillis = 200)),
                             ) {
                                 Row {
                                     TopAppBar(
@@ -829,21 +863,21 @@ class MainActivity : ComponentActivity() {
                                                 IconButton(onClick = { navController.navigate("history") }) {
                                                     Icon(
                                                         painter = painterResource(R.drawable.history),
-                                                        contentDescription = stringResource(R.string.history)
+                                                        contentDescription = stringResource(R.string.history),
                                                     )
                                                 }
                                             }
                                             IconButton(onClick = { navController.navigate("stats") }) {
                                                 Icon(
                                                     painter = painterResource(R.drawable.stats),
-                                                    contentDescription = stringResource(R.string.stats)
+                                                    contentDescription = stringResource(R.string.stats),
                                                 )
                                             }
                                             if (listenTogetherInTopBar) {
                                                 IconButton(onClick = { navController.navigate("listen_together_from_topbar") }) {
                                                     Icon(
                                                         painter = painterResource(R.drawable.group_outlined),
-                                                        contentDescription = stringResource(R.string.together)
+                                                        contentDescription = stringResource(R.string.together),
                                                     )
                                                 }
                                             }
@@ -857,71 +891,76 @@ class MainActivity : ComponentActivity() {
                                                         AsyncImage(
                                                             model = accountImageUrl,
                                                             contentDescription = stringResource(R.string.account),
-                                                            modifier = Modifier
-                                                                .size(24.dp)
-                                                                .clip(CircleShape)
+                                                            modifier =
+                                                                Modifier
+                                                                    .size(24.dp)
+                                                                    .clip(CircleShape),
                                                         )
                                                     } else {
                                                         Icon(
                                                             painter = painterResource(R.drawable.account),
                                                             contentDescription = stringResource(R.string.account),
-                                                            modifier = Modifier.size(24.dp)
+                                                            modifier = Modifier.size(24.dp),
                                                         )
                                                     }
                                                 }
                                             }
                                         },
                                         scrollBehavior = topAppBarScrollBehavior,
-                                        colors = TopAppBarDefaults.topAppBarColors(
-                                            containerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer,
-                                            scrolledContainerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer,
-                                            titleContentColor = MaterialTheme.colorScheme.onSurface,
-                                            actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                                        ),
-                                        modifier = Modifier.windowInsetsPadding(
-                                            if (showRail) {
-                                                WindowInsets(left = NavigationBarHeight)
-                                                    .add(cutoutInsets.only(WindowInsetsSides.Start))
-                                            } else {
-                                                cutoutInsets.only(WindowInsetsSides.Start + WindowInsetsSides.End)
-                                            }
-                                        )
+                                        colors =
+                                            TopAppBarDefaults.topAppBarColors(
+                                                containerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer,
+                                                scrolledContainerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer,
+                                                titleContentColor = MaterialTheme.colorScheme.onSurface,
+                                                actionIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                navigationIconContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            ),
+                                        modifier =
+                                            Modifier.windowInsetsPadding(
+                                                if (showRail) {
+                                                    WindowInsets(left = NavigationBarHeight)
+                                                        .add(cutoutInsets.only(WindowInsetsSides.Start))
+                                                } else {
+                                                    cutoutInsets.only(WindowInsetsSides.Start + WindowInsetsSides.End)
+                                                },
+                                            ),
                                     )
                                 }
                             }
                         },
                         bottomBar = {
-                            val onNavItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState) {
-                                { screen: Screens, isSelected: Boolean ->
-                                    if (playerBottomSheetState.isExpanded) {
-                                        playerBottomSheetState.collapseSoft()
-                                    }
-
-                                    if (isSelected) {
-                                        navController.currentBackStackEntry?.savedStateHandle?.set("scrollToTop", true)
-                                        coroutineScope.launch {
-                                            topAppBarScrollBehavior.state.resetHeightOffset()
+                            val onNavItemClick: (Screens, Boolean) -> Unit =
+                                remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState) {
+                                    { screen: Screens, isSelected: Boolean ->
+                                        if (playerBottomSheetState.isExpanded) {
+                                            playerBottomSheetState.collapseSoft()
                                         }
-                                    } else {
-                                        navController.navigate(screen.route) {
-                                            popUpTo(navController.graph.startDestinationId) {
-                                                saveState = true
+
+                                        if (isSelected) {
+                                            navController.currentBackStackEntry?.savedStateHandle?.set("scrollToTop", true)
+                                            coroutineScope.launch {
+                                                topAppBarScrollBehavior.state.resetHeightOffset()
                                             }
-                                            launchSingleTop = true
-                                            restoreState = true
+                                        } else {
+                                            navController.navigate(screen.route) {
+                                                popUpTo(navController.graph.startDestinationId) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            val onSearchLongClick: () -> Unit = remember(navController) {
-                                {
-                                    navController.navigate("recognition") {
-                                        launchSingleTop = true
+                            val onSearchLongClick: () -> Unit =
+                                remember(navController) {
+                                    {
+                                        navController.navigate("recognition") {
+                                            launchSingleTop = true
+                                        }
                                     }
                                 }
-                            }
 
                             // Pre-calculate values for graphicsLayer to avoid reading state during composition
                             val navBarTotalHeight = bottomInset + NavigationBarHeight
@@ -931,7 +970,7 @@ class MainActivity : ComponentActivity() {
                                     BottomSheetPlayer(
                                         state = playerBottomSheetState,
                                         navController = navController,
-                                        pureBlack = pureBlack
+                                        pureBlack = pureBlack,
                                     )
 
                                     AppNavigationBar(
@@ -941,38 +980,48 @@ class MainActivity : ComponentActivity() {
                                         pureBlack = pureBlack,
                                         slimNav = slimNav,
                                         onSearchLongClick = onSearchLongClick,
-                                        modifier = Modifier
-                                            .align(Alignment.BottomCenter)
-                                            .height(bottomInset + navPadding)
-                                            // Use graphicsLayer instead of offset to avoid recomposition
-                                            // graphicsLayer runs during draw phase, not composition phase
-                                            .graphicsLayer {
-                                                val navBarHeightPx = navigationBarHeight.toPx()
-                                                val totalHeightPx = navBarTotalHeight.toPx()
+                                        modifier =
+                                            Modifier
+                                                .align(Alignment.BottomCenter)
+                                                .height(bottomInset + navPadding)
+                                                // Use graphicsLayer instead of offset to avoid recomposition
+                                                // graphicsLayer runs during draw phase, not composition phase
+                                                .graphicsLayer {
+                                                    val navBarHeightPx = navigationBarHeight.toPx()
+                                                    val totalHeightPx = navBarTotalHeight.toPx()
 
-                                                translationY = if (navBarHeightPx == 0f) {
-                                                    totalHeightPx
-                                                } else {
-                                                    // Read progress only during draw phase
-                                                    val progress = playerBottomSheetState.progress.coerceIn(0f, 1f)
-                                                    val slideOffset = totalHeightPx * progress
-                                                    val hideOffset = totalHeightPx * (1 - navBarHeightPx / NavigationBarHeight.toPx())
-                                                    slideOffset + hideOffset
-                                                }
-                                            }
+                                                    translationY =
+                                                        if (navBarHeightPx == 0f) {
+                                                            totalHeightPx
+                                                        } else {
+                                                            // Read progress only during draw phase
+                                                            val progress = playerBottomSheetState.progress.coerceIn(0f, 1f)
+                                                            val slideOffset = totalHeightPx * progress
+                                                            val hideOffset =
+                                                                totalHeightPx * (1 - navBarHeightPx / NavigationBarHeight.toPx())
+                                                            slideOffset + hideOffset
+                                                        }
+                                                },
                                     )
 
                                     Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .align(Alignment.BottomCenter)
-                                            .height(bottomInsetDp)
-                                            // Use graphicsLayer for background color changes
-                                            .graphicsLayer {
-                                                val progress = playerBottomSheetState.progress
-                                                alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
-                                            }
-                                            .background(baseBg)
+                                        modifier =
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .align(Alignment.BottomCenter)
+                                                .height(bottomInsetDp)
+                                                // Use graphicsLayer for background color changes
+                                                .graphicsLayer {
+                                                    val progress = playerBottomSheetState.progress
+                                                    alpha =
+                                                        if (progress > 0f ||
+                                                            (useNewMiniPlayerDesign && !shouldShowNavigationBar)
+                                                        ) {
+                                                            0f
+                                                        } else {
+                                                            1f
+                                                        }
+                                                }.background(baseBg),
                                     )
                                 }
                             } else {
@@ -980,59 +1029,63 @@ class MainActivity : ComponentActivity() {
                                     BottomSheetPlayer(
                                         state = playerBottomSheetState,
                                         navController = navController,
-                                        pureBlack = pureBlack
+                                        pureBlack = pureBlack,
                                     )
                                 }
 
                                 Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .align(Alignment.BottomCenter)
-                                        .height(bottomInsetDp)
-                                        // Use graphicsLayer for background color changes
-                                        .graphicsLayer {
-                                            val progress = playerBottomSheetState.progress
-                                            alpha = if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
-                                        }
-                                        .background(baseBg)
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .align(Alignment.BottomCenter)
+                                            .height(bottomInsetDp)
+                                            // Use graphicsLayer for background color changes
+                                            .graphicsLayer {
+                                                val progress = playerBottomSheetState.progress
+                                                alpha =
+                                                    if (progress > 0f || (useNewMiniPlayerDesign && !shouldShowNavigationBar)) 0f else 1f
+                                            }.background(baseBg),
                                 )
                             }
                         },
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
                     ) {
                         Row(Modifier.fillMaxSize()) {
-                            val onRailItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState) {
-                                { screen: Screens, isSelected: Boolean ->
-                                    if (playerBottomSheetState.isExpanded) {
-                                        playerBottomSheetState.collapseSoft()
-                                    }
-
-                                    if (isSelected) {
-                                        navController.currentBackStackEntry?.savedStateHandle?.set("scrollToTop", true)
-                                        coroutineScope.launch {
-                                            topAppBarScrollBehavior.state.resetHeightOffset()
+                            val onRailItemClick: (Screens, Boolean) -> Unit =
+                                remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState) {
+                                    { screen: Screens, isSelected: Boolean ->
+                                        if (playerBottomSheetState.isExpanded) {
+                                            playerBottomSheetState.collapseSoft()
                                         }
-                                    } else {
-                                        navController.navigate(screen.route) {
-                                            popUpTo(navController.graph.startDestinationId) {
-                                                saveState = true
+
+                                        if (isSelected) {
+                                            navController.currentBackStackEntry?.savedStateHandle?.set("scrollToTop", true)
+                                            coroutineScope.launch {
+                                                topAppBarScrollBehavior.state.resetHeightOffset()
                                             }
-                                            launchSingleTop = true
-                                            restoreState = true
+                                        } else {
+                                            navController.navigate(screen.route) {
+                                                popUpTo(navController.graph.startDestinationId) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
                                         }
                                     }
                                 }
-                            }
 
-                            val onRailSearchLongClick: () -> Unit = remember(navController) {
-                                {
-                                    navController.navigate("recognition") {
-                                        launchSingleTop = true
+                            val onRailSearchLongClick: () -> Unit =
+                                remember(navController) {
+                                    {
+                                        navController.navigate("recognition") {
+                                            launchSingleTop = true
+                                        }
                                     }
                                 }
-                            }
 
                             if (showRail && currentRoute != "wrapped") {
                                 AppNavigationRail(
@@ -1040,82 +1093,95 @@ class MainActivity : ComponentActivity() {
                                     currentRoute = currentRoute,
                                     onItemClick = onRailItemClick,
                                     pureBlack = pureBlack,
-                                    onSearchLongClick = onRailSearchLongClick
+                                    onSearchLongClick = onRailSearchLongClick,
                                 )
                             }
                             Box(Modifier.weight(1f)) {
                                 // NavHost with animations (Material 3 Expressive style)
                                 NavHost(
                                     navController = navController,
-                                    startDestination = when (tabOpenedFromShortcut ?: defaultOpenTab) {
-                                        NavigationTab.HOME -> Screens.Home
-                                        NavigationTab.LIBRARY -> Screens.Library
-                                        else -> Screens.Home
-                                    }.route,
+                                    startDestination =
+                                        when (tabOpenedFromShortcut ?: defaultOpenTab) {
+                                            NavigationTab.HOME -> Screens.Home
+                                            NavigationTab.LIBRARY -> Screens.Library
+                                            else -> Screens.Home
+                                        }.route,
                                     // Enter Transition - smoother with smaller offset and longer duration
                                     enterTransition = {
-                                        val currentRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == targetState.destination.route
-                                        }
-                                        val previousRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == initialState.destination.route
-                                        }
+                                        val currentRouteIndex =
+                                            navigationItems.indexOfFirst {
+                                                it.route == targetState.destination.route
+                                            }
+                                        val previousRouteIndex =
+                                            navigationItems.indexOfFirst {
+                                                it.route == initialState.destination.route
+                                            }
 
-                                        if (currentRouteIndex == -1 || currentRouteIndex > previousRouteIndex)
+                                        if (currentRouteIndex == -1 || currentRouteIndex > previousRouteIndex) {
                                             slideInHorizontally { it / 8 } + fadeIn(tween(200))
-                                        else
+                                        } else {
                                             slideInHorizontally { -it / 8 } + fadeIn(tween(200))
+                                        }
                                     },
                                     // Exit Transition - smoother with smaller offset and longer duration
                                     exitTransition = {
-                                        val currentRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == initialState.destination.route
-                                        }
-                                        val targetRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == targetState.destination.route
-                                        }
+                                        val currentRouteIndex =
+                                            navigationItems.indexOfFirst {
+                                                it.route == initialState.destination.route
+                                            }
+                                        val targetRouteIndex =
+                                            navigationItems.indexOfFirst {
+                                                it.route == targetState.destination.route
+                                            }
 
-                                        if (targetRouteIndex == -1 || targetRouteIndex > currentRouteIndex)
+                                        if (targetRouteIndex == -1 || targetRouteIndex > currentRouteIndex) {
                                             slideOutHorizontally { -it / 8 } + fadeOut(tween(200))
-                                        else
+                                        } else {
                                             slideOutHorizontally { it / 8 } + fadeOut(tween(200))
+                                        }
                                     },
                                     // Pop Enter Transition - smoother with smaller offset and longer duration
                                     popEnterTransition = {
-                                        val currentRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == targetState.destination.route
-                                        }
-                                        val previousRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == initialState.destination.route
-                                        }
+                                        val currentRouteIndex =
+                                            navigationItems.indexOfFirst {
+                                                it.route == targetState.destination.route
+                                            }
+                                        val previousRouteIndex =
+                                            navigationItems.indexOfFirst {
+                                                it.route == initialState.destination.route
+                                            }
 
-                                        if (previousRouteIndex != -1 && previousRouteIndex < currentRouteIndex)
+                                        if (previousRouteIndex != -1 && previousRouteIndex < currentRouteIndex) {
                                             slideInHorizontally { it / 8 } + fadeIn(tween(200))
-                                        else
+                                        } else {
                                             slideInHorizontally { -it / 8 } + fadeIn(tween(200))
+                                        }
                                     },
                                     // Pop Exit Transition - smoother with smaller offset and longer duration
                                     popExitTransition = {
-                                        val currentRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == initialState.destination.route
-                                        }
-                                        val targetRouteIndex = navigationItems.indexOfFirst {
-                                            it.route == targetState.destination.route
-                                        }
+                                        val currentRouteIndex =
+                                            navigationItems.indexOfFirst {
+                                                it.route == initialState.destination.route
+                                            }
+                                        val targetRouteIndex =
+                                            navigationItems.indexOfFirst {
+                                                it.route == targetState.destination.route
+                                            }
 
-                                        if (currentRouteIndex != -1 && currentRouteIndex < targetRouteIndex)
+                                        if (currentRouteIndex != -1 && currentRouteIndex < targetRouteIndex) {
                                             slideOutHorizontally { -it / 8 } + fadeOut(tween(200))
-                                        else
+                                        } else {
                                             slideOutHorizontally { it / 8 } + fadeOut(tween(200))
+                                        }
                                     },
-                                    modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
+                                    modifier = Modifier.nestedScroll(topAppBarScrollBehavior.nestedScrollConnection),
                                 ) {
                                     navigationBuilder(
                                         navController = navController,
                                         scrollBehavior = topAppBarScrollBehavior,
                                         latestVersionName = latestVersionName,
                                         activity = this@MainActivity,
-                                        snackbarHostState = snackbarHostState
+                                        snackbarHostState = snackbarHostState,
                                     )
                                 }
                             }
@@ -1124,12 +1190,12 @@ class MainActivity : ComponentActivity() {
 
                     BottomSheetMenu(
                         state = LocalMenuState.current,
-                        modifier = Modifier.align(Alignment.BottomCenter)
+                        modifier = Modifier.align(Alignment.BottomCenter),
                     )
 
                     BottomSheetPage(
                         state = LocalBottomSheetPageState.current,
-                        modifier = Modifier.align(Alignment.BottomCenter)
+                        modifier = Modifier.align(Alignment.BottomCenter),
                     )
 
                     if (showAccountDialog) {
@@ -1139,7 +1205,7 @@ class MainActivity : ComponentActivity() {
                                 showAccountDialog = false
                                 homeViewModel.refresh()
                             },
-                            latestVersionName = latestVersionName
+                            latestVersionName = latestVersionName,
                         )
                     }
 
@@ -1177,23 +1243,32 @@ class MainActivity : ComponentActivity() {
      * Handles the ACTION_RECOGNITION intent sent from the Music Recognizer Widget.
      * Always navigates to the recognition screen to show the result.
      */
-    private fun handleRecognitionIntent(intent: Intent, navController: NavHostController) {
+    private fun handleRecognitionIntent(
+        intent: Intent,
+        navController: NavHostController,
+    ) {
         if (intent.action != ACTION_RECOGNITION) return
-        intent.action = null // consume so it isn't handled twice
-        navController.navigate("recognition") {
+        val autoStart = intent.getBooleanExtra(EXTRA_AUTO_START_RECOGNITION, false)
+        intent.action = null
+        intent.removeExtra(EXTRA_AUTO_START_RECOGNITION)
+        navController.navigate(if (autoStart) "recognition?autoStart=true" else "recognition") {
             launchSingleTop = true
         }
     }
 
-    private fun handleDeepLinkIntent(intent: Intent, navController: NavHostController) {
+    private fun handleDeepLinkIntent(
+        intent: Intent,
+        navController: NavHostController,
+    ) {
         val uri = intent.data ?: intent.extras?.getString(Intent.EXTRA_TEXT)?.toUri() ?: return
         intent.data = null
         intent.removeExtra(Intent.EXTRA_TEXT)
         val coroutineScope = lifecycle.coroutineScope
 
-        val listenCode = uri.getQueryParameter("code")
-            ?: uri.getQueryParameter("room")
-            ?: uri.pathSegments.getOrNull(1)
+        val listenCode =
+            uri.getQueryParameter("code")
+                ?: uri.getQueryParameter("room")
+                ?: uri.pathSegments.getOrNull(1)
         val isListenLink = uri.pathSegments.firstOrNull() == "listen" || uri.host?.equals("listen", ignoreCase = true) == true
         if (!listenCode.isNullOrBlank() && isListenLink) {
             val username = dataStore.get(ListenTogetherUsernameKey, "").ifBlank { "Guest" }
@@ -1202,28 +1277,36 @@ class MainActivity : ComponentActivity() {
         }
 
         when (val path = uri.pathSegments.firstOrNull()) {
-            "playlist" -> uri.getQueryParameter("list")?.let { playlistId ->
-                if (playlistId.startsWith("OLAK5uy_")) {
-                    coroutineScope.launch(Dispatchers.IO) {
-                        YouTube.albumSongs(playlistId).onSuccess { songs ->
-                            songs.firstOrNull()?.album?.id?.let { browseId ->
-                                withContext(Dispatchers.Main) {
-                                    navController.navigate("album/$browseId")
-                                }
-                            }
-                        }.onFailure { reportException(it) }
+            "playlist" -> {
+                uri.getQueryParameter("list")?.let { playlistId ->
+                    if (playlistId.startsWith("OLAK5uy_")) {
+                        coroutineScope.launch(Dispatchers.IO) {
+                            YouTube
+                                .albumSongs(playlistId)
+                                .onSuccess { songs ->
+                                    songs.firstOrNull()?.album?.id?.let { browseId ->
+                                        withContext(Dispatchers.Main) {
+                                            navController.navigate("album/$browseId")
+                                        }
+                                    }
+                                }.onFailure { reportException(it) }
+                        }
+                    } else {
+                        navController.navigate("online_playlist/$playlistId")
                     }
-                } else {
-                    navController.navigate("online_playlist/$playlistId")
                 }
             }
 
-            "browse" -> uri.lastPathSegment?.let { browseId ->
-                navController.navigate("album/$browseId")
+            "browse" -> {
+                uri.lastPathSegment?.let { browseId ->
+                    navController.navigate("album/$browseId")
+                }
             }
 
-            "channel", "c" -> uri.lastPathSegment?.let { artistId ->
-                navController.navigate("artist/$artistId")
+            "channel", "c" -> {
+                uri.lastPathSegment?.let { artistId ->
+                    navController.navigate("artist/$artistId")
+                }
             }
 
             "search" -> {
@@ -1233,44 +1316,49 @@ class MainActivity : ComponentActivity() {
             }
 
             else -> {
-                val videoId = when {
-                    path == "watch" -> uri.getQueryParameter("v")
-                    uri.host == "youtu.be" -> uri.pathSegments.firstOrNull()
-                    else -> null
-                }
+                val videoId =
+                    when {
+                        path == "watch" -> uri.getQueryParameter("v")
+                        uri.host == "youtu.be" -> uri.pathSegments.firstOrNull()
+                        else -> null
+                    }
 
                 val playlistId = uri.getQueryParameter("list")
 
                 if (videoId != null) {
                     coroutineScope.launch(Dispatchers.IO) {
-                        YouTube.queue(listOf(videoId), playlistId).onSuccess { queue ->
-                            withContext(Dispatchers.Main) {
-                                playerConnection?.playQueue(
-                                    YouTubeQueue(
-                                        WatchEndpoint(videoId = queue.firstOrNull()?.id, playlistId = playlistId),
-                                        queue.firstOrNull()?.toMediaMetadata()
+                        YouTube
+                            .queue(listOf(videoId), playlistId)
+                            .onSuccess { queue ->
+                                withContext(Dispatchers.Main) {
+                                    playerConnection?.playQueue(
+                                        YouTubeQueue(
+                                            WatchEndpoint(videoId = queue.firstOrNull()?.id, playlistId = playlistId),
+                                            queue.firstOrNull()?.toMediaMetadata(),
+                                        ),
                                     )
-                                )
+                                }
+                            }.onFailure {
+                                reportException(it)
                             }
-                        }.onFailure {
-                            reportException(it)
-                        }
                     }
                 } else if (playlistId != null) {
                     coroutineScope.launch(Dispatchers.IO) {
-                        YouTube.queue(null, playlistId).onSuccess { queue ->
-                            val firstItem = queue.firstOrNull()
-                            withContext(Dispatchers.Main) {
-                                playerConnection?.playQueue(
-                                    YouTubeQueue(
-                                        WatchEndpoint(videoId = firstItem?.id, playlistId = playlistId),
-                                        firstItem?.toMediaMetadata()
+                        YouTube
+                            .queue(null, playlistId)
+                            .onSuccess { queue ->
+                                val firstItem = queue.firstOrNull()
+                                withContext(Dispatchers.Main) {
+                                    playerConnection?.playQueue(
+                                        YouTubeQueue(
+                                            WatchEndpoint(videoId = firstItem?.id, playlistId = playlistId),
+                                            firstItem?.toMediaMetadata(),
+                                        ),
                                     )
-                                )
+                                }
+                            }.onFailure {
+                                reportException(it)
                             }
-                        }.onFailure {
-                            reportException(it)
-                        }
                     }
                 }
             }
