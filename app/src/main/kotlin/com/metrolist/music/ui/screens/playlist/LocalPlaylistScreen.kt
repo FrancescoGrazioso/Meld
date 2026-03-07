@@ -227,9 +227,11 @@ fun LocalPlaylistScreen(
             restore = { it.toMutableStateList() }
         )
     ) { mutableStateListOf() }
+    var selectionAnchorMapId by rememberSaveable { mutableStateOf<Int?>(null) }
     val onExitSelectionMode = {
         inSelectMode = false
         selection.clear()
+        selectionAnchorMapId = null
     }
 
     if (isSearching) {
@@ -253,6 +255,10 @@ fun LocalPlaylistScreen(
             if (songs.find { it.map.id == mapId } == null) {
                 selection.remove(Integer.valueOf(mapId))
             }
+        }
+
+        if (selectionAnchorMapId != null && songs.none { it.map.id == selectionAnchorMapId }) {
+            selectionAnchorMapId = songs.firstOrNull { it.map.id in selection }?.map?.id
         }
     }
 
@@ -532,8 +538,10 @@ fun LocalPlaylistScreen(
                 }
             }
 
+            val displayedSongs = if (isSearching) filteredSongs else mutableSongs
+
             itemsIndexed(
-                items = if (isSearching) filteredSongs else mutableSongs,
+                items = displayedSongs,
                 key = { _, song -> song.map.id },
             ) { index, song ->
                 ReorderableItem(
@@ -663,6 +671,24 @@ fun LocalPlaylistScreen(
                                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                             inSelectMode = true
                                             onCheckedChange(true)
+                                            selectionAnchorMapId = song.map.id
+                                        } else {
+                                            val anchorIndex = selectionAnchorMapId?.let { anchorMapId ->
+                                                displayedSongs.indexOfFirst { it.map.id == anchorMapId }
+                                            } ?: -1
+
+                                            if (anchorIndex == -1) {
+                                                onCheckedChange(true)
+                                                selectionAnchorMapId = song.map.id
+                                            } else {
+                                                val range = if (anchorIndex <= index) anchorIndex..index else index..anchorIndex
+                                                for (rangeIndex in range) {
+                                                    val rangeMapId = displayedSongs[rangeIndex].map.id
+                                                    if (rangeMapId !in selection) {
+                                                        selection.add(rangeMapId)
+                                                    }
+                                                }
+                                            }
                                         }
                                     },
                                 ),
