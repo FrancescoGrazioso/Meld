@@ -585,6 +585,8 @@ fun AlbumMenu(
                     ),
             )
 
+            val exportPlaylistStr = stringResource(R.string.export_playlist)
+
             if (showExportDialog) {
                 ExportDialog(
                     onDismiss = { showExportDialog = false },
@@ -617,7 +619,7 @@ fun AlbumMenu(
                                         putExtra(Intent.EXTRA_STREAM, uri)
                                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                     }
-                                context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.export_playlist)))
+                                context.startActivity(Intent.createChooser(shareIntent, exportPlaylistStr))
                             }.onFailure {
                                 Toast.makeText(context, R.string.export_failed, Toast.LENGTH_SHORT).show()
                             }

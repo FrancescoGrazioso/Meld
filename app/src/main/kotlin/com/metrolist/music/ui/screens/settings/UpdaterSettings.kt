@@ -60,7 +60,7 @@ fun UpdaterScreen(
 ) {
     val (checkForUpdates, onCheckForUpdatesChange) = rememberPreference(CheckForUpdatesKey, true)
     val (updateNotifications, onUpdateNotificationsChange) = rememberPreference(UpdateNotificationsEnabledKey, true)
-    
+
     val context = LocalContext.current
     var isChecking by remember { mutableStateOf(false) }
     var updateAvailable by remember { mutableStateOf(false) }
@@ -68,7 +68,7 @@ fun UpdaterScreen(
     var showChangelog by remember { mutableStateOf(false) }
     var changelogContent by remember { mutableStateOf<String?>(null) }
     var checkError by remember { mutableStateOf<String?>(null) }
-    
+
     val coroutineScope = rememberCoroutineScope()
 
     fun performManualCheck() {
@@ -76,128 +76,133 @@ fun UpdaterScreen(
             isChecking = true
             checkError = null
             withContext(Dispatchers.IO) {
-                Updater.checkForUpdate(forceRefresh = true).onSuccess { (releaseInfo, hasUpdate) ->
-                    if (releaseInfo != null) {
-                        latestVersion = releaseInfo.versionName
-                        updateAvailable = hasUpdate
-                        changelogContent = releaseInfo.description
+                Updater
+                    .checkForUpdate(forceRefresh = true)
+                    .onSuccess { (releaseInfo, hasUpdate) ->
+                        if (releaseInfo != null) {
+                            latestVersion = releaseInfo.versionName
+                            updateAvailable = hasUpdate
+                            changelogContent = releaseInfo.description
+                        }
+                    }.onFailure {
+                        checkError = context.getString(R.string.failed_to_check_updates, it.message ?: "Unknown error")
                     }
-                }.onFailure {
-                    checkError = context.getString(R.string.failed_to_check_updates, it.message ?: "Unknown error")
-                }
             }
             isChecking = false
         }
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .windowInsetsPadding(
-                LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
-                )
-            )
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .windowInsetsPadding(
+                    LocalPlayerAwareWindowInsets.current.only(
+                        WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+                    ),
+                ).verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(
             Modifier.windowInsetsPadding(
                 LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Top
-                )
-            )
+                    WindowInsetsSides.Top,
+                ),
+            ),
         )
 
         Spacer(Modifier.height(4.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.current_version),
-            items = listOf(
-                Material3SettingsItem(
-                    title = {
-                        Text(stringResource(R.string.version_format, BuildConfig.VERSION_NAME))
-                    },
-                    description = {
-                        val arch = BuildConfig.ARCHITECTURE
-                        val variant = if (BuildConfig.CAST_AVAILABLE) "GMS" else "FOSS"
-                        Text("$arch - $variant")
-                    }
-                )
-            )
+            items =
+                listOf(
+                    Material3SettingsItem(
+                        title = {
+                            Text(stringResource(R.string.version_format, BuildConfig.VERSION_NAME))
+                        },
+                        description = {
+                            val arch = BuildConfig.ARCHITECTURE
+                            val variant = if (BuildConfig.CAST_AVAILABLE) "GMS" else "FOSS"
+                            Text("$arch - $variant")
+                        },
+                    ),
+                ),
         )
-        
+
         Spacer(Modifier.height(16.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.update_settings),
-            items = buildList {
-                add(
-                    Material3SettingsItem(
-                        title = { Text(stringResource(R.string.check_for_updates)) },
-                        icon = painterResource(R.drawable.update),
-                        trailingContent = {
-                            Switch(
-                                checked = checkForUpdates,
-                                onCheckedChange = onCheckForUpdatesChange
-                            )
-                        },
-                        onClick = { onCheckForUpdatesChange(!checkForUpdates) }
-                    )
-                )
-
-                if (checkForUpdates) {
+            items =
+                buildList {
                     add(
                         Material3SettingsItem(
-                            title = { Text(stringResource(R.string.update_notifications)) },
-                            icon = painterResource(R.drawable.notification),
+                            title = { Text(stringResource(R.string.check_for_updates)) },
+                            icon = painterResource(R.drawable.update),
                             trailingContent = {
                                 Switch(
-                                    checked = updateNotifications,
-                                    onCheckedChange = onUpdateNotificationsChange
+                                    checked = checkForUpdates,
+                                    onCheckedChange = onCheckForUpdatesChange,
                                 )
                             },
-                            onClick = { onUpdateNotificationsChange(!updateNotifications) }
-                        )
+                            onClick = { onCheckForUpdatesChange(!checkForUpdates) },
+                        ),
                     )
-                }
-            }
+
+                    if (checkForUpdates) {
+                        add(
+                            Material3SettingsItem(
+                                title = { Text(stringResource(R.string.update_notifications)) },
+                                icon = painterResource(R.drawable.notification),
+                                trailingContent = {
+                                    Switch(
+                                        checked = updateNotifications,
+                                        onCheckedChange = onUpdateNotificationsChange,
+                                    )
+                                },
+                                onClick = { onUpdateNotificationsChange(!updateNotifications) },
+                            ),
+                        )
+                    }
+                },
         )
 
         Spacer(Modifier.height(16.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.check_for_updates_title),
-            items = listOf(
-                Material3SettingsItem(
-                    icon = painterResource(R.drawable.refresh),
-                    title = { 
-                        if (isChecking) {
-                            Text(stringResource(R.string.checking_for_updates))
-                        } else if (latestVersion != null) {
-                            Text(stringResource(R.string.latest_version_format, latestVersion!!))
-                        } else {
-                            Text(stringResource(R.string.check_for_updates_button))
-                        }
-                    },
-                    trailingContent = {
-                        if (isChecking) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.padding(end = 16.dp),
-                                strokeWidth = 2.dp
-                            )
-                        } else if (updateAvailable) {
-                            Icon(
-                                painter = painterResource(R.drawable.download),
-                                contentDescription = stringResource(R.string.update_available_title),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    },
-                    onClick = { if (!isChecking) performManualCheck() }
-                )
-            )
+            items =
+                listOf(
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.refresh),
+                        title = {
+                            if (isChecking) {
+                                Text(stringResource(R.string.checking_for_updates))
+                            } else if (latestVersion != null) {
+                                Text(stringResource(R.string.latest_version_format, latestVersion!!))
+                            } else {
+                                Text(stringResource(R.string.check_for_updates_button))
+                            }
+                        },
+                        trailingContent = {
+                            if (isChecking) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.padding(end = 16.dp),
+                                    strokeWidth = 2.dp,
+                                )
+                            } else if (updateAvailable) {
+                                Icon(
+                                    painter = painterResource(R.drawable.download),
+                                    contentDescription = stringResource(R.string.update_available_title),
+                                    tint = MaterialTheme.colorScheme.primary,
+                                )
+                            }
+                        },
+                        onClick = { if (!isChecking) performManualCheck() },
+                    ),
+                ),
         )
 
         checkError?.let {
@@ -206,7 +211,7 @@ fun UpdaterScreen(
                 text = it,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
         }
 
@@ -214,9 +219,10 @@ fun UpdaterScreen(
             Spacer(Modifier.height(16.dp))
             Button(
                 onClick = { showChangelog = !showChangelog },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
             ) {
                 Text(if (showChangelog) stringResource(R.string.hide_changelog) else stringResource(R.string.view_changelog))
             }
@@ -226,9 +232,10 @@ fun UpdaterScreen(
                 Text(
                     text = changelogContent!!,
                     style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                 )
             }
         }
@@ -248,6 +255,6 @@ fun UpdaterScreen(
                     contentDescription = null,
                 )
             }
-        }
+        },
     )
 }

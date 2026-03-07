@@ -118,7 +118,7 @@ fun StatsScreen(
     val monthlyDates =
         if (currentDate != null && firstEvent != null) {
             generateSequence(
-                currentDate.plusMonths(1).withDayOfMonth(1).minusDays(1)
+                currentDate.plusMonths(1).withDayOfMonth(1).minusDays(1),
             ) { it.minusMonths(1) }
                 .takeWhile {
                     it.isAfter(
@@ -166,58 +166,74 @@ fun StatsScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             state = lazyListState,
-            contentPadding = LocalPlayerAwareWindowInsets.current
-                .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
-                .asPaddingValues(),
-            modifier = Modifier.windowInsetsPadding(
-                LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top)
-            )
+            contentPadding =
+                LocalPlayerAwareWindowInsets.current
+                    .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom)
+                    .asPaddingValues(),
+            modifier =
+                Modifier.windowInsetsPadding(
+                    LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top),
+                ),
         ) {
             item(key = "choice_chips") {
                 ChoiceChipsRow(
                     chips =
-                    when (selectedOption) {
-                        OptionStats.WEEKS -> weeklyDates
-                        OptionStats.MONTHS -> monthlyDates
-                        OptionStats.YEARS -> yearlyDates
-                        OptionStats.CONTINUOUS -> {
-                            listOf(
-                                StatPeriod.WEEK_1.ordinal to pluralStringResource(
-                                    R.plurals.n_week,
-                                    1,
-                                    1
-                                ),
-                                StatPeriod.MONTH_1.ordinal to pluralStringResource(
-                                    R.plurals.n_month,
-                                    1,
-                                    1
-                                ),
-                                StatPeriod.MONTH_3.ordinal to pluralStringResource(
-                                    R.plurals.n_month,
-                                    3,
-                                    3
-                                ),
-                                StatPeriod.MONTH_6.ordinal to pluralStringResource(
-                                    R.plurals.n_month,
-                                    6,
-                                    6
-                                ),
-                                StatPeriod.YEAR_1.ordinal to pluralStringResource(
-                                    R.plurals.n_year,
-                                    1,
-                                    1
-                                ),
-                                StatPeriod.ALL.ordinal to stringResource(R.string.filter_all),
-                            )
-                        }
-                    },
+                        when (selectedOption) {
+                            OptionStats.WEEKS -> {
+                                weeklyDates
+                            }
+
+                            OptionStats.MONTHS -> {
+                                monthlyDates
+                            }
+
+                            OptionStats.YEARS -> {
+                                yearlyDates
+                            }
+
+                            OptionStats.CONTINUOUS -> {
+                                listOf(
+                                    StatPeriod.WEEK_1.ordinal to
+                                        pluralStringResource(
+                                            R.plurals.n_week,
+                                            1,
+                                            1,
+                                        ),
+                                    StatPeriod.MONTH_1.ordinal to
+                                        pluralStringResource(
+                                            R.plurals.n_month,
+                                            1,
+                                            1,
+                                        ),
+                                    StatPeriod.MONTH_3.ordinal to
+                                        pluralStringResource(
+                                            R.plurals.n_month,
+                                            3,
+                                            3,
+                                        ),
+                                    StatPeriod.MONTH_6.ordinal to
+                                        pluralStringResource(
+                                            R.plurals.n_month,
+                                            6,
+                                            6,
+                                        ),
+                                    StatPeriod.YEAR_1.ordinal to
+                                        pluralStringResource(
+                                            R.plurals.n_year,
+                                            1,
+                                            1,
+                                        ),
+                                    StatPeriod.ALL.ordinal to stringResource(R.string.filter_all),
+                                )
+                            }
+                        },
                     options =
-                    listOf(
-                        OptionStats.CONTINUOUS to stringResource(id = R.string.continuous),
-                        OptionStats.WEEKS to stringResource(R.string.weeks),
-                        OptionStats.MONTHS to stringResource(R.string.months),
-                        OptionStats.YEARS to stringResource(R.string.years),
-                    ),
+                        listOf(
+                            OptionStats.CONTINUOUS to stringResource(id = R.string.continuous),
+                            OptionStats.WEEKS to stringResource(R.string.weeks),
+                            OptionStats.MONTHS to stringResource(R.string.months),
+                            OptionStats.YEARS to stringResource(R.string.years),
+                        ),
                     selectedOption = selectedOption,
                     onSelectionChange = {
                         viewModel.selectedOption.value = it
@@ -244,45 +260,44 @@ fun StatsScreen(
                         LocalSongsGrid(
                             title = "${index + 1}. ${song.title}",
                             subtitle =
-                            joinByBullet(
-                                pluralStringResource(
-                                    R.plurals.n_time,
-                                    song.songCountListened,
-                                    song.songCountListened,
+                                joinByBullet(
+                                    pluralStringResource(
+                                        R.plurals.n_time,
+                                        song.songCountListened,
+                                        song.songCountListened,
+                                    ),
+                                    makeTimeString(song.timeListened),
                                 ),
-                                makeTimeString(song.timeListened),
-                            ),
                             thumbnailUrl = song.thumbnailUrl,
                             isActive = song.id == mediaMetadata?.id,
                             isPlaying = isPlaying,
                             modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .combinedClickable(
-                                    onClick = {
-                                        if (song.id == mediaMetadata?.id) {
-                                            playerConnection.togglePlayPause()
-                                        } else {
-                                            playerConnection.playQueue(
-                                                YouTubeQueue(
-                                                    endpoint = WatchEndpoint(song.id),
-                                                    preloadItem = mostPlayedSongs[index].toMediaMetadata(),
-                                                ),
-                                            )
-                                        }
-                                    },
-                                    onLongClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        menuState.show {
-                                            SongMenu(
-                                                originalSong = mostPlayedSongs[index],
-                                                navController = navController,
-                                                onDismiss = menuState::dismiss,
-                                            )
-                                        }
-                                    },
-                                )
-                                .animateItem(),
+                                Modifier
+                                    .fillMaxWidth()
+                                    .combinedClickable(
+                                        onClick = {
+                                            if (song.id == mediaMetadata?.id) {
+                                                playerConnection.togglePlayPause()
+                                            } else {
+                                                playerConnection.playQueue(
+                                                    YouTubeQueue(
+                                                        endpoint = WatchEndpoint(song.id),
+                                                        preloadItem = mostPlayedSongs[index].toMediaMetadata(),
+                                                    ),
+                                                )
+                                            }
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            menuState.show {
+                                                SongMenu(
+                                                    originalSong = mostPlayedSongs[index],
+                                                    navController = navController,
+                                                    onDismiss = menuState::dismiss,
+                                                )
+                                            }
+                                        },
+                                    ).animateItem(),
                         )
                     }
                 }
@@ -304,33 +319,32 @@ fun StatsScreen(
                         LocalArtistsGrid(
                             title = "${index + 1}. ${artist.artist.name}",
                             subtitle =
-                            joinByBullet(
-                                pluralStringResource(
-                                    R.plurals.n_time,
-                                    artist.songCount,
-                                    artist.songCount
+                                joinByBullet(
+                                    pluralStringResource(
+                                        R.plurals.n_time,
+                                        artist.songCount,
+                                        artist.songCount,
+                                    ),
+                                    makeTimeString(artist.timeListened?.toLong()),
                                 ),
-                                makeTimeString(artist.timeListened?.toLong()),
-                            ),
                             thumbnailUrl = artist.artist.thumbnailUrl,
                             modifier =
-                            Modifier
-                                .combinedClickable(
-                                    onClick = {
-                                        navController.navigate("artist/${artist.id}")
-                                    },
-                                    onLongClick = {
-                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        menuState.show {
-                                            ArtistMenu(
-                                                originalArtist = artist,
-                                                coroutineScope = coroutineScope,
-                                                onDismiss = menuState::dismiss,
-                                            )
-                                        }
-                                    },
-                                )
-                                .animateItem(),
+                                Modifier
+                                    .combinedClickable(
+                                        onClick = {
+                                            navController.navigate("artist/${artist.id}")
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            menuState.show {
+                                                ArtistMenu(
+                                                    originalArtist = artist,
+                                                    coroutineScope = coroutineScope,
+                                                    onDismiss = menuState::dismiss,
+                                                )
+                                            }
+                                        },
+                                    ).animateItem(),
                         )
                     }
                 }
@@ -353,36 +367,35 @@ fun StatsScreen(
                             LocalAlbumsGrid(
                                 title = "${index + 1}. ${album.album.title}",
                                 subtitle =
-                                joinByBullet(
-                                    pluralStringResource(
-                                        R.plurals.n_time,
-                                        album.songCountListened ?: 0,
-                                        album.songCountListened ?: 0
+                                    joinByBullet(
+                                        pluralStringResource(
+                                            R.plurals.n_time,
+                                            album.songCountListened ?: 0,
+                                            album.songCountListened ?: 0,
+                                        ),
+                                        makeTimeString(album.timeListened),
                                     ),
-                                    makeTimeString(album.timeListened),
-                                ),
                                 thumbnailUrl = album.album.thumbnailUrl,
                                 isActive = album.id == mediaMetadata?.album?.id,
                                 isPlaying = isPlaying,
                                 modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .combinedClickable(
-                                        onClick = {
-                                            navController.navigate("album/${album.id}")
-                                        },
-                                        onLongClick = {
-                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            menuState.show {
-                                                AlbumMenu(
-                                                    originalAlbum = album,
-                                                    navController = navController,
-                                                    onDismiss = menuState::dismiss,
-                                                )
-                                            }
-                                        },
-                                    )
-                                    .animateItem(),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .combinedClickable(
+                                            onClick = {
+                                                navController.navigate("album/${album.id}")
+                                            },
+                                            onLongClick = {
+                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                menuState.show {
+                                                    AlbumMenu(
+                                                        originalAlbum = album,
+                                                        navController = navController,
+                                                        onDismiss = menuState::dismiss,
+                                                    )
+                                                }
+                                            },
+                                        ).animateItem(),
                             )
                         }
                     }
@@ -392,6 +405,7 @@ fun StatsScreen(
 
         // FAB to shuffle most played songs
         if (mostPlayedSongs.isNotEmpty()) {
+            val mostPlayedSongsTitle = stringResource(R.string.most_played_songs)
             HideOnScrollFAB(
                 visible = true,
                 lazyListState = lazyListState,
@@ -399,11 +413,11 @@ fun StatsScreen(
                 onClick = {
                     playerConnection.playQueue(
                         ListQueue(
-                            title = context.getString(R.string.most_played_songs),
-                            items = mostPlayedSongs.map { it.toMediaMetadata().toMediaItem() }.shuffled()
-                        )
+                            title = mostPlayedSongsTitle,
+                            items = mostPlayedSongs.map { it.toMediaMetadata().toMediaItem() }.shuffled(),
+                        ),
                     )
-                }
+                },
             )
         }
 

@@ -150,67 +150,72 @@ fun BackupAndRestore(
             csvImportState = previewState
             showCsvColumnMapping = true
         }
-    val importM3uLauncherOnline = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri == null) return@rememberLauncherForActivityResult
-        val result = viewModel.loadM3UOnline(context, uri)
-        importedSongs.clear()
-        importedSongs.addAll(result)
+    val importM3uLauncherOnline =
+        rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+            if (uri == null) return@rememberLauncherForActivityResult
+            val result = viewModel.loadM3UOnline(context, uri)
+            importedSongs.clear()
+            importedSongs.addAll(result)
 
-        if (importedSongs.isNotEmpty()) {
-            showChoosePlaylistDialogOnline = true
+            if (importedSongs.isNotEmpty()) {
+                showChoosePlaylistDialogOnline = true
+            }
         }
-    }
 
     Column(
         Modifier
             .windowInsetsPadding(LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom))
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
     ) {
         Spacer(
             Modifier.windowInsetsPadding(
                 LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Top
-                )
-            )
+                    WindowInsetsSides.Top,
+                ),
+            ),
         )
 
+        val appName = stringResource(R.string.app_name)
         Material3SettingsGroup(
-            items = listOf(
-                Material3SettingsItem(
-                    title = { Text(stringResource(R.string.action_backup)) },
-                    icon = painterResource(R.drawable.backup),
-                    onClick = {
-                        val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
-                        backupLauncher.launch(
-                            "${context.getString(R.string.app_name)}_${
-                                LocalDateTime.now().format(formatter)
-                            }.backup"
-                        )
-                    },
+            items =
+                listOf(
+                    Material3SettingsItem(
+                        title = { Text(stringResource(R.string.action_backup)) },
+                        icon = painterResource(R.drawable.backup),
+                        onClick = {
+                            val formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss")
+                            backupLauncher.launch(
+                                "${appName}_${
+                                    LocalDateTime.now().format(formatter)
+                                }.backup",
+                            )
+                        },
+                    ),
+                    Material3SettingsItem(
+                        title = { Text(stringResource(R.string.action_restore)) },
+                        icon = painterResource(R.drawable.restore),
+                        onClick = {
+                            restoreLauncher.launch(arrayOf("application/octet-stream"))
+                        },
+                    ),
+                    Material3SettingsItem(
+                        title = { Text(stringResource(R.string.import_online)) },
+                        icon = painterResource(R.drawable.playlist_add),
+                        onClick = {
+                            importM3uLauncherOnline.launch(arrayOf("audio/*"))
+                        },
+                    ),
+                    Material3SettingsItem(
+                        title = { Text(stringResource(R.string.import_csv)) },
+                        icon = painterResource(R.drawable.playlist_add),
+                        onClick = {
+                            importPlaylistFromCsv.launch(
+                                arrayOf("text/csv", "text/comma-separated-values", "application/csv", "text/plain"),
+                            )
+                        },
+                    ),
                 ),
-                Material3SettingsItem(
-                    title = { Text(stringResource(R.string.action_restore)) },
-                    icon = painterResource(R.drawable.restore),
-                    onClick = {
-                        restoreLauncher.launch(arrayOf("application/octet-stream"))
-                    },
-                ),
-                Material3SettingsItem(
-                    title = { Text(stringResource(R.string.import_online)) },
-                    icon = painterResource(R.drawable.playlist_add),
-                    onClick = {
-                        importM3uLauncherOnline.launch(arrayOf("audio/*"))
-                    }
-                ),
-                Material3SettingsItem(
-                    title = { Text(stringResource(R.string.import_csv)) },
-                    icon = painterResource(R.drawable.playlist_add),
-                    onClick = {
-                        importPlaylistFromCsv.launch(arrayOf("text/csv", "text/comma-separated-values", "application/csv", "text/plain"))
-                    }
-                )
-            )
         )
     }
 
@@ -226,7 +231,7 @@ fun BackupAndRestore(
                     contentDescription = null,
                 )
             }
-        }
+        },
     )
 
     AddToPlaylistDialogOnline(
@@ -237,7 +242,7 @@ fun BackupAndRestore(
         onDismiss = { showChoosePlaylistDialogOnline = false },
         onProgressStart = { newVal -> isProgressStarted = newVal },
         onPercentageChange = { newPercentage -> progressPercentage = newPercentage },
-        onSongChange = { currentImportSong = it }
+        onSongChange = { currentImportSong = it },
     )
 
     LoadingScreen(
@@ -261,18 +266,19 @@ fun BackupAndRestore(
                 pendingCsvUri?.let { uri ->
                     showCsvImportProgress = true
                     coroutineScope.launch(Dispatchers.Default) {
-                        val result = viewModel.importPlaylistFromCsv(
-                            context,
-                            uri,
-                            mappingState,
-                            onProgress = { progress ->
-                                csvImportProgress = progress
-                            },
-                            onLogUpdate = { logs ->
-                                csvRecentLogs.clear()
-                                csvRecentLogs.addAll(logs)
-                            },
-                        )
+                        val result =
+                            viewModel.importPlaylistFromCsv(
+                                context,
+                                uri,
+                                mappingState,
+                                onProgress = { progress ->
+                                    csvImportProgress = progress
+                                },
+                                onLogUpdate = { logs ->
+                                    csvRecentLogs.clear()
+                                    csvRecentLogs.addAll(logs)
+                                },
+                            )
                         importedSongs.clear()
                         importedSongs.addAll(result)
                         if (result.isNotEmpty()) {
@@ -309,7 +315,7 @@ fun BackupAndRestore(
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.restore),
-                    contentDescription = null
+                    contentDescription = null,
                 )
             },
             title = { Text(stringResource(R.string.restore_confirm_title)) },
@@ -320,7 +326,7 @@ fun BackupAndRestore(
                         pendingRestoreUri = null
                         backupPreviewInfo = null
                         accountCheckFailed = false
-                    }
+                    },
                 ) {
                     Text(stringResource(android.R.string.cancel))
                 }
@@ -333,17 +339,17 @@ fun BackupAndRestore(
                         pendingRestoreUri = null
                         backupPreviewInfo = null
                         accountCheckFailed = false
-                    }
+                    },
                 ) {
                     Text(stringResource(R.string.restore))
                 }
-            }
+            },
         ) {
             // Supporting text
             Text(
                 text = stringResource(R.string.restore_confirm_message),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
 
             // Show warning about account sign out if account found
@@ -352,7 +358,7 @@ fun BackupAndRestore(
                 Text(
                     text = stringResource(R.string.restore_account_warning),
                     color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall,
                 )
             }
 
@@ -364,17 +370,17 @@ fun BackupAndRestore(
 
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(24.dp),
-                        strokeWidth = 2.dp
+                        strokeWidth = 2.dp,
                     )
                     Spacer(modifier = Modifier.size(16.dp))
                     Text(
                         text = stringResource(R.string.checking_previous_account),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -383,9 +389,10 @@ fun BackupAndRestore(
             }
 
             // Show "No account found" if check failed OR backup has no auth data
-            val hasNoAccount = backupPreviewInfo?.let {
-                !it.hasAuthData || (it.hasAuthData && it.accountName == null && !isLoadingAccountInfo)
-            } ?: false
+            val hasNoAccount =
+                backupPreviewInfo?.let {
+                    !it.hasAuthData || (it.hasAuthData && it.accountName == null && !isLoadingAccountInfo)
+                } ?: false
             if (!isLoadingAccountInfo && (accountCheckFailed || hasNoAccount)) {
                 Spacer(modifier = Modifier.height(16.dp))
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
@@ -394,7 +401,7 @@ fun BackupAndRestore(
                 Text(
                     text = stringResource(R.string.no_account_found),
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -407,37 +414,39 @@ fun BackupAndRestore(
                     Spacer(modifier = Modifier.height(16.dp))
 
                     HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant
+                        color = MaterialTheme.colorScheme.outlineVariant,
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         if (preview.accountImageUrl != null) {
                             AsyncImage(
                                 model = preview.accountImageUrl,
                                 contentDescription = null,
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape),
-                                contentScale = ContentScale.Crop
+                                modifier =
+                                    Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape),
+                                contentScale = ContentScale.Crop,
                             )
                         } else {
                             Box(
-                                modifier = Modifier
-                                    .size(40.dp)
-                                    .clip(CircleShape)
-                                    .background(MaterialTheme.colorScheme.secondaryContainer),
-                                contentAlignment = Alignment.Center
+                                modifier =
+                                    Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(MaterialTheme.colorScheme.secondaryContainer),
+                                contentAlignment = Alignment.Center,
                             ) {
                                 Icon(
                                     painter = painterResource(R.drawable.person),
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(24.dp),
                                 )
                             }
                         }
@@ -447,14 +456,14 @@ fun BackupAndRestore(
                         Text(
                             text = preview.accountEmail ?: preview.accountName,
                             style = MaterialTheme.typography.bodyLarge,
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = MaterialTheme.colorScheme.onSurface,
                         )
                     }
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     HorizontalDivider(
-                        color = MaterialTheme.colorScheme.outlineVariant
+                        color = MaterialTheme.colorScheme.outlineVariant,
                     )
                 }
             }

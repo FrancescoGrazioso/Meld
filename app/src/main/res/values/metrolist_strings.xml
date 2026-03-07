@@ -1,23 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="explore">Explore</string>
-
     <string name="local_history">Local</string>
     <string name="remote_history">Remote</string>
     <string name="recently_played">Recently Played</string>
 
     <string name="charts">Charts</string>
     <string name="back_button_desc">Back</string>
-    <string name="no_title">No title</string>
-    <string name="unknown_artist">Unknown artist</string>
-    <string name="unknown_item_type">Unknown item type</string>
-    <string name="loading_charts">Loading charts…</string>
-    <string name="retry_button">Retry</string>
     <string name="album_cover_desc">Album cover</string>
     <string name="top_music_videos">Top music videos</string>
     <string name="trending">Trending</string>
-    <string name="top_result">Top result</string>
-    <string name="other_results">Other</string>
 
     <string name="weeks">Weeks</string>
     <string name="months">Months</string>
@@ -32,7 +23,6 @@
     <string name="filter_uploaded">Uploaded</string>
     <string name="sync_playlist">Sync playlist</string>
     <string name="sync_disabled">Sync disabled</string>
-    <string name="elements_selected">%1$d elements selected</string>
     <string name="allows_for_sync_witch_youtube">Note: This allows for syncing with YouTube Music. This is NOT changeable later.</string>
     <string name="generating_image">Generating image</string>
     <string name="please_wait">Please wait</string>
@@ -44,13 +34,10 @@
     <string name="max_selection_limit">Max selection limit</string>
     <string name="share_selected">Share selected</string>
     <string name="customize_colors">Customize colors</string>
-    <string name="more_options">More options</string>
     <string name="text_color">Text color</string>
     <string name="secondary_text_color">Secondary text color</string>
     <string name="background_color">Background color</string>
 
-    <string name="added_to_play_next">Added to play next</string>
-    <string name="added_to_queue">Added to the queue</string>
     <string name="remove_from_cache">Remove from cache</string>
 
     <!-- Artist about section -->
@@ -80,8 +67,6 @@
 
     <string name="lyrics">Lyrics</string>
     <string name="close">Close</string>
-    <string name="minimum_volume">Minimum Volume</string>
-    <string name="maximum_volume">Maximum Volume</string>
     <string name="hide_player_thumbnail">Hide Player Thumbnail</string>
     <string name="hide_player_thumbnail_desc">Replace album artwork with app logo in player</string>
     <string name="crop_album_art">Crop Album Art</string>
@@ -89,26 +74,17 @@
 
     <string name="already_in_playlist">Already in playlist:</string>
 
-    <plurals name="n_element">
-        <item quantity="one">%d element</item>
-        <item quantity="other">%d elements</item>
-    </plurals>
     <plurals name="n_time">
         <item quantity="one">%d time</item>
         <item quantity="other">%d times</item>
     </plurals>
 
-    <string name="seek_backward">5 seconds backward</string>
-    <string name="seek_forward">5 seconds forward</string>
     <string name="seek_forward_dynamic">+%1$d seconds forwards</string>
     <string name="seek_backward_dynamic">-%1$d seconds backwards</string>
     <string name="seek_seconds_addup">Progressive seek</string>
     <string name="seek_seconds_addup_description">If enabled,  Adds up 5 extra seconds incrementally on each seek skip</string>
 
     <string name="similar_content">Similar content</string>
-
-    <string name="login_settings">Login settings</string>
-    <string name="general_settings">General settings</string>
 
     <string name="player_background_style">Player background style</string>
     <string name="player_background_solid">Solid</string>
@@ -121,12 +97,10 @@
     <string name="default_style">Default</string>
     <string name="primary_color_style">Primary color</string>
     <string name="tertiary_color_style">Tertiary color</string>
-    <string name="secondary_color_style">Secondary</string>
     <string name="display_density">Display density</string>
     <string name="restart">Restart</string>
     <string name="restart_required">Restart required</string>
     <string name="density_restart_message">The display density change will take effect after restarting the app. Do you want to restart now?</string>
-    <string name="enable_wavy_slider">Enable wavy slider</string>
     <string name="wavy">Wavy</string>
     <string name="enable_swipe_thumbnail">Enable swipe to change song</string>
     <string name="swipe_song_to_add">Swipe song to the left to add it to the queue or to the right to play it next</string>
@@ -164,13 +138,10 @@
     <string name="skip_silence_instant">Instantly skip silence</string>
     <string name="skip_silence_instant_desc">Jump ahead during silent moments instead of speeding up playback</string>
 
-    <string name="google">Google</string>
-    <string name="discord">Discord</string>
     <string name="advanced_login">Login with token</string>
     <string name="token_hidden">Tap to show token</string>
     <string name="token_shown">Tap again to copy or edit</string>
     <string name="token_adv_login_description">This is an ADVANCED login method. As an alternative to the web portal, you may directly enter or update your login token here. For example, this can speed up logging in on multiple devices. Please note that any invalid token formats the app fails to parse will not be accepted</string>
-    <string name="ytm_sync">Automatically sync with your YouTube Music account</string>
     <string name="yt_sync">Auto sync with account</string>
     <string name="more_content">More content</string>
     
@@ -188,12 +159,6 @@
     <string name="set_quick_picks">Set quick picks</string>
     <string name="last_song_listened">Based on last song listened</string>
     <string name="app_language">App language</string>
-    <string name="configure_app_language">Configure app languages</string>
-    <string name="intent_app_language_not_found">Couldn\'t find app language settings, please configure them manually</string>
-    <string name="open_supported_links">Open supported link by default</string>
-    <string name="configure_supported_links">Configure supported links</string>
-    <string name="intent_supported_links_not_found">Couldn\'t find supported links settings, please configure them manually</string>
-    <string name="set_first_lyrics_provider">Preferred lyrics provider</string>
     <string name="lyrics_provider_priority">Lyrics provider priority</string>
     <string name="lyrics_provider_priority_desc">Drag to reorder providers by preference. Higher position -> higher priority.</string>
     <string name="config_proxy">Configure proxy</string>
@@ -203,17 +168,13 @@
     <string name="discord_use_details">Use details instead of state</string>
     <string name="discord_use_details_description">Show song title prominently instead of artist names</string>
 
-    <string name="audio_quality_max">Max (beta)</string>
     <string name="enable_similar_content">Enable similar content</string>
     <string name="similar_content_desc">Automatically add more similar songs when the end of the queue is reached</string>
     <string name="persistent_shuffle_title">Persistent shuffle</string>
     <string name="persistent_shuffle_desc">Keep shuffle enabled when starting new songs or playlists</string>
     <string name="remember_shuffle_and_repeat">Remember shuffle and repeat</string>
     <string name="remember_shuffle_and_repeat_desc">Remember shuffle and repeat mode when restarting the app</string>
-    <string name="min_playback_duration_title">Minimum playback duration</string>
-    <string name="min_playback_duration_description">The minimum amount of a song that must be played before it is considered \"played\"</string>
     <string name="percentage_format">%d%%</string>
-    <string name="minimum_playback_duration">Minimum playback duration</string>
 
     <string name="import_online">Import a \"m3u\" playlists</string>
     <string name="import_csv">Import a "csv" playlists</string>
@@ -225,13 +186,11 @@
     <string name="export_failed">Failed to export playlist</string>
     <string name="export_option_share">Share</string>
     <string name="export_option_save">Save to Documents</string>
-    <string name="export_option_title">How would you like to export the playlist?</string>
 
     <string name="auto_download_on_like">Auto download on like</string>
     <string name="auto_download_on_like_desc">Automatically download songs when you like them</string>
 
     <string name="swipe_sensitivity">Mini player swipe sensitivity</string>
-    <string name="swipe_sensitivity_desc">Adjust how sensitive swipe gestures are for changing songs</string>
     <string name="sensitivity_percentage">%1$d%%</string>
 
     <string name="clear_song_cache_dialog">  Are you sure you want to clear all cached songs?</string>
@@ -240,7 +199,6 @@
 
     <string name="disable">Disable</string>
 
-    <string name="pause_remote_listen_history">Pause share listen history with YouTube Music</string>
     <string name="not_logged_in_youtube">Not logged in to YouTube</string>
 
     <string name="default_links">Open supported links</string>
@@ -272,17 +230,11 @@
     <string name="history_duration">History duration</string>
     <string name="information">Information</string>
     <string name="description">Description</string>
-    <string name="numbers">Numbers</string>
-    <string name="subscribers">Subscribers</string>
     <string name="views">Views</string>
     <string name="likes">Likes</string>
     <string name="dislikes">Dislikes</string>
     <string name="subscribe">Subscribe</string>
     <string name="subscribed">Subscribed</string>
-    <string name="playlist_not_found">Playlist not found</string>
-    <string name="playlist_not_found_desc">The requested playlist could not be loaded</string>
-    <string name="empty_playlist">Empty Playlist</string>
-    <string name="empty_playlist_desc">This playlist doesn\'t contain any songs</string>
     <plurals name="seconds">
         <item quantity="one">1 second</item>
         <item quantity="other">%d seconds</item>
@@ -294,7 +246,6 @@
     <string name="enable_automatic_sleeptimer">Enable automatic sleep timer</string>
     <string name="sleeptimer_description">Enables the sleep timer automatically with the default value by a custom time</string>
     <string name="sleep_timer_repeat_description">Set a custom day and time when the sleep timer should automatically activate</string>
-    <string name="sleep_timer_activate">Sleep timer activates automatically when you play a song between start time and end time</string>
     <string name="sleep_timer_repeat">Repeat</string>
     <string name="sleep_timer_daily">Daily</string>
     <string name="sleep_timer_weekdays">Monday to Friday</string>
@@ -303,7 +254,6 @@
     <string name="sleep_timer_custom">Custom</string>
     <string name="sleep_timer_start_time">Start time</string>
     <string name="sleep_timer_end_time">End time</string>
-    <string name="sleep_timer_select_days">Select days</string>
     <string name="sleep_timer_monday">Monday</string>
     <string name="sleep_timer_tuesday">Tuesday</string>
     <string name="sleep_timer_wednesday">Wednesday</string>
@@ -333,7 +283,6 @@
     <string name="lyrics_romanization_cyrillic">Cyrillic</string>
     <string name="lyrics_romanize_title">Romanization</string>
     <string name="lyrics_romanization">Lyrics romanization</string>
-    <string name="romanization">Romanization</string>
     <string name="lyrics_romanize_japanese">Romanize Japanese lyrics</string>
     <string name="lyrics_romanize_korean">Romanize Korean lyrics</string>
     <string name="lyrics_romanize_chinese">Romanize Chinese lyrics</string>
@@ -349,7 +298,6 @@
     <string name="line_by_line_option_desc">The Cyrillic language will be detected line by line instead of the entire song.</string>
     <string name="line_by_line_dialog_title">Are you sure?</string>
     <string name="line_by_line_dialog_desc">This is a hit or miss experimental feature. \n\nBy default, language is determined from the whole song, but with this option on, it will be determined line by line instead. This will allow multi-language songs to work BUT the language might not always be correct (for example if there is a Ukrainian lyric that doesn\'t contain any Ukrainian-specific letters, it might be romanized as Russian instead). \n\nIf you do not have issues, it is recommended to keep this option off.</string>
-    <string name="line_by_line_dialog_enable">Enable</string>
     <string name="romanize_current_track">Romanize current track</string>
 
     <!-- Lyrics Offset Settings -->
@@ -358,7 +306,6 @@
     <!-- Material 3 Settings Sections -->
     <string name="settings_section_ui">Interface</string>
     <string name="settings_section_privacy">Privacy &amp; Security</string>
-    <string name="settings_section_player">Player &amp; Media</string>
     <string name="settings_section_player_content">Player &amp; Content</string>
     <string name="settings_section_storage">Storage &amp; Data</string>
     <string name="settings_section_system">System &amp; About</string>
@@ -502,7 +449,6 @@
     <string name="enable_dynamic_icon">Enable dynamic icon</string>
     <string name="mini_player">Mini-player</string>
     <string name="pure_black_mini_player">Pure black mini-player</string>
-    <string name="mini_player_outline">Mini-player outline</string>
     <string name="cache_size_warning_title">Hold on!</string>
     <string name="cache_size_warning_message">You\'ve chosen a cache size limit smaller than what the app is currently using (%1$s). If you continue, the app may remove some cached %2$s to match the new limit. Proceed anyway?</string>
     <string name="cache_size_warning_confirm">Continue</string>
@@ -527,7 +473,6 @@
     <string name="wrapped_album_listening_time_minutes">%d minutes</string>
     <string name="wrapped_no_data">No data</string>
     <string name="wrapped_top_5_artists_title">Your top artists of the year</string>
-    <string name="wrapped_artist_image_content_description">Artist image</string>
     <string name="wrapped_artist_listening_time">%d minutes</string>
     <string name="wrapped_top_5_songs_title">Your top songs of the year</string>
     <string name="wrapped_top_song_album_art_content_description">Album art</string>
@@ -599,9 +544,6 @@
 
     <!-- Playback errors -->
     <string name="error_playback_failed">Playback failed</string>
-    <string name="error_copied">Error info copied to clipboard</string>
-    <string name="copy_error">Copy error</string>
-    <string name="error_copy_hint">Copy error info to help developers debug the issue</string>
     <string name="error_episode_save">Failed to save episode</string>
     <string name="error_episode_remove">Failed to remove episode</string>
     <string name="error_podcast_subscribe">Failed to subscribe to podcast</string>
@@ -612,8 +554,6 @@
     <string name="unsubscribed_from_channel">Unsubscribed from channel</string>
     <string name="error_subscribe_channel">Failed to update channel subscription</string>
     <string name="view_channel">View Channel</string>
-    <string name="saved_locally">Account not detected, saving locally</string>
-    <string name="removed_locally">Account not detected, removing locally</string>
 
     <!-- Widget strings -->
     <string name="album_art">Album art</string>
@@ -626,7 +566,6 @@
     <string name="not_playing">No song playing</string>
     <string name="tap_to_play">Tap to open Meld</string>
     <string name="widget_description">Music player widget with playback controls</string>
-    <string name="queue_widget_description">Music player with queue preview</string>
     <string name="turntable_widget_description">Circular music widget with play and like controls</string>
     <string name="widget_music_player">Music Player</string>
     <string name="widget_turntable">Turntable</string>
@@ -648,23 +587,12 @@
     <string name="widget_recognizer_notification_text">Recording audio to identify the song…</string>
 
     <!-- Player Client Settings -->
-    <string name="player_client">Player client</string>
-    <string name="player_client_android_vr">Android VR</string>
-    <string name="player_client_android_vr_desc">Fastest option. Direct stream URLs without signature decryption. Recommended for most users.</string>
-    <string name="player_client_web_remix">Web Remix</string>
-    <string name="player_client_web_remix_desc">Slower but supports premium formats. Uses JavaScript signature decryption which adds ~5-10 seconds to playback start.</string>
 
     <!-- Decryption Library Settings -->
-    <string name="decryption_library">Decryption library</string>
-    <string name="decryption_library_newpipe">NewPipe Extractor (Official)</string>
-    <string name="decryption_library_newpipe_desc">Official TeamNewPipe library. Most up-to-date with YouTube changes. Recommended as default. Automatic fallback to PipePipe API if fails.</string>
-    <string name="decryption_library_pipepipe_api">PipePipe API</string>
-    <string name="decryption_library_pipepipe_api_desc">API-based decryption using MetroExtractor. Faster but depends on external API. Automatic fallback to NewPipe if fails.</string>
 
     <!-- Listen Together -->
     <string name="together">Together</string>
     <string name="listen_together">Listen Together</string>
-    <string name="listen_together_desc">Listen to music with friends in real-time</string>
     <string name="listen_together_server_url">Server URL</string>
     <string name="listen_together_choose_server">Choose server</string>
     <string name="listen_together_custom_server">Custom server</string>
@@ -679,12 +607,10 @@
     <string name="listen_together_create_room_desc">Create a room and share the code with friends</string>
     <string name="listen_together_join_room">Join room</string>
     <string name="listen_together_room_code">Room code</string>
-    <string name="listen_together_leave_room">Leave room</string>
     <string name="listen_together_you_are_host">You are the host</string>
     <string name="listen_together_you_are_guest">You are a guest</string>
     <string name="mute">Mute</string>
     <string name="unmute">Unmute</string>
-    <string name="listen_together_users">%d users in room</string>
     <string name="listen_together_join_requests">Join requests</string>
     <string name="listen_together_view_logs">View logs</string>
     <string name="listen_together_view_logs_desc">Debug connection and messages</string>
@@ -720,14 +646,12 @@
     <string name="creating_room">Creating room…</string>
     <string name="connect">Connect</string>
     <string name="disconnect">Disconnect</string>
-    <string name="reconnect">Reconnect</string>
     <string name="create">Create</string>
     <string name="join">Join</string>
     <string name="approve">Approve</string>
     <string name="reject">Reject</string>
     <string name="clear">Clear</string>
     <string name="copy">Copy</string>
-    <string name="change">Change</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="not_set">Not set</string>
     <string name="hosting_room">Hosting room</string>
@@ -736,7 +660,6 @@
     <string name="pending_suggestions">Pending suggestions</string>
     <string name="suggest_to_host">Suggest to host</string>
     <string name="kick_user">Kick</string>
-    <string name="transfer_host">Transfer host</string>
     <string name="host_label">Host</string>
     <string name="you_label">You</string>
     <string name="connected_users">Connected users</string>
@@ -837,7 +760,6 @@
     <string name="enable_high_refresh_rate_desc">Force the display to run at the highest supported refresh rate (e.g. 120Hz)</string>
 
     <!-- Music Recognition -->
-    <string name="recognition">Recognition</string>
     <string name="recognize_music">Recognize Music</string>
     <string name="tap_to_recognize">Tap to recognize</string>
     <string name="listening">Listening…</string>
@@ -865,14 +787,10 @@
     <string name="importing_csv">Importing CSV</string>
     <string name="importing_playlist">Importing Playlist</string>
 
-    <string name="importing_song">Importing %s</string>
     <string name="recently_converted">Recently Converted</string>
     <string name="column_label">Col %d</string>
-    <string name="csv_import_failed">Failed to import CSV file</string>
-    <string name="csv_preview_failed">Failed to preview CSV file</string>
 
     <!-- Discord Integration Redesign -->
-    <string name="discord_integration_settings">Discord Integration</string>
     <string name="discord_status">Status</string>
     <string name="discord_status_online">Online</string>
     <string name="discord_status_idle">Idle</string>
@@ -880,8 +798,6 @@
     <string name="discord_buttons">Buttons</string>
     <string name="discord_button_1">Button 1</string>
     <string name="discord_button_2">Button 2</string>
-    <string name="button_text">Button text</string>
-    <string name="button_visible">Visible</string>
     <string name="login_successful">Login successful!</string>
     <string name="discord_information_warning">This feature uses the KizzyRPC library to connect to Discord\'s Gateway and set your Rich Presence status. While no known account suspensions have occurred from similar usage, this method is not officially supported by Discord and may be considered a Terms of Service violation. Your token is extracted locally and never sent to third-party servers. Proceed at your own discretion.</string>
     <string name="discord_activity_type">Activity type</string>
@@ -889,7 +805,6 @@
     <string name="discord_activity_listening">Listening</string>
     <string name="discord_activity_watching">Watching</string>
     <string name="discord_activity_competing">Competing</string>
-    <string name="discord_customization">Customization</string>
     <string name="discord_button_text_variables">Variables: {song_name}, {artist_name}, {album_name}</string>
     <string name="discord_rpc_preview">Rich Presence Preview</string>
     <string name="discord_presence">Presence</string>
@@ -909,13 +824,11 @@
 
     <!-- Daily Discover -->
     <string name="daily_discover_sounds_like">Sounds like %1$s</string>
-    <string name="your_daily_discover">Your daily discover</string>
     <string name="daily_discover_because_you_listen_to">Because you listen to %1$s</string>
     <string name="daily_discover_similar_to">Similar to %1$s</string>
     <string name="daily_discover_based_on">Based on %1$s</string>
     <string name="daily_discover_for_fans_of">For fans of %1$s</string>
     <string name="from_the_community">From the community</string>
-    <string name="songs_count">%s songs</string>
 
     <!-- Logout dialog -->
     <string name="logout_dialog_title">Keep library data?</string>
@@ -951,16 +864,12 @@
     <string name="podcast_channels">Podcast Channels</string>
     <string name="latest_episodes">Latest Episodes</string>
     <string name="your_shows">Your Shows</string>
-    <string name="subscribed_channels">Subscribed Channels</string>
     <string name="new_episodes">New Episodes</string>
     <string name="episodes_for_later">Episodes for Later</string>
     <string name="save_episode_for_later">Save for later</string>
     <string name="save_episode_for_later_desc">Add to your Episodes for Later playlist</string>
-    <string name="saved_episode">Saved to Episodes for Later</string>
     <string name="remove_episode_from_saved">Remove from saved</string>
     <string name="subscribe_to_podcast">Save podcast to library</string>
-    <string name="save_to_library">Save to Library</string>
-    <string name="saved_to_library">Saved</string>
     <plurals name="n_episode">
         <item quantity="one">%d episode</item>
         <item quantity="other">%d episodes</item>
@@ -970,7 +879,6 @@
     <string name="filter_channels">Channels</string>
     <string name="auto_playlist">Auto playlist</string>
     <string name="downloaded_episodes">Downloaded episodes</string>
-    <string name="episodes_for_later_empty">No saved episodes yet</string>
     <string name="no_subscribed_channels">No subscribed channels</string>
     <string name="no_downloaded_episodes">No downloaded episodes</string>
     <plurals name="n_channel">
@@ -985,8 +893,6 @@
     <string name="restore">Restore</string>
     <string name="checking_previous_account">Checking for previous account…</string>
     <string name="no_account_found">No account found</string>
-    <string name="restore_success">Restore completed successfully</string>
-    <string name="no_songs_found">No songs found. Invalid file, or perhaps no song matches were found.</string>
 
     <!-- Local Files -->
     <string name="filter_local_files">Local files</string>
@@ -1003,21 +909,15 @@
     </plurals>
 
     <!-- Cache settings -->
-    <string name="cache_after_seconds">Cache after seconds</string>
-    <string name="cache_at_percent">Cache at percent</string>
-    <string name="n_seconds">%d seconds</string>
-    <string name="n_percent">%d%%</string>
 
     <!-- Upload songs -->
     <string name="upload_songs">Upload songs</string>
     <string name="uploading">Uploading…</string>
-    <string name="uploading_song">Uploading %1$s</string>
     <string name="upload_progress">%1$d of %2$d</string>
     <string name="upload_complete">Upload complete</string>
     <string name="upload_failed">Upload failed</string>
     <string name="upload_file_too_large">File too large (max 300MB)</string>
     <string name="upload_unsupported_format">Unsupported format. Use mp3, m4a, wma, flac, or ogg</string>
-    <string name="select_songs_to_upload">Select songs to upload</string>
     <string name="delete_uploaded_song">Delete uploaded song</string>
     <string name="delete_uploaded_song_confirm">Are you sure you want to delete this uploaded song? This cannot be undone.</string>
     <string name="delete_uploaded_song_success">Uploaded song deleted</string>

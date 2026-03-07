@@ -28,11 +28,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import com.metrolist.music.ui.component.DefaultDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -75,6 +74,7 @@ import com.metrolist.music.constants.YtmSyncKey
 import com.metrolist.music.extensions.toMediaItem
 import com.metrolist.music.playback.queues.ListQueue
 import com.metrolist.music.ui.component.ChipsRow
+import com.metrolist.music.ui.component.DefaultDialog
 import com.metrolist.music.ui.component.DraggableScrollbar
 import com.metrolist.music.ui.component.HideOnScrollFAB
 import com.metrolist.music.ui.component.LocalMenuState
@@ -103,10 +103,11 @@ fun LibrarySongsScreen(
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val scope = rememberCoroutineScope()
 
-    val (sortType, onSortTypeChange) = rememberEnumPreference(
-        SongSortTypeKey,
-        SongSortType.CREATE_DATE
-    )
+    val (sortType, onSortTypeChange) =
+        rememberEnumPreference(
+            SongSortTypeKey,
+            SongSortType.CREATE_DATE,
+        )
     val (sortDescending, onSortDescendingChange) = rememberPreference(SongSortDescendingKey, true)
 
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
@@ -125,102 +126,109 @@ fun LibrarySongsScreen(
     var isUploading by remember { mutableStateOf(false) }
     var uploadJob by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
 
-    val filePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenMultipleDocuments()
-    ) { uris: List<Uri> ->
-        if (uris.isNotEmpty()) {
-            uploadJob = scope.launch {
-                isUploading = true
-                showUploadDialog = true
-                totalUploads = uris.size
-                var successCount = 0
+    val filePickerLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.OpenMultipleDocuments(),
+        ) { uris: List<Uri> ->
+            if (uris.isNotEmpty()) {
+                uploadJob =
+                    scope.launch {
+                        isUploading = true
+                        showUploadDialog = true
+                        totalUploads = uris.size
+                        var successCount = 0
 
-                uris.forEachIndexed { index, uri ->
-                    currentUploadIndex = index + 1
-                    uploadProgress = 0f
+                        uris.forEachIndexed { index, uri ->
+                            currentUploadIndex = index + 1
+                            uploadProgress = 0f
 
-                    try {
-                        val fileName = uri.lastPathSegment?.substringAfterLast('/') ?: "unknown"
-                        currentFileName = fileName
-                        val extension = fileName.substringAfterLast('.', "").lowercase()
+                            try {
+                                val fileName = uri.lastPathSegment?.substringAfterLast('/') ?: "unknown"
+                                currentFileName = fileName
+                                val extension = fileName.substringAfterLast('.', "").lowercase()
 
-                        if (extension !in YouTube.SUPPORTED_UPLOAD_TYPES) {
+                                if (extension !in YouTube.SUPPORTED_UPLOAD_TYPES) {
+                                    withContext(Dispatchers.Main) {
+                                        Toast
+                                            .makeText(
+                                                context,
+                                                context.getString(R.string.upload_unsupported_format),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                    }
+                                    return@forEachIndexed
+                                }
+
+                                val inputStream = context.contentResolver.openInputStream(uri)
+                                val data = inputStream?.readBytes()
+                                inputStream?.close()
+
+                                if (data == null) return@forEachIndexed
+
+                                if (data.size > YouTube.MAX_UPLOAD_SIZE) {
+                                    withContext(Dispatchers.Main) {
+                                        Toast
+                                            .makeText(
+                                                context,
+                                                context.getString(R.string.upload_file_too_large),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                    }
+                                    return@forEachIndexed
+                                }
+
+                                val result =
+                                    YouTube.uploadSong(
+                                        filename = fileName,
+                                        data = data,
+                                        onProgress = { progress ->
+                                            uploadProgress = progress
+                                        },
+                                    )
+
+                                if (result.isSuccess && result.getOrDefault(false)) {
+                                    successCount++
+                                }
+                            } catch (e: Exception) {
+                                withContext(Dispatchers.Main) {
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            context.getString(R.string.upload_failed) + ": ${e.message}",
+                                            Toast.LENGTH_SHORT,
+                                        ).show()
+                                }
+                            }
+                        }
+
+                        isUploading = false
+
+                        if (successCount > 0) {
+                            // Show completion briefly
+                            uploadProgress = 1f
+                            currentFileName = context.getString(R.string.upload_complete)
+                            kotlinx.coroutines.delay(1000)
+
+                            // Show toast on main thread
                             withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.upload_unsupported_format),
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast
+                                    .makeText(
+                                        context,
+                                        context.getString(R.string.upload_complete),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
                             }
-                            return@forEachIndexed
-                        }
 
-                        val inputStream = context.contentResolver.openInputStream(uri)
-                        val data = inputStream?.readBytes()
-                        inputStream?.close()
+                            showUploadDialog = false
 
-                        if (data == null) return@forEachIndexed
-
-                        if (data.size > YouTube.MAX_UPLOAD_SIZE) {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    context.getString(R.string.upload_file_too_large),
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                            return@forEachIndexed
-                        }
-
-                        val result = YouTube.uploadSong(
-                            filename = fileName,
-                            data = data,
-                            onProgress = { progress ->
-                                uploadProgress = progress
-                            }
-                        )
-
-                        if (result.isSuccess && result.getOrDefault(false)) {
-                            successCount++
-                        }
-                    } catch (e: Exception) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                context,
-                                context.getString(R.string.upload_failed) + ": ${e.message}",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            // Refresh uploaded songs
+                            viewModel.syncUploadedSongs()
+                        } else {
+                            showUploadDialog = false
                         }
                     }
-                }
-
-                isUploading = false
-
-                if (successCount > 0) {
-                    // Show completion briefly
-                    uploadProgress = 1f
-                    currentFileName = context.getString(R.string.upload_complete)
-                    kotlinx.coroutines.delay(1000)
-
-                    // Show toast on main thread
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            context.getString(R.string.upload_complete),
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-
-                    showUploadDialog = false
-
-                    // Refresh uploaded songs
-                    viewModel.syncUploadedSongs()
-                } else {
-                    showUploadDialog = false
-                }
             }
         }
-    }
 
     LaunchedEffect(Unit) {
         if (ytmSync) {
@@ -246,11 +254,12 @@ fun LibrarySongsScreen(
         }
     }
 
-    val filteredSongs = if (hideExplicit) {
-        songs.filter { !it.song.explicit }
-    } else {
-        songs
-    }
+    val filteredSongs =
+        if (hideExplicit) {
+            songs.filter { !it.song.explicit }
+        } else {
+            songs
+        }
 
     // Upload progress dialog
     if (showUploadDialog) {
@@ -265,7 +274,7 @@ fun LibrarySongsScreen(
             icon = {
                 Icon(
                     painter = painterResource(R.drawable.upload),
-                    contentDescription = null
+                    contentDescription = null,
                 )
             },
             title = { Text(stringResource(R.string.uploading)) },
@@ -277,21 +286,21 @@ fun LibrarySongsScreen(
                             isUploading = false
                         }
                         showUploadDialog = false
-                    }
+                    },
                 ) {
                     Text(stringResource(R.string.cancel))
                 }
-            }
+            },
         ) {
             Text(
                 text = stringResource(R.string.upload_progress, currentUploadIndex, totalUploads),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = currentFileName,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Spacer(modifier = Modifier.height(16.dp))
             LinearProgressIndicator(
@@ -323,18 +332,18 @@ fun LibrarySongsScreen(
                         leadingIcon = {
                             Icon(
                                 painter = painterResource(R.drawable.close),
-                                contentDescription = ""
+                                contentDescription = "",
                             )
                         },
                     )
                     ChipsRow(
                         chips =
-                        listOf(
-                            SongFilter.LIKED to stringResource(R.string.filter_liked),
-                            SongFilter.LIBRARY to stringResource(R.string.filter_library),
-                            SongFilter.UPLOADED to stringResource(R.string.filter_uploaded),
-                            SongFilter.DOWNLOADED to stringResource(R.string.filter_downloaded),
-                        ),
+                            listOf(
+                                SongFilter.LIKED to stringResource(R.string.filter_liked),
+                                SongFilter.LIBRARY to stringResource(R.string.filter_library),
+                                SongFilter.UPLOADED to stringResource(R.string.filter_uploaded),
+                                SongFilter.DOWNLOADED to stringResource(R.string.filter_downloaded),
+                            ),
                         currentValue = filter,
                         onValueUpdate = {
                             filter = it
@@ -370,11 +379,12 @@ fun LibrarySongsScreen(
                     Spacer(Modifier.weight(1f))
 
                     Text(
-                        text = pluralStringResource(
-                            R.plurals.n_song,
-                            filteredSongs.size,
-                            filteredSongs.size
-                        ),
+                        text =
+                            pluralStringResource(
+                                R.plurals.n_song,
+                                filteredSongs.size,
+                                filteredSongs.size,
+                            ),
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.secondary,
                     )
@@ -412,22 +422,21 @@ fun LibrarySongsScreen(
                         }
                     },
                     modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            if (song.id == mediaMetadata?.id) {
-                                playerConnection.togglePlayPause()
-                            } else {
-                                playerConnection.playQueue(
-                                    ListQueue(
-                                        title = context.getString(R.string.queue_all_songs),
-                                        items = filteredSongs.map { it.toMediaItem() },
-                                        startIndex = index,
-                                    ),
-                                )
-                            }
-                        }
-                        .animateItem(),
+                        Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                if (song.id == mediaMetadata?.id) {
+                                    playerConnection.togglePlayPause()
+                                } else {
+                                    playerConnection.playQueue(
+                                        ListQueue(
+                                            title = context.getString(R.string.queue_all_songs),
+                                            items = filteredSongs.map { it.toMediaItem() },
+                                            startIndex = index,
+                                        ),
+                                    )
+                                }
+                            }.animateItem(),
                 )
             }
         }
@@ -455,8 +464,8 @@ fun LibrarySongsScreen(
                             "audio/x-m4a",
                             "audio/flac",
                             "audio/ogg",
-                            "audio/x-ms-wma"
-                        )
+                            "audio/x-ms-wma",
+                        ),
                     )
                 } else {
                     playerConnection.playQueue(
