@@ -811,5 +811,5 @@
     <string name="export_option_share">共有</string>
     <string name="export_option_save">ドキュメントに保存</string>
     <string name="export_option_title">プレイリストをどの形式でエクスポートしますか？</string>
-    <string name="qs_tile_music_recognizer">音楽を認識</string>
+    <string name="qs_tile_music_recognizer">音楽認識</string>
 </resources>
