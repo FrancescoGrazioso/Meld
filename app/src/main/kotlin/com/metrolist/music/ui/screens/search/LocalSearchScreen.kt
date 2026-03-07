@@ -78,7 +78,7 @@ fun LocalSearchScreen(
     pureBlack: Boolean,
     viewModel: LocalSearchViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
+    val queueSearchedSongsStr = stringResource(R.string.queue_searched_songs)
     val keyboardController = LocalSoftwareKeyboardController.current
     val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current ?: return
@@ -226,7 +226,7 @@ fun LocalSearchScreen(
                                                             .map { it.toMediaItem() }
                                                     playerConnection.playQueue(
                                                         ListQueue(
-                                                            title = context.getString(R.string.queue_searched_songs),
+                                                            title = queueSearchedSongsStr,
                                                             items = songs,
                                                             startIndex = songs.indexOfFirst { it.mediaId == item.id },
                                                         ),

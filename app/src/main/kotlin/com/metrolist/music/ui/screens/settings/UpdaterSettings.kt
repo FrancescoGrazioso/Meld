@@ -68,6 +68,7 @@ fun UpdaterScreen(
     var showChangelog by remember { mutableStateOf(false) }
     var changelogContent by remember { mutableStateOf<String?>(null) }
     var checkError by remember { mutableStateOf<String?>(null) }
+    val failedToCheckUpdatesTemplate = stringResource(R.string.failed_to_check_updates)
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -85,7 +86,7 @@ fun UpdaterScreen(
                             changelogContent = releaseInfo.description
                         }
                     }.onFailure {
-                        checkError = context.getString(R.string.failed_to_check_updates, it.message ?: "Unknown error")
+                        checkError = String.format(failedToCheckUpdatesTemplate, it.message ?: "Unknown error")
                     }
             }
             isChecking = false

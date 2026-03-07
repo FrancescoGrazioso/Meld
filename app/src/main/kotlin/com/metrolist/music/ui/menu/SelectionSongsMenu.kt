@@ -85,6 +85,7 @@ fun SelectionSongMenu(
     val coroutineScope = rememberCoroutineScope()
     val playerConnection = LocalPlayerConnection.current ?: return
     val syncUtils = LocalSyncUtils.current
+    val deletedNSongsTemplate = stringResource(R.string.deleted_n_songs)
     val listenTogetherManager = com.metrolist.music.LocalListenTogetherManager.current
     val isGuest = listenTogetherManager?.isInRoom == true && listenTogetherManager.isHost == false
 
@@ -256,7 +257,7 @@ fun SelectionSongMenu(
                                     Toast
                                         .makeText(
                                             context,
-                                            context.getString(R.string.deleted_n_songs, successCount),
+                                            String.format(deletedNSongsTemplate, successCount),
                                             Toast.LENGTH_SHORT,
                                         ).show()
                                     isDeleting = false

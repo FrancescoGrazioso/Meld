@@ -193,6 +193,9 @@ fun BottomSheetPlayer(
     val context = LocalContext.current
     val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     val menuState = LocalMenuState.current
+    val sleepTimerDefaultSetTemplate = stringResource(R.string.sleep_timer_default_set)
+    val copiedTitleStr = stringResource(R.string.copied_title)
+    val copiedArtistStr = stringResource(R.string.copied_artist)
     val bottomSheetPageState = LocalBottomSheetPageState.current
     val playerConnection = LocalPlayerConnection.current ?: return
 
@@ -663,7 +666,7 @@ fun BottomSheetPlayer(
                             Toast
                                 .makeText(
                                     context,
-                                    context.getString(R.string.sleep_timer_default_set, sleepTimerValue.roundToInt()),
+                                    String.format(sleepTimerDefaultSetTemplate, sleepTimerValue.roundToInt()),
                                     Toast.LENGTH_SHORT,
                                 ).show()
                         },
@@ -939,10 +942,10 @@ fun BottomSheetPlayer(
                                             }
                                         },
                                         onLongClick = {
-                                            val clip = ClipData.newPlainText(context.getString(R.string.copied_title), title)
+                                            val clip = ClipData.newPlainText(copiedTitleStr, title)
                                             clipboardManager.setPrimaryClip(clip)
                                             Toast
-                                                .makeText(context, context.getString(R.string.copied_title), Toast.LENGTH_SHORT)
+                                                .makeText(context, copiedTitleStr, Toast.LENGTH_SHORT)
                                                 .show()
                                         },
                                     ),
@@ -1020,14 +1023,14 @@ fun BottomSheetPlayer(
                                                 onLongClick = {
                                                     val clip =
                                                         ClipData.newPlainText(
-                                                            context.getString(R.string.copied_artist),
+                                                            copiedArtistStr,
                                                             annotatedString,
                                                         )
                                                     clipboardManager.setPrimaryClip(clip)
                                                     Toast
                                                         .makeText(
                                                             context,
-                                                            context.getString(R.string.copied_artist),
+                                                            copiedArtistStr,
                                                             Toast.LENGTH_SHORT,
                                                         ).show()
                                                 },

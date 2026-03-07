@@ -102,7 +102,7 @@ fun LibraryPodcastsScreen(
     onDeselect: () -> Unit,
     viewModel: LibraryPodcastsViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
+    val downloadedEpisodesStr = stringResource(R.string.downloaded_episodes)
     val database = LocalDatabase.current
     val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current ?: return
@@ -435,7 +435,7 @@ fun LibraryPodcastsScreen(
                                         } else {
                                             playerConnection.playQueue(
                                                 ListQueue(
-                                                    title = context.getString(R.string.downloaded_episodes),
+                                                    title = downloadedEpisodesStr,
                                                     items = downloadedEpisodes.map { it.toMediaItem() },
                                                     startIndex = index,
                                                 ),
@@ -471,7 +471,7 @@ fun LibraryPodcastsScreen(
                     onClick = {
                         playerConnection.playQueue(
                             ListQueue(
-                                title = context.getString(R.string.downloaded_episodes),
+                                title = downloadedEpisodesStr,
                                 items = downloadedEpisodes.shuffled().map { it.toMediaItem() },
                             ),
                         )

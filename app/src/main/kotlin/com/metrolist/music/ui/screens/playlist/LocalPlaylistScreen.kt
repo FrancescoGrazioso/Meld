@@ -688,9 +688,10 @@ fun LocalPlaylistScreen(
                                                 onCheckedChange(true)
                                                 selectionAnchorMapId = song.map.id
                                             } else {
-                                                val anchorIndex = selectionAnchorMapId?.let { anchorMapId ->
-                                                    displayedSongs.indexOfFirst { it.map.id == anchorMapId }
-                                                } ?: -1
+                                                val anchorIndex =
+                                                    selectionAnchorMapId?.let { anchorMapId ->
+                                                        displayedSongs.indexOfFirst { it.map.id == anchorMapId }
+                                                    } ?: -1
 
                                                 if (anchorIndex == -1) {
                                                     onCheckedChange(true)
@@ -882,6 +883,8 @@ fun LocalPlaylistHeader(
     val menuState = LocalMenuState.current
     val syncUtils = LocalSyncUtils.current
     val scope = rememberCoroutineScope()
+    val editPlaylistCoverStr = stringResource(R.string.edit_playlist_cover)
+    val playlistSyncedStr = stringResource(R.string.playlist_synced)
 
     val playlistLength =
         remember(songs) {
@@ -937,7 +940,7 @@ fun LocalPlaylistHeader(
                         setCompressionFormat(Bitmap.CompressFormat.JPEG)
                         setCompressionQuality(90)
                         setHideBottomControls(true)
-                        setToolbarTitle(context.getString(R.string.edit_playlist_cover))
+                        setToolbarTitle(editPlaylistCoverStr)
 
                         setStatusBarLight(!darkTheme)
 
@@ -1363,7 +1366,7 @@ fun LocalPlaylistHeader(
                                     }
                                 }
                                 scope.launch(Dispatchers.Main) {
-                                    snackbarHostState.showSnackbar(context.getString(R.string.playlist_synced))
+                                    snackbarHostState.showSnackbar(playlistSyncedStr)
                                 }
                             },
                             onDelete = onshowDeletePlaylistDialog,

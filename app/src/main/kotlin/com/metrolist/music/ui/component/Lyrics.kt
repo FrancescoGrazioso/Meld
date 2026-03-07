@@ -206,6 +206,8 @@ fun Lyrics(
     val configuration = LocalWindowInfo.current
     val listenTogetherManager = LocalListenTogetherManager.current
     val isGuest = listenTogetherManager?.isInRoom == true && !listenTogetherManager.isHost
+    val shareLyricsStr = stringResource(R.string.share_lyrics)
+    val failedToCreateImageTemplate = stringResource(R.string.failed_to_create_image)
 
     val lyricsTextPosition by rememberEnumPreference(LyricsTextPositionKey, LyricsPosition.CENTER)
     val changeLyrics by rememberPreference(LyricsClickKey, true)
@@ -1895,7 +1897,7 @@ fun Lyrics(
                                         context.startActivity(
                                             Intent.createChooser(
                                                 shareIntent,
-                                                context.getString(R.string.share_lyrics),
+                                                shareLyricsStr,
                                             ),
                                         )
                                         showShareDialog = false
@@ -2222,12 +2224,12 @@ fun Lyrics(
                                                 putExtra(Intent.EXTRA_STREAM, uri)
                                                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                             }
-                                        context.startActivity(Intent.createChooser(shareIntent, context.getString(R.string.share_lyrics)))
+                                        context.startActivity(Intent.createChooser(shareIntent, shareLyricsStr))
                                     } catch (e: Exception) {
                                         Toast
                                             .makeText(
                                                 context,
-                                                context.getString(R.string.failed_to_create_image, e.message ?: ""),
+                                                String.format(failedToCreateImageTemplate, e.message ?: ""),
                                                 Toast.LENGTH_SHORT,
                                             ).show()
                                     } finally {

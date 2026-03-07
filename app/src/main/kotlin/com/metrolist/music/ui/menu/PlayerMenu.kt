@@ -909,6 +909,7 @@ fun ListenTogetherDialog(
 
     val context = LocalContext.current
     val listenTogetherManager = com.metrolist.music.LocalListenTogetherManager.current
+    val joiningRoomTemplate = stringResource(R.string.joining_room)
 
     // Handle case where manager is not available
     if (listenTogetherManager == null) {
@@ -2024,7 +2025,7 @@ fun ListenTogetherDialog(
                                         Toast
                                             .makeText(
                                                 context,
-                                                context.getString(R.string.joining_room, roomCodeInput),
+                                                String.format(joiningRoomTemplate, roomCodeInput),
                                                 Toast.LENGTH_SHORT,
                                             ).show()
                                         isJoiningRoom = true

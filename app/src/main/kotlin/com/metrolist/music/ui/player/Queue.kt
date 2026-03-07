@@ -159,6 +159,7 @@ fun Queue(
     val haptic = LocalHapticFeedback.current
     val clipboardManager = LocalClipboard.current
     val menuState = LocalMenuState.current
+    val sleepTimerDefaultSetTemplate = stringResource(R.string.sleep_timer_default_set)
     val bottomSheetPageState = LocalBottomSheetPageState.current
 
     // Listen Together state (reactive)
@@ -639,7 +640,7 @@ fun Queue(
                                     Toast
                                         .makeText(
                                             context,
-                                            context.getString(R.string.sleep_timer_default_set, sleepTimerValue.roundToInt()),
+                                            String.format(sleepTimerDefaultSetTemplate, sleepTimerValue.roundToInt()),
                                             Toast.LENGTH_SHORT,
                                         ).show()
                                 },

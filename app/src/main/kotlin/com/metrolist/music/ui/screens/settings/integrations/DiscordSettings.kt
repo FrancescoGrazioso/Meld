@@ -127,7 +127,7 @@ fun DiscordSettings(
     }
 
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
+    val loginSuccessfulStr = stringResource(R.string.login_successful)
 
     // Preferences
     var discordToken by rememberPreference(DiscordTokenKey, "")
@@ -230,7 +230,7 @@ fun DiscordSettings(
                         ).onSuccess {
                             discordToken = token
                             showTokenDialog = false
-                            snackbarHostState.showSnackbar(context.getString(R.string.login_successful))
+                            snackbarHostState.showSnackbar(loginSuccessfulStr)
                         }.onFailure {
                             error = "Invalid token"
                             isVerifying = false

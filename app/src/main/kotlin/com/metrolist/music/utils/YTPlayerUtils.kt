@@ -142,9 +142,6 @@ object YTPlayerUtils {
         }
 
         // If we still don't have a valid response, throw
-        if (mainPlayerResponse == null) {
-            throw Exception("Failed to get player response")
-        }
 
         val audioConfig = mainPlayerResponse.playerConfig?.audioConfig
         val videoDetails = mainPlayerResponse.videoDetails
@@ -153,11 +150,11 @@ object YTPlayerUtils {
         var streamUrl: String? = null
         var streamExpiresInSeconds: Int? = null
         var streamPlayerResponse: PlayerResponse? = null
-        var retryMainPlayerResponse: PlayerResponse? = if (usedAgeRestrictedClient != null) mainPlayerResponse else null
+        val retryMainPlayerResponse: PlayerResponse? = if (usedAgeRestrictedClient != null) mainPlayerResponse else null
 
         // Check current status
         val currentStatus = mainPlayerResponse.playabilityStatus.status
-        var isAgeRestricted = currentStatus in listOf("AGE_CHECK_REQUIRED", "AGE_VERIFICATION_REQUIRED", "LOGIN_REQUIRED", "CONTENT_CHECK_REQUIRED")
+        val isAgeRestricted = currentStatus in listOf("AGE_CHECK_REQUIRED", "AGE_VERIFICATION_REQUIRED", "LOGIN_REQUIRED", "CONTENT_CHECK_REQUIRED")
 
         if (isAgeRestricted) {
             Timber.tag(logTag).d("Content is still age-restricted (status: $currentStatus), will try fallback clients")
@@ -262,12 +259,12 @@ object YTPlayerUtils {
                 if (needsNTransform) {
                     try {
                         Timber.tag(logTag).d("Applying n-transform to stream URL for ${currentClient.clientName}")
-                        streamUrl = EjsNTransformSolver.transformNParamInUrl(streamUrl!!)
+                        streamUrl = EjsNTransformSolver.transformNParamInUrl(streamUrl)
 
                         // Append pot= parameter with streaming data poToken
                         if ((currentClient.useWebPoTokens || isPrivatelyOwnedTrack) && poToken?.streamingDataPoToken != null) {
                             Timber.tag(logTag).d("Appending pot= parameter to stream URL")
-                            val separator = if ("?" in streamUrl!!) "&" else "?"
+                            val separator = if ("?" in streamUrl) "&" else "?"
                             streamUrl = "${streamUrl}${separator}pot=${Uri.encode(poToken.streamingDataPoToken)}"
                         }
                     } catch (e: Exception) {
@@ -300,7 +297,7 @@ object YTPlayerUtils {
                     break
                 }
 
-                if (validateStatus(streamUrl!!)) {
+                if (validateStatus(streamUrl)) {
                     // working stream found
                     Timber.tag(logTag).d("Stream validated successfully with client: ${currentClient.clientName}")
                     // Log for release builds
@@ -352,7 +349,7 @@ object YTPlayerUtils {
 
         Timber.tag(logTag).d("Successfully obtained playback data with format: ${format.mimeType}, bitrate: ${format.bitrate}")
         if (isUploadedTrack) {
-            println("[PLAYBACK_DEBUG] SUCCESS: Got playback data for uploaded track - format=${format.mimeType}, streamUrl=${streamUrl?.take(100)}...")
+            println("[PLAYBACK_DEBUG] SUCCESS: Got playback data for uploaded track - format=${format.mimeType}, streamUrl=${streamUrl.take(100)}...")
         }
         PlaybackData(
             audioConfig,

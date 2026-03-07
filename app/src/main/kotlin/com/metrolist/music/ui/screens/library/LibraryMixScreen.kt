@@ -96,6 +96,7 @@ import java.text.Collator
 import java.time.LocalDateTime
 import java.util.Locale
 import java.util.UUID
+import androidx.compose.ui.platform.LocalLocale
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -195,7 +196,7 @@ fun LibraryMixScreen(
     val playlist = viewModel.playlists.collectAsState()
 
     var allItems = albums.value + artist.value + playlist.value
-    val collator = Collator.getInstance(Locale.getDefault())
+    val collator = Collator.getInstance(LocalLocale.current.platformLocale)
     collator.strength = Collator.PRIMARY
     allItems =
         when (sortType) {

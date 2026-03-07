@@ -107,6 +107,7 @@ fun ListenTogetherSettings(
     viewModel: ListenTogetherViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val cannotEditUsernameInRoomStr = stringResource(R.string.listen_together_cannot_edit_username_in_room)
     val coroutineScope = rememberCoroutineScope()
 
     val connectionState by viewModel.connectionState.collectAsState()
@@ -418,7 +419,7 @@ fun ListenTogetherSettings(
                                         Toast
                                             .makeText(
                                                 context,
-                                                context.getString(R.string.listen_together_cannot_edit_username_in_room),
+                                                cannotEditUsernameInRoomStr,
                                                 Toast.LENGTH_SHORT,
                                             ).show()
                                     }

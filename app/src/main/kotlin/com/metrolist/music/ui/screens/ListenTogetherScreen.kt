@@ -113,6 +113,7 @@ fun ListenTogetherScreen(
     val context = LocalContext.current
     val listenTogetherManager = LocalListenTogetherManager.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
+    val joiningRoomTemplate = stringResource(R.string.joining_room)
 
     if (listenTogetherManager == null) {
         NotConfiguredContent()
@@ -386,7 +387,7 @@ fun ListenTogetherScreen(
                             Toast
                                 .makeText(
                                     context,
-                                    context.getString(R.string.joining_room, roomCodeInput),
+                                    String.format(joiningRoomTemplate, roomCodeInput),
                                     Toast.LENGTH_SHORT,
                                 ).show()
                             isJoiningRoom = true

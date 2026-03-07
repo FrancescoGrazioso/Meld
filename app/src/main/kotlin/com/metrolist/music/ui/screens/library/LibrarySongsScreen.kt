@@ -98,6 +98,11 @@ fun LibrarySongsScreen(
 ) {
     val context = LocalContext.current
     val menuState = LocalMenuState.current
+    val uploadUnsupportedFormatStr = stringResource(R.string.upload_unsupported_format)
+    val uploadFileTooLargeStr = stringResource(R.string.upload_file_too_large)
+    val uploadFailedStr = stringResource(R.string.upload_failed)
+    val uploadCompleteStr = stringResource(R.string.upload_complete)
+    val queueAllSongsStr = stringResource(R.string.queue_all_songs)
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
@@ -152,7 +157,7 @@ fun LibrarySongsScreen(
                                         Toast
                                             .makeText(
                                                 context,
-                                                context.getString(R.string.upload_unsupported_format),
+                                                uploadUnsupportedFormatStr,
                                                 Toast.LENGTH_SHORT,
                                             ).show()
                                     }
@@ -170,7 +175,7 @@ fun LibrarySongsScreen(
                                         Toast
                                             .makeText(
                                                 context,
-                                                context.getString(R.string.upload_file_too_large),
+                                                uploadFileTooLargeStr,
                                                 Toast.LENGTH_SHORT,
                                             ).show()
                                     }
@@ -194,7 +199,7 @@ fun LibrarySongsScreen(
                                     Toast
                                         .makeText(
                                             context,
-                                            context.getString(R.string.upload_failed) + ": ${e.message}",
+                                            uploadFailedStr + ": ${e.message}",
                                             Toast.LENGTH_SHORT,
                                         ).show()
                                 }
@@ -206,7 +211,7 @@ fun LibrarySongsScreen(
                         if (successCount > 0) {
                             // Show completion briefly
                             uploadProgress = 1f
-                            currentFileName = context.getString(R.string.upload_complete)
+                            currentFileName = uploadCompleteStr
                             kotlinx.coroutines.delay(1000)
 
                             // Show toast on main thread
@@ -214,7 +219,7 @@ fun LibrarySongsScreen(
                                 Toast
                                     .makeText(
                                         context,
-                                        context.getString(R.string.upload_complete),
+                                        uploadCompleteStr,
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }
@@ -430,7 +435,7 @@ fun LibrarySongsScreen(
                                 } else {
                                     playerConnection.playQueue(
                                         ListQueue(
-                                            title = context.getString(R.string.queue_all_songs),
+                                            title = queueAllSongsStr,
                                             items = filteredSongs.map { it.toMediaItem() },
                                             startIndex = index,
                                         ),
@@ -470,7 +475,7 @@ fun LibrarySongsScreen(
                 } else {
                     playerConnection.playQueue(
                         ListQueue(
-                            title = context.getString(R.string.queue_all_songs),
+                            title = queueAllSongsStr,
                             items = filteredSongs.shuffled().map { it.toMediaItem() },
                         ),
                     )

@@ -2365,39 +2365,41 @@ fun HomeScreen(
                                                                             }
                                                                         }
 
-                                                                        is AlbumItem -> {
-                                                                            navController.navigate("album/${song.id}")
-                                                                        }
+                                                                        // TODO: this will trigger an error in future kotlin releases, make sure it doesnt 
 
-                                                                        is ArtistItem -> {
-                                                                            navController.navigate("artist/${song.id}")
-                                                                        }
+                                                                        //is AlbumItem -> {
+                                                                        //    navController.navigate("album/${song.id}")
+                                                                        //}
 
-                                                                        is PlaylistItem -> {
-                                                                            navController.navigate(
-                                                                                "online_playlist/${song.id.removePrefix("VL")}",
-                                                                            )
-                                                                        }
+                                                                        //is ArtistItem -> {
+                                                                        //    navController.navigate("artist/${song.id}")
+                                                                        //}
 
-                                                                        is PodcastItem -> {
-                                                                            navController.navigate("online_podcast/${song.id}")
-                                                                        }
+                                                                        //is PlaylistItem -> {
+                                                                        //    navController.navigate(
+                                                                        //        "online_playlist/${song.id.removePrefix("VL")}",
+                                                                        //    )
+                                                                        //}
 
-                                                                        is EpisodeItem -> {
-                                                                            if (!isListenTogetherGuest) {
-                                                                                playerConnection.playQueue(
-                                                                                    ListQueue(
-                                                                                        title = song.title,
-                                                                                        items =
-                                                                                            listOf(
-                                                                                                (song as EpisodeItem)
-                                                                                                    .toMediaMetadata()
-                                                                                                    .toMediaItem(),
-                                                                                            ),
-                                                                                    ),
-                                                                                )
-                                                                            }
-                                                                        }
+                                                                        //is PodcastItem -> {
+                                                                        //    navController.navigate("online_podcast/${song.id}")
+                                                                        //}
+
+                                                                        //is EpisodeItem -> {
+                                                                        //    if (!isListenTogetherGuest) {
+                                                                        //        playerConnection.playQueue(
+                                                                        //            ListQueue(
+                                                                        //                title = song.title,
+                                                                        //                items =
+                                                                        //                    listOf(
+                                                                        //                        (song as EpisodeItem)
+                                                                        //                            .toMediaMetadata()
+                                                                        //                            .toMediaItem(),
+                                                                        //                    ),
+                                                                        //            ),
+                                                                        //        )
+                                                                        //    }
+                                                                        //}
                                                                     }
                                                                 },
                                                                 onLongClick = {

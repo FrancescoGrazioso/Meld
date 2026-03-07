@@ -66,8 +66,8 @@ fun ArtistSongsScreen(
     scrollBehavior: TopAppBarScrollBehavior,
     viewModel: ArtistSongsViewModel = hiltViewModel(),
 ) {
-    val context = LocalContext.current
     val menuState = LocalMenuState.current
+    val queueAllSongsStr = stringResource(R.string.queue_all_songs)
     val haptic = LocalHapticFeedback.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
@@ -164,7 +164,7 @@ fun ArtistSongsScreen(
                                     } else {
                                         playerConnection.playQueue(
                                             ListQueue(
-                                                title = context.getString(R.string.queue_all_songs),
+                                                title = queueAllSongsStr,
                                                 items = songs.map { it.toMediaItem() },
                                                 startIndex = index,
                                             ),

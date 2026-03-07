@@ -137,6 +137,10 @@ fun AutoPlaylistScreen(
     val context = LocalContext.current
     val menuState = LocalMenuState.current
     val haptic = LocalHapticFeedback.current
+    val uploadUnsupportedFormatStr = stringResource(R.string.upload_unsupported_format)
+    val uploadFileTooLargeStr = stringResource(R.string.upload_file_too_large)
+    val uploadFailedStr = stringResource(R.string.upload_failed)
+    val uploadCompleteStr = stringResource(R.string.upload_complete)
     val focusManager = LocalFocusManager.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
@@ -254,7 +258,7 @@ fun AutoPlaylistScreen(
                                         Toast
                                             .makeText(
                                                 context,
-                                                context.getString(R.string.upload_unsupported_format),
+                                                uploadUnsupportedFormatStr,
                                                 Toast.LENGTH_SHORT,
                                             ).show()
                                     }
@@ -272,7 +276,7 @@ fun AutoPlaylistScreen(
                                         Toast
                                             .makeText(
                                                 context,
-                                                context.getString(R.string.upload_file_too_large),
+                                                uploadFileTooLargeStr,
                                                 Toast.LENGTH_SHORT,
                                             ).show()
                                     }
@@ -296,7 +300,7 @@ fun AutoPlaylistScreen(
                                     Toast
                                         .makeText(
                                             context,
-                                            context.getString(R.string.upload_failed) + ": ${e.message}",
+                                            uploadFailedStr + ": ${e.message}",
                                             Toast.LENGTH_SHORT,
                                         ).show()
                                 }
@@ -308,7 +312,7 @@ fun AutoPlaylistScreen(
                         if (successCount > 0) {
                             // Show completion briefly
                             uploadProgress = 1f
-                            currentFileName = context.getString(R.string.upload_complete)
+                            currentFileName = uploadCompleteStr
                             kotlinx.coroutines.delay(1000)
 
                             // Show toast on main thread
@@ -316,7 +320,7 @@ fun AutoPlaylistScreen(
                                 Toast
                                     .makeText(
                                         context,
-                                        context.getString(R.string.upload_complete),
+                                        uploadCompleteStr,
                                         Toast.LENGTH_SHORT,
                                     ).show()
                             }
