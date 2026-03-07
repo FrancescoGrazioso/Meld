@@ -7,11 +7,6 @@
     <string name="remote_history">מרוחק</string>
     <string name="charts">טבלאות</string>
     <string name="back_button_desc">אחורה</string>
-    <string name="no_title">אין כותרת</string>
-    <string name="unknown_artist">אמן לא ידוע</string>
-    <string name="unknown_item_type">סוג פריט לא ידוע</string>
-    <string name="loading_charts">טוען טבלאות...</string>
-    <string name="retry_button">נסה שוב</string>
     <string name="album_cover_desc">כיסוי אלבום</string>
     <string name="top_music_videos">סרטוני מוזיקה מובילים</string>
     <string name="trending">טרנדינג</string>
@@ -19,13 +14,10 @@
     <string name="continuous">מתמשך</string>
     <string name="liked">אהוב</string>
     <string name="offline">הורד</string>
-    <string name="added_to_play_next">נוסף לבאים בתור</string>
-    <string name="explore">מצא עוד</string>
     <string name="my_top">הנשמעים ביותר שלי</string>
     <string name="cached_playlist">נשמר</string>
     <string name="sync_playlist">סנכרן את הפלייליסט</string>
     <string name="sync_disabled">סינכרון מכובה</string>
-    <string name="elements_selected">%1$d איברים מסומנים</string>
     <string name="allows_for_sync_witch_youtube">הערה: זה מאפשר סנכרון עם YouTube Music. לא ניתן לשנות זאת מאוחר יותר.</string>
     <string name="generating_image">יצירת תמונה</string>
     <string name="please_wait">אנא המתן</string>
@@ -36,10 +28,8 @@
     <string name="max_selection_limit">מגבלת בחירה מקסימלית</string>
     <string name="share_selected">שתף את הנבחרים</string>
     <string name="customize_colors">התאמה אישית של צבעים</string>
-    <string name="more_options">אפשרויות נוספות</string>
     <string name="text_color">צבע טקסט</string>
     <string name="secondary_text_color">צבע טקסט משני</string>
-    <string name="other_results">תוצאות אחרות</string>
     <string name="sync_playlist_desc">סנכרון רשימת ההשמעה עם YouTube Music</string>
     <string name="description">תיאור</string>
     <string name="lyrics">מילות השיר</string>
@@ -54,25 +44,16 @@
     <string name="link_copied">הקישור הועתק ללוח</string>
     <string name="starting_radio">הפעלת הרדיו</string>
     <string name="now_playing">מתנגן כעת</string>
-    <string name="minimum_volume">ווליום מזערי</string>
-    <string name="maximum_volume">ווליום מירבי</string>
     <string name="hide_player_thumbnail">הסתרת צלמית הנגן</string>
     <string name="hide_player_thumbnail_desc">החלפת תמונת האלבום בסמל היישום בנגן</string>
     <string name="crop_album_art">חיתוך תמונת האלבום</string>
     <string name="crop_album_art_desc">כפיית יחס אורך-רוחב ריבועי ע\"י חיתוך צלמיות הוידאו</string>
     <string name="already_in_playlist">כבר נכללים ברשימת ההשמעה:</string>
-    <plurals name="n_element">
-        <item quantity="one">מרכיב %d</item>
-        <item quantity="two">%d מרכיבים</item>
-        <item quantity="other">%d מרכיבים</item>
-    </plurals>
     <plurals name="n_time">
         <item quantity="one">פעם אחת</item>
         <item quantity="two">%d פעמים</item>
         <item quantity="other">%d פעמים</item>
     </plurals>
-    <string name="seek_backward">5 שניות אחורה</string>
-    <string name="seek_forward">5 שניות קדימה</string>
     <string name="seek_forward_dynamic">+%1$d שניות קדימה</string>
     <string name="seek_backward_dynamic">-%1$d שניות אחורה</string>
     <string name="seek_seconds_addup">סריקה מתקדמת</string>
@@ -80,8 +61,6 @@
     <string name="default_style">ברירת-המחדל</string>
     <string name="primary_color_style">צבע ראשי</string>
     <string name="tertiary_color_style">צבע שלישוני</string>
-    <string name="secondary_color_style">משני</string>
-    <string name="enable_wavy_slider">הפעלת סרגל גלי</string>
     <string name="wavy">גלי</string>
     <string name="enable_swipe_thumbnail">הפעלת החלקה למעבר שיר</string>
     <string name="swipe_song_to_add">החלקה על שיר לשמאל להוספתו לתור או לימין להשמעתו בהמשך</string>
@@ -95,8 +74,6 @@
     <string name="enable_simpmusic">הפעלת מילות שיר SimpMusic</string>
     <string name="enable_simpmusic_desc">שימוש בספק מילות-שיר SimpMusic למילות שיר מסונכרנות</string>
     <string name="similar_content">תוכן דומה</string>
-    <string name="login_settings">הגדרות הכניסה לחשבון</string>
-    <string name="general_settings">הגדרות כלליות</string>
     <string name="player_background_style">סגנון הרקע של הנגן</string>
     <string name="player_background_solid">מלא</string>
     <string name="follow_theme">עפ\"י ערכת הנושא</string>
@@ -118,11 +95,9 @@
     <string name="shuffle_playlist_first_desc">בעת השמעה בסדר אקראי, השמעה תחילה של כל השירים מרשימת ההשמעה/האלבום המקוריים, ואח\"כ תוכן דומה</string>
     <string name="prevent_duplicate_tracks_in_queue">מניעת רצועות כפולות בתור</string>
     <string name="prevent_duplicate_tracks_in_queue_desc">בעת הוספת רצועה לתור ההשמעה, הסרתה ממקומה הקודם אם היא כבר בתור</string>
-    <string name="top_result">התוצאה המובילה</string>
     <string name="uploaded_playlist">הועלו</string>
     <string name="filter_uploaded">הועלו</string>
     <string name="enable">הפעלה</string>
-    <string name="added_to_queue">נוסף לתור</string>
     <string name="remove_from_cache">הסרה מהמטמון</string>
     <string name="about_artist">אודות</string>
 </resources>
