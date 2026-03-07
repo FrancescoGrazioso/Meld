@@ -136,7 +136,7 @@
     <string name="lyrics_auto_scroll">Défilement automatique des paroles</string>
     <string name="playlist_add_local_to_synced_note">Remarque : L’ajout de titres locaux à des playlists synchronisées/distantes n’est pas pris en charge. Toute autre combinaison est valide.</string>
     <string name="import_online">Importer une playlist « m3u »</string>
-    <string name="import_csv">Importer une playlist « csv »</string>
+    <string name="import_csv">Importer des playlists au format CSV</string>
     <string name="lyrics_romanize_japanese">Romaniser les paroles japonaises</string>
     <string name="lyrics_romanize_korean">Romaniser les paroles coréennes</string>
     <string name="yt_sync">Synchronisation automatique avec le compte</string>
@@ -817,4 +817,13 @@
     <string name="delete_uploaded_songs_confirm">Êtes-vous sûr de vouloir supprimer %1$d titres téléchargés ? Cette action est irréversible.</string>
     <string name="deleted_n_songs">Suppression de %1$d titres</string>
     <string name="deleting">Suppression en cours…</string>
+    <string name="export_playlist">Exporter la playlist</string>
+    <string name="export_as_csv">Exporter au format CSV</string>
+    <string name="export_as_m3u">Exporter au format M3U</string>
+    <string name="export_success">Playlist exportée avec succès</string>
+    <string name="export_failed">Échec de l\'exportation de la playlist</string>
+    <string name="export_option_share">Partager</string>
+    <string name="export_option_save">Enregistrer dans Documents</string>
+    <string name="export_option_title">Comment souhaitez-vous exporter la playlist ?</string>
+    <string name="qs_tile_music_recognizer">Reconnaître la musique</string>
 </resources>
