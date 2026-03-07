@@ -124,7 +124,7 @@
     <string name="set_first_lyrics_provider">Предпочитаемый поставщик текстов песен</string>
     <string name="percentage_format">%d%%</string>
     <string name="import_online">Импортировать плейлисты \"m3u\"</string>
-    <string name="import_csv">Импортировать плейлисты \"csv\"</string>
+    <string name="import_csv">Импортировать плейлисты csv</string>
     <string name="playlist_add_local_to_synced_note">Примечание: добавление локальных композиций в синхронизированные/удаленные плейлисты не поддерживается. Любая другая комбинация допустима</string>
     <string name="auto_download_on_like">Автоскачивание по понравившимся</string>
     <string name="auto_download_on_like_desc">Автоматически скачивать треки, отмечаемые как понравившиеся</string>
@@ -824,4 +824,13 @@
     <string name="delete_uploaded_songs_confirm">Вы уверены, что хотите удалить загруженные треки (%1$d)? Это действие нельзя отменить.</string>
     <string name="deleted_n_songs">Удалено треков: %1$d</string>
     <string name="deleting">Удаление…</string>
+    <string name="export_playlist">Экспортировать плейлист</string>
+    <string name="export_as_csv">Экспорт в CSV</string>
+    <string name="export_as_m3u">Экспорт в M3U</string>
+    <string name="export_success">Плейлист успешно экспортирован</string>
+    <string name="export_failed">Не удалось экспортировать плейлист</string>
+    <string name="export_option_share">Поделиться</string>
+    <string name="export_option_save">Сохранить в «Документы»</string>
+    <string name="export_option_title">Как экспортировать плейлист?</string>
+    <string name="qs_tile_music_recognizer">Распознать музыку</string>
 </resources>
