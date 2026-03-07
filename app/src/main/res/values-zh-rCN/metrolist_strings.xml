@@ -135,8 +135,8 @@
     <string name="lyrics_romanize_korean">使用韩文（罗马音）</string>
     <string name="yt_sync">自动与账号同步</string>
     <string name="more_content">更多内容</string>
-    <string name="import_online">导入 m3u 格式的播放列表</string>
-    <string name="import_csv">导入 csv 格式的播放列表</string>
+    <string name="import_online">导入 M3U 格式的播放列表</string>
+    <string name="import_csv">导入 CSV 格式的播放列表</string>
     <string name="playlist_add_local_to_synced_note">注意：不支持将本地歌曲添加到同步/远程播放列表，其他组合均有效</string>
     <string name="swipe_sensitivity">播放控件灵敏度</string>
     <string name="swipe_sensitivity_desc">调整滑动切歌灵敏度</string>
@@ -803,4 +803,13 @@
     <string name="delete_uploaded_songs">删除上传的歌曲</string>
     <string name="deleted_n_songs">已删除 %1$d 首歌曲</string>
     <string name="deleting">正在删除…</string>
+    <string name="export_playlist">导出播放列表</string>
+    <string name="export_as_csv">导出为 CSV</string>
+    <string name="export_as_m3u">导出为 M3U</string>
+    <string name="export_success">播放列表导出成功</string>
+    <string name="export_failed">无法导出播放列表</string>
+    <string name="export_option_share">分享</string>
+    <string name="export_option_save">保存到文档</string>
+    <string name="export_option_title">您想如何导出播放列表？</string>
+    <string name="qs_tile_music_recognizer">识别音乐</string>
 </resources>
