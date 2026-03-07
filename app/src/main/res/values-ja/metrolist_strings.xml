@@ -122,8 +122,8 @@
     <string name="min_playback_duration_title">最小の再生時間</string>
     <string name="min_playback_duration_description">曲を再生したとみなす再生時間</string>
     <string name="minimum_playback_duration">最小の再生時間</string>
-    <string name="import_online">m3u形式のプレイリストをインポート</string>
-    <string name="import_csv">csv形式のプレイリストをインポート</string>
+    <string name="import_online">M3U形式のプレイリストをインポート</string>
+    <string name="import_csv">CSV形式のプレイリストをインポート</string>
     <string name="playlist_add_local_to_synced_note">同期/リモートプレイリストへのローカル曲の追加はサポートしていません</string>
     <string name="auto_download_on_like_desc">ハートをつけた曲を自動でダウンロードします</string>
     <string name="swipe_sensitivity">ミニプレーヤーのスワイプ感度</string>
