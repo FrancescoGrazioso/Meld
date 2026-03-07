@@ -546,7 +546,7 @@
     <string name="ai_error_unexpected">翻訳結果が正しくありません</string>
     <string name="ai_error_unknown">不明なエラーが発生しました</string>
     <string name="ai_error_translation_failed">翻訳に失敗しました</string>
-    <string name="recognition">音声認識</string>
+    <string name="recognition">認識</string>
     <string name="recognize_music">音楽認識</string>
     <string name="tap_to_recognize">タップして開始</string>
     <string name="listening">聴き取り中…</string>
@@ -730,7 +730,7 @@
     <string name="restore_success">復元が完了しました</string>
     <string name="no_songs_found">曲が見つかりません。ファイルが無効であるか、該当する曲が存在しない可能性があります。</string>
     <string name="widget_recognizer_name">音楽認識</string>
-    <string name="widget_recognizer_description">ホーム画面から直接、周囲で再生中の楽曲を識別できます</string>
+    <string name="widget_recognizer_description">周囲で流れている曲を認識できるウィジェット</string>
     <string name="widget_recognizer_tap_to_search">タップして開始</string>
     <string name="widget_recognizer_listening">聴き取り中…</string>
     <string name="widget_recognizer_processing">認識中…</string>
@@ -740,7 +740,7 @@
     <string name="widget_recognizer_unknown_song">不明な曲</string>
     <string name="widget_recognizer_unknown_artist">不明なアーティスト</string>
     <string name="widget_recognizer_mic_desc">曲を認識します</string>
-    <string name="widget_recognizer_channel_name">楽曲認識</string>
+    <string name="widget_recognizer_channel_name">音楽認識</string>
     <string name="widget_recognizer_channel_desc">ウィジェットから曲を認識している間、通知を表示します</string>
     <string name="widget_recognizer_notification_text">音声を録音中…</string>
     <string name="filter_episodes">エピソード</string>
