@@ -137,7 +137,7 @@
         <item quantity="other">%d sekund</item>
     </plurals>
     <string name="lyrics_auto_scroll">Automaticky posouvat texty</string>
-    <string name="import_csv">Importovat playlist „csv“</string>
+    <string name="import_csv">Importovat playlisty CSV</string>
     <string name="import_online">Importovat playlist „m3u“</string>
     <string name="playlist_add_local_to_synced_note">Upozornění: přidávání místních skladeb do synchronizovaných/vzdálených playlistů není podporováno. Jakákoli jiná kombinace je platná</string>
     <string name="lyrics_romanize_japanese">Přepsat japonské texty do latinky</string>
@@ -824,4 +824,13 @@
     <string name="delete_uploaded_songs_confirm">Opravdu chcete odstranit %1$d nahraných skladeb? Tato akce je nevratná.</string>
     <string name="deleted_n_songs">Odstraněno %1$d skladeb</string>
     <string name="deleting">Odstraňování…</string>
+    <string name="export_playlist">Exportovat playlist</string>
+    <string name="export_as_csv">Exportovat jako CSV</string>
+    <string name="export_as_m3u">Exportovat jako M3U</string>
+    <string name="export_success">Playlist úspěšně exportován</string>
+    <string name="export_failed">Nepodařilo se exportovat playlist</string>
+    <string name="export_option_share">Sdílet</string>
+    <string name="export_option_save">Uložit do Dokumentů</string>
+    <string name="export_option_title">Jakým způsobem chcete exportovat playlist?</string>
+    <string name="qs_tile_music_recognizer">Rozpoznat hudbu</string>
 </resources>
