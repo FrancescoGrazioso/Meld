@@ -803,4 +803,13 @@
     <string name="delete_uploaded_songs_confirm">%1$d件のアップロードした曲を削除しますか？この操作は元に戻せません。</string>
     <string name="deleted_n_songs">%1$d件の曲を削除しました</string>
     <string name="deleting">削除中…</string>
+    <string name="export_playlist">プレイリストをエクスポート</string>
+    <string name="export_as_csv">CSV形式でエクスポート</string>
+    <string name="export_as_m3u">M3U形式でエクスポート</string>
+    <string name="export_success">プレイリストを正常にエクスポートしました</string>
+    <string name="export_failed">プレイリストのエクスポートに失敗しました</string>
+    <string name="export_option_share">共有</string>
+    <string name="export_option_save">ドキュメントに保存</string>
+    <string name="export_option_title">プレイリストをどの形式でエクスポートしますか？</string>
+    <string name="qs_tile_music_recognizer">音楽を認識</string>
 </resources>
