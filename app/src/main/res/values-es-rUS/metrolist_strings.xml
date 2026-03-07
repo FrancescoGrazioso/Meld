@@ -654,4 +654,5 @@
     <string name="from_the_community">De la comunidad</string>
     <string name="songs_count">%s canciones</string>
     <string name="daily_discover_sounds_like">Sonidos como %1$s</string>
+    <string name="deleting">Borrando…</string>
 </resources>
