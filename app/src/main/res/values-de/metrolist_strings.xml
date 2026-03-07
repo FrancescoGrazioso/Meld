@@ -698,4 +698,6 @@
     <string name="upload_unsupported_format">Nicht unterstütztes Format. Verwenden Sie mp3, m4a, wma, flac oder ogg.</string>
     <string name="delete_uploaded_song">Hochgeladenen Song löschen</string>
     <string name="delete_uploaded_song_confirm">Möchten Sie diesen hochgeladenen Song wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.</string>
+    <string name="export_success">Playlist export erfolgreich</string>
+    <string name="export_option_share">Teilen</string>
 </resources>
