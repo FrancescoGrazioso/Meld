@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.metrolist.lastfm.LastFM
 import com.metrolist.music.LocalPlayerAwareWindowInsets
@@ -128,6 +129,7 @@ fun LastFMSettings(
         var tempPassword by rememberSaveable { mutableStateOf("") }
 
         AlertDialog(
+            properties = DialogProperties(usePlatformDefaultWidth = false),
             onDismissRequest = {
                 if (!isLoggingIn) {
                     showLoginDialog = false
@@ -138,7 +140,6 @@ fun LastFMSettings(
             text = {
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
@@ -151,7 +152,6 @@ fun LastFMSettings(
                         label = { Text(stringResource(R.string.username)) },
                         singleLine = true,
                         enabled = !isLoggingIn,
-                        modifier = Modifier.fillMaxWidth()
                     )
                     OutlinedTextField(
                         value = tempPassword,
@@ -164,7 +164,6 @@ fun LastFMSettings(
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         enabled = !isLoggingIn,
-                        modifier = Modifier.fillMaxWidth()
                     )
 
                     // Show error message if login failed
