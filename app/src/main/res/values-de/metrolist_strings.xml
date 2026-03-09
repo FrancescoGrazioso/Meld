@@ -700,4 +700,14 @@
     <string name="delete_uploaded_song_confirm">Möchten Sie diesen hochgeladenen Song wirklich löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.</string>
     <string name="export_success">Playlist export erfolgreich</string>
     <string name="export_option_share">Teilen</string>
+    <string name="export_option_save">In Dokumente speichern</string>
+    <string name="discord_presence">Anwesenheit</string>
+    <string name="delete_uploaded_song_success">Hochgeladener Song gelöscht</string>
+    <string name="delete_uploaded_song_failed">Das Hochladen des Songs ist fehlgeschlagen.</string>
+    <string name="delete_uploaded_songs">Hochgeladene Songs löschen</string>
+    <string name="delete_uploaded_songs_confirm">Möchten Sie wirklich %1$d hochgeladene Songs löschen? Dieser Vorgang kann nicht rückgängig gemacht werden.</string>
+    <string name="deleted_n_songs">%1$d Songs gelöscht</string>
+    <string name="deleting">Löschen…</string>
+    <string name="discord_activity_watching">Ansehen</string>
+    <string name="discord_activity_competing">Wettbewerb</string>
 </resources>
