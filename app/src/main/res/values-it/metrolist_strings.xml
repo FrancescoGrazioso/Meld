@@ -100,7 +100,7 @@
     <string name="auto_download_on_like">Scarica automaticamente quando si mette Mi piace</string>
     <string name="auto_download_on_like_desc">Scarica automaticamente i brani quando si mette Mi piace</string>
     <string name="lyrics_auto_scroll">Scorri il testo automaticamente</string>
-    <string name="import_csv">Importa una playlist in formato \"csv\"</string>
+    <string name="import_csv">Importa una playlist in formato csv</string>
     <string name="playlist_add_local_to_synced_note">Nota: non è supportata l\'importazione di brani locali in una playlist sincronizzata o remota. Qualsiasi altra combinazione è valida</string>
     <string name="import_online">Importa una playlist in formato \"m3u\"</string>
     <string name="more_content">Altri contenuti</string>
@@ -708,4 +708,12 @@
     <string name="enable_automatic_sleeptimer">Attiva timer per lo spegnimento automatico</string>
     <string name="sleeptimer_description">Attiva lo spegnimento automatico con un valore temporale personalizzato</string>
     <string name="sleep_timer_repeat_description">Imposta um giorno e un orario personalizzati per quando lo spegnimento automatico si deve attivare</string>
+    <string name="export_playlist">Esporta playlist</string>
+    <string name="export_as_csv">Esporta come CSV</string>
+    <string name="export_as_m3u">Esporta come M3U</string>
+    <string name="export_success">Playlist esportata con successo</string>
+    <string name="export_failed">Errore nell\'esportazione della playlist</string>
+    <string name="export_option_share">Condividi</string>
+    <string name="export_option_save">Salva in Documenti</string>
+    <string name="qs_tile_music_recognizer">Riconosci Musica</string>
 </resources>
