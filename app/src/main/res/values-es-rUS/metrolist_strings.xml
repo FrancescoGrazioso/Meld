@@ -170,7 +170,7 @@
     <string name="lyrics_glow_effect">Habilitar efecto de brillo de la letra</string>
     <string name="lyrics_glow_effect_desc">Añadir animación de brillo y efecto de rebote a la letra activa</string>
     <string name="enable_better_lyrics">Habilitar Better Lyrics</string>
-    <string name="enable_better_lyrics_desc">Usar el proveedor Better Lyrics para letras sincronizadas palabra a palabra</string>
+    <string name="enable_better_lyrics_desc">Usar el proveedor Better Lyrics para letras sincronizadas palabra a palabra. Letras sincronizadas con sílabas para cualquier canción, para karaoke</string>
     <string name="auto_scroll">Sincronizar de nuevo</string>
     <string name="shuffle_playlist_first">Aleatorizar lista de reproducción/álbum primero</string>
     <string name="shuffle_playlist_first_desc">Al aleatorizar, reproducir primero todas las canciones de la lista de reproducción/álbum original, luego el contenido similar</string>
@@ -567,4 +567,6 @@
     <string name="from_the_community">De la comunidad</string>
     <string name="daily_discover_sounds_like">Sonidos como %1$s</string>
     <string name="deleting">Borrando…</string>
+    <string name="enable_lrclib_desc">Base de datos de letras sincronizada impulsada por la comunidad</string>
+    <string name="youtube_music_lyrics_note">NOTA: Las letras de YouTube Music se mostrarán automáticamente cuando no haya otras letras disponibles. Las letras de YouTube Music no suelen estar sincronizadas.</string>
 </resources>
