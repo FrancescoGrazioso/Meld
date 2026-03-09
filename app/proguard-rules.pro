@@ -5,6 +5,14 @@
 # For more details, see
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
+## Reproducible Build Support
+# Disable obfuscation to ensure deterministic R8 output across different build environments.
+# Without this, R8 assigns short names (e.g. `j`, `k`) to renamed classes in a non-deterministic
+# order, causing byte-for-byte differences between builds. This is required for F-Droid / IzzyOnDroid
+# Reproducible Build verification. Code shrinking (dead code removal) remains fully enabled.
+# Since Metrolist is fully open-source, obfuscation provides no meaningful security benefit.
+-dontobfuscate
+
 # WEB_REMIX Streaming - WebView JavaScript interfaces
 -keepclassmembers class com.metrolist.music.utils.sabr.EjsNTransformSolver$SolverWebView {
     @android.webkit.JavascriptInterface public *;
@@ -27,6 +35,32 @@
     void resumeWithException(...);
 }
 
+## Kotlin Coroutines — Reproducible Build Rules
+# Keep volatile fields in coroutine classes to prevent AtomicFieldUpdater optimisation issues
+# and ensure R8 does not reorder or merge these across builds.
+# Source: https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/coroutines.pro
+-keepclassmembers class kotlinx.coroutines.** {
+    volatile <fields>;
+}
+-keepclassmembers class kotlin.coroutines.SafeContinuation {
+    volatile <fields>;
+}
+
+# Eliminate coroutines debug-only code paths so R8 sees a single, consistent
+# control-flow graph regardless of build machine or JVM configuration.
+# Source: https://github.com/Kotlin/kotlinx.coroutines/blob/master/kotlinx-coroutines-core/jvm/resources/META-INF/proguard/r8-from-1.6.0/coroutines.pro
+-assumenosideeffects class kotlinx.coroutines.internal.MainDispatcherLoader {
+    boolean FAST_SERVICE_LOADER_ENABLED return false;
+}
+-assumenosideeffects class kotlinx.coroutines.internal.FastServiceLoaderKt {
+    boolean ANDROID_DETECTED return true;
+}
+-assumenosideeffects class kotlinx.coroutines.DebugKt {
+    boolean getASSERTIONS_ENABLED() return false;
+    boolean getDEBUG() return false;
+    boolean getRECOVER_STACK_TRACES() return false;
+}
+
 # If your project uses WebView with JS, uncomment the following
 # and specify the fully qualified class name to the JavaScript interface
 # class:
@@ -34,9 +68,8 @@
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Preserve line number information for readable crash stack traces.
+-keepattributes SourceFile,LineNumberTable
 
 # If you keep the line number information, uncomment this to
 # hide the original source file name.

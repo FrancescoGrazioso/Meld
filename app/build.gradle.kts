@@ -82,7 +82,7 @@ android {
             isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             ndk {
                 debugSymbolLevel = "NONE"
@@ -91,11 +91,12 @@ android {
         debug {
             applicationIdSuffix = ".debug"
             isDebuggable = true
-            signingConfig = if (System.getenv("GITHUB_EVENT_NAME") == "pull_request") {
-                signingConfigs.getByName("debug")
-            } else {
-                signingConfigs.getByName("persistentDebug")
-            }
+            signingConfig =
+                if (System.getenv("GITHUB_EVENT_NAME") == "pull_request") {
+                    signingConfigs.getByName("debug")
+                } else {
+                    signingConfigs.getByName("persistentDebug")
+                }
             ndk {
                 debugSymbolLevel = "FULL"
             }
@@ -140,10 +141,11 @@ android {
     packaging {
         jniLibs {
             useLegacyPackaging = false
-            keepDebugSymbols += listOf(
-                "**/libandroidx.graphics.path.so",
-                "**/libdatastore_shared_counter.so"
-            )
+            keepDebugSymbols +=
+                listOf(
+                    "**/libandroidx.graphics.path.so",
+                    "**/libdatastore_shared_counter.so",
+                )
         }
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
@@ -163,10 +165,20 @@ ksp {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions {
         freeCompilerArgs.addAll(
-            "-opt-in=kotlin.RequiresOptIn"
+            "-opt-in=kotlin.RequiresOptIn",
         )
         suppressWarnings.set(false)
     }
+}
+
+// Android provides org.json as a platform API (/apex/com.android.art/javalib/core-libart.jar).
+// The standalone org.json:json artefact bundles an older Apache Harmony copy of JSONArray that
+// contains an internal `myArrayList` field absent from the platform class.  Without obfuscation
+// R8 inlines against this internal field; at runtime the platform class is resolved instead,
+// producing a NoSuchFieldError.  Excluding the artefact globally ensures only the platform
+// class is ever referenced.
+configurations.configureEach {
+    exclude(group = "org.json", module = "json")
 }
 
 dependencies {
