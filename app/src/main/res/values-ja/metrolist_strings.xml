@@ -471,7 +471,7 @@
     <string name="ai_error_unexpected">翻訳結果が正しくありません</string>
     <string name="ai_error_unknown">不明なエラーが発生しました</string>
     <string name="ai_error_translation_failed">翻訳に失敗しました</string>
-    <string name="recognize_music">音楽認識</string>
+    <string name="recognize_music">楽曲認識</string>
     <string name="tap_to_recognize">タップして開始</string>
     <string name="listening">聴き取り中…</string>
     <string name="processing">処理中…</string>
@@ -636,7 +636,7 @@
     <string name="restore">復元</string>
     <string name="checking_previous_account">以前のアカウントを確認中…</string>
     <string name="no_account_found">アカウントが見つかりません</string>
-    <string name="widget_recognizer_name">音楽認識</string>
+    <string name="widget_recognizer_name">楽曲認識</string>
     <string name="widget_recognizer_description">周囲で流れている曲を認識できるウィジェット</string>
     <string name="widget_recognizer_tap_to_search">タップして開始</string>
     <string name="widget_recognizer_listening">聴き取り中…</string>
@@ -646,8 +646,8 @@
     <string name="widget_recognizer_error_generic">エラーが発生しました。もう一度お試しください</string>
     <string name="widget_recognizer_unknown_song">不明な曲</string>
     <string name="widget_recognizer_unknown_artist">不明なアーティスト</string>
-    <string name="widget_recognizer_mic_desc">曲を認識します</string>
-    <string name="widget_recognizer_channel_name">音楽認識</string>
+    <string name="widget_recognizer_mic_desc">音楽を特定します</string>
+    <string name="widget_recognizer_channel_name">楽曲認識</string>
     <string name="widget_recognizer_channel_desc">ウィジェットから曲を認識している間、通知を表示します</string>
     <string name="widget_recognizer_notification_text">音声を録音中…</string>
     <string name="filter_episodes">エピソード</string>
@@ -687,7 +687,7 @@
     <string name="upload_complete">アップロードが完了しました</string>
     <string name="upload_failed">アップロードに失敗しました</string>
     <string name="upload_file_too_large">ファイルサイズが大きすぎます（最大300MB）</string>
-    <string name="upload_unsupported_format">対応していない形式です。mp3、m4a、wma、flac、oggを使用してください</string>
+    <string name="upload_unsupported_format">対応していない形式です。MP3、M4A、WMA、FLAC、OGGを使用してください</string>
     <string name="delete_uploaded_song">アップロードした曲を削除</string>
     <string name="delete_uploaded_song_confirm">このアップロードした曲を削除しますか？この操作は元に戻せません。</string>
     <string name="delete_uploaded_song_success">アップロードした曲を削除しました</string>
@@ -703,5 +703,5 @@
     <string name="export_failed">プレイリストのエクスポートに失敗しました</string>
     <string name="export_option_share">共有</string>
     <string name="export_option_save">ドキュメントに保存</string>
-    <string name="qs_tile_music_recognizer">音楽認識</string>
+    <string name="qs_tile_music_recognizer">楽曲を認識</string>
 </resources>
