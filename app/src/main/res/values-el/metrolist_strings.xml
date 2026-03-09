@@ -95,8 +95,8 @@
     <string name="secondary_text_color">Δευτερεύον χρώμα κειμένου</string>
     <string name="background_color">Χρώμα φόντου</string>
     <string name="generating_image">Δημιουργία εικόνας</string>
-    <string name="auto_download_on_like">Αυτόματη λήψη στο like</string>
-    <string name="auto_download_on_like_desc">Αυτόματη λήψη τραγουδιών στο like</string>
+    <string name="auto_download_on_like">Αυτόματη λήψη όταν κάνω like</string>
+    <string name="auto_download_on_like_desc">Αυτόματη λήψη τραγουδιών όταν έχω πατήσει like</string>
     <string name="new_mini_player_design">Νέο σχέδιο mini player</string>
     <string name="lyrics_auto_scroll">Στίχοι αυτόματης κύλισης</string>
     <string name="lyrics_romanize_japanese">Λατινοποίηση (transliteration) ιαπωνικών στίχων</string>
@@ -324,4 +324,6 @@
     <string name="error_playing">Σφάλμα αναπαραγωγής</string>
     <string name="failed_to_parse_proxy">Αποτυχία ανάλυσης του url του proxy.</string>
     <string name="album_art">Εξώφυλλο άλμπουμ</string>
+    <string name="qs_tile_music_recognizer">Αναγνώριση Μουσικής</string>
+    <string name="export_option_save">Αποθήκευση στα έγγραφα</string>
 </resources>
