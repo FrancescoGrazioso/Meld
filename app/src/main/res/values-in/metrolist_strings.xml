@@ -696,4 +696,12 @@
     <string name="delete_uploaded_songs_confirm">Apakah Anda yakin ingin menghapus %1$d lagu yang diunggah? Tindakan ini tidak dapat dibatalkan.</string>
     <string name="deleted_n_songs">%1$d lagu dihapus</string>
     <string name="deleting">Menghapus…</string>
+    <string name="export_playlist">Ekspor playlist</string>
+    <string name="export_as_csv">Ekspor sebagai CSV</string>
+    <string name="export_as_m3u">Ekspor sebagai M3U</string>
+    <string name="export_success">Pengeksporan playlist berhasil</string>
+    <string name="export_failed">Gagal mengekspor playlist</string>
+    <string name="export_option_share">Bagikan</string>
+    <string name="export_option_save">Simpan ke Dokumen</string>
+    <string name="qs_tile_music_recognizer">Mengenali Musik</string>
 </resources>
