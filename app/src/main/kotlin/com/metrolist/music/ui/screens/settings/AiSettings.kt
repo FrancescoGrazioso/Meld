@@ -72,69 +72,87 @@ fun AiSettings(
     var deeplApiKey by rememberPreference(DeeplApiKey, "")
     var deeplFormality by rememberPreference(DeeplFormalityKey, "default")
 
-    val aiProviders = mapOf(
-        "OpenRouter" to "https://openrouter.ai/api/v1/chat/completions",
-        "OpenAI" to "https://api.openai.com/v1/chat/completions",
-        "Perplexity" to "https://api.perplexity.ai/chat/completions",
-        "Claude" to "https://api.anthropic.com/v1/messages",
-        "Gemini" to "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
-        "XAi" to "https://api.x.ai/v1/chat/completions",
-        "DeepL" to "https://api.deepl.com/v2/translate",
-        "Custom" to ""
-    )
+    val aiProviders =
+        mapOf(
+            "OpenRouter" to "https://openrouter.ai/api/v1/chat/completions",
+            "OpenAI" to "https://api.openai.com/v1/chat/completions",
+            "Perplexity" to "https://api.perplexity.ai/chat/completions",
+            "Claude" to "https://api.anthropic.com/v1/messages",
+            "Gemini" to "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+            "XAi" to "https://api.x.ai/v1/chat/completions",
+            "Mistral" to "https://api.mistral.ai/v1/chat/completions",
+            "DeepL" to "https://api.deepl.com/v2/translate",
+            "Custom" to "",
+        )
 
-    val providerHelpText = mapOf(
-        "OpenRouter" to stringResource(R.string.ai_provider_openrouter_help),
-        "OpenAI" to stringResource(R.string.ai_provider_openai_help),
-        "Perplexity" to stringResource(R.string.ai_provider_perplexity_help),
-        "Claude" to stringResource(R.string.ai_provider_claude_help),
-        "Gemini" to stringResource(R.string.ai_provider_gemini_help),
-        "XAi" to stringResource(R.string.ai_provider_xai_help),
-        "DeepL" to stringResource(R.string.ai_provider_deepl_help),
-        "Custom" to ""
-    )
+    val providerHelpText =
+        mapOf(
+            "OpenRouter" to stringResource(R.string.ai_provider_openrouter_help),
+            "OpenAI" to stringResource(R.string.ai_provider_openai_help),
+            "Perplexity" to stringResource(R.string.ai_provider_perplexity_help),
+            "Claude" to stringResource(R.string.ai_provider_claude_help),
+            "Gemini" to stringResource(R.string.ai_provider_gemini_help),
+            "XAi" to stringResource(R.string.ai_provider_xai_help),
+            "Mistral" to stringResource(R.string.ai_provider_mistral_help),
+            "DeepL" to stringResource(R.string.ai_provider_deepl_help),
+            "Custom" to "",
+        )
 
-    val modelsByProvider = mapOf(
-        "OpenRouter" to listOf(
-            "google/gemini-2.5-flash-lite",
-            "google/gemini-2.5-flash",
-            "x-ai/grok-4.1-fast",
-            "deepseek/deepseek-v3.1-terminus:exacto",
-            "openai/gpt-4o-mini",
-            "meta-llama/llama-4-scout",
-            "openai/gpt-5-nano",
-            "openai/gpt-oss-120b",
-            "google/gemini-3-flash-preview"
-        ),
-        "OpenAI" to listOf(
-            "gpt-4o-mini",
-            "gpt-4o",
-            "gpt-4-turbo"
-        ),
-        "Claude" to listOf(
-            "claude-opus-4-6",
-            "claude-sonnet-4-6",
-            "claude-haiku-4-5-20251001"
-        ),
-        "Gemini" to listOf(
-            "gemini-flash-lite-latest",
-            "gemini-2.5-flash-lite",
-            "gemini-flash-latest",
-            "gemini-2.5-flash",
-            "gemini-3-flash-preview",
-        ),
-        "Perplexity" to listOf(
-            "sonar",
-            "sonar-pro",
-            "sonar-reasoning"
-        ),
-        "XAi" to listOf(
-            "grok-4-1-fast",
-            "grok-vision-beta"
-        ),
-        "DeepL" to listOf(),
-        "Custom" to listOf()
-    )
+    val modelsByProvider =
+        mapOf(
+            "OpenRouter" to
+                listOf(
+                    "google/gemini-2.5-flash-lite",
+                    "google/gemini-2.5-flash",
+                    "x-ai/grok-4.1-fast",
+                    "deepseek/deepseek-v3.1-terminus:exacto",
+                    "openai/gpt-4o-mini",
+                    "meta-llama/llama-4-scout",
+                    "openai/gpt-5-nano",
+                    "openai/gpt-oss-120b",
+                    "google/gemini-3-flash-preview",
+                ),
+            "OpenAI" to
+                listOf(
+                    "gpt-4o-mini",
+                    "gpt-4o",
+                    "gpt-4-turbo",
+                ),
+            "Claude" to
+                listOf(
+                    "claude-opus-4-6",
+                    "claude-sonnet-4-6",
+                    "claude-haiku-4-5-20251001",
+                ),
+            "Gemini" to
+                listOf(
+                    "gemini-flash-lite-latest",
+                    "gemini-2.5-flash-lite",
+                    "gemini-flash-latest",
+                    "gemini-2.5-flash",
+                    "gemini-3-flash-preview",
+                ),
+            "Perplexity" to
+                listOf(
+                    "sonar",
+                    "sonar-pro",
+                    "sonar-reasoning",
+                ),
+            "XAi" to
+                listOf(
+                    "grok-4-1-fast",
+                    "grok-vision-beta",
+                ),
+            "Mistral" to
+                listOf(
+                    "mistral-large-latest",
+                    "mistral-medium-latest",
+                    "mistral-small-latest",
+                    "mistral-tiny-latest",
+                ),
+            "DeepL" to listOf(),
+            "Custom" to listOf(),
+        )
 
     val commonModels = modelsByProvider[aiProvider] ?: listOf()
 
@@ -165,51 +183,55 @@ fun AiSettings(
                     providerHelpText.forEach { (provider, help) ->
                         if (help.isNotEmpty()) {
                             val primaryColor = MaterialTheme.colorScheme.primary
-                            val annotatedString = buildAnnotatedString {
-                                append("$provider: ")
-                                // Extract URL from text
-                                val urlRegex = "https?://[^\\s]+".toRegex()
-                                val match = urlRegex.find(help)
-                                if (match != null) {
-                                    val url = match.value
-                                    val beforeUrl = help.substring(0, match.range.first)
-                                    val afterUrl = help.substring(match.range.last + 1)
+                            val annotatedString =
+                                buildAnnotatedString {
+                                    append("$provider: ")
+                                    // Extract URL from text
+                                    val urlRegex = "https?://[^\\s]+".toRegex()
+                                    val match = urlRegex.find(help)
+                                    if (match != null) {
+                                        val url = match.value
+                                        val beforeUrl = help.substring(0, match.range.first)
+                                        val afterUrl = help.substring(match.range.last + 1)
 
-                                    append(beforeUrl)
-                                    val linkStart = length
-                                    append(url)
-                                    val linkEnd = length
-                                    append(afterUrl)
+                                        append(beforeUrl)
+                                        val linkStart = length
+                                        append(url)
+                                        val linkEnd = length
+                                        append(afterUrl)
 
-                                    addLink(
-                                        LinkAnnotation.Url(
-                                            url = url,
-                                            styles = TextLinkStyles(
-                                                style = SpanStyle(
-                                                    color = primaryColor,
-                                                    textDecoration = TextDecoration.Underline
-                                                )
-                                            )
-                                        ),
-                                        start = linkStart,
-                                        end = linkEnd
-                                    )
-                                } else {
-                                    append(help)
+                                        addLink(
+                                            LinkAnnotation.Url(
+                                                url = url,
+                                                styles =
+                                                    TextLinkStyles(
+                                                        style =
+                                                            SpanStyle(
+                                                                color = primaryColor,
+                                                                textDecoration = TextDecoration.Underline,
+                                                            ),
+                                                    ),
+                                            ),
+                                            start = linkStart,
+                                            end = linkEnd,
+                                        )
+                                    } else {
+                                        append(help)
+                                    }
                                 }
-                            }
 
                             Text(
                                 text = annotatedString,
-                                style = MaterialTheme.typography.bodyMedium.copy(
-                                    color = MaterialTheme.colorScheme.onSurface
-                                ),
+                                style =
+                                    MaterialTheme.typography.bodyMedium.copy(
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                    ),
                                 modifier = Modifier.padding(vertical = 4.dp),
                             )
                         }
                     }
                 }
-            }
+            },
         )
     }
 
@@ -223,29 +245,29 @@ fun AiSettings(
             },
             icon = { Icon(painterResource(R.drawable.info), null) },
             title = { Text(stringResource(R.string.ai_translation_mode)) },
-            text = { 
+            text = {
                 Column {
                     Text(
                         text = "${stringResource(R.string.ai_translation_literal)}:",
                         style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.padding(top = 8.dp)
+                        modifier = Modifier.padding(top = 8.dp),
                     )
                     Text(
                         text = stringResource(R.string.ai_translation_literal_desc),
                         style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(bottom = 12.dp)
+                        modifier = Modifier.padding(bottom = 12.dp),
                     )
-                    
+
                     Text(
                         text = "${stringResource(R.string.ai_translation_transcribed)}:",
-                        style = MaterialTheme.typography.titleSmall
+                        style = MaterialTheme.typography.titleSmall,
                     )
                     Text(
                         text = stringResource(R.string.ai_translation_transcribed_desc),
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium,
                     )
                 }
-            }
+            },
         )
     }
 
@@ -261,17 +283,18 @@ fun AiSettings(
                 }
                 // Set model to first available model for the selected provider
                 val modelsForProvider = modelsByProvider[it] ?: listOf()
-                openRouterModel = if (modelsForProvider.isNotEmpty()) {
-                    modelsForProvider[0]
-                } else {
-                    ""
-                }
+                openRouterModel =
+                    if (modelsForProvider.isNotEmpty()) {
+                        modelsForProvider[0]
+                    } else {
+                        ""
+                    }
                 showProviderDialog = false
             },
             title = stringResource(R.string.ai_provider),
             current = aiProvider,
             values = aiProviders.keys.toList(),
-            valueText = { it }
+            valueText = { it },
         )
     }
 
@@ -291,7 +314,7 @@ fun AiSettings(
                     "Transcribed" -> stringResource(R.string.ai_translation_transcribed)
                     else -> it
                 }
-            }
+            },
         )
     }
 
@@ -305,7 +328,7 @@ fun AiSettings(
             title = stringResource(R.string.ai_target_language),
             current = translateLanguage,
             values = LanguageCodeToName.keys.sortedBy { LanguageCodeToName[it] },
-            valueText = { LanguageCodeToName[it] ?: it }
+            valueText = { LanguageCodeToName[it] ?: it },
         )
     }
 
@@ -318,7 +341,7 @@ fun AiSettings(
                 openRouterApiKey = it
                 showApiKeyDialog = false
             },
-            onDismiss = { showApiKeyDialog = false }
+            onDismiss = { showApiKeyDialog = false },
         )
     }
 
@@ -331,7 +354,7 @@ fun AiSettings(
                 deeplApiKey = it
                 showDeeplApiKeyDialog = false
             },
-            onDismiss = { showDeeplApiKeyDialog = false }
+            onDismiss = { showDeeplApiKeyDialog = false },
         )
     }
 
@@ -352,7 +375,7 @@ fun AiSettings(
                     "less" -> stringResource(R.string.ai_deepl_formality_less)
                     else -> it
                 }
-            }
+            },
         )
     }
 
@@ -365,7 +388,7 @@ fun AiSettings(
                 openRouterBaseUrl = it
                 showBaseUrlDialog = false
             },
-            onDismiss = { showBaseUrlDialog = false }
+            onDismiss = { showBaseUrlDialog = false },
         )
     }
 
@@ -384,9 +407,9 @@ fun AiSettings(
             title = stringResource(R.string.ai_model),
             current = if (openRouterModel in commonModels) openRouterModel else "custom_input",
             values = commonModels + "custom_input",
-            valueText = { 
+            valueText = {
                 if (it == "custom_input") "Custom" else it
-            }
+            },
         )
     }
 
@@ -399,7 +422,7 @@ fun AiSettings(
                 openRouterModel = it
                 showCustomModelInput = false
             },
-            onDismiss = { showCustomModelInput = false }
+            onDismiss = { showCustomModelInput = false },
         )
     }
 
@@ -407,158 +430,162 @@ fun AiSettings(
         Modifier
             .windowInsetsPadding(
                 LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom
-                )
-            )
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp)
+                    WindowInsetsSides.Horizontal + WindowInsetsSides.Bottom,
+                ),
+            ).verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
     ) {
         Spacer(
             Modifier.windowInsetsPadding(
                 LocalPlayerAwareWindowInsets.current.only(
-                    WindowInsetsSides.Top
-                )
-            )
+                    WindowInsetsSides.Top,
+                ),
+            ),
         )
-        
+
         Material3SettingsGroup(
             title = stringResource(R.string.ai_provider),
-            items = listOf(
-                Material3SettingsItem(
-                    icon = painterResource(R.drawable.explore_outlined),
-                    title = { Text(stringResource(R.string.ai_provider)) },
-                    description = { Text(aiProvider) },
-                    onClick = { showProviderDialog = true },
-                    trailingContent = {
-                        IconButton(onClick = { showProviderHelpDialog = true }) {
-                            Icon(
-                                painterResource(R.drawable.info),
-                                contentDescription = stringResource(R.string.ai_provider_help),
-                                modifier = Modifier.size(20.dp)
-                            )
-                        }
-                    }
-                ),
-                if (aiProvider == "Custom") {
+            items =
+                listOf(
                     Material3SettingsItem(
-                        icon = painterResource(R.drawable.link),
-                        title = { Text(stringResource(R.string.ai_base_url)) },
-                        description = { Text(openRouterBaseUrl.ifBlank { stringResource(R.string.not_set) }) },
-                        onClick = { showBaseUrlDialog = true }
-                    )
-                } else {
-                    null
-                }
-            ).filterNotNull()
+                        icon = painterResource(R.drawable.explore_outlined),
+                        title = { Text(stringResource(R.string.ai_provider)) },
+                        description = { Text(aiProvider) },
+                        onClick = { showProviderDialog = true },
+                        trailingContent = {
+                            IconButton(onClick = { showProviderHelpDialog = true }) {
+                                Icon(
+                                    painterResource(R.drawable.info),
+                                    contentDescription = stringResource(R.string.ai_provider_help),
+                                    modifier = Modifier.size(20.dp),
+                                )
+                            }
+                        },
+                    ),
+                    if (aiProvider == "Custom") {
+                        Material3SettingsItem(
+                            icon = painterResource(R.drawable.link),
+                            title = { Text(stringResource(R.string.ai_base_url)) },
+                            description = { Text(openRouterBaseUrl.ifBlank { stringResource(R.string.not_set) }) },
+                            onClick = { showBaseUrlDialog = true },
+                        )
+                    } else {
+                        null
+                    },
+                ).filterNotNull(),
         )
 
         Spacer(modifier = Modifier.height(27.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.ai_setup_guide),
-            items = buildList {
-                if (aiProvider == "DeepL") {
-                    add(
-                        Material3SettingsItem(
-                            icon = painterResource(R.drawable.key),
-                            title = { Text("DeepL ${stringResource(R.string.ai_api_key)}") },
-                            description = { 
-                                Text(
-                                    if (deeplApiKey.isNotEmpty()) 
-                                        "•".repeat(minOf(deeplApiKey.length, 8))
-                                    else 
-                                        stringResource(R.string.not_set)
-                                )
-                            },
-                            onClick = { showDeeplApiKeyDialog = true }
+            items =
+                buildList {
+                    if (aiProvider == "DeepL") {
+                        add(
+                            Material3SettingsItem(
+                                icon = painterResource(R.drawable.key),
+                                title = { Text("DeepL ${stringResource(R.string.ai_api_key)}") },
+                                description = {
+                                    Text(
+                                        if (deeplApiKey.isNotEmpty()) {
+                                            "•".repeat(minOf(deeplApiKey.length, 8))
+                                        } else {
+                                            stringResource(R.string.not_set)
+                                        },
+                                    )
+                                },
+                                onClick = { showDeeplApiKeyDialog = true },
+                            ),
                         )
-                    )
-                    add(
-                        Material3SettingsItem(
-                            icon = painterResource(R.drawable.tune),
-                            title = { Text(stringResource(R.string.ai_deepl_formality)) },
-                            description = { 
-                                Text(
-                                    when (deeplFormality) {
-                                        "default" -> stringResource(R.string.ai_deepl_formality_default)
-                                        "more" -> stringResource(R.string.ai_deepl_formality_more)
-                                        "less" -> stringResource(R.string.ai_deepl_formality_less)
-                                        else -> deeplFormality
-                                    }
-                                )
-                            },
-                            onClick = { showDeeplFormalityDialog = true }
+                        add(
+                            Material3SettingsItem(
+                                icon = painterResource(R.drawable.tune),
+                                title = { Text(stringResource(R.string.ai_deepl_formality)) },
+                                description = {
+                                    Text(
+                                        when (deeplFormality) {
+                                            "default" -> stringResource(R.string.ai_deepl_formality_default)
+                                            "more" -> stringResource(R.string.ai_deepl_formality_more)
+                                            "less" -> stringResource(R.string.ai_deepl_formality_less)
+                                            else -> deeplFormality
+                                        },
+                                    )
+                                },
+                                onClick = { showDeeplFormalityDialog = true },
+                            ),
                         )
-                    )
-                } else {
-                    add(
-                        Material3SettingsItem(
-                            icon = painterResource(R.drawable.key),
-                            title = { Text(stringResource(R.string.ai_api_key)) },
-                            description = { 
-                                Text(
-                                    if (openRouterApiKey.isNotEmpty()) 
-                                        "•".repeat(minOf(openRouterApiKey.length, 8))
-                                    else 
-                                        stringResource(R.string.not_set)
-                                )
-                            },
-                            onClick = { showApiKeyDialog = true }
+                    } else {
+                        add(
+                            Material3SettingsItem(
+                                icon = painterResource(R.drawable.key),
+                                title = { Text(stringResource(R.string.ai_api_key)) },
+                                description = {
+                                    Text(
+                                        if (openRouterApiKey.isNotEmpty()) {
+                                            "•".repeat(minOf(openRouterApiKey.length, 8))
+                                        } else {
+                                            stringResource(R.string.not_set)
+                                        },
+                                    )
+                                },
+                                onClick = { showApiKeyDialog = true },
+                            ),
                         )
-                    )
-                    add(
-                        Material3SettingsItem(
-                            icon = painterResource(R.drawable.discover_tune),
-                            title = { Text(stringResource(R.string.ai_model)) },
-                            description = { Text(openRouterModel.ifBlank { stringResource(R.string.not_set) }) },
-                            onClick = { showModelDialog = true }
+                        add(
+                            Material3SettingsItem(
+                                icon = painterResource(R.drawable.discover_tune),
+                                title = { Text(stringResource(R.string.ai_model)) },
+                                description = { Text(openRouterModel.ifBlank { stringResource(R.string.not_set) }) },
+                                onClick = { showModelDialog = true },
+                            ),
                         )
-                    )
-                }
-            }
+                    }
+                },
         )
 
         Spacer(modifier = Modifier.height(27.dp))
 
         Material3SettingsGroup(
             title = stringResource(R.string.ai_translation_mode),
-            items = buildList {
-                if (aiProvider != "DeepL") {
+            items =
+                buildList {
+                    if (aiProvider != "DeepL") {
+                        add(
+                            Material3SettingsItem(
+                                icon = painterResource(R.drawable.translate),
+                                title = { Text(stringResource(R.string.ai_translation_mode)) },
+                                description = {
+                                    Text(
+                                        when (translateMode) {
+                                            "Literal" -> stringResource(R.string.ai_translation_literal)
+                                            "Transcribed" -> stringResource(R.string.ai_translation_transcribed)
+                                            else -> translateMode
+                                        },
+                                    )
+                                },
+                                onClick = { showTranslateModeDialog = true },
+                                trailingContent = {
+                                    IconButton(onClick = { showTranslateModeHelpDialog = true }) {
+                                        Icon(
+                                            painterResource(R.drawable.info),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(20.dp),
+                                        )
+                                    }
+                                },
+                            ),
+                        )
+                    }
                     add(
                         Material3SettingsItem(
-                            icon = painterResource(R.drawable.translate),
-                            title = { Text(stringResource(R.string.ai_translation_mode)) },
-                            description = {
-                                Text(
-                                    when (translateMode) {
-                                        "Literal" -> stringResource(R.string.ai_translation_literal)
-                                        "Transcribed" -> stringResource(R.string.ai_translation_transcribed)
-                                        else -> translateMode
-                                    }
-                                )
-                            },
-                            onClick = { showTranslateModeDialog = true },
-                            trailingContent = {
-                                IconButton(onClick = { showTranslateModeHelpDialog = true }) {
-                                    Icon(
-                                        painterResource(R.drawable.info),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
-                        )
+                            icon = painterResource(R.drawable.language),
+                            title = { Text(stringResource(R.string.ai_target_language)) },
+                            description = { Text(LanguageCodeToName[translateLanguage] ?: translateLanguage) },
+                            onClick = { showLanguageDialog = true },
+                        ),
                     )
-                }
-                add(
-                    Material3SettingsItem(
-                        icon = painterResource(R.drawable.language),
-                        title = { Text(stringResource(R.string.ai_target_language)) },
-                        description = { Text(LanguageCodeToName[translateLanguage] ?: translateLanguage) },
-                        onClick = { showLanguageDialog = true }
-                    )
-                )
-            }
+                },
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -570,9 +597,9 @@ fun AiSettings(
             IconButton(onClick = { navController.navigateUp() }) {
                 Icon(
                     painterResource(R.drawable.arrow_back),
-                    contentDescription = null
+                    contentDescription = null,
                 )
             }
-        }
+        },
     )
 }

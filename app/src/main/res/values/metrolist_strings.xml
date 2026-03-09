@@ -712,6 +712,7 @@
     <string name="ai_provider_perplexity_help">Visit https://perplexity.ai/settings/api</string>
     <string name="ai_provider_xai_help">Visit https://console.x.ai</string>
     <string name="ai_provider_deepl_help">Visit https://deepl.com/pro-api for free and paid keys</string>
+    <string name="ai_provider_mistral_help">Visit https://console.mistral.ai/api-keys</string>
     <string name="ai_deepl_formality">Formality</string>
     <string name="ai_deepl_formality_default">Default</string>
     <string name="ai_deepl_formality_more">More Formal</string>
