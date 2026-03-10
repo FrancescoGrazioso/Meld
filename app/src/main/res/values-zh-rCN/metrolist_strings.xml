@@ -704,4 +704,5 @@
     <string name="export_option_share">分享</string>
     <string name="export_option_save">保存到文档</string>
     <string name="qs_tile_music_recognizer">听歌识曲</string>
+    <string name="ai_provider_mistral_help">访问 https://console.mistral.ai/api-keys</string>
 </resources>
