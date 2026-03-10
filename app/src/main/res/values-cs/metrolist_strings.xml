@@ -722,4 +722,5 @@
     <string name="export_option_share">Sdílet</string>
     <string name="export_option_save">Uložit do Dokumentů</string>
     <string name="qs_tile_music_recognizer">Rozpoznat hudbu</string>
+    <string name="ai_provider_mistral_help">Navštivte https://console.mistral.ai/api-keys</string>
 </resources>
