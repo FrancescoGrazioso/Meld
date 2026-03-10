@@ -501,14 +501,14 @@
     <string name="ai_translation_literal_desc">意味を対象の言語に翻訳</string>
     <string name="ai_translation_transcribed_desc">発音を対象の文字体系に変換</string>
     <string name="ai_provider_help">APIキーを入手</string>
-    <string name="ai_provider_openrouter_help">無料および有料モデルについては、 openrouter.ai をご覧ください</string>
-    <string name="ai_provider_openai_help">APIキーは、 platform.openai.com/api-keys で取得できます</string>
+    <string name="ai_provider_openrouter_help">https://openrouter.ai</string>
+    <string name="ai_provider_openai_help">https://platform.openai.com/api-keys</string>
     <string name="wrapped_year">2025</string>
-    <string name="ai_provider_claude_help">APIキーは、 console.anthropic.com/settings/keys で取得できます</string>
-    <string name="ai_provider_gemini_help">APIキーは、 aistudio.google.com/apikey で取得できます</string>
-    <string name="ai_provider_perplexity_help">APIキーは、 perplexity.ai/settings/api で取得できます</string>
-    <string name="ai_provider_xai_help">APIキーは、 console.x.ai で取得できます</string>
-    <string name="ai_provider_deepl_help">APIキーは、 deepl.com/pro-api for free and paid keys で取得できます</string>
+    <string name="ai_provider_claude_help">https://console.anthropic.com/settings/keys</string>
+    <string name="ai_provider_gemini_help">https://aistudio.google.com/apikey</string>
+    <string name="ai_provider_perplexity_help">https://perplexity.ai/settings/api</string>
+    <string name="ai_provider_xai_help">https://console.x.ai</string>
+    <string name="ai_provider_deepl_help">https://deepl.com/pro-api</string>
     <string name="ai_deepl_formality">丁寧さ</string>
     <string name="ai_deepl_formality_default">デフォルト</string>
     <string name="ai_deepl_formality_more">より丁寧</string>
@@ -704,4 +704,5 @@
     <string name="export_option_share">共有</string>
     <string name="export_option_save">ドキュメントに保存</string>
     <string name="qs_tile_music_recognizer">楽曲を認識</string>
+    <string name="ai_provider_mistral_help">https://console.mistral.ai/api-keys</string>
 </resources>
