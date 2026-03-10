@@ -60,8 +60,8 @@
     <string name="remote_history">Remoto</string>
     <string name="charts">Ranques</string>
     <string name="back_button_desc">Voltar</string>
-    <string name="album_cover_desc">Arte do álbum</string>
-    <string name="top_music_videos">Vídeos de música populares</string>
+    <string name="album_cover_desc">Capa do álbum</string>
+    <string name="top_music_videos">Vídeoclipes populares</string>
     <string name="trending">Em alta</string>
     <string name="sync_disabled">Sincronização desativada</string>
     <string name="remove_from_cache">Remover do cache</string>
@@ -716,4 +716,5 @@
     <string name="export_option_share">Compartilhar</string>
     <string name="export_option_save">Salvar nos Documentos</string>
     <string name="qs_tile_music_recognizer">Reconhecer música</string>
+    <string name="ai_provider_mistral_help">Visite https://console.mistral.ai/api-keys</string>
 </resources>
