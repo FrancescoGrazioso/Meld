@@ -716,4 +716,5 @@
     <string name="export_option_share">Partager</string>
     <string name="export_option_save">Enregistrer dans Documents</string>
     <string name="qs_tile_music_recognizer">Reconnaître la musique</string>
+    <string name="ai_provider_mistral_help">Visitez https://console.mistral.ai/api-keys</string>
 </resources>
