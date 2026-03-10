@@ -22,7 +22,7 @@ Metrolist is a 3rd party YouTube Music client written in Kotlin. It follows mate
 1. You are strictly prohibited from making ANY changes to the readme/markdown files, including this one. This is to ensure that the documentation remains accurate and consistent for all contributors.
 2. You are NOT allowed to use the following commands:
    - You are not to commit, push, or merge any changes to any branch.
-   - You should absolutely NOT use any commands that would modify the git history, do force pushes (except or rebases on your own branch), or delete branches without explicit instructions from a human.
+   - You should absolutely NOT use any commands that would modify the git history, do force pushes (except for rebases on your own branch), or delete branches without explicit instructions from a human.
 3. Always follow the guidelines and instructions provided by human contributors.
 4. Ensure the absolutely highest code quality in all contributions, including proper formatting, clear variable naming, and comprehensive comments where necessary.
 5. Comments should be added only for complex logic or non-obvious code. Avoid redundant comments that simply restate what the code does.
