@@ -63,8 +63,8 @@
     <string name="share_selected">Поделиться выделенным</string>
     <string name="customize_colors">Настроить цвета</string>
     <string name="secondary_text_color">Цвет вторичного текста</string>
-    <string name="like_all">Нравится всё</string>
-    <string name="dislike_all">Не нравится всё</string>
+    <string name="like_all">Отметить все как «Нравится»</string>
+    <string name="dislike_all">Убрать все отметки «Нравится»</string>
     <string name="sort_by_last_updated">Дата обновления</string>
     <plurals name="n_time">
         <item quantity="one">%d раз</item>
