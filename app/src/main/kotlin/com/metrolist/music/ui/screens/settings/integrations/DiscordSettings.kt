@@ -43,7 +43,6 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -115,7 +114,6 @@ private enum class DiscordActivityType { LISTENING, PLAYING, WATCHING, COMPETING
 @Composable
 fun DiscordSettings(
     navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
     snackbarHostState: SnackbarHostState,
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return

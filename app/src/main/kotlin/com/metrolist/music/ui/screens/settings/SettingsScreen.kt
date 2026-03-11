@@ -43,7 +43,6 @@ import com.metrolist.music.utils.Updater
 @Composable
 fun SettingsScreen(
     navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
     latestVersionName: String,
 ) {
     val uriHandler = LocalUriHandler.current

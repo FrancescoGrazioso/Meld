@@ -15,7 +15,6 @@ package com.metrolist.music.ui.screens
  import androidx.compose.material3.Icon
  import androidx.compose.material3.Text
  import androidx.compose.material3.TopAppBar
- import androidx.compose.material3.TopAppBarScrollBehavior
  import androidx.compose.runtime.Composable
  import androidx.compose.runtime.collectAsState
  import androidx.compose.runtime.getValue
@@ -50,7 +49,6 @@ package com.metrolist.music.ui.screens
  @Composable
  fun BrowseScreen(
     navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
     browseId: String?,
     viewModel: BrowseViewModel = hiltViewModel(),
 ) {

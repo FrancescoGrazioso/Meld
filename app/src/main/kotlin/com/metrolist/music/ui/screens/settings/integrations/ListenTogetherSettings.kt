@@ -52,7 +52,6 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -103,7 +102,6 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun ListenTogetherSettings(
     navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
     viewModel: ListenTogetherViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
