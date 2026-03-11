@@ -38,6 +38,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -79,6 +80,7 @@ import com.metrolist.music.ui.component.SortHeader
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.viewmodels.LibraryPlaylistsViewModel
+import com.metrolist.music.ui.menu.SpotifyPlaylistMenu
 import com.metrolist.music.viewmodels.SpotifyViewModel
 import com.metrolist.spotify.SpotifyMapper
 import kotlinx.coroutines.Dispatchers
@@ -469,11 +471,12 @@ fun LibraryPlaylistsScreen(
                     // Spotify Liked Songs as a special playlist entry
                     if (isSpotifyActive && spotifyLikedSongsTotal > 0) {
                         item(key = "spotify_liked_songs") {
+                            val likedSongsName = stringResource(R.string.spotify_liked_songs)
                             PlaylistListItem(
                                 playlist = Playlist(
                                     playlist = PlaylistEntity(
                                         id = "spotify_liked_songs",
-                                        name = stringResource(R.string.spotify_liked_songs),
+                                        name = likedSongsName,
                                         remoteSongCount = spotifyLikedSongsTotal,
                                     ),
                                     songCount = spotifyLikedSongsTotal,
@@ -482,9 +485,22 @@ fun LibraryPlaylistsScreen(
                                 autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("spotify_liked_songs")
-                                    }
+                                    .combinedClickable(
+                                        onClick = {
+                                            navController.navigate("spotify_liked_songs")
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            menuState.show {
+                                                SpotifyPlaylistMenu(
+                                                    spotifyId = "spotify:liked_songs",
+                                                    title = likedSongsName,
+                                                    onNavigate = { navController.navigate("spotify_liked_songs") },
+                                                    onDismiss = menuState::dismiss,
+                                                )
+                                            }
+                                        }
+                                    )
                                     .animateItem(),
                             )
                         }
@@ -511,9 +527,21 @@ fun LibraryPlaylistsScreen(
                                 autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("spotify_playlist/${spotifyPlaylist.id}")
-                                    }
+                                    .combinedClickable(
+                                        onClick = {
+                                            navController.navigate("spotify_playlist/${spotifyPlaylist.id}")
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            menuState.show {
+                                                SpotifyPlaylistMenu(
+                                                    playlist = spotifyPlaylist,
+                                                    onNavigate = { navController.navigate("spotify_playlist/${spotifyPlaylist.id}") },
+                                                    onDismiss = menuState::dismiss,
+                                                )
+                                            }
+                                        }
+                                    )
                                     .animateItem(),
                             )
                         }
@@ -686,11 +714,12 @@ fun LibraryPlaylistsScreen(
                     // Spotify Liked Songs as a special playlist entry (grid)
                     if (isSpotifyActive && spotifyLikedSongsTotal > 0) {
                         item(key = "spotify_liked_songs") {
+                            val likedSongsName = stringResource(R.string.spotify_liked_songs)
                             PlaylistGridItem(
                                 playlist = Playlist(
                                     playlist = PlaylistEntity(
                                         id = "spotify_liked_songs",
-                                        name = stringResource(R.string.spotify_liked_songs),
+                                        name = likedSongsName,
                                         remoteSongCount = spotifyLikedSongsTotal,
                                     ),
                                     songCount = spotifyLikedSongsTotal,
@@ -700,9 +729,22 @@ fun LibraryPlaylistsScreen(
                                 autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("spotify_liked_songs")
-                                    }
+                                    .combinedClickable(
+                                        onClick = {
+                                            navController.navigate("spotify_liked_songs")
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            menuState.show {
+                                                SpotifyPlaylistMenu(
+                                                    spotifyId = "spotify:liked_songs",
+                                                    title = likedSongsName,
+                                                    onNavigate = { navController.navigate("spotify_liked_songs") },
+                                                    onDismiss = menuState::dismiss,
+                                                )
+                                            }
+                                        }
+                                    )
                                     .animateItem(),
                             )
                         }
@@ -730,9 +772,21 @@ fun LibraryPlaylistsScreen(
                                 autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("spotify_playlist/${spotifyPlaylist.id}")
-                                    }
+                                    .combinedClickable(
+                                        onClick = {
+                                            navController.navigate("spotify_playlist/${spotifyPlaylist.id}")
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            menuState.show {
+                                                SpotifyPlaylistMenu(
+                                                    playlist = spotifyPlaylist,
+                                                    onNavigate = { navController.navigate("spotify_playlist/${spotifyPlaylist.id}") },
+                                                    onDismiss = menuState::dismiss,
+                                                )
+                                            }
+                                        }
+                                    )
                                     .animateItem(),
                             )
                         }

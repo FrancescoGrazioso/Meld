@@ -10,6 +10,8 @@ import com.metrolist.innertube.models.PlaylistItem
 import com.metrolist.innertube.models.PodcastItem
 import com.metrolist.innertube.models.SongItem
 import com.metrolist.innertube.models.YTItem
+import com.metrolist.spotify.SpotifyMapper
+import com.metrolist.spotify.models.SpotifyPlaylist
 
 @Entity(tableName = "speed_dial_item")
 data class SpeedDialItem(
@@ -110,5 +112,17 @@ data class SpeedDialItem(
                 )
             }
         }
+
+        /**
+         * Creates a SpeedDialItem for a Spotify playlist (e.g. Made for You, Discover Weekly).
+         * Uses id "spotify:{playlistId}" so that navigation and pin state work with the existing flow.
+         */
+        fun fromSpotifyPlaylist(playlist: SpotifyPlaylist): SpeedDialItem = SpeedDialItem(
+            id = "spotify:${playlist.id}",
+            title = playlist.name,
+            subtitle = playlist.owner?.displayName,
+            thumbnailUrl = SpotifyMapper.getPlaylistThumbnail(playlist),
+            type = "PLAYLIST"
+        )
     }
 }

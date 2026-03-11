@@ -43,6 +43,7 @@ import com.metrolist.music.db.entities.Album
 import com.metrolist.music.db.entities.LocalItem
 import com.metrolist.music.db.entities.Song
 import com.metrolist.music.db.entities.SpeedDialItem
+import com.metrolist.spotify.models.SpotifyPlaylist
 import com.metrolist.music.extensions.filterVideoSongs
 import com.metrolist.music.extensions.toEnum
 import com.metrolist.music.models.SectionType
@@ -261,6 +262,10 @@ class HomeViewModel @Inject constructor(
         enabled && useForHome && homeOnly && hasToken
     }.distinctUntilChanged().stateIn(viewModelScope, SharingStarted.Lazily, false)
 
+    /** Set of speed dial item ids (used to show Pin/Unpin for Spotify playlists in home section). */
+    val pinnedSpeedDialIds: StateFlow<Set<String>> = database.speedDialDao.getAll()
+        .map { list -> list.map { it.id }.toSet() }
+        .stateIn(viewModelScope, SharingStarted.Lazily, emptySet())
 
 	val showWrappedCard: StateFlow<Boolean> = context.dataStore.data.map { prefs ->
         val showWrappedPref = prefs[ShowWrappedCardKey] ?: false
@@ -277,6 +282,22 @@ class HomeViewModel @Inject constructor(
     fun togglePin(item: YTItem) {
         viewModelScope.launch(Dispatchers.IO) {
             val speedDialItem = SpeedDialItem.fromYTItem(item)
+            val isPinned = database.speedDialDao.isPinned(speedDialItem.id).first()
+            if (isPinned) {
+                database.speedDialDao.delete(speedDialItem.id)
+            } else {
+                database.speedDialDao.insert(speedDialItem)
+            }
+        }
+    }
+
+    /**
+     * Toggles pin state for a Spotify playlist (e.g. Made for You, Discover Weekly).
+     * Works when Spotify-only home is enabled so that playlists can be pinned from the Spotify section.
+     */
+    fun togglePin(spotifyPlaylist: SpotifyPlaylist) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val speedDialItem = SpeedDialItem.fromSpotifyPlaylist(spotifyPlaylist)
             val isPinned = database.speedDialDao.isPinned(speedDialItem.id).first()
             if (isPinned) {
                 database.speedDialDao.delete(speedDialItem.id)

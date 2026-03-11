@@ -150,6 +150,7 @@ import com.metrolist.music.ui.component.ChipsRow
 import com.metrolist.music.ui.component.HideOnScrollFAB
 import com.metrolist.music.ui.component.LocalBottomSheetPageState
 import com.metrolist.music.ui.component.LocalMenuState
+import com.metrolist.music.ui.menu.SpotifyPlaylistMenu
 import com.metrolist.music.ui.component.NavigationTitle
 import com.metrolist.music.ui.component.RandomizeGridItem
 import com.metrolist.music.ui.component.SpotifyAlbumSectionRow
@@ -173,8 +174,10 @@ import com.metrolist.music.ui.menu.YouTubeArtistMenu
 import com.metrolist.music.ui.menu.YouTubePlaylistMenu
 import com.metrolist.music.ui.menu.YouTubeSongMenu
 import com.metrolist.music.ui.utils.SnapLayoutInfoProvider
+import com.metrolist.music.utils.isSpotifyId
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
+import com.metrolist.music.utils.stripSpotifyPrefix
 import com.metrolist.music.viewmodels.CommunityPlaylistItem
 import com.metrolist.music.viewmodels.DailyDiscoverItem
 import com.metrolist.music.viewmodels.HomeViewModel
@@ -603,6 +606,7 @@ fun HomeScreen(
     val spotifyHomeSections by viewModel.spotifyHomeSections.collectAsState()
     val isSpotifyHome by viewModel.useSpotifyHome.collectAsState()
     val isSpotifyHomeOnly by viewModel.spotifyHomeOnly.collectAsState()
+    val pinnedSpeedDialIds by viewModel.pinnedSpeedDialIds.collectAsState()
     val spotifyMapper = remember { SpotifyYouTubeMapper(database) }
 
     val isLoading: Boolean by viewModel.isLoading.collectAsState()
@@ -667,6 +671,28 @@ fun HomeScreen(
     }
 
     val scope = rememberCoroutineScope()
+
+    val navigateToPlaylist: (String) -> Unit = remember(navController) {
+        { playlistId: String ->
+            if (playlistId.isSpotifyId()) {
+                navController.navigate("spotify_playlist/${playlistId.stripSpotifyPrefix()}")
+            } else {
+                scope.launch(Dispatchers.IO) {
+                    val localById = database.playlist(playlistId).first()
+                    val localByBrowseId = if (localById == null) database.playlistByBrowseId(playlistId).first() else null
+                    val localPlaylist = localById ?: localByBrowseId
+                    withContext(Dispatchers.Main) {
+                        if (localPlaylist != null) {
+                            navController.navigate("local_playlist/${localPlaylist.id}")
+                        } else {
+                            navController.navigate("online_playlist/$playlistId")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // Track randomization job
     var randomizeJob by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
 
@@ -828,7 +854,7 @@ fun HomeScreen(
 
                             is AlbumItem -> navController.navigate("album/${item.id}")
                             is ArtistItem -> navController.navigate("artist/${item.id}")
-                            is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
+                            is PlaylistItem -> navigateToPlaylist(item.id)
                             is PodcastItem -> navController.navigate("online_podcast/${item.id}")
                             is EpisodeItem -> playerConnection.playQueue(
                                 ListQueue(
@@ -905,8 +931,10 @@ fun HomeScreen(
 
         if (recentlyPlayed?.isNotEmpty() == true) list.add(HomeSection.RecentlyPlayed)
 
+        // Show speed dial when we have pinned items (including when Spotify-only home is on)
+        if (speedDialItems.isNotEmpty()) list.add(HomeSection.SpeedDial)
+
         if (!isSpotifyHomeOnly && !chipActive) {
-            if (speedDialItems.isNotEmpty()) list.add(HomeSection.SpeedDial)
             if (quickPicks?.isNotEmpty() == true) list.add(HomeSection.QuickPicks)
             if (communityPlaylists?.isNotEmpty() == true) list.add(HomeSection.FromTheCommunity)
             if (dailyDiscover?.isNotEmpty() == true) list.add(HomeSection.DailyDiscover)
@@ -1337,7 +1365,7 @@ fun HomeScreen(
                                                                                             )
                                                                                             is AlbumItem -> navController.navigate("album/${randomItem.id}")
                                                                                             is ArtistItem -> navController.navigate("artist/${randomItem.id}")
-                                                                                            is PlaylistItem -> navController.navigate("online_playlist/${randomItem.id}")
+                                                                                            is PlaylistItem -> navigateToPlaylist(randomItem.id)
                                                                                             is PodcastItem -> navController.navigate("online_podcast/${randomItem.id}")
                                                                                             is EpisodeItem -> playerConnection.playQueue(
                                                                                                 ListQueue(
@@ -1380,7 +1408,7 @@ fun HomeScreen(
                                                                                         )
                                                                                         is AlbumItem -> navController.navigate("album/${item.id}")
                                                                                         is ArtistItem -> navController.navigate("artist/${item.id}")
-                                                                                        is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
+                                                                                        is PlaylistItem -> navigateToPlaylist(item.id)
                                                                                         is PodcastItem -> navController.navigate("online_podcast/${item.id}")
                                                                                         is EpisodeItem -> playerConnection.playQueue(
                                                                                             ListQueue(
@@ -1408,11 +1436,21 @@ fun HomeScreen(
                                                                                                 artist = item,
                                                                                                 onDismiss = menuState::dismiss
                                                                                             )
-                                                                                            is PlaylistItem -> YouTubePlaylistMenu(
-                                                                                                playlist = item,
-                                                                                                coroutineScope = scope,
-                                                                                                onDismiss = menuState::dismiss
-                                                                                            )
+                                                                                            is PlaylistItem -> if (item.id.isSpotifyId()) {
+                                                                                                SpotifyPlaylistMenu(
+                                                                                                    spotifyId = item.id,
+                                                                                                    title = item.title,
+                                                                                                    thumbnail = item.thumbnail,
+                                                                                                    onNavigate = { navController.navigate("spotify_playlist/${item.id.stripSpotifyPrefix()}") },
+                                                                                                    onDismiss = menuState::dismiss,
+                                                                                                )
+                                                                                            } else {
+                                                                                                YouTubePlaylistMenu(
+                                                                                                    playlist = item,
+                                                                                                    coroutineScope = scope,
+                                                                                                    onDismiss = menuState::dismiss,
+                                                                                                )
+                                                                                            }
                                                                                             is PodcastItem -> YouTubePlaylistMenu(
                                                                                                 playlist = item.asPlaylistItem(),
                                                                                                 coroutineScope = scope,
@@ -2220,6 +2258,16 @@ fun HomeScreen(
                                         playlists = section.playlists,
                                         onPlaylistClick = { playlist ->
                                             navController.navigate("spotify_playlist/${playlist.id}")
+                                        },
+                                        onPlaylistLongClick = { playlist ->
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            menuState.show {
+                                                SpotifyPlaylistMenu(
+                                                    playlist = playlist,
+                                                    onNavigate = { navController.navigate("spotify_playlist/${playlist.id}") },
+                                                    onDismiss = menuState::dismiss,
+                                                )
+                                            }
                                         },
                                         modifier = Modifier.animateItem(),
                                     )

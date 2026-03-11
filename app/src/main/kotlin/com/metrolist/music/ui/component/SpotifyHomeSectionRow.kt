@@ -7,7 +7,7 @@ package com.metrolist.music.ui.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
@@ -211,12 +212,14 @@ fun SpotifyAlbumSectionRow(
 
 /**
  * Renders a section of playlists as a horizontal row.
+ * Optional [onPlaylistLongClick] enables "Pin to speed dial" from the long-press menu.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SpotifyPlaylistSectionRow(
     playlists: List<SpotifyPlaylist>,
     onPlaylistClick: (SpotifyPlaylist) -> Unit,
+    onPlaylistLongClick: ((SpotifyPlaylist) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
@@ -233,11 +236,12 @@ fun SpotifyPlaylistSectionRow(
                 isActive = false,
                 isPlaying = false,
                 modifier = Modifier
-                    .width(GridThumbnailHeight + 24.dp)
-                    .padding(horizontal = 6.dp)
-                    .combinedClickable(
-                        onClick = { onPlaylistClick(playlist) },
-                    ),
+                    .pointerInput(playlist.id) {
+                        detectTapGestures(
+                            onTap = { onPlaylistClick(playlist) },
+                            onLongPress = { onPlaylistLongClick?.invoke(playlist) },
+                        )
+                    },
             )
         }
     }

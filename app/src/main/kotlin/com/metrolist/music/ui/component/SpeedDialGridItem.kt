@@ -94,8 +94,9 @@ fun SpeedDialGridItem(
                     tint = Color.White,
                     modifier = Modifier.size(20.dp)
                 )
+            }
         }
-    }
+
         // Pinned Icon
         if (isPinned) {
             Icon(
@@ -108,7 +109,5 @@ fun SpeedDialGridItem(
                     .size(16.dp)
             )
         }
-
-
     }
 }
