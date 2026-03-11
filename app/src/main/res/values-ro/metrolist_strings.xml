@@ -78,7 +78,7 @@
     <string name="similar_content_desc">Adaugă automat mai multe melodii similare atunci când se ajunge la finalul cozii</string>
     <string name="percentage_format">%d%%</string>
     <string name="import_online">Importă un playlist \"m3u\"</string>
-    <string name="import_csv">Importă un playlist \"csv\"</string>
+    <string name="import_csv">Importă un playlist csv</string>
     <string name="playlist_add_local_to_synced_note">Notă: Adăugarea de melodii locale la playlisturile sincronizate/de la distanță nu este suportată. Orice altă combinație este validă</string>
     <string name="auto_download_on_like">Descarcă automat la apreciere</string>
     <string name="auto_download_on_like_desc">Descarcă melodiile automat atunci când le apreciezi</string>
@@ -708,4 +708,13 @@
     <string name="delete_uploaded_songs_confirm">Ești sigur(ă) că vrei să ștergi %1$d (de) melodii încărcate? Această acțiune nu poate fi anulată.</string>
     <string name="deleted_n_songs">S-au șters %1$d (de) melodii</string>
     <string name="deleting">Șe șterge…</string>
+    <string name="export_playlist">Exportă playlistul</string>
+    <string name="export_as_csv">Exportă ca CSV</string>
+    <string name="export_as_m3u">Exportă ca M3U</string>
+    <string name="export_success">Playlistul a fost exportat cu succes</string>
+    <string name="export_failed">Nu s-a putut exporta playlistul</string>
+    <string name="export_option_share">Distribuie</string>
+    <string name="export_option_save">Salvează în Documents</string>
+    <string name="ai_provider_mistral_help">Vizitează https://console.mistral.ai/api-keys</string>
+    <string name="qs_tile_music_recognizer">Recunoaște muzica</string>
 </resources>
