@@ -72,14 +72,18 @@ object AppModule {
     fun providePlayerCache(
         @ApplicationContext context: Context,
         databaseProvider: DatabaseProvider,
+        musicDatabase: MusicDatabase,
     ): SimpleCache {
         val cacheSize = context.dataStore[MaxSongCacheSizeKey] ?: 1024
         return SimpleCache(
             context.filesDir.resolve("exoplayer"),
-            when (cacheSize) {
-                -1 -> NoOpCacheEvictor()
-                else -> LeastRecentlyUsedCacheEvictor(cacheSize * 1024 * 1024L)
-            },
+            com.metrolist.music.playback.MetrolistCacheEvictor(
+                when (cacheSize) {
+                    -1 -> NoOpCacheEvictor()
+                    else -> LeastRecentlyUsedCacheEvictor(cacheSize * 1024 * 1024L)
+                },
+                musicDatabase
+            ),
             databaseProvider,
         )
     }

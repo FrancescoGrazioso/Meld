@@ -153,7 +153,7 @@ class MusicDatabase(
         AutoMigration(from = 32, to = 33),
         AutoMigration(from = 33, to = 34),
         AutoMigration(from = 34, to = 35),
-        AutoMigration(from = 35, to = 36),
+        AutoMigration(from = 35, to = 36, spec = Migration35To36::class),
     ],
 )
 @TypeConverters(Converters::class)
@@ -409,7 +409,7 @@ val MIGRATION_21_24 =
     object : Migration(21, 24) {
         override fun migrate(db: SupportSQLiteDatabase) {
             // Combine all changes from 21→22→23→24
-            
+
             // From 21→22: Add columns
             try {
                 db.execSQL("ALTER TABLE song ADD COLUMN libraryAddToken TEXT DEFAULT ''")
@@ -444,7 +444,7 @@ val MIGRATION_21_24 =
                     }
                 }
             }
-            
+
             if (!hasIsUploaded) {
                 db.execSQL("ALTER TABLE `song` ADD COLUMN `isUploaded` INTEGER NOT NULL DEFAULT 0")
             }
@@ -466,7 +466,7 @@ val MIGRATION_22_24 =
                     }
                 }
             }
-            
+
             if (!hasIsUploaded) {
                 db.execSQL("ALTER TABLE `song` ADD COLUMN `isUploaded` INTEGER NOT NULL DEFAULT 0")
             }
@@ -717,6 +717,25 @@ class Migration29To30 : AutoMigrationSpec {
         }
         if (!hasProvider) {
             db.execSQL("ALTER TABLE lyrics ADD COLUMN provider TEXT NOT NULL DEFAULT 'Unknown'")
+        }
+    }
+}
+
+class Migration35To36 : AutoMigrationSpec {
+    override fun onPostMigrate(db: SupportSQLiteDatabase) {
+        var hasIsCached = false
+        db.query("PRAGMA table_info('song')").use { cursor ->
+            val nameIndex = cursor.getColumnIndex("name")
+            while (cursor.moveToNext()) {
+                val colName = if (nameIndex >= 0) cursor.getString(nameIndex) else null
+                if (colName == "isCached") {
+                    hasIsCached = true
+                    break
+                }
+            }
+        }
+        if (!hasIsCached) {
+            db.execSQL("ALTER TABLE song ADD COLUMN isCached INTEGER NOT NULL DEFAULT 0")
         }
     }
 }

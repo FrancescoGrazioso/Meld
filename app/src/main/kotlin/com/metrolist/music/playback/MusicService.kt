@@ -514,6 +514,34 @@ class MusicService :
         playerInitialized.value = true
         Timber.tag(TAG).d("Player successfully initialized")
 
+        // Sync initial cache state
+        scope.launch(Dispatchers.IO) {
+            try {
+                val cachedIds = playerCache.keys.toList()
+                if (cachedIds.isNotEmpty()) {
+                    val fullyCachedIds = cachedIds.filter { mediaId ->
+                        val contentLength = playerCache.getContentMetadata(mediaId)
+                            .get(androidx.media3.datasource.cache.ContentMetadata.KEY_CONTENT_LENGTH, -1L)
+                        if (contentLength > 0) {
+                            val cachedBytes = playerCache.getCachedSpans(mediaId).sumOf { it.length }
+                            cachedBytes >= contentLength * 0.99
+                        } else {
+                            false
+                        }
+                    }
+                    if (fullyCachedIds.isNotEmpty()) {
+                        val chunkSize = 500
+                        for (i in fullyCachedIds.indices step chunkSize) {
+                            val chunk = fullyCachedIds.subList(i, minOf(i + chunkSize, fullyCachedIds.size))
+                            database.updateCachedInfoMany(chunk)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Failed to sync initial cache state")
+            }
+        }
+
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         setupAudioFocusRequest()
 
@@ -2796,34 +2824,37 @@ class MusicService :
         }
     }
 
-    private fun createCacheDataSource(): CacheDataSource.Factory =
-        CacheDataSource
-            .Factory()
-            .setCache(downloadCache)
-            .setUpstreamDataSourceFactory(
-                CacheDataSource
-                    .Factory()
-                    .setCache(playerCache)
-                    .setUpstreamDataSourceFactory(
-                        DefaultDataSource.Factory(
-                            this,
-                            OkHttpDataSource.Factory(
-                                OkHttpClient
-                                    .Builder()
-                                    .proxy(YouTube.proxy)
-                                    .proxyAuthenticator { _, response ->
-                                        YouTube.proxyAuth?.let { auth ->
-                                            response.request.newBuilder()
-                                                .header("Proxy-Authorization", auth)
-                                                .build()
-                                        } ?: response.request
-                                    }
-                                    .build(),
-                            ),
-                        ),
-                    ),
-            ).setCacheWriteDataSinkFactory(null)
-            .setFlags(FLAG_IGNORE_CACHE_ON_ERROR)
+    private fun createCacheDataSource(): DataSource.Factory {
+        val baseFactory = DefaultDataSource.Factory(
+            this,
+            OkHttpDataSource.Factory(
+                OkHttpClient
+                    .Builder()
+                    .proxy(YouTube.proxy)
+                    .proxyAuthenticator { _, response ->
+                        YouTube.proxyAuth?.let { auth ->
+                            response.request.newBuilder()
+                                .header("Proxy-Authorization", auth)
+                                .build()
+                        } ?: response.request
+                    }
+                    .build(),
+            ),
+        )
+
+        return DataSource.Factory {
+            val upstreamFactory = CacheDataSource.Factory()
+                .setCache(playerCache)
+                .setUpstreamDataSourceFactory(baseFactory)
+
+            CacheDataSource.Factory()
+                .setCache(downloadCache)
+                .setUpstreamDataSourceFactory(upstreamFactory)
+                .setCacheWriteDataSinkFactory(null)
+                .setFlags(FLAG_IGNORE_CACHE_ON_ERROR)
+                .createDataSource()
+        }
+    }
 
     // Flag to prevent queue saving during silence skip operations
     private var isSilenceSkipping = false
