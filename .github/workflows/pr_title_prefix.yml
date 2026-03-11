@@ -1,0 +1,31 @@
+name: Auto-prefix PR title
+
+on:
+  pull_request:
+    types: [opened, reopened]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  prefix-title:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add "merge -" prefix to PR title
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const prefix = 'merge - ';
+
+            if (!pr.title.startsWith(prefix)) {
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                title: `${prefix}${pr.title}`
+              });
+              core.info(`PR title updated to: ${prefix}${pr.title}`);
+            } else {
+              core.info('PR title already has the prefix, skipping.');
+            }
