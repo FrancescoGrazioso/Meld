@@ -2,7 +2,7 @@
 <resources>
     <string name="liked">Polubione</string>
     <string name="offline">Pobrane</string>
-    <string name="my_top">Mój Top</string>
+    <string name="my_top">Moje Top</string>
     <string name="select">Zaznacz wszystko</string>
     <string name="like_all">Polub wszystko</string>
     <string name="sort_by_last_updated">Data zaktualizowania</string>
@@ -22,10 +22,10 @@
     <string name="top_length">Długość mojej Top listy</string>
     <string name="remote_history">Zdalna</string>
     <string name="back_button_desc">Wstecz</string>
-    <string name="weeks">Tygodnie</string>
-    <string name="months">Miesiące</string>
-    <string name="years">Lata</string>
-    <string name="continuous">Ciągły</string>
+    <string name="weeks">Tydzień</string>
+    <string name="months">Miesiąc</string>
+    <string name="years">Rok</string>
+    <string name="continuous">Ostatni</string>
     <string name="cached_playlist">W pamięci podręcznej</string>
     <string name="cancel">Anuluj</string>
     <string name="album_cover_desc">Okładka</string>
@@ -371,28 +371,28 @@
     <string name="listen_together_disconnected">Rozłączono</string>
     <string name="listen_together_connecting">Łączenie…</string>
     <string name="listen_together_error">Błąd połączenia</string>
-    <string name="listen_together_create_room">Utwórz serwer</string>
-    <string name="listen_together_create_room_desc">Utwórz serwer i podziel się kodem ze znajomymi</string>
+    <string name="listen_together_create_room">Utwórz pokój</string>
+    <string name="listen_together_create_room_desc">Utwórz pokój i podziel się kodem ze znajomymi</string>
     <string name="listen_together_join_room">Dołącz</string>
-    <string name="listen_together_room_code">Kod serwera</string>
-    <string name="listen_together_you_are_host">Jesteś hostem serwera</string>
+    <string name="listen_together_room_code">Kod pokoju</string>
+    <string name="listen_together_you_are_host">Jesteś hostem</string>
     <string name="listen_together_you_are_guest">Jesteś gościem</string>
     <string name="listen_together_join_requests">Prośby o dołączenie</string>
     <string name="listen_together_view_logs">Zobacz logi</string>
     <string name="listen_together_view_logs_desc">Debug połączeń i wiadomości</string>
     <string name="listen_together_logs">Logi połączenia</string>
     <string name="listen_together_no_logs">Na razie brak logów</string>
-    <string name="listen_together_description">Słuchaj muzyki razem ze znajomymi w czasie rzeczywistym. Stwórz pokój aby stać się hostem lub dołącz do istniejącego serwera za pomocą kodu.</string>
-    <string name="listen_together_background_disconnect_note">Uwaga: Możesz zostać rozłączony, jeśli utworzysz serwer, gdy nie gra żadna muzyka, a następnie przełączysz się na inną aplikację.</string>
+    <string name="listen_together_description">Słuchaj muzyki razem ze znajomymi w czasie rzeczywistym. Stwórz pokój aby stać się hostem lub dołącz do istniejącego pokoju za pomocą kodu.</string>
+    <string name="listen_together_background_disconnect_note">Uwaga: Możesz zostać rozłączony, jeśli utworzysz pokój, gdy nie gra żadna muzyka, a następnie przełączysz się na inną aplikację.</string>
     <string name="listen_together_not_configured">\"Słuchaj razem\" nie zostało skonfigurowane. Proszę ustawić URL serwera w Ustawienia → Integracje → Słuchaj razem.</string>
     <string name="listen_together_suggestion_received">%1$s poprosił %2$s</string>
     <string name="listen_together_suggestion_sent">Sugestia została wysłana do hosta!</string>
-    <string name="listen_together_join_request_notification">%1$s chce dołączyć do serwera</string>
+    <string name="listen_together_join_request_notification">%1$s chce dołączyć do pokoju</string>
     <string name="listen_together_notification_channel_name">Słuchaj razem</string>
     <string name="changelog">Lista zmian</string>
     <string name="changelog_empty">Brak dostępnych dzienników zmian</string>
     <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
-    <string name="view_on_github">Zobacz na GitHub</string>
+    <string name="view_on_github">Zobacz na GitHubie</string>
     <string name="current_version">Obecna wersja</string>
     <string name="version_format">Wersja: %s</string>
     <string name="update_settings">Zaktualizuj ustawienia</string>
@@ -427,7 +427,7 @@
     <string name="crossfade_gapless">Wyłącz dla albumów bez przerw</string>
     <string name="crossfade_gapless_desc">Nie stosuj płynnego przejścia jeśli album jest bez przerw</string>
     <string name="crossfade_beta_title">Funkcja Beta</string>
-    <string name="crossfade_beta_message">Crossfade to nowa funkcja i może zawierać błędy. Jeśli napotkasz jakiekolwiek problemy, prosimy o ich zgłoszenie\n\nTa funkcja wyłączna odciążane audio z powodu ograniczeń technicznych.</string>
+    <string name="crossfade_beta_message">Crossfade to nowa funkcja i może zawierać błędy. Jeśli napotkasz jakiekolwiek problemy, prosimy o ich zgłoszenie\n\nTa funkcja wyłącza odciążane audio z powodu ograniczeń technicznych.</string>
     <string name="lyrics_romanize_hindi">Romanizuj tekst Hindi</string>
     <string name="lyrics_romanize_punjabi">Romanizuj teksty w pendżabskim</string>
     <string name="audio_offload_disabled_by_crossfade">Wyłączone ponieważ włączono Crossfade</string>
@@ -444,7 +444,7 @@
     <string name="sleeptimer_description">Automatycznie włącza wyłącznik czasowy z domyślną wartością o niestandardowym czasie</string>
     <string name="sleep_timer_repeat_description">Ustaw niestandardową godzinę, o której wyłącznik czasowy powinien się automatycznie aktywować</string>
     <string name="sleep_timer_custom">Niestandardowy</string>
-    <string name="sleep_timer_stop_after_current_song">Zatrzymaj na końcu bieżącego utworu po zakończeniu odliczania czasu</string>
+    <string name="sleep_timer_stop_after_current_song">Zatrzymaj po bieżącym utworze, gdy timer się skończy</string>
     <string name="lyrics_romanize_as_main">Pokaż zromanizowane teksty jako główne</string>
     <string name="found_in_settings_content">Znajdujące się w Ustawieniach &gt; Zawartość</string>
     <string name="plays">odtworzeń</string>
@@ -472,7 +472,7 @@
     <string name="widget_recognizer_channel_desc">Wyświetla powiadomienie podczas identyfikowania utworu z widżetu</string>
     <string name="widget_recognizer_notification_text">Nagrywanie dźwięku w celu identyfikacji utworu…</string>
     <string name="together">Razem</string>
-    <string name="listen_together">Słuchanie Razem</string>
+    <string name="listen_together">Słuchaj Razem</string>
     <string name="listen_together_choose_server">Wybierz serwer</string>
     <string name="listen_together_custom_server">Niestandardowy serwer</string>
     <string name="listen_together_use_custom_server">Użyj niestandardowego serwera</string>
@@ -487,7 +487,7 @@
     <string name="listen_together_in_top_bar">Słuchaj Razem na górnym pasku</string>
     <string name="listen_together_in_top_bar_desc">Pokaż Słuchaj Razem na górnym pasku aplikacji zamiast na pasku nawigacyjnym</string>
     <string name="listen_together_notification_channel_desc">Powiadomienia o wydarzeniach w Słuchaj Razem</string>
-    <string name="listen_together_room_created">Pokój stworzony: %s</string>
+    <string name="listen_together_room_created">Utworzono pokój: %s</string>
     <string name="listen_together_cannot_edit_username_in_room">Nie można edytować nazwy użytkownika będąc w pokoju</string>
     <string name="waiting_for_approval">Oczekiwanie na zatwierdzenie przez hosta</string>
     <string name="invalid_room_code">Nieprawidłowy kod pokoju</string>
@@ -724,4 +724,5 @@
     <string name="delete_uploaded_song_failed">Nie udało się usunąć przesłanego utworu</string>
     <string name="delete_uploaded_songs">Usuń przesłane utwory</string>
     <string name="delete_uploaded_songs_confirm">Czy na pewno chcesz usunąć %1$d przesłanych utworów? Tej czynności nie można cofnąć.</string>
+    <string name="ai_provider_mistral_help">Odwiedź https://console.mistral.ai/api-keys</string>
 </resources>
