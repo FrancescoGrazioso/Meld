@@ -1979,10 +1979,9 @@ class MusicService :
                 }
                 if (player.playbackState != STATE_IDLE && mediaItems.isNotEmpty()) {
                     player.addMediaItems(mediaItems)
-                    if (player.shuffleModeEnabled) {
-                        val shufflePlaylistFirst = dataStore.get(ShufflePlaylistFirstKey, false)
-                        applyShuffleOrder(player.currentMediaItemIndex, player.mediaItemCount, shufflePlaylistFirst)
-                    }
+                    // Don't re-shuffle here: ExoPlayer's DefaultShuffleOrder.cloneAndInsert()
+                    // already places newly added items at random positions within the existing
+                    // shuffle order, preserving the sequence the user is currently listening to.
                 }
             }
         }
