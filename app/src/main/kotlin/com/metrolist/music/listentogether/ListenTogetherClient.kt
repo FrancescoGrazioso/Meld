@@ -472,36 +472,39 @@ class ListenTogetherClient @Inject constructor(
     fun connect() {
         if (_connectionState.value == ConnectionState.CONNECTED || 
             _connectionState.value == ConnectionState.CONNECTING) {
-            log(LogLevel.WARNING, "Already connected or connecting")
+            log(LogLevel.WARNING, "Already connected or connecting", "state=${_connectionState.value}")
             return
         }
 
         _connectionState.value = ConnectionState.CONNECTING
-        log(LogLevel.INFO, "Connecting to server", getServerUrl())
+        val serverUrl = getServerUrl()
+        log(LogLevel.INFO, "Connecting to server", "URL: $serverUrl, hasPendingAction: ${pendingAction != null}, hasSession: ${sessionToken != null}")
 
         val request = Request.Builder()
-            .url(getServerUrl())
+            .url(serverUrl)
             .build()
 
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
             override fun onOpen(webSocket: WebSocket, response: Response) {
-                log(LogLevel.INFO, "Connected to server")
+                log(LogLevel.INFO, "WebSocket OPEN", "protocol=${response.protocol}, code=${response.code}, hasPendingAction=${pendingAction != null}, hasSession=${sessionToken != null}")
                 _connectionState.value = ConnectionState.CONNECTED
                 reconnectAttempts = 0
                 startPingJob()
                 
-                // Try to reconnect to previous session if we have a valid token
                 if (sessionToken != null && storedRoomCode != null) {
                     log(LogLevel.INFO, "Attempting to reconnect to previous session", "Room: $storedRoomCode")
                     sendMessage(MessageTypes.RECONNECT, ReconnectPayload(sessionToken!!))
                 } else {
-                    // Execute any pending action
                     executePendingAction()
                 }
             }
 
+            override fun onMessage(webSocket: WebSocket, text: String) {
+                log(LogLevel.WARNING, "Received TEXT message (unexpected)", "length=${text.length}, preview=${text.take(200)}")
+            }
+
             override fun onMessage(webSocket: WebSocket, bytes: okio.ByteString) {
-                // Handle binary protobuf messages
+                log(LogLevel.DEBUG, "Received BINARY message", "${bytes.size} bytes")
                 handleMessage(bytes.toByteArray())
             }
 
@@ -516,23 +519,27 @@ class ListenTogetherClient @Inject constructor(
             }
 
             override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-                log(LogLevel.ERROR, "Connection failure", t.message)
+                log(LogLevel.ERROR, "Connection FAILURE", "error=${t.message}, class=${t.javaClass.simpleName}, responseCode=${response?.code}, responseMsg=${response?.message}")
                 handleConnectionFailure(t)
             }
         })
     }
     
     private fun executePendingAction() {
-        val action = pendingAction ?: return
+        val action = pendingAction
+        if (action == null) {
+            log(LogLevel.DEBUG, "executePendingAction: no pending action")
+            return
+        }
         pendingAction = null
         
         when (action) {
             is PendingAction.CreateRoom -> {
-                log(LogLevel.INFO, "Executing pending create room", action.username)
+                log(LogLevel.INFO, "Executing pending CREATE_ROOM", "username=${action.username}")
                 sendMessage(MessageTypes.CREATE_ROOM, CreateRoomPayload(action.username))
             }
             is PendingAction.JoinRoom -> {
-                log(LogLevel.INFO, "Executing pending join room", "${action.roomCode} as ${action.username}")
+                log(LogLevel.INFO, "Executing pending JOIN_ROOM", "room=${action.roomCode} username=${action.username}")
                 sendMessage(MessageTypes.JOIN_ROOM, JoinRoomPayload(action.roomCode.uppercase(), action.username))
             }
         }
@@ -775,11 +782,11 @@ class ListenTogetherClient @Inject constructor(
     }
 
     private fun handleMessage(data: ByteArray) {
-        log(LogLevel.DEBUG, "Received message", "${data.size} bytes")
+        log(LogLevel.INFO, "handleMessage", "size=${data.size} bytes")
         
         try {
-            // Decode message using Protobuf
             val (msgType, payloadBytes) = codec.decode(data)
+            log(LogLevel.INFO, "Decoded message", "type=$msgType, payloadSize=${payloadBytes.size}")
             
             when (msgType) {
                 MessageTypes.ROOM_CREATED -> {
@@ -1156,14 +1163,16 @@ class ListenTogetherClient @Inject constructor(
     private inline fun <reified T> sendMessage(type: String, payload: T?) {
         try {
             val data = codec.encode(type, payload)
-            log(LogLevel.DEBUG, "Sending message", "$type (protobuf)")
+            log(LogLevel.INFO, "Sending message", "type=$type, size=${data.size} bytes, wsNull=${webSocket == null}")
             
             val success = webSocket?.send(okio.ByteString.of(*data)) ?: false
             if (!success) {
-                log(LogLevel.ERROR, "Failed to send message", type)
+                log(LogLevel.ERROR, "Failed to send message (send returned false)", "type=$type, wsNull=${webSocket == null}")
+            } else {
+                log(LogLevel.DEBUG, "Message sent OK", type)
             }
         } catch (e: Exception) {
-            log(LogLevel.ERROR, "Error encoding message", "$type: ${e.message}")
+            log(LogLevel.ERROR, "Error encoding/sending message", "type=$type, error=${e.message}, class=${e.javaClass.simpleName}")
         }
     }
     
@@ -1178,7 +1187,7 @@ class ListenTogetherClient @Inject constructor(
      * If not connected, will queue the action and connect first.
      */
     fun createRoom(username: String) {
-        // Clear any existing session to ensure we create a new room instead of reconnecting
+        log(LogLevel.INFO, "createRoom called", "username=$username, state=${_connectionState.value}")
         clearPersistedSession()
         sessionToken = null
         storedRoomCode = null
@@ -1187,15 +1196,15 @@ class ListenTogetherClient @Inject constructor(
         storedUsername = username
         
         if (_connectionState.value == ConnectionState.CONNECTED) {
+            log(LogLevel.INFO, "Already connected, sending CREATE_ROOM now")
             sendMessage(MessageTypes.CREATE_ROOM, CreateRoomPayload(username))
         } else {
-            log(LogLevel.INFO, "Not connected, queueing create room action")
+            log(LogLevel.INFO, "Not connected (${_connectionState.value}), queueing CREATE_ROOM")
             pendingAction = PendingAction.CreateRoom(username)
             if (_connectionState.value == ConnectionState.DISCONNECTED || 
                 _connectionState.value == ConnectionState.ERROR) {
                 connect()
             }
-            // If CONNECTING or RECONNECTING, the action will be executed when connected
         }
     }
 
@@ -1204,7 +1213,7 @@ class ListenTogetherClient @Inject constructor(
      * If not connected, will queue the action and connect first.
      */
     fun joinRoom(roomCode: String, username: String) {
-        // Clear any existing session to ensure we join the new room instead of reconnecting
+        log(LogLevel.INFO, "joinRoom called", "room=$roomCode, username=$username, state=${_connectionState.value}")
         clearPersistedSession()
         sessionToken = null
         storedRoomCode = null
@@ -1213,15 +1222,15 @@ class ListenTogetherClient @Inject constructor(
         storedUsername = username
         
         if (_connectionState.value == ConnectionState.CONNECTED) {
+            log(LogLevel.INFO, "Already connected, sending JOIN_ROOM now")
             sendMessage(MessageTypes.JOIN_ROOM, JoinRoomPayload(roomCode.uppercase(), username))
         } else {
-            log(LogLevel.INFO, "Not connected, queueing join room action")
+            log(LogLevel.INFO, "Not connected (${_connectionState.value}), queueing JOIN_ROOM")
             pendingAction = PendingAction.JoinRoom(roomCode, username)
             if (_connectionState.value == ConnectionState.DISCONNECTED || 
                 _connectionState.value == ConnectionState.ERROR) {
                 connect()
             }
-            // If CONNECTING or RECONNECTING, the action will be executed when connected
         }
     }
 

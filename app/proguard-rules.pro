@@ -170,3 +170,15 @@
 -keepclasseswithmembers class com.metrolist.shazamkit.models.** {
     kotlinx.serialization.KSerializer serializer(...);
 }
+
+## Protobuf Lite — required for reflection-based field access at runtime
+-keep class * extends com.google.protobuf.GeneratedMessageLite { *; }
+-keep class * extends com.google.protobuf.GeneratedMessageLite$Builder { *; }
+-keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite {
+    <fields>;
+    <methods>;
+}
+
+## Listen Together Protobuf classes
+-keep class com.metrolist.music.listentogether.proto.** { *; }
+-keepclassmembers class com.metrolist.music.listentogether.proto.** { *; }

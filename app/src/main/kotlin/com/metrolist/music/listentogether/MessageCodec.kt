@@ -46,10 +46,11 @@ class MessageCodec(
         var compressed = false
         
         if (payload != null) {
+            Timber.tag(TAG).d("Encoding payload: type=$msgType, class=${payload.javaClass.simpleName}")
             val protoMsg = toProtoMessage(payload)
             payloadBytes = protoMsg.toByteArray()
+            Timber.tag(TAG).d("Payload encoded: ${payloadBytes.size} bytes")
             
-            // Compress if enabled and payload is large enough
             if (compressionEnabled && payloadBytes.size > COMPRESSION_THRESHOLD) {
                 val compressedBytes = compressData(payloadBytes)
                 if (compressedBytes.size < payloadBytes.size) {
@@ -65,14 +66,18 @@ class MessageCodec(
             .setCompressed(compressed)
             .build()
         
-        return envelope.toByteArray()
+        val result = envelope.toByteArray()
+        Timber.tag(TAG).d("Envelope built: type=$msgType, totalSize=${result.size}, compressed=$compressed")
+        return result
     }
     
     /**
      * Decode protobuf message
      */
     private fun decodeProtobuf(data: ByteArray): Pair<String, ByteArray> {
+        Timber.tag(TAG).d("Decoding envelope: ${data.size} bytes")
         val envelope = Listentogether.Envelope.parseFrom(data)
+        Timber.tag(TAG).d("Envelope decoded: type=${envelope.type}, payloadSize=${envelope.payload.size()}, compressed=${envelope.compressed}")
         
         var payloadBytes = envelope.payload.toByteArray()
         
