@@ -710,4 +710,5 @@
     <string name="export_as_m3u">M3U olarak dışa aktar</string>
     <string name="export_as_csv">CSV olarak dışa aktar</string>
     <string name="export_playlist">Oynatma listesini dışa aktar</string>
+    <string name="ai_provider_mistral_help">https://console.mistral.ai/api-keys sitesini ziyaret et</string>
 </resources>
