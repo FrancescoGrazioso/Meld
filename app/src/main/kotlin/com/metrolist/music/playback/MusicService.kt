@@ -96,6 +96,7 @@ import com.metrolist.music.constants.DiscordActivityTypeKey
 import com.metrolist.music.constants.DiscordAdvancedModeKey
 import com.metrolist.music.constants.DiscordAvatarKey
 import com.metrolist.music.constants.DiscordButton1TextKey
+import com.metrolist.music.constants.EnableSongCacheKey
 import com.metrolist.music.constants.DiscordButton1VisibleKey
 import com.metrolist.music.constants.DiscordButton2TextKey
 import com.metrolist.music.constants.DiscordButton2VisibleKey
@@ -2843,9 +2844,15 @@ class MusicService :
         )
 
         return DataSource.Factory {
-            val upstreamFactory = CacheDataSource.Factory()
-                .setCache(playerCache)
-                .setUpstreamDataSourceFactory(baseFactory)
+            val usePlayerCache = dataStore.get(EnableSongCacheKey, true)
+
+            val upstreamFactory = if (usePlayerCache) {
+                CacheDataSource.Factory()
+                    .setCache(playerCache)
+                    .setUpstreamDataSourceFactory(baseFactory)
+            } else {
+                baseFactory
+            }
 
             CacheDataSource.Factory()
                 .setCache(downloadCache)
@@ -2963,12 +2970,13 @@ class MusicService :
             val shouldBypassCache = bypassCacheForQualityChange.contains(mediaId)
 
             if (!shouldBypassCache) {
+                val usePlayerCache = dataStore.get(EnableSongCacheKey, true)
                 if (downloadCache.isCached(
                         mediaId,
                         dataSpec.position,
                         if (dataSpec.length >= 0) dataSpec.length else 1
                     ) ||
-                    playerCache.isCached(mediaId, dataSpec.position, CHUNK_LENGTH)
+                    (usePlayerCache && playerCache.isCached(mediaId, dataSpec.position, CHUNK_LENGTH))
                 ) {
                     scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
                     return@Factory dataSpec

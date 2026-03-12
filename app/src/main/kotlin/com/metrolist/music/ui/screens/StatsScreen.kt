@@ -342,32 +342,39 @@ fun StatsScreen(
                             isActive = song.id == mediaMetadata?.id,
                             isPlaying = isPlaying,
                             modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .combinedClickable(
-                                        onClick = {
-                                            if (song.id == mediaMetadata?.id) {
-                                                playerConnection.togglePlayPause()
-                                            } else {
+                            Modifier
+                                .fillMaxWidth()
+                                .combinedClickable(
+                                    onClick = {
+                                        if (song.id == mediaMetadata?.id) {
+                                            playerConnection.togglePlayPause()
+                                        } else {
+                                            val targetSong = mostPlayedSongs.find { it.id == song.id }
+                                            if (targetSong != null) {
                                                 playerConnection.playQueue(
                                                     YouTubeQueue(
                                                         endpoint = WatchEndpoint(song.id),
-                                                        preloadItem = mostPlayedSongs[index].toMediaMetadata(),
+                                                        preloadItem = targetSong.toMediaMetadata(),
                                                     ),
                                                 )
                                             }
-                                        },
-                                        onLongClick = {
+                                        }
+                                    },
+                                    onLongClick = {
+                                        val targetSong = mostPlayedSongs.find { it.id == song.id }
+                                        if (targetSong != null) {
                                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                             menuState.show {
                                                 SongMenu(
-                                                    originalSong = mostPlayedSongs[index],
+                                                    originalSong = targetSong,
                                                     navController = navController,
                                                     onDismiss = menuState::dismiss,
                                                 )
                                             }
-                                        },
-                                    ).animateItem(),
+                                        }
+                                    },
+                                )
+                                .animateItem(),
                         )
                     }
                 }
