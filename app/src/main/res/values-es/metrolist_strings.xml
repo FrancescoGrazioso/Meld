@@ -144,7 +144,7 @@
     <string name="lyrics_romanize_kyrgyz">Romanizar la letra del kirguís</string>
     <string name="lyrics_romanize_serbian">Romanizar letras en serbio</string>
     <string name="lyrics_romanize_bulgarian">Romanizar letras en búlgaro</string>
-    <string name="line_by_line_option_title">EXPERIMENTAL: Detectar el lenguaje línea por línea</string>
+    <string name="line_by_line_option_title">Detectar idioma línea por línea</string>
     <string name="line_by_line_option_desc">El idioma cirílico se detectará línea por línea en lugar de toda la canción.</string>
     <string name="line_by_line_dialog_title">¿Está seguro?</string>
     <string name="line_by_line_dialog_desc">Esta función es experimental y puede tener sus fallos.\n\nPor defecto, el idioma se determina a partir de la canción completa, pero con esta opción activada, se determinará línea por línea. Esto permitirá que las canciones multilingües funcionen, PERO el idioma podría no ser siempre correcto (por ejemplo, si hay una letra en ucraniano que no contiene letras específicas del idioma, podría romanizarse al ruso).\n\nSi no tienes problemas, se recomienda desactivar esta opción.</string>
