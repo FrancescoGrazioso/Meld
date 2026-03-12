@@ -265,8 +265,10 @@
     <string name="sleep_timer_friday">Friday</string>
     <string name="sleep_timer_saturday">Saturday</string>
     <string name="sleep_timer_sunday">Sunday</string>
-    <string name="sleep_timer_stop_after_current_song">Stop at end of current song when timer ends</string>
-    <string name="sleep_timer_fade_out">Fade out in final minute</string>
+    <string name="sleep_timer_stop_after_current_song_title">Stop at end of current song</string>
+    <string name="sleep_timer_stop_after_current_song_description">Stops the sleep timer at the end of the current playing song</string>
+    <string name="sleep_timer_fade_out_title">Fade out</string>
+    <string name="sleep_timer_fade_out_description">Fades out the volume in the final minute</string>
 
     <!-- Player Settings -->
     <string name="disable_load_more_when_repeat_all">Disable load more when repeat all</string>

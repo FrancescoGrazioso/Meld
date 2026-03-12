@@ -56,7 +56,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -181,6 +180,12 @@ import kotlinx.coroutines.withContext
 import kotlin.math.max
 import kotlin.math.roundToInt
 import com.metrolist.music.ui.component.Icon as MIcon
+import com.metrolist.music.constants.SleepTimerDefaultKey
+import com.metrolist.music.utils.dataStore
+import androidx.datastore.preferences.core.edit
+import com.metrolist.music.constants.SleepTimerFadeOutKey
+import com.metrolist.music.constants.SleepTimerStopAfterCurrentSongKey
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -560,14 +565,12 @@ fun BottomSheetPlayer(
     var sleepTimerValue by remember {
         mutableFloatStateOf(sleepTimerDefault)
     }
-    val sleepTimerStopAfterCurrentSongDefault by rememberPreference(SleepTimerStopAfterCurrentSongKey, false)
-    var sleepTimerStopAfterCurrentSong by remember {
-        mutableStateOf(sleepTimerStopAfterCurrentSongDefault)
+    val isAtDefault by remember {
+        derivedStateOf { sleepTimerValue.roundToInt() == sleepTimerDefault.roundToInt() }
     }
-    val sleepTimerFadeOutDefault by rememberPreference(SleepTimerFadeOutKey, false)
-    var sleepTimerFadeOut by remember {
-        mutableStateOf(sleepTimerFadeOutDefault)
-    }
+    val sleepTimerStopAfterCurrentSong by rememberPreference(SleepTimerStopAfterCurrentSongKey, false)
+    val sleepTimerFadeOut by rememberPreference(SleepTimerFadeOutKey, false)
+
 
     if (showSleepTimerDialog) {
         AlertDialog(
@@ -621,57 +624,57 @@ fun BottomSheetPlayer(
                     )
 
                     Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Checkbox(
-                            checked = sleepTimerStopAfterCurrentSong,
-                            onCheckedChange = { sleepTimerStopAfterCurrentSong = it },
-                        )
-                        Text(stringResource(R.string.sleep_timer_stop_after_current_song))
-                    }
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Checkbox(
-                            checked = sleepTimerFadeOut,
-                            onCheckedChange = { sleepTimerFadeOut = it },
-                        )
-                        Text(stringResource(R.string.sleep_timer_fade_out))
-                    }
-
-                    OutlinedIconButton(
-                        onClick = {
-                            showSleepTimerDialog = false
-                            playerConnection.service.sleepTimer.start(
-                                minute = -1,
-                                stopAfterCurrentSong = false,
-                                fadeOut = sleepTimerFadeOut,
-                            )
-                        },
-                    ) {
-                        Text(stringResource(R.string.end_of_song))
-                    }
-                    TextButton(
-                        onClick = {
-                            scope.launch {
-                                context.dataStore.edit { settings ->
-                                    settings[SleepTimerDefaultKey] = sleepTimerValue
-                                    settings[SleepTimerStopAfterCurrentSongKey] = sleepTimerStopAfterCurrentSong
-                                    settings[SleepTimerFadeOutKey] = sleepTimerFadeOut
-                                }
+                        if (isAtDefault) {
+                            FilledIconButton(
+                                onClick = {
+                                    scope.launch {
+                                        context.dataStore.edit { settings ->
+                                            settings[SleepTimerDefaultKey] = sleepTimerValue
+                                        }
+                                    }
+                                    Toast.makeText(
+                                        context,
+                                        String.format(sleepTimerDefaultSetTemplate, sleepTimerValue.roundToInt()),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                                },
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = MaterialTheme.colorScheme.onPrimary,
+                                ),
+                            ) {
+                                Text(stringResource(R.string.set_as_default))
                             }
-                            Toast
-                                .makeText(
-                                    context,
-                                    String.format(sleepTimerDefaultSetTemplate, sleepTimerValue.roundToInt()),
-                                    Toast.LENGTH_SHORT,
-                                ).show()
-                        },
-                    ) {
-                        Text(stringResource(R.string.set_as_default))
+                        } else {
+                            OutlinedIconButton(
+                                onClick = {
+                                    scope.launch {
+                                        context.dataStore.edit { settings ->
+                                            settings[SleepTimerDefaultKey] = sleepTimerValue
+                                        }
+                                    }
+                                    Toast.makeText(
+                                        context,
+                                        String.format(sleepTimerDefaultSetTemplate, sleepTimerValue.roundToInt()),
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
+                                },
+                            ) {
+                                Text(stringResource(R.string.set_as_default))
+                            }
+                        }
+
+                        OutlinedIconButton(
+                            onClick = {
+                                showSleepTimerDialog = false
+                                playerConnection.service.sleepTimer.start(minute = -1)
+                            },
+                        ) {
+                            Text(stringResource(R.string.end_of_song))
+                        }
                     }
                 }
             },

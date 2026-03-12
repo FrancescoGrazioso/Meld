@@ -6,7 +6,6 @@
 package com.metrolist.music.ui.player
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -107,9 +106,6 @@ import com.metrolist.music.R
 import com.metrolist.music.constants.ListItemHeight
 import com.metrolist.music.constants.PlayerBackgroundStyle
 import com.metrolist.music.constants.QueueEditLockKey
-import com.metrolist.music.constants.SleepTimerDefaultKey
-import com.metrolist.music.constants.SleepTimerFadeOutKey
-import com.metrolist.music.constants.SleepTimerStopAfterCurrentSongKey
 import com.metrolist.music.constants.UseNewPlayerDesignKey
 import com.metrolist.music.extensions.metadata
 import com.metrolist.music.extensions.move
@@ -136,6 +132,16 @@ import kotlinx.coroutines.launch
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import kotlin.math.roundToInt
+import com.metrolist.music.constants.SleepTimerDefaultKey
+import com.metrolist.music.utils.dataStore
+import androidx.datastore.preferences.core.edit
+import android.widget.Toast
+import androidx.compose.runtime.derivedStateOf
+import com.metrolist.music.constants.SleepTimerFadeOutKey
+import com.metrolist.music.constants.SleepTimerStopAfterCurrentSongKey
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.material3.Button
+
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalFoundationApi::class)
@@ -223,17 +229,17 @@ fun Queue(
     var showSleepTimerDialog by remember { mutableStateOf(false) }
     val sleepTimerDefault by rememberPreference(SleepTimerDefaultKey, 30f)
     var sleepTimerValue by remember { mutableFloatStateOf(sleepTimerDefault) }
-    val sleepTimerStopAfterCurrentSongDefault by rememberPreference(SleepTimerStopAfterCurrentSongKey, false)
-    var sleepTimerStopAfterCurrentSong by remember { mutableStateOf(sleepTimerStopAfterCurrentSongDefault) }
-    val sleepTimerFadeOutDefault by rememberPreference(SleepTimerFadeOutKey, false)
-    var sleepTimerFadeOut by remember { mutableStateOf(sleepTimerFadeOutDefault) }
-    val sleepTimerEnabled =
-        remember(
-            playerConnection.service.sleepTimer.triggerTime,
-            playerConnection.service.sleepTimer.pauseWhenSongEnd,
-        ) {
-            playerConnection.service.sleepTimer.isActive
-        }
+    val isAtDefault by remember {
+        derivedStateOf { sleepTimerValue.roundToInt() == sleepTimerDefault.roundToInt() }
+    }
+    val sleepTimerStopAfterCurrentSong by rememberPreference(SleepTimerStopAfterCurrentSongKey, false)
+    val sleepTimerFadeOut by rememberPreference(SleepTimerFadeOutKey, false)
+    val sleepTimerEnabled = remember(
+        playerConnection.service.sleepTimer.triggerTime,
+        playerConnection.service.sleepTimer.pauseWhenSongEnd
+    ) {
+        playerConnection.service.sleepTimer.isActive
+    }
     var sleepTimerTimeLeft by remember { mutableLongStateOf(0L) }
 
     LaunchedEffect(sleepTimerEnabled) {
@@ -563,8 +569,6 @@ fun Queue(
                     },
                     onReset = {
                         sleepTimerValue = sleepTimerDefault
-                        sleepTimerStopAfterCurrentSong = sleepTimerStopAfterCurrentSongDefault
-                        sleepTimerFadeOut = sleepTimerFadeOutDefault
                     },
                     content = {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -591,61 +595,59 @@ fun Queue(
                             Spacer(Modifier.height(8.dp))
 
                             Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
                                 verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth(),
                             ) {
-                                Checkbox(
-                                    checked = sleepTimerStopAfterCurrentSong,
-                                    onCheckedChange = { sleepTimerStopAfterCurrentSong = it },
-                                )
-                                Text(stringResource(R.string.sleep_timer_stop_after_current_song))
-                            }
-
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth(),
-                            ) {
-                                Checkbox(
-                                    checked = sleepTimerFadeOut,
-                                    onCheckedChange = { sleepTimerFadeOut = it },
-                                )
-                                Text(stringResource(R.string.sleep_timer_fade_out))
-                            }
-
-                            Spacer(Modifier.height(8.dp))
-
-                            OutlinedButton(
-                                onClick = {
-                                    showSleepTimerDialog = false
-                                    playerConnection.service.sleepTimer.start(
-                                        minute = -1,
-                                        stopAfterCurrentSong = false,
-                                        fadeOut = sleepTimerFadeOut,
-                                    )
-                                },
-                            ) {
-                                Text(stringResource(R.string.end_of_song))
-                            }
-                            Spacer(Modifier.height(8.dp))
-
-                            TextButton(
-                                onClick = {
-                                    coroutineScope.launch {
-                                        context.dataStore.edit { settings ->
-                                            settings[SleepTimerDefaultKey] = sleepTimerValue
-                                            settings[SleepTimerStopAfterCurrentSongKey] = sleepTimerStopAfterCurrentSong
-                                            settings[SleepTimerFadeOutKey] = sleepTimerFadeOut
-                                        }
+                                if (isAtDefault) {
+                                    Button(
+                                        onClick = {
+                                            coroutineScope.launch {
+                                                context.dataStore.edit { settings ->
+                                                    settings[SleepTimerDefaultKey] = sleepTimerValue
+                                                }
+                                            }
+                                            Toast.makeText(
+                                                context,
+                                                String.format(sleepTimerDefaultSetTemplate, sleepTimerValue.roundToInt()),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                        },
+                                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                            containerColor = MaterialTheme.colorScheme.primary,
+                                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                                        ),
+                                    ) {
+                                        Text(stringResource(R.string.set_as_default))
                                     }
-                                    Toast
-                                        .makeText(
-                                            context,
-                                            String.format(sleepTimerDefaultSetTemplate, sleepTimerValue.roundToInt()),
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
-                                },
-                            ) {
-                                Text(stringResource(R.string.set_as_default))
+                                } else {
+                                    OutlinedButton(
+                                        onClick = {
+                                            coroutineScope.launch {
+                                                context.dataStore.edit { settings ->
+                                                    settings[SleepTimerDefaultKey] = sleepTimerValue
+                                                }
+                                            }
+                                            Toast.makeText(
+                                                context,
+                                                String.format(sleepTimerDefaultSetTemplate, sleepTimerValue.roundToInt()),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                        },
+                                    ) {
+                                        Text(stringResource(R.string.set_as_default))
+                                    }
+                                }
+
+                                OutlinedButton(
+                                    onClick = {
+                                        showSleepTimerDialog = false
+                                        playerConnection.service.sleepTimer.start(
+                                            minute = -1,
+                                        )
+                                    },
+                                ) {
+                                    Text(stringResource(R.string.end_of_song))
+                                }
                             }
                         }
                     },
