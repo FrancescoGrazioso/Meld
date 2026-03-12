@@ -146,7 +146,7 @@
     <string name="lyrics_romanize_kyrgyz">キルギス語の歌詞にローマ字を追加</string>
     <string name="lyrics_romanize_serbian">セルビア語の歌詞にローマ字を追加</string>
     <string name="lyrics_romanize_bulgarian">ブルガリア語の歌詞にローマ字を追加</string>
-    <string name="line_by_line_option_title">行ごとに言語を判別(実験的)</string>
+    <string name="line_by_line_option_title">行ごとに言語を判別</string>
     <string name="line_by_line_option_desc">キリル文字の言語は、曲全体ではなく行ごとに判別されます。</string>
     <string name="line_by_line_dialog_title">確認</string>
     <string name="line_by_line_dialog_desc">この機能は実験的で、動作が不安定になる場合があります。\n通常、言語は曲全体から判別されますが、この設定をオンにすると行ごとに判別されます。複数の言語が混在する曲に対応できますが、判別結果が常に正しいとは限りません（例：ウクライナ語特有の文字が含まれていない歌詞は、ロシア語として判別される場合があります）。\n問題がない場合は、この設定はオフにすることをおすすめします。</string>
