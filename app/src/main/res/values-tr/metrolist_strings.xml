@@ -685,8 +685,6 @@
     <string name="sleep_timer_friday">Cuma</string>
     <string name="sleep_timer_saturday">Cumartesi</string>
     <string name="sleep_timer_sunday">Pazar</string>
-    <string name="sleep_timer_stop_after_current_song">Zamanlayıcının süresi dolduğunda o sırada çalınan şarkıyı durdur</string>
-    <string name="sleep_timer_fade_out">Son dakikalarda ses yavaşça azaltılır</string>
     <string name="upload_songs">Şarkıları yükle</string>
     <string name="uploading">Yükleniyor…</string>
     <string name="upload_progress">%1$d / %2$d</string>

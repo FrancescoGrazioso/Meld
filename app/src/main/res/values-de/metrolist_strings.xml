@@ -682,8 +682,6 @@
     <string name="sleep_timer_repeat">Wiederholen</string>
     <string name="sleep_timer_weekdays_weekends">Wochentage / Wochenenden</string>
     <string name="sleep_timer_custom">Benutzerdefiniert</string>
-    <string name="sleep_timer_stop_after_current_song">Am Ende des aktuellen Songs anhalten, wenn der Timer abgelaufen ist</string>
-    <string name="sleep_timer_fade_out">Ausblenden in der letzten Minute</string>
     <string name="view_channel">Kanal anzeigen</string>
     <string name="qs_tile_music_recognizer">Musik erkennen</string>
     <string name="discord_activity_listening">Zuhören</string>

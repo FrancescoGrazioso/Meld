@@ -679,8 +679,6 @@
     <string name="sleep_timer_friday">周五</string>
     <string name="sleep_timer_saturday">周六</string>
     <string name="sleep_timer_sunday">周日</string>
-    <string name="sleep_timer_stop_after_current_song">定时器结束时，当前歌曲播放完毕后停止</string>
-    <string name="sleep_timer_fade_out">在最后一分钟淡出</string>
     <string name="upload_songs">上传歌曲</string>
     <string name="uploading">正在上传…</string>
     <string name="upload_progress">%1$d / %2$d</string>

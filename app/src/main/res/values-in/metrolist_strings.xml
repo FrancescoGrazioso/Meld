@@ -591,8 +591,6 @@
     <string name="sleep_timer_friday">Jumat</string>
     <string name="sleep_timer_saturday">Sabtu</string>
     <string name="sleep_timer_sunday">Minggu</string>
-    <string name="sleep_timer_stop_after_current_song">Berhenti di akhir lagu saat ini ketika pengatur waktu selesai</string>
-    <string name="sleep_timer_fade_out">Redam suara di menit terakhir</string>
     <string name="found_in_settings_content">Tersedia di Pengaturan &gt; Konten</string>
     <string name="plays">diputar</string>
     <string name="error_episode_save">Gagal menyimpan episode</string>

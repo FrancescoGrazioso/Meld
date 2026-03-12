@@ -691,8 +691,6 @@
     <string name="sleep_timer_friday">Vendredi</string>
     <string name="sleep_timer_saturday">Samedi</string>
     <string name="sleep_timer_sunday">Dimanche</string>
-    <string name="sleep_timer_stop_after_current_song">Arrêter à la fin du titre en cours lorsque le minuteur arrive à son terme</string>
-    <string name="sleep_timer_fade_out">S\'éteint dans la dernière minute</string>
     <string name="upload_songs">Télécharger des titres</string>
     <string name="uploading">Téléchargement en cours…</string>
     <string name="upload_progress">%1$d de %2$d</string>

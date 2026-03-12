@@ -304,8 +304,6 @@
     <string name="sleep_timer_friday">星期五</string>
     <string name="sleep_timer_saturday">週六</string>
     <string name="sleep_timer_sunday">星期日</string>
-    <string name="sleep_timer_stop_after_current_song">當計時器結束時，在當前歌曲結束時停止播放</string>
-    <string name="sleep_timer_fade_out">最後幾分鐘淡出</string>
     <string name="resume_on_bluetooth_connect">藍牙連線恢復</string>
     <string name="keep_screen_on_when_player_is_expanded">播放器最大化時保持螢幕常亮</string>
     <string name="crossfade">歌曲淡入淡出</string>

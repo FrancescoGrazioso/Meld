@@ -689,8 +689,6 @@
     <string name="sleep_timer_friday">Sexta</string>
     <string name="sleep_timer_saturday">Sábado</string>
     <string name="sleep_timer_sunday">Domingo</string>
-    <string name="sleep_timer_stop_after_current_song">Parar no final da música atual quando o timer acabar</string>
-    <string name="sleep_timer_fade_out">Desvanecer áudio no minuto final</string>
     <string name="view_channel">Ver canal</string>
     <string name="filter_profiles">Perfis</string>
     <string name="upload_songs">Enviar músicas</string>

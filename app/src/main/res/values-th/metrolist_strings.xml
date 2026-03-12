@@ -679,8 +679,6 @@
     <string name="sleep_timer_friday">วันศุกร์</string>
     <string name="sleep_timer_saturday">วันเสาร์</string>
     <string name="sleep_timer_sunday">วันอาทิตย์</string>
-    <string name="sleep_timer_stop_after_current_song">หยุดเล่นเมื่อเพลงปัจจุบันจบเมื่อครบเวลาที่ตั้งไว้</string>
-    <string name="sleep_timer_fade_out">ค่อย ๆ ลดเสียงลงในนาทีสุดท้าย</string>
     <string name="upload_songs">อัปโหลดเพลง</string>
     <string name="uploading">กำลังอัปโหลด…</string>
     <string name="upload_progress">%1$d จาก %2$d</string>

@@ -697,8 +697,6 @@
     <string name="sleep_timer_friday">Пятница</string>
     <string name="sleep_timer_saturday">Суббота</string>
     <string name="sleep_timer_sunday">Воскресенье</string>
-    <string name="sleep_timer_stop_after_current_song">Доиграть текущий трек после окончания таймера</string>
-    <string name="sleep_timer_fade_out">Плавное затухание в последнюю минуту</string>
     <string name="upload_songs">Загрузить треки</string>
     <string name="uploading">Загрузка…</string>
     <string name="upload_progress">%1$d из %2$d</string>

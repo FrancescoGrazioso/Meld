@@ -679,8 +679,6 @@
     <string name="sleep_timer_friday">金曜日</string>
     <string name="sleep_timer_saturday">土曜日</string>
     <string name="sleep_timer_sunday">日曜日</string>
-    <string name="sleep_timer_stop_after_current_song">タイマー終了時のときの曲が終わってから停止</string>
-    <string name="sleep_timer_fade_out">終了前の1分間でフェードアウト</string>
     <string name="upload_songs">曲をアップロード</string>
     <string name="uploading">アップロード中…</string>
     <string name="upload_progress">%1$d/%2$d</string>

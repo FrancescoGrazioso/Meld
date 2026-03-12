@@ -697,8 +697,6 @@
     <string name="sleep_timer_friday">Pátek</string>
     <string name="sleep_timer_saturday">Sobota</string>
     <string name="sleep_timer_sunday">Neděle</string>
-    <string name="sleep_timer_stop_after_current_song">Po vypršení časovače zastavit na konci aktuální skladby</string>
-    <string name="sleep_timer_fade_out">Postupné ztlumení v poslední minutě</string>
     <string name="upload_songs">Nahrát skladby</string>
     <string name="uploading">Nahrávání…</string>
     <string name="upload_progress">%1$d z %2$d</string>

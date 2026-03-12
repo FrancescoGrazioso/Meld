@@ -691,8 +691,6 @@
     <string name="sleep_timer_friday">Viernes</string>
     <string name="sleep_timer_saturday">Sábado</string>
     <string name="sleep_timer_sunday">Domingo</string>
-    <string name="sleep_timer_stop_after_current_song">Detener al final de la canción actual cuando termine el temporizador</string>
-    <string name="sleep_timer_fade_out">Atenuar el volumen en el último minuto</string>
     <string name="upload_songs">Subir canciones</string>
     <string name="uploading">Subiendo…</string>
     <string name="upload_progress">%1$d de %2$d</string>

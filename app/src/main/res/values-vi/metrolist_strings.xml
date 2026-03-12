@@ -501,8 +501,6 @@
     <string name="sleep_timer_friday">Thứ Sáu</string>
     <string name="sleep_timer_saturday">Thứ Bảy</string>
     <string name="sleep_timer_sunday">Chủ nhật</string>
-    <string name="sleep_timer_stop_after_current_song">Dừng lại ở kết thúc của bài hát hiện tại khi bộ đếm kết thúc</string>
-    <string name="sleep_timer_fade_out">Giảm dần âm lượng trong phút cuối cùng</string>
     <string name="wrapped_top_5_artists_title">Các nghệ sĩ yêu thích trong năm của bạn</string>
     <string name="wrapped_artist_listening_time">%d phút</string>
     <string name="wrapped_top_5_songs_title">Các bài hát yêu thích trong năm của bạn</string>

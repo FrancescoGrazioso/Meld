@@ -612,8 +612,6 @@
     <string name="sleep_timer_friday">Divendres</string>
     <string name="sleep_timer_saturday">Dissabte</string>
     <string name="sleep_timer_sunday">Diumenge</string>
-    <string name="sleep_timer_stop_after_current_song">Para en acabar la cançó actual quan el temporitzador finalitze</string>
-    <string name="sleep_timer_fade_out">Esvaïment durant el minut final</string>
     <string name="error_episode_save">No s\'ha pogut desar l\'episodi</string>
     <string name="error_episode_remove">No s\'ha pogut eliminar l\'episodi</string>
     <string name="error_podcast_subscribe">No s\'ha pogut subscriure\'s al podcast</string>

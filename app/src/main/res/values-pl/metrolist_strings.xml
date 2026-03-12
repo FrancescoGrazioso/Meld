@@ -419,7 +419,6 @@
     <string name="sleep_timer_friday">Piątek</string>
     <string name="sleep_timer_saturday">Sobota</string>
     <string name="sleep_timer_sunday">Niedziela</string>
-    <string name="sleep_timer_fade_out">Stopniowe wyciszanie w ostatniej minucie</string>
     <string name="resume_on_bluetooth_connect">Wznów po podłączeniu Bluetooth</string>
     <string name="crossfade">Crossfade</string>
     <string name="crossfade_desc">Płynne przejście między utworami</string>
@@ -444,7 +443,6 @@
     <string name="sleeptimer_description">Automatycznie włącza wyłącznik czasowy z domyślną wartością o niestandardowym czasie</string>
     <string name="sleep_timer_repeat_description">Ustaw niestandardową godzinę, o której wyłącznik czasowy powinien się automatycznie aktywować</string>
     <string name="sleep_timer_custom">Niestandardowy</string>
-    <string name="sleep_timer_stop_after_current_song">Zatrzymaj po bieżącym utworze, gdy timer się skończy</string>
     <string name="lyrics_romanize_as_main">Pokaż zromanizowane teksty jako główne</string>
     <string name="found_in_settings_content">Znajdujące się w Ustawieniach &gt; Zawartość</string>
     <string name="plays">odtworzeń</string>

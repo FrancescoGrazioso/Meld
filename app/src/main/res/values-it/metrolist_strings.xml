@@ -688,8 +688,6 @@
     <string name="sleep_timer_friday">Venerdì</string>
     <string name="sleep_timer_saturday">Sabato</string>
     <string name="sleep_timer_sunday">Domenica</string>
-    <string name="sleep_timer_stop_after_current_song">Interrompi alla fine del brano corrente allo scadere del timer</string>
-    <string name="sleep_timer_fade_out">Dissolvenza nell\'ultimo minuto</string>
     <string name="upload_songs">Carica brani</string>
     <string name="uploading">Caricamento…</string>
     <string name="upload_progress">%1$d di %2$d</string>

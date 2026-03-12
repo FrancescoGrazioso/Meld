@@ -700,8 +700,6 @@
     <string name="sleep_timer_friday">الجمعة</string>
     <string name="sleep_timer_saturday">السبت</string>
     <string name="sleep_timer_sunday">الأحد</string>
-    <string name="sleep_timer_stop_after_current_song">التوقف عند نهاية الأغنية الحالية عند انتهاء المؤقت</string>
-    <string name="sleep_timer_fade_out">تلاشي في الدقيقة الأخيرة</string>
     <string name="view_channel">عرض القناة</string>
     <string name="qs_tile_music_recognizer">التعرف على الموسيقى</string>
     <string name="filter_episodes">حلقات</string>

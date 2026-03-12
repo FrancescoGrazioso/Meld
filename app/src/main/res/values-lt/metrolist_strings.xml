@@ -369,8 +369,6 @@
     <string name="sleep_timer_friday">Penktadienis</string>
     <string name="sleep_timer_saturday">Šeštadienis</string>
     <string name="sleep_timer_sunday">Sekmadienis</string>
-    <string name="sleep_timer_stop_after_current_song">Laikmačiui pasibaigus, sustabdyti tik pasibaigus dabartinei dainai</string>
-    <string name="sleep_timer_fade_out">Paskutinę minutę tildyti palaipsniui</string>
     <string name="resume_on_bluetooth_connect">Tęsti prijungus Bluetooth</string>
     <string name="keep_screen_on_when_player_is_expanded">Palikti ekraną įjungtą, kai grotuvas padidintas</string>
     <string name="crossfade">Perėjimas</string>
