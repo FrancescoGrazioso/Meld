@@ -715,4 +715,12 @@
     <string name="export_option_save">Enregistrer dans Documents</string>
     <string name="qs_tile_music_recognizer">Reconnaître la musique</string>
     <string name="ai_provider_mistral_help">Visitez https://console.mistral.ai/api-keys</string>
+    <string name="weekly_most_playlist_name">Les plus populaires de la semaine</string>
+    <string name="monthly_most_playlist_name">Les plus populaires du mois</string>
+    <string name="enable_song_cache">Activer le cache des titres</string>
+    <string name="enable_song_cache_desc">Mettre automatiquement en cache les titres pour une lecture ultérieure</string>
+    <string name="sleep_timer_stop_after_current_song_title">Arrêter à la fin du titre en cours</string>
+    <string name="sleep_timer_stop_after_current_song_description">Arrête la minuterie de mise en veille à la fin du titre en cours de lecture</string>
+    <string name="sleep_timer_fade_out_title">Fondu de sortie</string>
+    <string name="sleep_timer_fade_out_description">Réduit progressivement le volume pendant la dernière minute</string>
 </resources>
