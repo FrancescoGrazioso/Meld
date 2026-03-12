@@ -721,4 +721,12 @@
     <string name="export_option_save">Uložit do Dokumentů</string>
     <string name="qs_tile_music_recognizer">Rozpoznat hudbu</string>
     <string name="ai_provider_mistral_help">Navštivte https://console.mistral.ai/api-keys</string>
+    <string name="weekly_most_playlist_name">Nejpřehrávanější za týden</string>
+    <string name="monthly_most_playlist_name">Nejpřehrávanější za měsíc</string>
+    <string name="enable_song_cache">Povolit mezipaměť skladeb</string>
+    <string name="enable_song_cache_desc">Automaticky přidávat skladby do mezipaměti pro budoucí přehrání</string>
+    <string name="sleep_timer_stop_after_current_song_title">Zastavit na konci aktuální skladby</string>
+    <string name="sleep_timer_stop_after_current_song_description">Zastaví časovač spánku na konci aktuálně hrající skladby</string>
+    <string name="sleep_timer_fade_out_title">Postupné zeslabení</string>
+    <string name="sleep_timer_fade_out_description">Hlasitost se v poslední minutě postupně zeslabí</string>
 </resources>
