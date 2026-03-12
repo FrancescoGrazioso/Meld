@@ -8,6 +8,7 @@ package com.metrolist.music.ui.screens
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
@@ -33,12 +35,15 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.metrolist.innertube.models.WatchEndpoint
+import com.metrolist.innertube.utils.parseCookieString
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
+import com.metrolist.music.constants.InnerTubeCookieKey
 import com.metrolist.music.constants.StatPeriod
 import com.metrolist.music.extensions.toMediaItem
 import com.metrolist.music.models.toMediaMetadata
@@ -52,12 +57,14 @@ import com.metrolist.music.ui.component.LocalArtistsGrid
 import com.metrolist.music.ui.component.LocalMenuState
 import com.metrolist.music.ui.component.LocalSongsGrid
 import com.metrolist.music.ui.component.NavigationTitle
+import com.metrolist.music.ui.component.PlaylistGridItem
 import com.metrolist.music.ui.menu.AlbumMenu
 import com.metrolist.music.ui.menu.ArtistMenu
 import com.metrolist.music.ui.menu.SongMenu
 import com.metrolist.music.ui.utils.backToMain
 import com.metrolist.music.utils.joinByBullet
 import com.metrolist.music.utils.makeTimeString
+import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.viewmodels.StatsViewModel
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -81,11 +88,36 @@ fun StatsScreen(
     val mostPlayedArtists by viewModel.mostPlayedArtists.collectAsState()
     val mostPlayedAlbums by viewModel.mostPlayedAlbums.collectAsState()
     val firstEvent by viewModel.firstEvent.collectAsState()
+    val weeklyMostPlaylist by viewModel.weeklyMostPlaylist.collectAsState()
+    val monthlyMostPlaylist by viewModel.monthlyMostPlaylist.collectAsState()
+    val recapPlaylists by viewModel.recapPlaylists.collectAsState()
     val currentDate = LocalDateTime.now()
+    val orderedMostPlayedSongs = remember(mostPlayedSongsStats, mostPlayedSongs) {
+        val songsById = mostPlayedSongs.associateBy { it.song.id }
+        mostPlayedSongsStats.mapNotNull { statsSong -> songsById[statsSong.id] }
+    }
+    val mostPeriodPlaylists = listOfNotNull(weeklyMostPlaylist, monthlyMostPlaylist)
+    val (innerTubeCookie) = rememberPreference(InnerTubeCookieKey, "")
+    val isLoggedIn =
+        remember(innerTubeCookie) {
+            "SAPISID" in parseCookieString(innerTubeCookie)
+        }
+    val visibleStatsPlaylists =
+        remember(mostPeriodPlaylists, recapPlaylists, isLoggedIn) {
+            if (isLoggedIn) {
+                (mostPeriodPlaylists + recapPlaylists).distinctBy { it.id }
+            } else {
+                mostPeriodPlaylists
+            }
+        }
 
     val coroutineScope = rememberCoroutineScope()
     val lazyListState = rememberLazyListState()
     val selectedOption by viewModel.selectedOption.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.syncMostPlaylistsIfNeeded()
+    }
 
     val weeklyDates =
         if (currentDate != null && firstEvent != null) {
@@ -242,6 +274,44 @@ fun StatsScreen(
                     currentValue = indexChips,
                     onValueUpdate = { viewModel.indexChips.value = it },
                 )
+            }
+
+            if (visibleStatsPlaylists.isNotEmpty()) {
+                item(key = "mostPeriodPlaylistsTitle") {
+                    NavigationTitle(
+                        title =
+                            pluralStringResource(
+                                R.plurals.n_playlist,
+                                visibleStatsPlaylists.size,
+                                visibleStatsPlaylists.size,
+                            ),
+                        modifier = Modifier.animateItem(),
+                    )
+                }
+
+                item(key = "mostPeriodPlaylists") {
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 4.dp),
+                        modifier = Modifier.animateItem(),
+                    ) {
+                        itemsIndexed(
+                            items = visibleStatsPlaylists,
+                            key = { _, playlist -> playlist.id },
+                        ) { _, playlist ->
+                            PlaylistGridItem(
+                                playlist = playlist,
+                                autoPlaylist = true,
+                                modifier =
+                                    Modifier
+                                        .combinedClickable(
+                                            onClick = {
+                                                navController.navigate("local_playlist/${playlist.id}")
+                                            },
+                                        ).animateItem(),
+                            )
+                        }
+                    }
+                }
             }
 
             item(key = "mostPlayedSongs") {
