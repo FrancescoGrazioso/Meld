@@ -17,7 +17,7 @@
     <string name="cached_playlist">Önbelleğe Alınan</string>
     <string name="sync_playlist">Oynatma listesini senkronize et</string>
     <string name="sync_disabled">Senkronizasyon devre dışı</string>
-    <string name="allows_for_sync_witch_youtube">Not: Bu, YouTube Music ile senkronizasyona izin verir. Sonradan DEĞİŞTİRİLEMEZ.</string>
+    <string name="allows_for_sync_witch_youtube">Not: Bu, YouTube Music senkronizasyonuna izin verir. Sonradan DEĞİŞTİRİLEMEZ.</string>
     <string name="remove_from_cache">Önbellekten kaldır</string>
     <string name="copy_link">Bağlantıyı kopyala</string>
     <string name="select">Tümünü seç</string>
@@ -147,7 +147,7 @@
     <string name="lyrics_romanize_kyrgyz">Kırgızca şarkı sözlerini Latinleştir</string>
     <string name="lyrics_romanize_serbian">Sırpça şarkı sözlerini Latinleştir</string>
     <string name="lyrics_romanize_bulgarian">Bulgarca şarkı sözlerini Latinleştir</string>
-    <string name="line_by_line_option_title">DENEYSEL: Her satırın dilini ayrı ayrı algıla</string>
+    <string name="line_by_line_option_title">Her satırın sözlerini parça parça belirt</string>
     <string name="line_by_line_option_desc">Kiril dili, şarkının tamamı yerine satır satır algılanacaktır.</string>
     <string name="line_by_line_dialog_title">Emin misiniz?</string>
     <string name="line_by_line_dialog_desc">Bu, başarılı veya başarısız olabilecek deneysel bir özelliktir.\n\nVarsayılan olarak, dil tüm şarkı üzerinden belirlenir; ancak bu seçenek açık olduğunda, dil satır satır belirlenecektir. Bu sayede çok dilli şarkılar da çalışabilir, ama dil her zaman doğru olmayabilir (örneğin, Ukraynaca bir satır Ukraynaca’ya özgü harf içermiyorsa, yanlışlıkla Rusça olarak Latinleştirilebilir).\n\nSorun yaşamıyorsanız, bu seçeneği kapalı bırakmanız önerilir.</string>
@@ -313,7 +313,7 @@
     <string name="show_more">Daha fazla göster</string>
     <string name="show_less">Daha az göster</string>
     <string name="artist_page_settings">Sanatçı sayfası</string>
-    <string name="show_artist_description">Sanatçının açıklamasını göster</string>
+    <string name="show_artist_description">Sanatçı açıklamasını göster</string>
     <string name="show_artist_subscriber_count">Abone sayısını göster</string>
     <string name="show_artist_monthly_listeners">Aylık dinleyicileri göster</string>
     <string name="persistent_shuffle_title">Sürekli karıştırma</string>
