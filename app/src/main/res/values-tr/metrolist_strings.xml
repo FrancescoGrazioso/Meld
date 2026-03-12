@@ -148,7 +148,7 @@
     <string name="lyrics_romanize_serbian">Sırpça şarkı sözlerini Latinleştir</string>
     <string name="lyrics_romanize_bulgarian">Bulgarca şarkı sözlerini Latinleştir</string>
     <string name="line_by_line_option_title">Her satırın sözlerini parça parça belirt</string>
-    <string name="line_by_line_option_desc">Kiril dili, şarkının tamamı yerine satır satır algılanacaktır.</string>
+    <string name="line_by_line_option_desc">Kiril dili, şarkının tamamı parçalara ayrılarak algılanacaktır.</string>
     <string name="line_by_line_dialog_title">Emin misiniz?</string>
     <string name="line_by_line_dialog_desc">Bu, başarılı veya başarısız olabilecek deneysel bir özelliktir.\n\nVarsayılan olarak, dil tüm şarkı üzerinden belirlenir; ancak bu seçenek açık olduğunda, dil satır satır belirlenecektir. Bu sayede çok dilli şarkılar da çalışabilir, ama dil her zaman doğru olmayabilir (örneğin, Ukraynaca bir satır Ukraynaca’ya özgü harf içermiyorsa, yanlışlıkla Rusça olarak Latinleştirilebilir).\n\nSorun yaşamıyorsanız, bu seçeneği kapalı bırakmanız önerilir.</string>
     <string name="romanize_current_track">Geçerli parçayı Latinleştir</string>
@@ -663,7 +663,7 @@
     <string name="no_downloaded_episodes">İndirilen bölüm yok</string>
     <plurals name="n_channel">
         <item quantity="one">%d kanal</item>
-        <item quantity="other">%d kanal</item>
+        <item quantity="other">%d kanalları</item>
     </plurals>
     <string name="view_channel">Kanalı görüntüle</string>
     <string name="filter_profiles">Profiller</string>
@@ -709,4 +709,12 @@
     <string name="export_as_csv">CSV olarak dışa aktar</string>
     <string name="export_playlist">Oynatma listesini dışa aktar</string>
     <string name="ai_provider_mistral_help">https://console.mistral.ai/api-keys sitesini ziyaret et</string>
+    <string name="weekly_most_playlist_name">Haftanın en çok oynatılanları</string>
+    <string name="monthly_most_playlist_name">Ayın en çok oynatılanları</string>
+    <string name="enable_song_cache">Şarkı önbelleğini etkinleştir</string>
+    <string name="enable_song_cache_desc">Daha sonra oynatabilmek için şarkıları önbelleğe otomatikman al</string>
+    <string name="sleep_timer_stop_after_current_song_title">Şu anki şarkının sonuna gelinince durdur</string>
+    <string name="sleep_timer_stop_after_current_song_description">Şu anda çalınan şarkının sonuna gelinince uyku zamanlayıcısını durdurur</string>
+    <string name="sleep_timer_fade_out_title">Sesi azaltarak bitir</string>
+    <string name="sleep_timer_fade_out_description">Son dakikalarda sesi yavaşça azalt</string>
 </resources>
