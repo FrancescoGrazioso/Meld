@@ -69,8 +69,8 @@
     <string name="player_buttons_style">Player-Tastenfarbe</string>
     <string name="album_cover_desc">Albumcover</string>
     <plurals name="n_time">
-        <item quantity="one">%d Mal</item>
-        <item quantity="other">%d Male</item>
+        <item quantity="one">%d mal</item>
+        <item quantity="other">%d mal</item>
     </plurals>
     <string name="cached_playlist">Im Cache</string>
     <string name="remove_from_cache">Aus Cache entfernen</string>
