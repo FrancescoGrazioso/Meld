@@ -703,4 +703,12 @@
     <string name="export_option_save">保存到文档</string>
     <string name="qs_tile_music_recognizer">听歌识曲</string>
     <string name="ai_provider_mistral_help">访问 https://console.mistral.ai/api-keys</string>
+    <string name="weekly_most_playlist_name">本周最常播放</string>
+    <string name="monthly_most_playlist_name">本月最常播放</string>
+    <string name="enable_song_cache">启用歌曲缓存</string>
+    <string name="enable_song_cache_desc">播放时自动将歌曲保存至本地以节省流量</string>
+    <string name="sleep_timer_stop_after_current_song_title">播放完当前歌曲后停止</string>
+    <string name="sleep_timer_stop_after_current_song_description">当倒计时结束时，等待当前歌曲播放完毕再停止</string>
+    <string name="sleep_timer_fade_out_title">渐隐效果</string>
+    <string name="sleep_timer_fade_out_description">在播放停止前逐渐降低音量</string>
 </resources>
