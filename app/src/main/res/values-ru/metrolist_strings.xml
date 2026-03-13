@@ -721,4 +721,12 @@
     <string name="export_option_save">Сохранить в «Документы»</string>
     <string name="qs_tile_music_recognizer">Распознать музыку</string>
     <string name="ai_provider_mistral_help">Перейдите на https://console.mistral.ai/api-keys</string>
+    <string name="weekly_most_playlist_name">Самые прослушиваемые за неделю</string>
+    <string name="monthly_most_playlist_name">Самые прослушиваемые за месяц</string>
+    <string name="enable_song_cache">Включить кэширование аудио</string>
+    <string name="enable_song_cache_desc">Автоматически кэшировать аудио для последующего воспроизведения</string>
+    <string name="sleep_timer_stop_after_current_song_title">Остановить после текущего трека</string>
+    <string name="sleep_timer_stop_after_current_song_description">Таймер сна сработает после окончания текущего трека</string>
+    <string name="sleep_timer_fade_out_title">Плавное затухание</string>
+    <string name="sleep_timer_fade_out_description">Плавно снижает громкость в последнюю минуту</string>
 </resources>
