@@ -147,7 +147,7 @@
     <string name="lyrics_romanize_kyrgyz">Kirgisische Liedtexte romanisieren</string>
     <string name="lyrics_romanize_serbian">Serbische Liedtexte romanisieren</string>
     <string name="lyrics_romanize_bulgarian">Bulgarische Liedtexte romanisieren</string>
-    <string name="line_by_line_option_title">EXPERIMENTELL: Sprache Zeile für Zeile erkennen</string>
+    <string name="line_by_line_option_title">Sprache Zeile für Zeile erkennen</string>
     <string name="line_by_line_option_desc">Die kyrillische Sprache wird Zeile für Zeile statt für das ganze Lied erkannt.</string>
     <string name="line_by_line_dialog_title">Sind Sie sicher?</string>
     <string name="line_by_line_dialog_desc">Dies ist eine experimentelle Funktion, deren Erfolg nicht garantiert ist.\n\nStandardmäßig wird die Sprache anhand des gesamten Liedes bestimmt, aber wenn diese Option aktiviert ist, wird sie stattdessen Zeile für Zeile bestimmt. Dadurch können mehrsprachige Lieder funktionieren, ABER die Sprache ist möglicherweise nicht immer korrekt (wenn beispielsweise ein ukrainischer Text keine ukrainischen Buchstaben enthält, wird er möglicherweise stattdessen als russisch romanisiert). \n\nWenn Sie keine Probleme haben, wird empfohlen, diese Option deaktiviert zu lassen.</string>
@@ -708,4 +708,12 @@
     <string name="deleting">Löschen…</string>
     <string name="discord_activity_watching">Ansehen</string>
     <string name="discord_activity_competing">Wettbewerb</string>
+    <string name="weekly_most_playlist_name">Wöchentlich meiste</string>
+    <string name="monthly_most_playlist_name">Monatlich meiste</string>
+    <string name="enable_song_cache">Aktiviere Song cache</string>
+    <string name="enable_song_cache_desc">Cache Songs automatisch für Wiedergabe in der Zukunft</string>
+    <string name="sleep_timer_stop_after_current_song_title">Stoppe am Ende vom derzeitigen Song</string>
+    <string name="sleep_timer_stop_after_current_song_description">Stoppt den Sleeptimer am Ende vom Song der zurzeit gespielt wird</string>
+    <string name="sleep_timer_fade_out_title">Langsames verringern der Lautstärke am Ende</string>
+    <string name="sleep_timer_fade_out_description">Verringert die Lautstärke langsam in der letzten Minute</string>
 </resources>
