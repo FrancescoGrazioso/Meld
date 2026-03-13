@@ -64,9 +64,7 @@ import androidx.media3.exoplayer.audio.DefaultAudioSink
 import androidx.media3.exoplayer.audio.SilenceSkippingAudioProcessor
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
-import androidx.media3.extractor.ExtractorsFactory
-import androidx.media3.extractor.mkv.MatroskaExtractor
-import androidx.media3.extractor.mp4.FragmentedMp4Extractor
+import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.session.CommandButton
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaController
@@ -2824,6 +2822,18 @@ class MusicService :
         return ResolvingDataSource.Factory(createCacheDataSource()) { dataSpec ->
             val mediaId = dataSpec.key ?: error("No media id")
 
+            // Handle local audio files — resolve to content URI and bypass YouTube fetch
+            if (mediaId.startsWith("local:")) {
+                val localPath = runBlocking(Dispatchers.IO) {
+                    database.getSongById(mediaId)?.song?.localPath
+                }
+                if (localPath != null) {
+                    return@Factory dataSpec.withUri(localPath.toUri())
+                }
+                // fallback: URI already set to localPath in MediaItem
+                return@Factory dataSpec
+            }
+
             // Check if we need to bypass cache for quality change
             val shouldBypassCache = bypassCacheForQualityChange.contains(mediaId)
 
@@ -2931,9 +2941,7 @@ class MusicService :
     private fun createMediaSourceFactory() =
         DefaultMediaSourceFactory(
             createDataSourceFactory(),
-            ExtractorsFactory {
-                arrayOf(MatroskaExtractor(), FragmentedMp4Extractor())
-            },
+            DefaultExtractorsFactory(),
         )
 
     private fun createRenderersFactory(

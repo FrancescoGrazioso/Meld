@@ -1061,6 +1061,46 @@ interface DatabaseDao {
     @Query("UPDATE song SET isDownloaded = :downloaded, dateDownload = :date WHERE id = :songId")
     fun updateDownloadedInfo(songId: String, downloaded: Boolean, date: LocalDateTime?)
 
+    fun localSongs(
+        sortType: SongSortType,
+        descending: Boolean,
+    ) = when (sortType) {
+        SongSortType.CREATE_DATE -> localSongsByCreateDateAsc()
+        SongSortType.NAME -> localSongsByNameAsc().map { songs ->
+            val collator = Collator.getInstance(Locale.getDefault())
+            collator.strength = Collator.PRIMARY
+            songs.sortedWith(compareBy(collator) { it.song.title })
+        }
+        SongSortType.ARTIST -> localSongsByRowIdAsc().map { songs ->
+            val collator = Collator.getInstance(Locale.getDefault())
+            collator.strength = Collator.PRIMARY
+            songs.sortedWith(compareBy(collator) { song -> song.artists.joinToString("") { it.name } })
+        }
+        SongSortType.PLAY_TIME -> localSongsByPlayTimeAsc()
+    }.map { it.reversed(descending) }
+
+    @Transaction
+    @Query("SELECT * FROM song WHERE isLocal = 1 AND localPath IS NOT NULL ORDER BY rowId")
+    fun localSongsByRowIdAsc(): Flow<List<Song>>
+
+    @Transaction
+    @Query("SELECT * FROM song WHERE isLocal = 1 AND localPath IS NOT NULL ORDER BY inLibrary")
+    fun localSongsByCreateDateAsc(): Flow<List<Song>>
+
+    @Transaction
+    @Query("SELECT * FROM song WHERE isLocal = 1 AND localPath IS NOT NULL ORDER BY title")
+    fun localSongsByNameAsc(): Flow<List<Song>>
+
+    @Transaction
+    @Query("SELECT * FROM song WHERE isLocal = 1 AND localPath IS NOT NULL ORDER BY totalPlayTime")
+    fun localSongsByPlayTimeAsc(): Flow<List<Song>>
+
+    @Query("UPDATE song SET isLocal = 1, localPath = :path WHERE id = :songId")
+    fun setLocalPath(songId: String, path: String)
+
+    @Query("SELECT COUNT(*) FROM song WHERE isLocal = 1 AND localPath IS NOT NULL")
+    fun localSongsCount(): Flow<Int>
+
     @Transaction
     @Query("SELECT * FROM song WHERE isUploaded = 1 ORDER BY dateDownload")
     fun uploadedSongsByCreateDateAsc(): Flow<List<Song>>

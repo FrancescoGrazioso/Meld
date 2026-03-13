@@ -908,4 +908,18 @@
     <string name="no_account_found">No account found</string>
     <string name="restore_success">Restore completed successfully</string>
     <string name="no_songs_found">No songs found. Invalid file, or perhaps no song matches were found.</string>
+
+    <!-- Local Files -->
+    <string name="filter_local_files">Local files</string>
+    <string name="local_files">Local files</string>
+    <string name="scan_local_files">Scan for local files</string>
+    <string name="scanning_local_files">Scanning…</string>
+    <string name="local_files_permission_required">Storage permission required to scan local audio files</string>
+    <string name="local_files_empty">No local audio files found. Tap the scan button to search your device.</string>
+    <string name="local_files_found">%d files found</string>
+    <string name="grant_permission">Grant permission</string>
+    <plurals name="n_local_file">
+        <item quantity="one">%d file</item>
+        <item quantity="other">%d files</item>
+    </plurals>
 </resources>

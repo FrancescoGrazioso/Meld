@@ -18,29 +18,32 @@ import com.metrolist.music.ui.utils.resize
 val MediaItem.metadata: MediaMetadata?
     get() = localConfiguration?.tag as? MediaMetadata
 
-fun Song.toMediaItem() = MediaItem.Builder()
-    .setMediaId(song.id)
-    .setUri(song.id)
-    .setCustomCacheKey(song.id)
-    .setTag(toMediaMetadata())
-    .setMediaMetadata(
-        androidx.media3.common.MediaMetadata.Builder()
-            .setTitle(song.title)
-            .setSubtitle(artists.joinToString { it.name })
-            .setArtist(artists.joinToString { it.name })
-            .setArtworkUri(song.thumbnailUrl?.toUri())
-            .setAlbumTitle(song.albumName)
-            .setAlbumArtist(artists.firstOrNull()?.name)
-            .setDisplayTitle(song.title)
-            .setMediaType(MEDIA_TYPE_MUSIC)
-            .setIsBrowsable(false)
-            .setIsPlayable(true)
-            .setExtras(Bundle().apply {
-                putString("artwork_uri", song.thumbnailUrl)
-            })
-            .build()
-    )
-    .build()
+fun Song.toMediaItem(): MediaItem {
+    val uri = if (song.isLocal && song.localPath != null) song.localPath.toUri() else song.id.toUri()
+    return MediaItem.Builder()
+        .setMediaId(song.id)
+        .setUri(uri)
+        .setCustomCacheKey(song.id)
+        .setTag(toMediaMetadata())
+        .setMediaMetadata(
+            androidx.media3.common.MediaMetadata.Builder()
+                .setTitle(song.title)
+                .setSubtitle(artists.joinToString { it.name })
+                .setArtist(artists.joinToString { it.name })
+                .setArtworkUri(song.thumbnailUrl?.toUri())
+                .setAlbumTitle(song.albumName)
+                .setAlbumArtist(artists.firstOrNull()?.name)
+                .setDisplayTitle(song.title)
+                .setMediaType(MEDIA_TYPE_MUSIC)
+                .setIsBrowsable(false)
+                .setIsPlayable(true)
+                .setExtras(Bundle().apply {
+                    putString("artwork_uri", song.thumbnailUrl)
+                })
+                .build()
+        )
+        .build()
+}
 
 fun SongItem.toMediaItem() = MediaItem.Builder()
     .setMediaId(id)

@@ -126,10 +126,9 @@ class CustomEqualizerAudioProcessor : AudioProcessor {
                 .d("Applied pending profile with ${filters.size} bands and ${profile.preamp} dB preamp")
         }
 
-        // Only support 16-bit PCM stereo/mono
         if (encoding != C.ENCODING_PCM_16BIT || channelCount > 2) {
-            val exception = AudioProcessor.UnhandledAudioFormatException(inputAudioFormat)
-            throw exception // Rethrow, unsupported
+            isActive = false
+            return AudioProcessor.AudioFormat.NOT_SET
         }
 
         isActive = true
