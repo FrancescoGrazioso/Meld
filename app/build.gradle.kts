@@ -6,6 +6,17 @@ val localPropertiesFile = rootProject.file("local.properties")
 if (localPropertiesFile.exists()) {
     localProperties.load(localPropertiesFile.inputStream())
 }
+
+val baseApplicationId = "com.metrolist.music"
+val applicationIdOverride = System.getenv("METROLIST_APPLICATION_ID")?.takeIf { it.isNotBlank() }
+val appNameOverride = System.getenv("METROLIST_APP_NAME")?.takeIf { it.isNotBlank() }
+val debugKeystorePathOverride = System.getenv("METROLIST_DEBUG_KEYSTORE_PATH")?.takeIf { it.isNotBlank() }
+val debugKeystorePassword = System.getenv("METROLIST_DEBUG_KEYSTORE_PASSWORD")?.takeIf { it.isNotBlank() } ?: "android"
+val debugKeyAlias = System.getenv("METROLIST_DEBUG_KEY_ALIAS")?.takeIf { it.isNotBlank() } ?: "androiddebugkey"
+val debugKeyPassword = System.getenv("METROLIST_DEBUG_KEY_PASSWORD")?.takeIf { it.isNotBlank() } ?: "android"
+val persistentDebugKeystoreFile = file("persistent-debug.keystore")
+val workflowDebugKeystoreFile = debugKeystorePathOverride?.let(::file)
+
 plugins {
     id("com.android.application")
     alias(libs.plugins.hilt)
@@ -19,11 +30,12 @@ android {
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.meld.app"
+        applicationId = applicationIdOverride ?: "com.meld.app"
         minSdk = 26
         targetSdk = 36
         versionCode = 11
         versionName = "0.6.2"
+        resValue("string", "app_name", appNameOverride ?: "Meld")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -44,21 +56,36 @@ android {
             dimension = "variant"
             isDefault = true
             buildConfigField("Boolean", "CAST_AVAILABLE", "false")
+            buildConfigField("Boolean", "UPDATER_AVAILABLE", "true")
         }
 
         // GMS variant - with Google Cast support (requires Google Play Services)
         create("gms") {
             dimension = "variant"
             buildConfigField("Boolean", "CAST_AVAILABLE", "true")
+            buildConfigField("Boolean", "UPDATER_AVAILABLE", "true")
+        }
+
+        // IzzyOnDroid variant - no Google Cast, no built-in updater (store handles updates)
+        create("izzy") {
+            dimension = "variant"
+            buildConfigField("Boolean", "CAST_AVAILABLE", "false")
+            buildConfigField("Boolean", "UPDATER_AVAILABLE", "false")
         }
     }
 
     signingConfigs {
         create("persistentDebug") {
-            storeFile = file("persistent-debug.keystore")
+            storeFile = persistentDebugKeystoreFile
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"
+        }
+        create("workflowDebug") {
+            storeFile = workflowDebugKeystoreFile ?: persistentDebugKeystoreFile
+            storePassword = debugKeystorePassword
+            keyAlias = debugKeyAlias
+            keyPassword = debugKeyPassword
         }
         create("release") {
             storeFile = file("keystore/release.keystore")
@@ -89,13 +116,20 @@ android {
             }
         }
         debug {
-            applicationIdSuffix = ".debug"
+            if (applicationIdOverride == null) {
+                applicationIdSuffix = ".debug"
+            }
             isDebuggable = true
+            if (appNameOverride == null) {
+                resValue("string", "app_name", "Meld Debug")
+            }
             signingConfig =
-                if (System.getenv("GITHUB_EVENT_NAME") == "pull_request") {
-                    signingConfigs.getByName("debug")
-                } else {
+                if (workflowDebugKeystoreFile != null) {
+                    signingConfigs.getByName("workflowDebug")
+                } else if (persistentDebugKeystoreFile.exists()) {
                     signingConfigs.getByName("persistentDebug")
+                } else {
+                    signingConfigs.getByName("debug")
                 }
             ndk {
                 debugSymbolLevel = "FULL"
@@ -120,6 +154,7 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+        resValues = true
     }
 
     dependenciesInfo {

@@ -182,13 +182,15 @@ fun SettingsScreen(
                         )
                     )
                 }
-                add(
-                    Material3SettingsItem(
-                        icon = painterResource(R.drawable.update),
-                        title = { Text(stringResource(R.string.updater)) },
-                        onClick = { navController.navigate("settings/updater") }
+                if (BuildConfig.UPDATER_AVAILABLE) {
+                    add(
+                        Material3SettingsItem(
+                            icon = painterResource(R.drawable.update),
+                            title = { Text(stringResource(R.string.updater)) },
+                            onClick = { navController.navigate("settings/updater") }
+                        )
                     )
-                )
+                }
                 val showChangelog = com.metrolist.music.LocalChangelogState.current
                 add(
                     Material3SettingsItem(
@@ -204,7 +206,7 @@ fun SettingsScreen(
                         onClick = { navController.navigate("settings/about") }
                     )
                 )
-                if (latestVersionName != BuildConfig.VERSION_NAME) {
+                if (BuildConfig.UPDATER_AVAILABLE && latestVersionName != BuildConfig.VERSION_NAME) {
                     val releaseInfo = Updater.getCachedLatestRelease()
                     val downloadUrl = releaseInfo?.let { Updater.getDownloadUrlForCurrentVariant(it) }
                     
@@ -233,7 +235,7 @@ fun SettingsScreen(
             }
         )
         
-        if (latestVersionName != BuildConfig.VERSION_NAME) {
+        if (BuildConfig.UPDATER_AVAILABLE && latestVersionName != BuildConfig.VERSION_NAME) {
             Spacer(modifier = Modifier.height(16.dp))
             ReleaseNotesCard()
         }

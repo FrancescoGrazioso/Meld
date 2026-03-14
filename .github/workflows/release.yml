@@ -79,6 +79,8 @@ jobs:
             variantName: Foss
           - variant: gms
             variantName: Gms
+          - variant: izzy
+            variantName: Izzy
 
     steps:
       - uses: actions/checkout@v6
@@ -107,6 +109,8 @@ jobs:
       - name: Build and Lint Release APK
         run: ./gradlew --no-configuration-cache --console=plain clean assemble${{ matrix.variantName }}Release :app:lint${{ matrix.variantName }}Release --warning-mode summary
         env:
+          METROLIST_APPLICATION_ID: com.metrolist.music
+          METROLIST_APP_NAME: Metrolist
           PULL_REQUEST: "false"
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
@@ -137,6 +141,8 @@ jobs:
 
           if [ "${{ matrix.variant }}" = "gms" ]; then
             TARGET_NAME="Meld-with-Google-Cast.apk"
+          elif [ "${{ matrix.variant }}" = "izzy" ]; then
+            TARGET_NAME="Meld-izzy.apk"
           else
             TARGET_NAME="Meld.apk"
           fi
@@ -149,7 +155,7 @@ jobs:
       - name: Upload Signed APKs
         uses: actions/upload-artifact@v6
         with:
-          name: ${{ matrix.variant == 'gms' && 'Meld-with-Google-Cast' || 'Meld' }}
+          name: ${{ matrix.variant == 'gms' && 'Meld-with-Google-Cast' || matrix.variant == 'izzy' && 'Meld-izzy' || 'Meld' }}
           path: app/build/outputs/apk/${{ matrix.variant }}/release/out/*.apk
 
   create-release:
