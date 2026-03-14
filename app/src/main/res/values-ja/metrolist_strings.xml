@@ -703,4 +703,12 @@
     <string name="export_option_save">ドキュメントに保存</string>
     <string name="qs_tile_music_recognizer">楽曲を認識</string>
     <string name="ai_provider_mistral_help">https://console.mistral.ai/api-keys</string>
+    <string name="weekly_most_playlist_name">今週の人気</string>
+    <string name="monthly_most_playlist_name">今月の人気</string>
+    <string name="enable_song_cache">曲をキャッシュする</string>
+    <string name="enable_song_cache_desc">今後の再生のために曲を自動でキャッシュします</string>
+    <string name="sleep_timer_stop_after_current_song_title">この曲の終了後に停止</string>
+    <string name="sleep_timer_stop_after_current_song_description">現在再生中の曲が終わるとスリープタイマーを停止します</string>
+    <string name="sleep_timer_fade_out_title">フェードアウト</string>
+    <string name="sleep_timer_fade_out_description">終了1分前から音量を徐々に下げます</string>
 </resources>
