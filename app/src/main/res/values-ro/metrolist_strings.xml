@@ -143,7 +143,7 @@
     <string name="lyrics_romanize_kyrgyz">Romanizează versurile în kirghiză</string>
     <string name="lyrics_romanize_serbian">Romanizează versurile în sârbă</string>
     <string name="lyrics_romanize_bulgarian">Romanizează versurile în bulgară</string>
-    <string name="line_by_line_option_title">EXPERIMENTAL: Detectează limba linie cu linie</string>
+    <string name="line_by_line_option_title">Detectează limba linie cu linie</string>
     <string name="line_by_line_option_desc">Limbile chirilice vor fi detectate linie cu linie în loc de întreaga melodie.</string>
     <string name="line_by_line_dialog_title">Ești sigur(ă)?</string>
     <string name="line_by_line_dialog_desc">Aceasta este o funcție experimentală cu posibilitate de succes sau eșec.\n\nÎn mod implicit, limba este determinată din întreaga melodie, dar cu această opțiune activată, va fi determinată linie cu linie. Acest lucru va permite ca melodiile multilimbă să funcționeze, DAR limba s-ar putea să nu fie mereu corectă (de exemplu dacă există un vers în ucraineană care nu conține vreo literă specifică limbii ucrainene, ar putea fi romanizat în rusă).\n\nDacă nu ai probleme, este recomandat să lași această opțiune dezactivată.</string>
@@ -715,4 +715,12 @@
     <string name="export_option_save">Salvează în Documents</string>
     <string name="ai_provider_mistral_help">Vizitează https://console.mistral.ai/api-keys</string>
     <string name="qs_tile_music_recognizer">Recunoaște muzica</string>
+    <string name="sleep_timer_stop_after_current_song_title">Oprire la finalul melodiei curente</string>
+    <string name="sleep_timer_stop_after_current_song_description">Oprește temporizatorul de somn la finalul melodiei care se redă acum</string>
+    <string name="weekly_most_playlist_name">Cele mai populare ale săptămânii</string>
+    <string name="monthly_most_playlist_name">Cele mai populare ale lunii</string>
+    <string name="enable_song_cache">Activează cache-ul melodiilor</string>
+    <string name="enable_song_cache_desc">Adaugă melodiile automat în cache pentru redare ulterioară</string>
+    <string name="sleep_timer_fade_out_description">Diminuează volumul în ultimul minut</string>
+    <string name="sleep_timer_fade_out_title">Diminuarea volumului</string>
 </resources>
