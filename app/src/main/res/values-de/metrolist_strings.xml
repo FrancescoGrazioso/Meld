@@ -716,4 +716,5 @@
     <string name="sleep_timer_stop_after_current_song_description">Stoppt den Sleeptimer am Ende vom Song der zurzeit gespielt wird</string>
     <string name="sleep_timer_fade_out_title">Langsames verringern der Lautstärke am Ende</string>
     <string name="sleep_timer_fade_out_description">Verringert die Lautstärke langsam in der letzten Minute</string>
+    <string name="ai_provider_mistral_help">Besuche https://console.mistral.ai/api-keys</string>
 </resources>
