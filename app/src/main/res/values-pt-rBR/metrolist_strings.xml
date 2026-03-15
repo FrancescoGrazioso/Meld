@@ -147,7 +147,7 @@
     <string name="lyrics_romanize_kyrgyz">Romanizar letras em Quirguiz</string>
     <string name="lyrics_romanize_serbian">Romanizar letras em Sérvio</string>
     <string name="lyrics_romanize_bulgarian">Romanizar letras em Búlgaro</string>
-    <string name="line_by_line_option_title">EXPERIMENTAL: Detectar idioma linha por linha</string>
+    <string name="line_by_line_option_title">Detectar idioma linha por linha</string>
     <string name="line_by_line_option_desc">O idioma Cirílico será detectado linha por linha em vez da música inteira.</string>
     <string name="line_by_line_dialog_title">Tem certeza?</string>
     <string name="line_by_line_dialog_desc">Este é um recurso experimental que pode acertar ou errar.\n\nPor padrão, o idioma é determinado da música inteira, mas com esta opção ativada, será determinado de linha por linha. Isto permite que funcione para músicas em vários idiomas MAS o idioma pode estar incorreto (por exemplo se há uma letra em Ucraniano que não contém nenhum símbolo específico ao Ucraniano, ela pode ser romanizada como Russo).\n\nSe você não está tendo problemas, é recomendado manter esta opção desativada.</string>
@@ -183,7 +183,7 @@
     <string name="tertiary_color_style">Cor terciária</string>
     <string name="auto_scroll">Sincronizar</string>
     <string name="lyrics_romanize_chinese">Romanizar letras em Chinês</string>
-    <string name="google_cast">Google Cast</string>
+    <string name="google_cast">Transmitir via Google Cast</string>
     <string name="google_cast_description">Habilitar transmissão de áudio para o Chromecast e outros dispositivos compatíveis</string>
     <string name="last_fm_send_likes">Enviar Likes/Deslikes</string>
     <string name="last_fm_send_likes_description">Curtir/Descurtir músicas no Last.fm quanto são Curtidas/Descurtidas no Metrolist</string>
@@ -227,7 +227,7 @@
     <string name="glow">Brilhar</string>
     <string name="slide">Deslizar</string>
     <string name="karaoke">Karaoke</string>
-    <string name="apple_music_style">Apple Music</string>
+    <string name="apple_music_style">Apple Músicas</string>
     <string name="lyrics_text_size">Tamanho do texto das letras</string>
     <string name="lyrics_line_spacing">Espaçamento de linha das letras</string>
     <string name="album_art_for">Arte de álbum para %s</string>
@@ -715,4 +715,12 @@
     <string name="export_option_save">Salvar nos Documentos</string>
     <string name="qs_tile_music_recognizer">Reconhecer música</string>
     <string name="ai_provider_mistral_help">Visite https://console.mistral.ai/api-keys</string>
+    <string name="weekly_most_playlist_name">Maioria Semanal</string>
+    <string name="monthly_most_playlist_name">Maioria Mensal</string>
+    <string name="enable_song_cache">Ativar cache de músicas</string>
+    <string name="enable_song_cache_desc">Armazene músicas em cache automaticamente para reprodução futura</string>
+    <string name="sleep_timer_stop_after_current_song_title">Pare no final da música atual</string>
+    <string name="sleep_timer_stop_after_current_song_description">Interrompe o temporizador de sono ao final da música que está sendo reproduzida</string>
+    <string name="sleep_timer_fade_out_title">Desaparecer</string>
+    <string name="sleep_timer_fade_out_description">O volume diminui gradualmente no último minuto</string>
 </resources>
