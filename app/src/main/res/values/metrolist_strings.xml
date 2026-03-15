@@ -148,6 +148,9 @@
     <string name="token_adv_login_description">This is an ADVANCED login method. As an alternative to the web portal, you may directly enter or update your login token here. For example, this can speed up logging in on multiple devices. Please note that any invalid token formats the app fails to parse will not be accepted</string>
     <string name="yt_sync">Auto sync with account</string>
     <string name="more_content">More content</string>
+
+    <string name="sort_ascending">Sort ascending</string>
+    <string name="sort_descending">Sort descending</string>
     
     <!-- Playlist cover edit -->
     <string name="edit_playlist_cover">Edit playlist cover</string>
