@@ -542,4 +542,10 @@
     <string name="import_error_title">Lỗi nhập</string>
     <string name="error_title">Lỗi</string>
     <string name="error_eq_apply_failed">Không thể áp dụng hồ sơ EQ: %1$s</string>
+    <string name="weekly_most_playlist_name">Top Tuần</string>
+    <string name="monthly_most_playlist_name">Top Tháng</string>
+    <string name="enable_song_cache">Bật cache bài hát</string>
+    <string name="enable_song_cache_desc">Tự động cache bài hát</string>
+    <string name="sleep_timer_stop_after_current_song_title">Dừng khi hết bài</string>
+    <string name="wrapped_playlist_title">Nhìn lại %s</string>
 </resources>
