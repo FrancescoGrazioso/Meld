@@ -6,9 +6,12 @@
 package com.metrolist.music.viewmodels
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metrolist.innertube.YouTube
+import com.metrolist.innertube.models.Artist
 import com.metrolist.music.constants.HideVideoSongsKey
 import com.metrolist.music.constants.LastMonthlyMostPlaylistSyncKey
 import com.metrolist.music.constants.LastWeeklyMostPlaylistSyncKey
@@ -42,6 +45,7 @@ import java.time.ZoneOffset
 import javax.inject.Inject
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlin.collections.emptyList
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -52,7 +56,6 @@ constructor(
     val database: MusicDatabase,
 ) : ViewModel() {
     private val periodicMostPlaylistSyncMutex = Mutex()
-
     val selectedOption = MutableStateFlow(OptionStats.CONTINUOUS)
     val indexChips = MutableStateFlow(0)
 
@@ -160,6 +163,61 @@ constructor(
             .firstEvent()
             .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
+    val selectedArtists = mutableStateListOf<Artist>() // Current artist selection
+
+    val filteredSongs = combine(
+        mostPlayedSongsStats, // Unfiltered songs
+        snapshotFlow { selectedArtists.toList() } // Selected artists
+    ) { songs, selected ->
+        if (selected.isEmpty()) {
+            songs
+        } else {
+            songs.filter { song ->
+                song.artists.any { artist -> selected.any { it.id == artist.id } }
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val filteredArtists = combine(
+        mostPlayedArtists, // Unfiltered list of artists
+        snapshotFlow { selectedArtists.toList() } // Selected artists
+    ) { artists, selected ->
+        if (selected.isEmpty()) {
+            artists
+        } else {
+            artists.filter { artist ->
+                selected.any { it.id == artist.artist.id }
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val filteredAlbums = combine(
+        mostPlayedAlbums, // Unfiltered list of albums
+        snapshotFlow { selectedArtists.toList() } // Selected artists
+    ) { albums, selected ->
+        if (selected.isEmpty()) {
+            albums
+        } else {
+            albums.filter { album ->
+                album.artists.any { artist ->
+                    selected.any { it.id == artist.id }
+                }
+            }
+        }
+    }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    fun transferSongStats(fromSongId: String, toSongId: String, onDone: (() -> Unit)? = null) {
+        viewModelScope.launch {
+            try {
+                database.transferSongStats(fromSongId, toSongId)
+                syncMostPlaylistsIfNeeded(force = true)
+                onDone?.invoke()
+            } catch (t: Throwable) {
+                reportException(t)
+            }
+        }
+    }
+
     val weeklyMostPlaylist =
         database
             .playlist(PlaylistEntity.WEEKLY_MOST_PLAYLIST_ID)
@@ -181,7 +239,7 @@ constructor(
             }.distinctUntilChanged()
             .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    fun syncMostPlaylistsIfNeeded() {
+    fun syncMostPlaylistsIfNeeded(force: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
             periodicMostPlaylistSyncMutex.withLock {
                 val now = LocalDateTime.now(ZoneOffset.UTC)
@@ -195,12 +253,12 @@ constructor(
                     database.playlist(PlaylistEntity.MONTHLY_MOST_PLAYLIST_ID).first() != null
 
                 val shouldSyncWeekly =
-                    !weeklyPlaylistExists || isWeeklySyncDue(
+                    force || !weeklyPlaylistExists || isWeeklySyncDue(
                         lastSyncMillis = preferences[LastWeeklyMostPlaylistSyncKey],
                         now = now,
                     )
                 val shouldSyncMonthly =
-                    !monthlyPlaylistExists || isMonthlySyncDue(
+                    force || !monthlyPlaylistExists || isMonthlySyncDue(
                         lastSyncMillis = preferences[LastMonthlyMostPlaylistSyncKey],
                         now = now,
                     )
@@ -229,12 +287,11 @@ constructor(
                     )
                 }
 
-                context.dataStore.edit { settings ->
-                    if (shouldSyncWeekly) {
-                        settings[LastWeeklyMostPlaylistSyncKey] = nowEpochMillis
-                    }
-                    if (shouldSyncMonthly) {
-                        settings[LastMonthlyMostPlaylistSyncKey] = nowEpochMillis
+                // Only write "last sync" when it was a scheduled sync, not a forced rebuild
+                if (!force) {
+                    context.dataStore.edit { settings ->
+                        if (shouldSyncWeekly) settings[LastWeeklyMostPlaylistSyncKey] = nowEpochMillis
+                        if (shouldSyncMonthly) settings[LastMonthlyMostPlaylistSyncKey] = nowEpochMillis
                     }
                 }
             }
