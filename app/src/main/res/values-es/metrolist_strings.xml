@@ -715,4 +715,12 @@
     <string name="export_option_save">Guardar en Documentos</string>
     <string name="qs_tile_music_recognizer">Identificar música</string>
     <string name="ai_provider_mistral_help">Visita https://console.mistral.ai/api-keys</string>
+    <string name="weekly_most_playlist_name">Lo más escuchado de la semana</string>
+    <string name="monthly_most_playlist_name">Lo más escuchado del mes</string>
+    <string name="enable_song_cache">Activar caché de canciones</string>
+    <string name="enable_song_cache_desc">Guardar automáticamente las canciones en caché para reproducirlas más tarde</string>
+    <string name="sleep_timer_stop_after_current_song_title">Detener al finalizar la canción actual</string>
+    <string name="sleep_timer_stop_after_current_song_description">Detiene el temporizador de apagado al finalizar la canción que se está reproduciendo</string>
+    <string name="sleep_timer_fade_out_title">Desvanecer</string>
+    <string name="sleep_timer_fade_out_description">Reduce el volumen gradualmente durante el último minuto</string>
 </resources>
