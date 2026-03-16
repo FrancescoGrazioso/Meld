@@ -717,4 +717,13 @@
     <string name="sleep_timer_stop_after_current_song_description">Çalmakta olan şarkı bittiğinde uyku zamanlayıcısını durdurur</string>
     <string name="sleep_timer_fade_out_title">Kısarak bitir</string>
     <string name="sleep_timer_fade_out_description">Son dakikada ses seviyesi kademeli olarak kısar</string>
+    <string name="sort_ascending">Artan sırayla sırala</string>
+    <string name="sort_descending">Azalan sırayla sırala</string>
+    <string name="time_transfer_title">Zaman transferi</string>
+    <string name="time_transfer_warning">UYARI: Yapılan işlem geri alınamaz, bu yüzden işlem yapılmadan önce yedek alınmalıdır. En az bir tane kayıtlı etkinlik/çalma kaydı seçenilirsiniz.</string>
+    <string name="time_transfer_source_song">Kaynak şarkı</string>
+    <string name="time_transfer_target_song">Hedef şarkı</string>
+    <string name="time_transfer_listen_time_label">Dinleme süresi:</string>
+    <string name="time_transfer_convert">Dönüştür</string>
+    <string name="song_dropdown_more_results">Sonucu daraltmak için daha fazla yazın. (%d fazlası)</string>
 </resources>
