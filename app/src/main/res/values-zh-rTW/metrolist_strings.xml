@@ -619,7 +619,6 @@
     <string name="widget_recognizer_channel_name">音樂識別</string>
     <string name="widget_recognizer_channel_desc">在小工具辨識歌曲時顯示通知</string>
     <string name="widget_recognizer_notification_text">錄製音訊以識別歌曲…</string>
-    <string name="together"></string>
     <string name="listen_together">一起聆聽</string>
     <string name="listen_together_server_url">伺服器 URL</string>
     <string name="listen_together_choose_server">選擇伺服器</string>
@@ -648,7 +647,6 @@
     <string name="listen_together_auto_approval_joins_desc">自動批准加入請求，無需手動審核</string>
     <string name="listen_together_auto_approval_suggestions">自動批准歌曲推薦</string>
     <string name="listen_together_auto_approval_suggestions_desc">自動批准並接收客人並加入播列表</string>
-    <string name="listen_together_sync_volume"></string>
     <string name="listen_together_sync_volume_desc">訪客的音量將與主持人的音量同步</string>
     <string name="listen_together_in_top_bar">在頂部欄中一起聆聽</string>
     <string name="listen_together_in_top_bar_desc">在頂部應用程式列中顯示“一起聆聽”，而不是在導覽列中顯示</string>
