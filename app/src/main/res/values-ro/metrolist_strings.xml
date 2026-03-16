@@ -723,4 +723,13 @@
     <string name="enable_song_cache_desc">Adaugă melodiile automat în cache pentru redare ulterioară</string>
     <string name="sleep_timer_fade_out_description">Diminuează volumul în ultimul minut</string>
     <string name="sleep_timer_fade_out_title">Diminuarea volumului</string>
+    <string name="sort_ascending">Sortează ascendent</string>
+    <string name="sort_descending">Sortează descendent</string>
+    <string name="time_transfer_warning">AVERTISMENT: Nu mai este posibilă anularea acestei acțiuni odată ce a fost finalizată. Ar trebui să creezi un fișier de backup înainte de a continua. Poți viza doar melodii cu cel puțin o redare sau un eveniment înregistrate.</string>
+    <string name="time_transfer_source_song">Melodia sursă</string>
+    <string name="time_transfer_target_song">Melodia țintă</string>
+    <string name="time_transfer_listen_time_label">Timpul de ascultare:</string>
+    <string name="time_transfer_convert">Convertește</string>
+    <string name="song_dropdown_more_results">Tastează mai mult pentru a restrânge rezultatele (încă %d)</string>
+    <string name="time_transfer_title">Transfer de timp</string>
 </resources>
