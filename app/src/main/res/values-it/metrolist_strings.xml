@@ -144,7 +144,7 @@
     <string name="lyrics_romanize_kyrgyz">Romanizza testo in kirghiso</string>
     <string name="lyrics_romanize_serbian">Romanizza testo in serbo</string>
     <string name="lyrics_romanize_bulgarian">Romanizza testo in bulgaro</string>
-    <string name="line_by_line_option_title">SPERIMENTALE: Determina la lingua linea per linea</string>
+    <string name="line_by_line_option_title">Rileva la lingua riga per riga</string>
     <string name="line_by_line_option_desc">La lingua in cirillico verrà determinata linea per linea e non per tutto il brano.</string>
     <string name="line_by_line_dialog_title">Sei sicuro?</string>
     <string name="romanize_current_track">Romanizza attuale brano</string>
@@ -714,4 +714,13 @@
     <string name="export_option_share">Condividi</string>
     <string name="export_option_save">Salva in Documenti</string>
     <string name="qs_tile_music_recognizer">Riconosci Musica</string>
+    <string name="sleep_timer_fade_out_description">Sfuma il volume nell\'ultimo minuto</string>
+    <string name="sleep_timer_fade_out_title">Dissolvenza</string>
+    <string name="sleep_timer_stop_after_current_song_description">Arresta il timer di spegnimento alla fine del brano attualmente in riproduzione</string>
+    <string name="sleep_timer_stop_after_current_song_title">Interrompe alla fine del brano corrente</string>
+    <string name="enable_song_cache_desc">Memorizza automaticamente nella cache i brani per la riproduzione futura</string>
+    <string name="enable_song_cache">Abilita la cache del brano</string>
+    <string name="monthly_most_playlist_name">Il più frequente del Mese</string>
+    <string name="weekly_most_playlist_name">Il più frequente della Settimana</string>
+    <string name="ai_provider_mistral_help">Visita https://console.mistral.ai/api-keys</string>
 </resources>
