@@ -723,4 +723,13 @@
     <string name="sleep_timer_stop_after_current_song_description">Arrête la minuterie de mise en veille à la fin du titre en cours de lecture</string>
     <string name="sleep_timer_fade_out_title">Fondu de sortie</string>
     <string name="sleep_timer_fade_out_description">Réduit progressivement le volume pendant la dernière minute</string>
+    <string name="sort_ascending">Trier par ordre croissant</string>
+    <string name="sort_descending">Trier par ordre décroissant</string>
+    <string name="time_transfer_warning">AVERTISSEMENT : cette action ne peut pas être annulée une fois effectuée. Il est recommandé de créer un fichier de sauvegarde avant de continuer. Vous ne pouvez sélectionner que les titres comportant au moins un événement ou une lecture enregistrée.</string>
+    <string name="time_transfer_target_song">Titre cible</string>
+    <string name="time_transfer_source_song">Titre source</string>
+    <string name="time_transfer_listen_time_label">Durée d\'écoute :</string>
+    <string name="time_transfer_convert">Convertir</string>
+    <string name="song_dropdown_more_results">Saisissez davantage de caractères pour affiner les résultats (%d de plus)</string>
+    <string name="time_transfer_title">Temps de transfert</string>
 </resources>
