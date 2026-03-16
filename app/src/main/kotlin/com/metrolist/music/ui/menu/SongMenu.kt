@@ -256,6 +256,20 @@ fun SongMenu(
         mutableStateOf(false)
     }
 
+    var showAddToSpotifyPlaylist by rememberSaveable { mutableStateOf(false) }
+    val spotifyMapper = remember { com.metrolist.music.playback.SpotifyYouTubeMapper(database) }
+
+    AddToSpotifyPlaylistFlow(
+        showDialog = showAddToSpotifyPlaylist,
+        youtubeId = song.id,
+        title = song.song.title,
+        artist = song.artists.firstOrNull()?.name ?: "",
+        durationSec = song.song.duration,
+        spotifyUri = spotifyId?.let { "spotify:track:$it" },
+        mapper = spotifyMapper,
+        onDismiss = { showAddToSpotifyPlaylist = false },
+    )
+
     AddToPlaylistDialog(
         isVisible = showChoosePlaylistDialog,
         onGetSong = { playlist ->
@@ -472,8 +486,25 @@ fun SongMenu(
                             }
                             context.startActivity(Intent.createChooser(intent, null))
                         }
+                    ),
+                ) + if (com.metrolist.spotify.Spotify.isAuthenticated()) {
+                    listOf(
+                        NewAction(
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.spotify),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(28.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            },
+                            text = stringResource(R.string.spotify_add_to_playlist),
+                            onClick = { showAddToSpotifyPlaylist = true }
+                        ),
                     )
-                ),
+                } else {
+                    emptyList()
+                },
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
             )
         }

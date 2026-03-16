@@ -5,6 +5,7 @@
 
 package com.metrolist.music.ui.screens.playlist
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
@@ -23,11 +24,19 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
@@ -45,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -82,6 +92,7 @@ fun SpotifyPlaylistScreen(
     scrollBehavior: TopAppBarScrollBehavior,
     viewModel: SpotifyPlaylistViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val database = LocalDatabase.current
     val menuState = LocalMenuState.current
@@ -90,6 +101,7 @@ fun SpotifyPlaylistScreen(
     val tracks by viewModel.tracks.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val mutationError by viewModel.mutationError.collectAsState()
 
     val lazyListState = rememberLazyListState()
 
@@ -98,6 +110,20 @@ fun SpotifyPlaylistScreen(
     var isSearching by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
+    }
+
+    var showRenameDialog by rememberSaveable { mutableStateOf(false) }
+    var showOverflowMenu by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(mutationError) {
+        mutationError?.let { msg ->
+            snackbarHostState.showSnackbar(
+                message = msg,
+                duration = SnackbarDuration.Short,
+            )
+            viewModel.clearMutationError()
+        }
     }
 
     val filteredTracks = remember(tracks, query) {
@@ -277,6 +303,14 @@ fun SpotifyPlaylistScreen(
                                         track = track,
                                         mapper = mapper,
                                         onDismiss = menuState::dismiss,
+                                        onRemoveFromPlaylist = {
+                                            viewModel.removeTrack(track)
+                                            Toast.makeText(
+                                                context,
+                                                context.getString(R.string.spotify_track_removed),
+                                                Toast.LENGTH_SHORT,
+                                            ).show()
+                                        },
                                     )
                                 }
                             },
@@ -357,8 +391,90 @@ fun SpotifyPlaylistScreen(
                             contentDescription = null,
                         )
                     }
+
+                    Box {
+                        IconButton(
+                            onClick = { showOverflowMenu = true },
+                            onLongClick = {},
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.more_vert),
+                                contentDescription = null,
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showOverflowMenu,
+                            onDismissRequest = { showOverflowMenu = false },
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.spotify_rename_playlist)) },
+                                leadingIcon = {
+                                    Icon(
+                                        painterResource(R.drawable.edit),
+                                        contentDescription = null,
+                                    )
+                                },
+                                onClick = {
+                                    showOverflowMenu = false
+                                    showRenameDialog = true
+                                },
+                            )
+                        }
+                    }
                 }
             },
         )
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
     }
+
+    if (showRenameDialog) {
+        RenamePlaylistDialog(
+            currentName = playlist?.name ?: "",
+            onConfirm = { newName ->
+                viewModel.renamePlaylist(newName)
+                showRenameDialog = false
+            },
+            onDismiss = { showRenameDialog = false },
+        )
+    }
+}
+
+@Composable
+private fun RenamePlaylistDialog(
+    currentName: String,
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit,
+) {
+    var name by rememberSaveable { mutableStateOf(currentName) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.spotify_rename_playlist)) },
+        text = {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text(stringResource(R.string.spotify_playlist_name_label)) },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth(),
+            )
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(name) },
+                enabled = name.isNotBlank() && name != currentName,
+            ) {
+                Text(stringResource(android.R.string.ok))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(android.R.string.cancel))
+            }
+        },
+    )
 }

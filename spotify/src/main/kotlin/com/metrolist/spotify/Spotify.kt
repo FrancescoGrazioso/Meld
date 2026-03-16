@@ -100,11 +100,19 @@ object Spotify {
 
     private val gqlClient by lazy {
         HttpClient(OkHttp) {
+            engine {
+                config {
+                    connectTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+                    readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+                    writeTimeout(15, java.util.concurrent.TimeUnit.SECONDS)
+                }
+            }
             defaultRequest {
                 header("User-Agent", randomUserAgent())
                 header("app-platform", "WebPlayer")
                 header("Origin", "https://open.spotify.com")
                 header("Referer", "https://open.spotify.com/")
+                header("Accept", "application/json")
             }
             expectSuccess = false
         }
@@ -191,7 +199,12 @@ object Spotify {
             val response =
                 gqlClient.post(GQL_URL) {
                     header("Authorization", "Bearer $token")
-                    setBody(TextContent(body.toString(), ContentType.Application.Json))
+                    setBody(
+                        TextContent(
+                            body.toString(),
+                            ContentType.Application.Json.withParameter("charset", "UTF-8"),
+                        ),
+                    )
                 }
 
             log("D", "GQL POST $operationName -> ${response.status.value}")
@@ -630,7 +643,11 @@ object Spotify {
                     val itemWrapper = elem.jsonObject.obj("itemV2") ?: return@mapNotNull null
                     val itemData = itemWrapper.obj("data") ?: return@mapNotNull null
                     val wrapperUri = itemWrapper.str("_uri") ?: itemWrapper.str("uri")
-                    SpotifyPlaylistTrack(track = parseGqlTrack(itemData, uriOverride = wrapperUri))
+                    val uid = elem.jsonObject.str("uid") ?: itemWrapper.str("uid")
+                    SpotifyPlaylistTrack(
+                        track = parseGqlTrack(itemData, uriOverride = wrapperUri),
+                        uid = uid,
+                    )
                 } ?: emptyList()
 
             SpotifyPaging(
@@ -640,6 +657,98 @@ object Spotify {
                 offset = offset,
             )
         }
+
+    // ── Playlist Mutations (GQL) ──────────────────────────────────────
+
+    private const val PLAYLIST_OPS_HASH =
+        "47b2a1234b17748d332dd0431534f22450e9ecbb3d5ddcdacbd83368636a0990"
+    private const val PLAYLIST_MGMT_HASH =
+        "35a1a9ce3a2f4f8c32ee0e24c63c2069c6613c0a0b7e56d0e40dabe69a0b4f80"
+
+    /**
+     * Adds tracks to a Spotify playlist via GQL mutation.
+     * @param playlistId Playlist ID (without the `spotify:playlist:` prefix).
+     * @param trackUris Full Spotify URIs, e.g. `["spotify:track:abc123"]`.
+     */
+    suspend fun addTracksToPlaylist(
+        playlistId: String,
+        trackUris: List<String>,
+    ): Result<Unit> =
+        runCatching {
+            val vars = buildJsonObject {
+                put("playlistUri", "spotify:playlist:$playlistId")
+                putJsonArray("playlistItemUris") {
+                    trackUris.forEach { add(it) }
+                }
+                putJsonObject("newPosition") {
+                    put("moveType", "BOTTOM_OF_PLAYLIST")
+                    put("fromUid", JsonNull)
+                }
+            }
+            log("D", "addTracksToPlaylist: sending mutation for $playlistId with ${trackUris.size} tracks, vars=$vars")
+            kotlinx.coroutines.withTimeout(20_000L) {
+                graphqlPost(
+                    operationName = "addToPlaylist",
+                    sha256Hash = PLAYLIST_OPS_HASH,
+                    variables = vars,
+                )
+            }
+            log("D", "addTracksToPlaylist: added ${trackUris.size} tracks to $playlistId")
+        }
+
+    /**
+     * Removes tracks from a Spotify playlist via GQL mutation.
+     * Requires the playlist-scoped [uid] for each item
+     * (returned by fetchPlaylist in each content item).
+     */
+    suspend fun removeTracksFromPlaylist(
+        playlistId: String,
+        items: List<PlaylistItemRef>,
+    ): Result<Unit> =
+        runCatching {
+            val vars = buildJsonObject {
+                put("playlistUri", "spotify:playlist:$playlistId")
+                putJsonArray("uids") {
+                    items.forEach { item -> add(item.uid) }
+                }
+            }
+            graphqlPost(
+                operationName = "removeFromPlaylist",
+                sha256Hash = PLAYLIST_OPS_HASH,
+                variables = vars,
+            )
+            log("D", "removeTracksFromPlaylist: removed ${items.size} items from $playlistId")
+        }
+
+    /**
+     * Renames a playlist and/or updates its description via GQL mutation.
+     */
+    suspend fun editPlaylistAttributes(
+        playlistId: String,
+        newName: String? = null,
+        newDescription: String? = null,
+    ): Result<Unit> =
+        runCatching {
+            val vars = buildJsonObject {
+                put("playlistUri", "spotify:playlist:$playlistId")
+                if (newName != null) put("newName", newName)
+                if (newDescription != null) put("newDescription", newDescription)
+            }
+            graphqlPost(
+                operationName = "editPlaylistAttributes",
+                sha256Hash = PLAYLIST_MGMT_HASH,
+                variables = vars,
+            )
+            log("D", "editPlaylistAttributes: updated $playlistId (name=$newName)")
+        }
+
+    /**
+     * Reference to a specific item inside a playlist, needed for removal/reorder.
+     */
+    data class PlaylistItemRef(
+        val uri: String,
+        val uid: String,
+    )
 
     // ── Liked Songs (GQL: fetchLibraryTracks) ───────────────────────────
 

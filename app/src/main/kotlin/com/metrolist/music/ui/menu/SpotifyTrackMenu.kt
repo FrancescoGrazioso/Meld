@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -53,13 +52,18 @@ import kotlinx.coroutines.withContext
 
 /**
  * Context menu for Spotify tracks that haven't been resolved to a Room [Song] yet.
- * Provides the most common actions: play next, add to queue, and change YouTube match.
+ * Provides the most common actions: play next, add to queue, change YouTube match,
+ * and (when inside a playlist context) remove from playlist.
+ *
+ * @param onRemoveFromPlaylist When non-null, shows a "Remove from playlist" action.
+ *   The callback is invoked when the user confirms removal.
  */
 @Composable
 fun SpotifyTrackMenu(
     track: SpotifyTrack,
     mapper: SpotifyYouTubeMapper,
     onDismiss: () -> Unit,
+    onRemoveFromPlaylist: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
     val database = LocalDatabase.current
@@ -67,6 +71,7 @@ fun SpotifyTrackMenu(
     val coroutineScope = rememberCoroutineScope()
 
     var showYouTubeMatchDialog by rememberSaveable { mutableStateOf(false) }
+    var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
 
     val currentMatch by produceState<com.metrolist.music.db.entities.SpotifyMatchEntity?>(
         initialValue = null,
@@ -205,6 +210,19 @@ fun SpotifyTrackMenu(
     Material3MenuGroup(
         items = listOf(
             Material3MenuItemData(
+                title = { Text(text = stringResource(R.string.spotify_add_to_playlist)) },
+                description = { Text(text = stringResource(R.string.spotify_add_to_playlist_desc)) },
+                icon = {
+                    Icon(
+                        painter = painterResource(R.drawable.playlist_add),
+                        contentDescription = null,
+                    )
+                },
+                onClick = {
+                    showAddToPlaylistDialog = true
+                },
+            ),
+            Material3MenuItemData(
                 title = { Text(text = stringResource(R.string.change_youtube_version)) },
                 description = { Text(text = stringResource(R.string.change_youtube_version_desc)) },
                 icon = {
@@ -219,4 +237,36 @@ fun SpotifyTrackMenu(
             ),
         ),
     )
+
+    AddToSpotifyPlaylistFlow(
+        showDialog = showAddToPlaylistDialog,
+        youtubeId = track.id,
+        title = track.name,
+        artist = track.artists.firstOrNull()?.name ?: "",
+        durationSec = track.durationMs / 1000,
+        spotifyUri = track.uri ?: "spotify:track:${track.id}",
+        mapper = mapper,
+        onDismiss = { showAddToPlaylistDialog = false },
+    )
+
+    if (onRemoveFromPlaylist != null) {
+        Material3MenuGroup(
+            items = listOf(
+                Material3MenuItemData(
+                    title = { Text(text = stringResource(R.string.spotify_remove_from_playlist)) },
+                    description = { Text(text = stringResource(R.string.spotify_remove_from_playlist_desc)) },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.remove),
+                            contentDescription = null,
+                        )
+                    },
+                    onClick = {
+                        onDismiss()
+                        onRemoveFromPlaylist()
+                    },
+                ),
+            ),
+        )
+    }
 }
