@@ -558,7 +558,7 @@
     <string name="display_density">Плотность интерфейса</string>
     <string name="restart">Перезапустить</string>
     <string name="restart_required">Требуется перезапуск</string>
-    <string name="density_restart_message">Изменения плотности интерфейса вступят в силу после перезапуска приложения. Перезапустить сейчас?</string>
+    <string name="density_restart_message">Изменение плотности интерфейса вступит в силу после перезапуска приложения. Перезапустить сейчас?</string>
     <string name="enable_lrclib_desc">База синхронизированных текстов песен, поддерживаемая сообществом</string>
     <string name="enable_kugou_desc">Берет тексты песен из KuGou, популярной китайской музыкальной платформы</string>
     <string name="youtube_music_lyrics_note">ПРИМЕЧАНИЕ: Тексты из YouTube Music будут показаны автоматически, если другие недоступны. Обычно тексты из YTM не синхронизированы.</string>
@@ -729,4 +729,13 @@
     <string name="sleep_timer_stop_after_current_song_description">Таймер сна сработает после окончания текущего трека</string>
     <string name="sleep_timer_fade_out_title">Плавное затухание</string>
     <string name="sleep_timer_fade_out_description">Плавно снижает громкость в последнюю минуту</string>
+    <string name="sort_ascending">Сортировать по возрастанию</string>
+    <string name="sort_descending">Сортировать по убыванию</string>
+    <string name="time_transfer_title">Перенос времени</string>
+    <string name="time_transfer_warning">ВНИМАНИЕ: это действие невозможно отменить после завершения. Перед продолжением следует создать резервную копию. В качестве целевой можно выбрать только ту песню, для которой зарегистрировано хотя бы одно событие/прослушивание.</string>
+    <string name="time_transfer_source_song">Исходная песня</string>
+    <string name="time_transfer_target_song">Целевая песня</string>
+    <string name="time_transfer_listen_time_label">Время прослушивания:</string>
+    <string name="time_transfer_convert">Перенести</string>
+    <string name="song_dropdown_more_results">Введите больше символов, чтобы сузить результаты (ещё %d)</string>
 </resources>
