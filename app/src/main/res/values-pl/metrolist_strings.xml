@@ -723,4 +723,7 @@
     <string name="delete_uploaded_songs">Usuń przesłane utwory</string>
     <string name="delete_uploaded_songs_confirm">Czy na pewno chcesz usunąć %1$d przesłanych utworów? Tej czynności nie można cofnąć.</string>
     <string name="ai_provider_mistral_help">Odwiedź https://console.mistral.ai/api-keys</string>
+    <string name="enable_song_cache">Włącz buforowanie utworów</string>
+    <string name="enable_song_cache_desc">Automatycznie dodaj piosenki do pamięci podręcznej dla późniejszego odsłuchu</string>
+    <string name="sleep_timer_stop_after_current_song_title">Zatrzymaj gdy piosenka się skończy</string>
 </resources>
