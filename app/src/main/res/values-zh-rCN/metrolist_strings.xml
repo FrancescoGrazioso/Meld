@@ -711,4 +711,13 @@
     <string name="sleep_timer_stop_after_current_song_description">当倒计时结束时，等待当前歌曲播放完毕再停止</string>
     <string name="sleep_timer_fade_out_title">渐隐效果</string>
     <string name="sleep_timer_fade_out_description">在播放停止前逐渐降低音量</string>
+    <string name="sort_ascending">升序</string>
+    <string name="sort_descending">降序</string>
+    <string name="time_transfer_title">时长转移</string>
+    <string name="time_transfer_warning">警告：此操作一旦完成将无法撤销。在继续之前，建议先创建一个备份文件。您只能选择至少有一次播放记录的歌曲作为目标。</string>
+    <string name="time_transfer_source_song">原歌曲</string>
+    <string name="time_transfer_target_song">目标歌曲</string>
+    <string name="time_transfer_listen_time_label">听歌时长：</string>
+    <string name="time_transfer_convert">转换</string>
+    <string name="song_dropdown_more_results">请输入更多内容以缩小搜索范围（还需 %d 个字符）</string>
 </resources>
