@@ -723,4 +723,13 @@
     <string name="sleep_timer_stop_after_current_song_description">Detiene el temporizador de apagado al finalizar la canción que se está reproduciendo</string>
     <string name="sleep_timer_fade_out_title">Desvanecer</string>
     <string name="sleep_timer_fade_out_description">Reduce el volumen gradualmente durante el último minuto</string>
+    <string name="sort_ascending">Orden ascendente</string>
+    <string name="sort_descending">Orden descendente</string>
+    <string name="time_transfer_title">Transferencia de tiempo</string>
+    <string name="time_transfer_warning">ADVERTENCIA: No es posible revertir esta acción una vez completada. Se recomienda crear una copia de seguridad antes de continuar. Solo se pueden seleccionar canciones que tengan al menos un evento o reproducción registrada.</string>
+    <string name="time_transfer_source_song">Canción de origen</string>
+    <string name="time_transfer_target_song">Canción de destino</string>
+    <string name="time_transfer_listen_time_label">Tiempo de reproducción:</string>
+    <string name="time_transfer_convert">Convertir</string>
+    <string name="song_dropdown_more_results">Escribe más para acotar los resultados (quedan %d más)</string>
 </resources>
