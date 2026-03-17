@@ -729,4 +729,13 @@
     <string name="sleep_timer_stop_after_current_song_description">Zastaví časovač spánku na konci aktuálně hrající skladby</string>
     <string name="sleep_timer_fade_out_title">Postupné zeslabení</string>
     <string name="sleep_timer_fade_out_description">Hlasitost se v poslední minutě postupně zeslabí</string>
+    <string name="sort_ascending">Seřadit vzestupně</string>
+    <string name="sort_descending">Seřadit sestupně</string>
+    <string name="time_transfer_title">Přesun času</string>
+    <string name="time_transfer_warning">VAROVÁNÍ: Tato akce je po dokončení nevratná. Před pokračováním doporučujeme si vytvořit zálohu. Můžete cílit pouze na skladby s alespoň jednou zaregistrovanou událostí/přehráním.</string>
+    <string name="time_transfer_source_song">Zdrojová skladba</string>
+    <string name="time_transfer_target_song">Cílová skladba</string>
+    <string name="time_transfer_listen_time_label">Doba poslechu:</string>
+    <string name="time_transfer_convert">Převést</string>
+    <string name="song_dropdown_more_results">Pište dále pro zúžení výsledků vyhledávání (%d dalších)</string>
 </resources>
