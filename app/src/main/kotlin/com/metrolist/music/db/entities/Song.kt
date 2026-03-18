@@ -30,6 +30,12 @@ constructor(
     val artists: List<ArtistEntity>,
 
     @Relation(
+        parentColumn = "id",
+        entityColumn = "songId",
+    )
+    val artistMaps: List<SongArtistMap> = emptyList(),
+
+    @Relation(
         entity = AlbumEntity::class,
         entityColumn = "id",
         parentColumn = "id",
@@ -56,4 +62,16 @@ constructor(
         get() = song.thumbnailUrl
     val romanizeLyrics: Boolean
         get() = song.romanizeLyrics
+
+    val orderedArtists: List<ArtistEntity>
+        get() {
+            if (artistMaps.isEmpty()) return artists
+
+            val artistsById = artists.associateBy { it.id }
+            val sorted = artistMaps
+                .sortedBy { it.position }
+                .mapNotNull { map -> artistsById[map.artistId] }
+
+            return sorted.ifEmpty { artists }
+        }
 }
