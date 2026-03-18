@@ -8,7 +8,6 @@ package com.metrolist.music.ui.component
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.content.res.Configuration
 import android.text.Layout
 import android.view.WindowManager
 import android.widget.Toast
@@ -90,7 +89,6 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -178,6 +176,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.seconds
 
+/**
+ * A composable function that displays lyrics for the currently playing song.
+ *
+ * @param sliderPositionProvider Provides the current playback position in milliseconds.
+ * @param modifier Modifier to be applied to the layout.
+ * @param showLyrics Whether lyrics should be displayed.
+ */
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedBoxWithConstraintsScope", "StringFormatInvalid")
 @Composable
@@ -389,7 +394,6 @@ fun Lyrics(
                 Color.White
             }
         }
-    val textColor = expressiveAccent
 
     var currentLineIndex by remember {
         mutableIntStateOf(-1)
@@ -535,6 +539,12 @@ fun Lyrics(
         }
     }
 
+    /**
+     * Smoothly scrolls the lyrics list to center the item at [targetIndex].
+     *
+     * @param targetIndex The index of the lyrics line to scroll to.
+     * @param duration The duration of the scroll animation in milliseconds.
+     */
     suspend fun performSmoothPageScroll(
         targetIndex: Int,
         duration: Int = 1500,
@@ -1637,8 +1647,10 @@ fun Lyrics(
             // Removed the more button from bottom - it's now in the top header
         }
 
-        Box(
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 16.dp),
+        AnimatedVisibility(
+            visible = isSelectionModeActive,
+            enter = slideInVertically { it } + fadeIn(),
+            exit = slideOutVertically { it } + fadeOut()
         ) {
             AnimatedVisibility(
                 visible = !isAutoScrollEnabled && isSynced && !isSelectionModeActive,

@@ -694,6 +694,8 @@
     <string name="reject">Reject</string>
     <string name="clear">Clear</string>
     <string name="copy">Copy</string>
+    <string name="copy_all_lyrics">Copy all lyrics</string>
+    <string name="change">Change</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="not_set">Not set</string>
     <string name="hosting_room">Hosting room</string>
