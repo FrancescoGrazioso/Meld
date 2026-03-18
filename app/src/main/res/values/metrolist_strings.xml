@@ -273,6 +273,39 @@
     <string name="sleep_timer_fade_out_title">Fade out</string>
     <string name="sleep_timer_fade_out_description">Fades out the volume in the final minute</string>
 
+    <!-- Alarm -->
+    <string name="alarm">Alarm</string>
+    <string name="alarm_enabled">Enable alarm</string>
+    <string name="alarm_time">Alarm time</string>
+    <string name="alarm_playlist">Playlist</string>
+    <string name="alarm_select_playlist">Select playlist</string>
+    <string name="alarm_no_playlists">No playlists found</string>
+    <plurals name="alarm_playlist_song_count">
+        <item quantity="one">%d song</item>
+        <item quantity="other">%d songs</item>
+    </plurals>
+    <string name="alarm_selected">Selected</string>
+    <string name="alarm_playlist_helper">Choose which playlist the alarm should play.</string>
+    <string name="alarm_add">Add alarm</string>
+    <string name="alarm_empty">No alarms yet. Add one to start scheduled playback.</string>
+    <string name="alarm_disabled">Disabled</string>
+    <string name="alarm_random_enabled">Random</string>
+    <string name="alarm_random_disabled">In order</string>
+    <string name="alarm_next_prefix">Next: %s</string>
+    <string name="alarm_new">New alarm</string>
+    <string name="alarm_edit">Edit alarm</string>
+    <string name="alarm_save">Save</string>
+    <string name="alarm_time_picker_value">Time: %s</string>
+    <string name="alarm_delete">Delete alarm</string>
+    <string name="alarm_duplicate_time_warning">Another alarm already exists at this time. If both trigger together, only one may effectively play.</string>
+    <string name="alarm_random_song">Play random song from playlist</string>
+    <string name="alarm_next_trigger">Next trigger</string>
+    <string name="alarm_not_scheduled">Not scheduled</string>
+    <string name="alarm_exact_permission_title">Allow exact alarms</string>
+    <string name="alarm_exact_permission_desc">Exact alarm permission improves reliability when the app is in the background.</string>
+    <string name="alarm_battery_optimization_title">Battery optimization</string>
+    <string name="alarm_battery_optimization_desc">Disable battery optimization for better alarm reliability in the background.</string>
+
     <!-- Player Settings -->
     <string name="disable_load_more_when_repeat_all">Disable load more when repeat all</string>
     <string name="disable_load_more_when_repeat_all_desc">Don\'t auto load more songs and similar content when repeat all mode is enabled</string>

@@ -266,10 +266,16 @@ fun AlarmSettingsSection(showTitle: Boolean = true) {
                     }
                 )
             }
-
-            addAll(systemItems)
         }
     )
+
+    if (systemItems.isNotEmpty()) {
+        Spacer(modifier = Modifier.height(16.dp))
+        Material3SettingsGroup(
+            title = stringResource(R.string.settings_section_system),
+            items = systemItems
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
