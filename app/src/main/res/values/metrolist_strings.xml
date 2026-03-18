@@ -761,6 +761,11 @@
     <string name="ai_deepl_formality_default">Default</string>
     <string name="ai_deepl_formality_more">More Formal</string>
     <string name="ai_deepl_formality_less">Less Formal</string>
+    <string name="ai_system_prompt">System Prompt</string>
+    <string name="ai_system_prompt_desc">Custom instructions sent to the AI model. Leave empty to use the default prompt.</string>
+    <string name="ai_system_prompt_placeholder">Use {lineCount} as a placeholder for the number of lines to translate.</string>
+    <string name="ai_system_prompt_default">Default</string>
+    <string name="ai_system_prompt_reset">Reset to Default</string>
     
     <!-- Crash Handler -->
     <string name="crash_title">App Crashed</string>

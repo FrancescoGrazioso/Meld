@@ -24,12 +24,16 @@ val MiniPlayerOutlineKey = booleanPreferencesKey("miniPlayerOutline")
 val DensityScaleKey = floatPreferencesKey("density_scale_factor")
 val CustomDensityScaleKey = floatPreferencesKey("custom_density_scale_value")
 
-enum class DensityScale(val value: Float, val label: String) {
+enum class DensityScale(
+    val value: Float,
+    val label: String,
+) {
     NATIVE(1.0f, "Native (100%)"),
     SLIGHTLY_COMPACT(0.85f, "Slightly Compact (85%)"),
     COMPACT(0.75f, "Compact (75%)"),
     VERY_COMPACT(0.65f, "Very Compact (65%)"),
-    ULTRA_COMPACT(0.55f, "Ultra Compact (55%)");
+    ULTRA_COMPACT(0.55f, "Ultra Compact (55%)"),
+    ;
 
     companion object {
         fun fromValue(value: Float): DensityScale = entries.find { it.value == value } ?: NATIVE
@@ -43,7 +47,7 @@ val SliderStyleKey = stringPreferencesKey("sliderStyle")
 val SquigglySliderKey = booleanPreferencesKey("squigglySlider")
 val SwipeToSongKey = booleanPreferencesKey("SwipeToSong")
 val SwipeToRemoveSongKey = booleanPreferencesKey("SwipeToRemoveSong")
-val UseNewPlayerDesignKey= booleanPreferencesKey("useNewPlayerDesign")
+val UseNewPlayerDesignKey = booleanPreferencesKey("useNewPlayerDesign")
 val UseNewMiniPlayerDesignKey = booleanPreferencesKey("useNewMiniPlayerDesign")
 val HidePlayerThumbnailKey = booleanPreferencesKey("hidePlayerThumbnail")
 val CropAlbumArtKey = booleanPreferencesKey("cropAlbumArt")
@@ -63,7 +67,7 @@ val DeveloperModeKey = booleanPreferencesKey("developerMode")
 enum class SliderStyle {
     DEFAULT,
     WAVY,
-    SLIM
+    SLIM,
 }
 
 const val SYSTEM_DEFAULT = "SYSTEM_DEFAULT"
@@ -157,6 +161,7 @@ val ListenTogetherAutoApproveSuggestionsKey = booleanPreferencesKey("listenToget
 val ListenTogetherSyncVolumeKey = booleanPreferencesKey("listenTogetherSyncVolume")
 val ListenTogetherBlockedUsersKey = stringPreferencesKey("listenTogetherBlockedUsers")
 val ListenTogetherInTopBarKey = booleanPreferencesKey("listenTogetherInTopBar")
+
 // Session persistence for reconnection
 val ListenTogetherSessionTokenKey = stringPreferencesKey("listenTogetherSessionToken")
 val ListenTogetherRoomCodeKey = stringPreferencesKey("listenTogetherRoomCode")
@@ -277,13 +282,13 @@ enum class SongFilter {
 
 enum class ArtistFilter {
     LIBRARY,
-    LIKED
+    LIKED,
 }
 
 enum class AlbumFilter {
     LIBRARY,
     LIKED,
-    UPLOADED
+    UPLOADED,
 }
 
 enum class PodcastFilter {
@@ -372,35 +377,41 @@ enum class MyTopFilter {
 
     fun toTimeMillis(): Long =
         when (this) {
-            DAY ->
+            DAY -> {
                 LocalDateTime
                     .now()
                     .minusDays(1)
                     .toInstant(ZoneOffset.UTC)
                     .toEpochMilli()
+            }
 
-            WEEK ->
+            WEEK -> {
                 LocalDateTime
                     .now()
                     .minusWeeks(1)
                     .toInstant(ZoneOffset.UTC)
                     .toEpochMilli()
+            }
 
-            MONTH ->
+            MONTH -> {
                 LocalDateTime
                     .now()
                     .minusMonths(1)
                     .toInstant(ZoneOffset.UTC)
                     .toEpochMilli()
+            }
 
-            YEAR ->
+            YEAR -> {
                 LocalDateTime
                     .now()
                     .minusMonths(12)
                     .toInstant(ZoneOffset.UTC)
                     .toEpochMilli()
+            }
 
-            ALL_TIME -> 0
+            ALL_TIME -> {
+                0
+            }
         }
 }
 
@@ -419,7 +430,7 @@ enum class PreferredLyricsProvider {
 enum class PlayerButtonsStyle {
     DEFAULT,
     PRIMARY,
-    TERTIARY
+    TERTIARY,
 }
 
 enum class PlayerBackgroundStyle {
@@ -447,10 +458,22 @@ val TranslateModeKey = stringPreferencesKey("translateMode")
 val TranslateLanguageKey = stringPreferencesKey("translateLanguage")
 val DeeplApiKey = stringPreferencesKey("deeplApiKey")
 val DeeplFormalityKey = stringPreferencesKey("deeplFormality")
+val AiSystemPromptKey = stringPreferencesKey("aiSystemPrompt")
+
+const val DEFAULT_AI_SYSTEM_PROMPT = """You are a precise lyrics translation assistant. Your output must ALWAYS be a valid JSON array of strings.
+
+CRITICAL RULES:
+1. Output ONLY a JSON array: ["line1", "line2", "line3"]
+2. NO explanations, NO questions, NO additional text
+3. Each input line maps to exactly one output line
+4. Preserve empty lines as empty strings ""
+5. Return EXACTLY {lineCount} items in the array
+6. If uncertain, provide best approximation but maintain line count"""
 val LyricsGlowEffectKey = booleanPreferencesKey("lyricsGlowEffect")
 
 val LyricsRomanizeList = stringPreferencesKey("lyricsRomanizeList")
 val LyricsAnimationStyleKey = stringPreferencesKey("lyricsAnimationStyle")
+
 enum class LyricsAnimationStyle {
     NONE,
     FADE,

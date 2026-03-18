@@ -33,6 +33,7 @@ object MistralService {
         mode: String,
         maxRetries: Int = 3,
         sourceLanguage: String? = null,
+        customSystemPrompt: String = "",
     ): Result<List<String>> =
         withContext(Dispatchers.IO) {
             var currentAttempt = 0
@@ -47,8 +48,12 @@ object MistralService {
 
             while (currentAttempt < maxRetries) {
                 try {
-                    // Enhanced prompt with strict formatting requirements
-                    val systemPrompt = """You are a precise lyrics translation assistant. Your output must ALWAYS be a valid JSON array of strings.
+                    // Use custom system prompt if provided, otherwise use the default
+                    val systemPrompt =
+                        if (customSystemPrompt.isNotBlank()) {
+                            customSystemPrompt.replace("{lineCount}", lineCount.toString())
+                        } else {
+                            """You are a precise lyrics translation assistant. Your output must ALWAYS be a valid JSON array of strings.
 
 CRITICAL RULES:
 1. Output ONLY a JSON array: ["line1", "line2", "line3"]
@@ -57,6 +62,7 @@ CRITICAL RULES:
 4. Preserve empty lines as empty strings ""
 5. Return EXACTLY $lineCount items in the array
 6. If uncertain, provide best approximation but maintain line count"""
+                        }
 
                     val userPrompt =
                         when (mode) {
@@ -126,6 +132,15 @@ Output MUST be a JSON array with EXACTLY $lineCount strings."""
 
                     val messages =
                         JSONArray().apply {
+                            // Include system prompt when a custom one is provided
+                            if (customSystemPrompt.isNotBlank()) {
+                                put(
+                                    JSONObject().apply {
+                                        put("role", "system")
+                                        put("content", systemPrompt)
+                                    },
+                                )
+                            }
                             put(
                                 JSONObject().apply {
                                     put("role", "user")

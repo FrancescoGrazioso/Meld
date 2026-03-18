@@ -5,9 +5,12 @@
 
 package com.metrolist.music.ui.screens.settings
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
@@ -42,6 +45,8 @@ import androidx.navigation.NavController
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.R
 import com.metrolist.music.constants.AiProviderKey
+import com.metrolist.music.constants.AiSystemPromptKey
+import com.metrolist.music.constants.DEFAULT_AI_SYSTEM_PROMPT
 import com.metrolist.music.constants.DeeplApiKey
 import com.metrolist.music.constants.DeeplFormalityKey
 import com.metrolist.music.constants.LanguageCodeToName
@@ -58,9 +63,7 @@ import com.metrolist.music.utils.rememberPreference
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AiSettings(
-    navController: NavController
-) {
+fun AiSettings(navController: NavController) {
     var aiProvider by rememberPreference(AiProviderKey, "OpenRouter")
     var openRouterApiKey by rememberPreference(OpenRouterApiKey, "")
     var openRouterBaseUrl by rememberPreference(OpenRouterBaseUrlKey, "https://openrouter.ai/api/v1/chat/completions")
@@ -69,6 +72,7 @@ fun AiSettings(
     var translateMode by rememberPreference(TranslateModeKey, "Literal")
     var deeplApiKey by rememberPreference(DeeplApiKey, "")
     var deeplFormality by rememberPreference(DeeplFormalityKey, "default")
+    var aiSystemPrompt by rememberPreference(AiSystemPromptKey, "")
 
     val aiProviders =
         mapOf(
@@ -165,6 +169,7 @@ fun AiSettings(
     var showBaseUrlDialog by rememberSaveable { mutableStateOf(false) }
     var showModelDialog by rememberSaveable { mutableStateOf(false) }
     var showCustomModelInput by rememberSaveable { mutableStateOf(false) }
+    var showSystemPromptDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showProviderHelpDialog) {
         AlertDialog(
@@ -424,6 +429,43 @@ fun AiSettings(
         )
     }
 
+    if (showSystemPromptDialog) {
+        TextFieldDialog(
+            title = { Text(stringResource(R.string.ai_system_prompt)) },
+            icon = { Icon(painterResource(R.drawable.edit), null) },
+            initialTextFieldValue = TextFieldValue(text = aiSystemPrompt.ifBlank { DEFAULT_AI_SYSTEM_PROMPT }),
+            singleLine = false,
+            maxLines = 12,
+            isInputValid = { true },
+            onDone = {
+                // Treat saving the unmodified default (or blank) as "use default"
+                aiSystemPrompt = if (it.isBlank() || it == DEFAULT_AI_SYSTEM_PROMPT) "" else it
+                showSystemPromptDialog = false
+            },
+            onDismiss = { showSystemPromptDialog = false },
+            extraContent = {
+                if (aiSystemPrompt.isNotBlank()) {
+                    Row(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp),
+                        horizontalArrangement = Arrangement.End,
+                    ) {
+                        TextButton(
+                            onClick = {
+                                aiSystemPrompt = ""
+                                showSystemPromptDialog = false
+                            },
+                        ) {
+                            Text(stringResource(R.string.ai_system_prompt_reset))
+                        }
+                    }
+                }
+            },
+        )
+    }
+
     Column(
         Modifier
             .windowInsetsPadding(
@@ -572,6 +614,24 @@ fun AiSettings(
                                         )
                                     }
                                 },
+                            ),
+                        )
+                        add(
+                            Material3SettingsItem(
+                                icon = painterResource(R.drawable.edit),
+                                title = { Text(stringResource(R.string.ai_system_prompt)) },
+                                description = {
+                                    Text(
+                                        if (aiSystemPrompt.isNotBlank()) {
+                                            aiSystemPrompt.take(60).let {
+                                                if (aiSystemPrompt.length > 60) "$it…" else it
+                                            }
+                                        } else {
+                                            stringResource(R.string.ai_system_prompt_default)
+                                        },
+                                    )
+                                },
+                                onClick = { showSystemPromptDialog = true },
                             ),
                         )
                     }

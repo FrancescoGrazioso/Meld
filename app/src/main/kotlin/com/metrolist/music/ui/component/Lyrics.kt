@@ -118,6 +118,7 @@ import com.metrolist.music.LocalListenTogetherManager
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
 import com.metrolist.music.constants.AiProviderKey
+import com.metrolist.music.constants.AiSystemPromptKey
 import com.metrolist.music.constants.DarkModeKey
 import com.metrolist.music.constants.DeeplApiKey
 import com.metrolist.music.constants.DeeplFormalityKey
@@ -221,6 +222,7 @@ fun Lyrics(
     val translateLanguage by rememberPreference(TranslateLanguageKey, "en")
     val translateMode by rememberPreference(TranslateModeKey, "Literal")
     val deeplFormality by rememberPreference(DeeplFormalityKey, "default")
+    val aiSystemPrompt by rememberPreference(AiSystemPromptKey, "")
 
     val scope = rememberCoroutineScope()
 
@@ -241,14 +243,15 @@ fun Lyrics(
             if (darkTheme == DarkMode.AUTO) isSystemInDarkTheme else darkTheme == DarkMode.ON
         }
 
-    val decodedList = if (romanizeLyricsList.value.isEmpty()) {
-        defaultList
-    } else {
-        romanizeLyricsList.value.split(",").map { entry ->
-            val (lang, checked) = entry.split(":")
-            Pair(lang, checked.toBoolean())
+    val decodedList =
+        if (romanizeLyricsList.value.isEmpty()) {
+            defaultList
+        } else {
+            romanizeLyricsList.value.split(",").map { entry ->
+                val (lang, checked) = entry.split(":")
+                Pair(lang, checked.toBoolean())
+            }
         }
-    }
 
     val enabledLanguages = decodedList.filter { (_, checked) -> checked }.map { (lang, _) -> lang }
 
@@ -260,28 +263,62 @@ fun Lyrics(
                 val parsedLines = parseLyrics(lyrics)
 
                 parsedLines
-                     .map { entry ->
-                        val newEntry = LyricsEntry(entry.time, entry.text, entry.words, agent = entry.agent, isBackground = entry.isBackground)
+                    .map { entry ->
+                        val newEntry =
+                            LyricsEntry(entry.time, entry.text, entry.words, agent = entry.agent, isBackground = entry.isBackground)
 
                         scope.launch {
                             val text = if (romanizeCyrillicByLine) entry.text else lyrics
                             var value: String? = ""
 
                             when {
-                                "Japanese" in enabledLanguages && isJapanese(text) && !isChinese(text) -> value = romanizeJapanese(entry.text)
-                                "Korean" in enabledLanguages && isKorean(text) -> value = romanizeKorean(entry.text)
-                                "Chinese" in enabledLanguages && isChinese(text) -> value = romanizeChinese(entry.text)
-                                "Hindi" in enabledLanguages && isHindi(text) -> value = romanizeHindi(entry.text)
-                                "Ukrainian" in enabledLanguages && isUkrainian(text) -> value = romanizeCyrillic(entry.text)
-                                "Russian" in enabledLanguages && isRussian(text) -> value = romanizeCyrillic(entry.text)
-                                "Serbian" in enabledLanguages && isSerbian(text) -> value = romanizeCyrillic(entry.text)
-                                "Bulgarian" in enabledLanguages && isBulgarian(text) -> value = romanizeCyrillic(entry.text)
-                                "Belarusian" in enabledLanguages && isBelarusian(text) -> value = romanizeCyrillic(entry.text)
-                                "Kyrgyz" in enabledLanguages && isKyrgyz(text) -> value = romanizeCyrillic(entry.text)
-                                "Macedonian" in enabledLanguages && isMacedonian(text) -> value = romanizeCyrillic(entry.text)
+                                "Japanese" in enabledLanguages && isJapanese(text) && !isChinese(text) -> {
+                                    value =
+                                        romanizeJapanese(entry.text)
+                                }
+
+                                "Korean" in enabledLanguages && isKorean(text) -> {
+                                    value = romanizeKorean(entry.text)
+                                }
+
+                                "Chinese" in enabledLanguages && isChinese(text) -> {
+                                    value = romanizeChinese(entry.text)
+                                }
+
+                                "Hindi" in enabledLanguages && isHindi(text) -> {
+                                    value = romanizeHindi(entry.text)
+                                }
+
+                                "Ukrainian" in enabledLanguages && isUkrainian(text) -> {
+                                    value = romanizeCyrillic(entry.text)
+                                }
+
+                                "Russian" in enabledLanguages && isRussian(text) -> {
+                                    value = romanizeCyrillic(entry.text)
+                                }
+
+                                "Serbian" in enabledLanguages && isSerbian(text) -> {
+                                    value = romanizeCyrillic(entry.text)
+                                }
+
+                                "Bulgarian" in enabledLanguages && isBulgarian(text) -> {
+                                    value = romanizeCyrillic(entry.text)
+                                }
+
+                                "Belarusian" in enabledLanguages && isBelarusian(text) -> {
+                                    value = romanizeCyrillic(entry.text)
+                                }
+
+                                "Kyrgyz" in enabledLanguages && isKyrgyz(text) -> {
+                                    value = romanizeCyrillic(entry.text)
+                                }
+
+                                "Macedonian" in enabledLanguages && isMacedonian(text) -> {
+                                    value = romanizeCyrillic(entry.text)
+                                }
                             }
 
-                           newEntry.romanizedTextFlow.value = value
+                            newEntry.romanizedTextFlow.value = value
                         }
 
                         newEntry
@@ -368,6 +405,7 @@ fun Lyrics(
                     useStreaming = true,
                     songId = currentSong?.id ?: "",
                     database = database,
+                    systemPrompt = aiSystemPrompt,
                 )
             } else if (effectiveApiKey.isBlank()) {
                 Toast.makeText(context, aiApiKeyRequiredStr, Toast.LENGTH_SHORT).show()
@@ -1650,7 +1688,7 @@ fun Lyrics(
         AnimatedVisibility(
             visible = isSelectionModeActive,
             enter = slideInVertically { it } + fadeIn(),
-            exit = slideOutVertically { it } + fadeOut()
+            exit = slideOutVertically { it } + fadeOut(),
         ) {
             AnimatedVisibility(
                 visible = !isAutoScrollEnabled && isSynced && !isSelectionModeActive,

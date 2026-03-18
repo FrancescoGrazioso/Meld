@@ -256,6 +256,7 @@ object LyricsTranslationHelper {
         useStreaming: Boolean = true,
         songId: String = "",
         database: MusicDatabase? = null,
+        systemPrompt: String = "",
     ) {
         translationJob?.cancel()
         _status.value = TranslationStatus.Translating
@@ -369,6 +370,7 @@ object LyricsTranslationHelper {
                                 apiKey = apiKey,
                                 model = model,
                                 mode = mode,
+                                customSystemPrompt = systemPrompt,
                             )
                         } else if (useStreaming && provider != "Custom") {
                             Timber.d("Using streaming for translation with provider: $provider")
@@ -386,6 +388,7 @@ object LyricsTranslationHelper {
                                     baseUrl = baseUrl,
                                     model = model,
                                     mode = mode,
+                                    customSystemPrompt = systemPrompt,
                                 ).collect { chunk ->
                                     Timber.v("Received streaming chunk: $chunk")
                                     when (chunk) {
@@ -439,6 +442,7 @@ object LyricsTranslationHelper {
                                 baseUrl = baseUrl,
                                 model = model,
                                 mode = mode,
+                                customSystemPrompt = systemPrompt,
                             )
                         }
 
