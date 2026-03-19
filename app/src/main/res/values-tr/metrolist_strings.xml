@@ -725,5 +725,5 @@
     <string name="time_transfer_target_song">Hedef şarkı</string>
     <string name="time_transfer_listen_time_label">Dinleme süresi:</string>
     <string name="time_transfer_convert">Dönüştür</string>
-    <string name="song_dropdown_more_results">Sonucu daraltmak için daha fazla yazın. (%d fazlası)</string>
+    <string name="song_dropdown_more_results">Sonuçları daraltmak için daha fazlasını yazın (%d daha fazla)</string>
 </resources>
