@@ -42,7 +42,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun Material3SettingsGroup(
     title: String? = null,
-    items: List<Material3SettingsItem>
+    items: List<Material3SettingsItem>,
+    useLowContrast: Boolean = false
 ) {
     Column(
         modifier = Modifier
@@ -77,7 +78,11 @@ fun Material3SettingsGroup(
                         .animateContentSize(),
                     shape = shape,
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        containerColor = if (!useLowContrast) {
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerLow
+                        }
                     ),
                     elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                 ) {
