@@ -717,4 +717,13 @@
     <string name="sleep_timer_fade_out_title">Langsames verringern der Lautstärke am Ende</string>
     <string name="sleep_timer_fade_out_description">Verringert die Lautstärke langsam in der letzten Minute</string>
     <string name="ai_provider_mistral_help">Besuche https://console.mistral.ai/api-keys</string>
+    <string name="sort_ascending">Aufsteigend sortieren</string>
+    <string name="sort_descending">Absteigend sortieren</string>
+    <string name="time_transfer_title">Zeitübertragung</string>
+    <string name="time_transfer_warning">WARNUNG: Diese Aktion kann nachdem sie ausgeführt wurde nicht mehr rückgängig gemacht werden. Erstellen Sie daher vor dem Fortfahren ein backup. Sie können nur Titel auswählen, für die mindestens ein Ereignis/eine Wiedergabe registriert ist.</string>
+    <string name="time_transfer_source_song">Quell Song</string>
+    <string name="time_transfer_target_song">Ziel Song</string>
+    <string name="time_transfer_listen_time_label">Hörzeit:</string>
+    <string name="time_transfer_convert">Konvertieren</string>
+    <string name="song_dropdown_more_results">Geben Sie weitere Begriffe ein, um die Ergebnisse einzugrenzen (noch %d)</string>
 </resources>
