@@ -826,6 +826,13 @@
     <string name="play_on_app">Play on Meld</string>
     <string name="recognized_track">Recognized Track</string>
     <string name="qs_tile_music_recognizer">Recognize Music</string>
+    <string name="recognition_notification_channel_name">Music Recognition</string>
+    <string name="recognition_notification_channel_desc">Shows a notification while identifying a song from Quick Settings</string>
+    <string name="recognition_notification_listening">Listening for music...</string>
+    <string name="recognition_notification_processing">Identifying...</string>
+    <string name="recognition_notification_no_match">No match found</string>
+    <string name="recognition_notification_failed">Recognition failed</string>
+    <string name="listen_on_metrolist">Listen on Metrolist</string>
 
     <!-- CSV Import Strings -->
     <string name="map_csv_columns">Map CSV Columns</string>

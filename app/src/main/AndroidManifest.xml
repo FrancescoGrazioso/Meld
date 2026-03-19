@@ -221,6 +221,14 @@
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
+        <activity
+            android:name=".recognition.RecognitionLaunchActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:theme="@style/Theme.Metrolist.Transparent" />
+
         <service
             android:name=".playback.MusicService"
             android:exported="true"
@@ -336,6 +344,11 @@
 
         <service
             android:name=".widget.MusicRecognizerWidgetService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+
+        <service
+            android:name=".recognition.RecognitionForegroundService"
             android:exported="false"
             android:foregroundServiceType="microphone" />
 
