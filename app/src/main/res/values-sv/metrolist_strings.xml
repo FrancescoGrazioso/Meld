@@ -101,8 +101,8 @@
     <string name="clear_downloads_dialog">Är du säker på att du vill rensa alla nedladdningar?</string>
     <string name="not_logged_in_youtube">Inte inloggad på YouTube</string>
     <string name="release_notes">Versionsinfo</string>
-    <string name="new_player_design">Ny spelar design</string>
-    <string name="new_mini_player_design">Ny mini spelar design</string>
+    <string name="new_player_design">Ny spelardesign</string>
+    <string name="new_mini_player_design">Ny mini spelardesign</string>
     <string name="uploaded_playlist">Upladdad</string>
     <string name="filter_uploaded">Upladdad</string>
     <string name="about_artist">Om artisten</string>
@@ -123,7 +123,7 @@
     <string name="close">Stäng</string>
     <string name="hide_player_thumbnail">Dölj spelarens miniatyrbild</string>
     <string name="hide_player_thumbnail_desc">Ersätta album bilder med appens logo på spelaren</string>
-    <string name="crop_album_art">Skära album bild</string>
+    <string name="crop_album_art">Beskär albumomslag</string>
     <string name="seek_forward_dynamic">+%1$d skunder framåt</string>
     <string name="seek_backward_dynamic">-%1$d sekunder bakåt</string>
     <string name="seek_seconds_addup">Progresivt seek</string>
@@ -141,4 +141,14 @@
     <string name="auto_scroll">Synka en gång till</string>
     <string name="show_uploaded_playlist">Visa spellista \"Uppladdade\"</string>
     <string name="shuffle_playlist_first">Blanda spellistan/albumet först</string>
+    <string name="weekly_most_playlist_name">Veckans mest</string>
+    <string name="monthly_most_playlist_name">Månadens mest</string>
+    <string name="enable">Aktivera</string>
+    <string name="crop_album_art_desc">Tvinga kvadratiskt bildformat genom att beskära videons minatyrbild</string>
+    <string name="player_background_solid">Fast</string>
+    <string name="restart">Starta om</string>
+    <string name="restart_required">Omstart krävs</string>
+    <string name="enable_lrclib_desc">Communitydriven synkroniserad databas för låttexter</string>
+    <string name="enable_kugou_desc">Hämtar låttexter från KoGou, en populär Kinesisk musikplattform</string>
+    <string name="youtube_music_lyrics_note">OBS: Låttexter från YouTube Music kommer användas när andra låttexttjänster inte är tillgängliga. Låttexter från YTM är oftast inte synkroniserade.</string>
 </resources>
