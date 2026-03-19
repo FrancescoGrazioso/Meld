@@ -724,6 +724,6 @@
     <string name="time_transfer_source_song">Kaynak şarkı</string>
     <string name="time_transfer_target_song">Hedef şarkı</string>
     <string name="time_transfer_listen_time_label">Dinleme süresi:</string>
-    <string name="time_transfer_convert">Dönüştür</string>
+    <string name="time_transfer_convert">Dönüştürmek</string>
     <string name="song_dropdown_more_results">Sonuçları daraltmak için daha fazlasını yazın (%d daha fazla)</string>
 </resources>
