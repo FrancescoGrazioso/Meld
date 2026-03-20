@@ -764,4 +764,8 @@
     <string name="alarm_time_picker_value">Čas: %s</string>
     <string name="alarm_delete">Odstranit budík</string>
     <string name="alarm_duplicate_time_warning">V tuto chvíli již existuje jiný budík. Pokud se oba spustí ve stejnou chvíli, přehraje se pouze jeden z nich.</string>
+    <string name="alarm_random_song">Přehrát náhodnou skladbu z playlistu</string>
+    <string name="alarm_next_trigger">Další spuštění</string>
+    <string name="alarm_not_scheduled">Nenaplánováno</string>
+    <string name="alarm_battery_optimization_title">Optimalizace využití baterie</string>
 </resources>
