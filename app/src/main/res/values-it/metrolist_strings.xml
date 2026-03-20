@@ -723,4 +723,17 @@
     <string name="monthly_most_playlist_name">Il più frequente del Mese</string>
     <string name="weekly_most_playlist_name">Il più frequente della Settimana</string>
     <string name="ai_provider_mistral_help">Visita https://console.mistral.ai/api-keys</string>
+    <string name="sort_ascending">Ordine crescente</string>
+    <string name="sort_descending">Ordine decrescente</string>
+    <string name="alarm">Sveglia</string>
+    <string name="alarm_enabled">Abilita sveglia</string>
+    <string name="alarm_time">Orario sveglia</string>
+    <string name="alarm_playlist">Playlist</string>
+    <string name="alarm_select_playlist">Seleziona playlist</string>
+    <string name="alarm_no_playlists">Nessuna playlist trovata</string>
+    <plurals name="alarm_playlist_song_count">
+        <item quantity="one">%d canzone</item>
+        <item quantity="many">%d di canzoni</item>
+        <item quantity="other">%d canzoni</item>
+    </plurals>
 </resources>
