@@ -283,9 +283,16 @@ fun QueueMenu(
                         text = stringResource(R.string.start_radio),
                         onClick = {
                             onDismiss()
-                            playerConnection.playQueue(
-                                YouTubeQueue.radio(mediaMetadata)
-                            )
+                            val currentMediaId = playerConnection.player.currentMediaItemIndex.let {
+                                playerConnection.player.getMediaItemAt(it).mediaId
+                            }
+                            if (mediaMetadata.id == currentMediaId) {
+                                playerConnection.startRadioSeamlessly()
+                            } else {
+                                playerConnection.playQueue(
+                                    YouTubeQueue.radio(mediaMetadata)
+                                )
+                            }
                         }
                     ),
                     NewAction(
