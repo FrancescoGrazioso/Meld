@@ -116,4 +116,6 @@
     <string name="show_wrapped_card">Vis Wrapped-kort</string>
     <string name="skip_silence_desc">Hopp forbi stille deler av sanger</string>
     <string name="skip_silence_instant">Hopp over stillhet øyeblikkelig</string>
+    <string name="monthly_most_playlist_name">Månedlig mest</string>
+    <string name="restart">Restart</string>
 </resources>
