@@ -100,7 +100,7 @@
     <string name="auto_download_on_like">Scarica automaticamente quando si mette Mi piace</string>
     <string name="auto_download_on_like_desc">Scarica automaticamente i brani quando si mette Mi piace</string>
     <string name="lyrics_auto_scroll">Scorri il testo automaticamente</string>
-    <string name="import_csv">Importa una playlist CSV</string>
+    <string name="import_csv">Importa una playlist csv</string>
     <string name="playlist_add_local_to_synced_note">Nota: non è supportata l\'importazione di brani locali in una playlist sincronizzata o remota. Qualsiasi altra combinazione è valida</string>
     <string name="import_online">Importa una playlist in formato \"m3u\"</string>
     <string name="more_content">Altri contenuti</string>
@@ -736,4 +736,33 @@
         <item quantity="many">%d di canzoni</item>
         <item quantity="other">%d canzoni</item>
     </plurals>
+    <string name="alarm_selected">Selezionato</string>
+    <string name="alarm_playlist_helper">Scegli quale playlist viene riprodotta dalla sveglia.</string>
+    <string name="alarm_add">Aggiungi sveglia</string>
+    <string name="alarm_empty">Nessuna sveglia al momento. Aggiungine una per iniziare la riproduzione programmata.</string>
+    <string name="alarm_disabled">Disabilitato</string>
+    <string name="alarm_random_enabled">Casuale</string>
+    <string name="alarm_random_disabled">In ordine</string>
+    <string name="alarm_next_prefix">Prossimo: %s</string>
+    <string name="alarm_new">Nuova sveglia</string>
+    <string name="alarm_edit">Modifica sveglia</string>
+    <string name="alarm_save">Salva</string>
+    <string name="alarm_time_picker_value">Ora: %s</string>
+    <string name="alarm_delete">Elimina sveglia</string>
+    <string name="alarm_random_song">Riproduci una canzone casuale dalla playlist</string>
+    <string name="alarm_not_scheduled">Non programmata</string>
+    <string name="alarm_battery_optimization_title">Ottimizzazione della batteria</string>
+    <string name="copy_all_lyrics">Copia tutto il testo</string>
+    <string name="change">Cambia</string>
+    <string name="ai_system_prompt">Prompt di sistema</string>
+    <string name="listen_on_metrolist">Ascolta su Metrolist</string>
+    <string name="android_auto">Android Auto</string>
+    <string name="android_auto_visible_sections">Sezioni visibili</string>
+    <string name="android_auto_youtube_playlists">Mostra le playlist suggerite da YouTube</string>
+    <string name="android_auto_youtube_playlists_desc">Visualizza playlist raccomandate da YouTube Music all\'interno della sezione Playlist durante la navigazione con Android Auto</string>
+    <string name="android_auto_target_playlist_auto">Non impostato</string>
+    <string name="added_to_playlist">Aggiunto alla playlist</string>
+    <string name="android_auto_target_playlist_not_set">Nessuna playlist selezionata. Scegline una nelle impostazioni di Android Auto.</string>
+    <string name="time_transfer_source_song">Brano sorgente</string>
+    <string name="alarm_next_trigger">Prossima attivazione</string>
 </resources>
