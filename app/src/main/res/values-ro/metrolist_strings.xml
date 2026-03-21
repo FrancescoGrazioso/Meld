@@ -769,4 +769,23 @@
     <string name="ai_system_prompt_default">Prestabilit</string>
     <string name="ai_system_prompt_reset">Resetează la prestabilit</string>
     <string name="recognition_notification_channel_name">Recunoaștere muzicală</string>
+    <string name="alarm_time">Ora alarmei</string>
+    <string name="alarm_selected">Selectată</string>
+    <string name="alarm_time_picker_value">Ora: %s</string>
+    <string name="recognition_notification_channel_desc">Afișează o notificare în timpul identificării unei melodii din panoul cu setări rapide</string>
+    <string name="recognition_notification_listening">Se ascultă muzica...</string>
+    <string name="recognition_notification_processing">Se identifică...</string>
+    <string name="recognition_notification_no_match">Nicio potrivire găsită</string>
+    <string name="recognition_notification_failed">Recunoaștere eșuată</string>
+    <string name="listen_on_metrolist">Ascultă pe Metrolist</string>
+    <string name="android_auto">Android Auto</string>
+    <string name="android_auto_visible_sections">Secțiuni vizibile</string>
+    <string name="android_auto_reorder_hint">Atinge o secțiune pentru a o activa sau dezactiva.\nȚine apăsat glisorul pentru a reordona. Prima secțiune va fi afișată în mod prestabilit.</string>
+    <string name="android_auto_youtube_playlists">Arată playlisturi sugerate de YouTube</string>
+    <string name="android_auto_youtube_playlists_desc">Arată playlisturi recomandate de YouTube Music în secțiunea Playlisturi atunci când navighezi pe Android Auto</string>
+    <string name="android_auto_target_playlist_desc">Selectează playlistul unde melodiile vor fi salvate atunci când folosești butonul de adăugare rapidă în Android Auto</string>
+    <string name="android_auto_target_playlist">Destinație adăugare rapidă</string>
+    <string name="android_auto_target_playlist_auto">Nesetat</string>
+    <string name="added_to_playlist">Adăugată în playlist</string>
+    <string name="android_auto_target_playlist_not_set">Niciun playlist selectat. Alege unul în setările Android Auto.</string>
 </resources>
