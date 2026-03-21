@@ -12,4 +12,8 @@
     <string name="continuous">បន្តជាប់គ្នា</string>
     <string name="liked">ចូលចិត្ត</string>
     <string name="offline">បានទាញយក</string>
+    <string name="time_transfer_target_song">Brano di destinazione</string>
+    <string name="time_transfer_listen_time_label">Tempo d\'ascolto:</string>
+    <string name="time_transfer_convert">Convertire</string>
+    <string name="song_dropdown_more_results">Scrivi ancora per restringere i risultati (%d in più)</string>
 </resources>
