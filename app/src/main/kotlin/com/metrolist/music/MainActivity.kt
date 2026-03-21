@@ -235,7 +235,13 @@ class MainActivity : ComponentActivity() {
     private var pendingIntent: Intent? = null
     private var latestVersionName by mutableStateOf(BuildConfig.VERSION_NAME)
 
-    private var playerConnection by mutableStateOf<PlayerConnection?>(null)
+    // Keep PlayerConnection as regular property - NOT mutableStateOf to prevent UI recomposition
+    // when it becomes null during onStop. Only update the snapshot for Compose when needed.
+    private var playerConnection: PlayerConnection? = null
+    
+    // This is the snapshot we pass to Compose - changes here trigger recomposition
+    private var playerConnectionSnapshot by mutableStateOf<PlayerConnection?>(null)
+    
     private var isServiceBound = false
 
     private val serviceConnection =
@@ -247,6 +253,7 @@ class MainActivity : ComponentActivity() {
                 if (service is MusicBinder) {
                     try {
                         playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
+                        playerConnectionSnapshot = playerConnection
                         Timber.tag("MainActivity").d("PlayerConnection created successfully")
                         // Connect Listen Together manager to player
                         listenTogetherManager.setPlayerConnection(playerConnection)
@@ -257,6 +264,7 @@ class MainActivity : ComponentActivity() {
                             delay(500)
                             try {
                                 playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
+                                playerConnectionSnapshot = playerConnection
                                 listenTogetherManager.setPlayerConnection(playerConnection)
                             } catch (e2: Exception) {
                                 Timber.tag("MainActivity").e(e2, "Failed to create PlayerConnection on retry")
@@ -270,7 +278,8 @@ class MainActivity : ComponentActivity() {
                 // Disconnect Listen Together manager
                 listenTogetherManager.setPlayerConnection(null)
                 playerConnection?.dispose()
-                playerConnection = null
+                // DO NOT null out playerConnection here - keep it for when service reconnects
+                // DO NOT update playerConnectionSnapshot - this is the key to preventing recomposition
             }
         }
 
@@ -284,7 +293,8 @@ class MainActivity : ComponentActivity() {
             isServiceBound = false
             listenTogetherManager.setPlayerConnection(null)
             playerConnection?.dispose()
-            playerConnection = null
+            // DO NOT null out playerConnection here - keep it for reconnection
+            // DO NOT update playerConnectionSnapshot - this prevents UI recomposition
         }
     }
 
@@ -306,16 +316,23 @@ class MainActivity : ComponentActivity() {
         // here ensures it persists independently of binding state, so Media3 never needs to
         // re-start it from a background context.
         startService(Intent(this, MusicService::class.java))
-        bindService(
-            Intent(this, MusicService::class.java),
-            serviceConnection,
-            BIND_AUTO_CREATE,
-        )
-        isServiceBound = true
+        
+        // Bind to service - if already bound, this is a no-op but ensures we stay connected
+        if (!isServiceBound) {
+            bindService(
+                Intent(this, MusicService::class.java),
+                serviceConnection,
+                BIND_AUTO_CREATE,
+            )
+            isServiceBound = true
+        }
     }
 
     override fun onStop() {
-        safeUnbindService("onStop()")
+        // CRITICAL FIX: Do NOT unbind service or dispose playerConnection here!
+        // Just disconnect ListenTogetherManager to stop audio routing
+        // This prevents UI recomposition when switching apps
+        listenTogetherManager.setPlayerConnection(null)
         super.onStop()
     }
 
@@ -327,6 +344,12 @@ class MainActivity : ComponentActivity() {
         ) {
             stopService(Intent(this, MusicService::class.java))
         }
+        
+        // Full cleanup - only on actual destroy
+        playerConnection?.dispose()
+        playerConnection = null
+        playerConnectionSnapshot = null
+        
         safeUnbindService("onDestroy()")
     }
 
@@ -378,7 +401,7 @@ class MainActivity : ComponentActivity() {
             MetrolistApp(
                 latestVersionName = latestVersionName,
                 onLatestVersionNameChange = { latestVersionName = it },
-                playerConnection = playerConnection,
+                playerConnection = playerConnectionSnapshot,
                 database = database,
                 downloadUtil = downloadUtil,
                 syncUtils = syncUtils,
