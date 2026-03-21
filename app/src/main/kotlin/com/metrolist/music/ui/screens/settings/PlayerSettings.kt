@@ -6,6 +6,7 @@
 package com.metrolist.music.ui.screens.settings
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.height
@@ -23,7 +24,6 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,12 +73,22 @@ import com.metrolist.music.ui.utils.backToMain
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import kotlin.math.roundToInt
+import com.metrolist.music.ui.component.SleepTimerDialog
+import com.metrolist.music.constants.SleepTimerEnabledKey
+import com.metrolist.music.constants.SleepTimerRepeatKey
+import com.metrolist.music.constants.SleepTimerCustomDaysKey
+import com.metrolist.music.constants.SleepTimerEndTimeKey
+import com.metrolist.music.constants.SleepTimerStartTimeKey
+import com.metrolist.music.constants.SleepTimerDayTimesKey
+import com.metrolist.music.ui.component.decodeDayTimes
+import com.metrolist.music.ui.component.encodeDayTimes
+import com.metrolist.music.constants.SleepTimerFadeOutKey
+import com.metrolist.music.constants.SleepTimerStopAfterCurrentSongKey
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlayerSettings(
-    navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
+    navController: NavController
 ) {
     val (audioQuality, onAudioQualityChange) = rememberEnumPreference(
         AudioQualityKey,
@@ -489,6 +499,178 @@ fun PlayerSettings(
                 ))
             }
         )
+
+        Spacer(modifier = Modifier.height(27.dp))
+
+        var showSleepTimerDialog by remember { mutableStateOf(false) }
+
+        val (sleepTimerEnabled, onSleepTimerEnabledChange) = rememberPreference(
+            SleepTimerEnabledKey,
+            defaultValue = false
+        )
+        val (sleepTimerRepeat, onSleepTimerRepeatChange) = rememberPreference(
+            SleepTimerRepeatKey,
+            defaultValue = "daily"
+        )
+        val (sleepTimerStartTime, onSleepTimerStartTimeChange) = rememberPreference(
+            SleepTimerStartTimeKey,
+            defaultValue = "22:00"
+        )
+        val (sleepTimerEndTime, onSleepTimerEndTimeChange) = rememberPreference(
+            SleepTimerEndTimeKey,
+            defaultValue = "06:00"
+        )
+        val (sleepTimerCustomDays, onSleepTimerCustomDaysChange) = rememberPreference(
+            SleepTimerCustomDaysKey,
+            defaultValue = "0,1,2,3,4"
+        )
+        // Per-day time ranges used in custom mode
+        val (sleepTimerDayTimes, onSleepTimerDayTimesChange) = rememberPreference(
+            SleepTimerDayTimesKey,
+            defaultValue = ""
+        )
+
+        val (sleepTimerStopAfterCurrentSong, onSleepTimerStopAfterCurrentSongChange) = rememberPreference (
+        SleepTimerStopAfterCurrentSongKey,
+        defaultValue = false)
+        val (sleepTimerFadeOut, onSleepTimerFadeOutChange) = rememberPreference(
+            SleepTimerFadeOutKey,
+            false
+        )
+
+        if (showSleepTimerDialog) {
+            val customDays = sleepTimerCustomDays.split(",").mapNotNull { it.toIntOrNull() }
+            val dayTimesMap = decodeDayTimes(sleepTimerDayTimes)
+
+            SleepTimerDialog(
+                isVisible = true,
+                onDismiss = { showSleepTimerDialog = false },
+                onConfirm = { repeat, startTime, endTime, days, dayTimes ->
+                    onSleepTimerRepeatChange(repeat)
+                    onSleepTimerStartTimeChange(startTime)
+                    onSleepTimerEndTimeChange(endTime)
+                    onSleepTimerCustomDaysChange(days?.joinToString(",") ?: "0,1,2,3,4")
+                    onSleepTimerDayTimesChange(encodeDayTimes(dayTimes))
+                    showSleepTimerDialog = false
+                },
+                initialRepeat = sleepTimerRepeat,
+                initialStartTime = sleepTimerStartTime,
+                initialEndTime = sleepTimerEndTime,
+                initialCustomDays = customDays,
+                initialDayTimes = dayTimesMap
+            )
+        }
+
+        Material3SettingsGroup(
+            title = stringResource(R.string.sleep_timer),
+            items = buildList {
+                add(
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.time_auto),
+                        title = { Text(stringResource(R.string.enable_automatic_sleeptimer)) },
+                        description = { Text(stringResource(R.string.sleeptimer_description)) },
+                        trailingContent = {
+                            Switch(
+                                checked = sleepTimerEnabled,
+                                onCheckedChange = onSleepTimerEnabledChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (sleepTimerEnabled) R.drawable.check else R.drawable.close
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            )
+                        },
+                        onClick = { onSleepTimerEnabledChange(!sleepTimerEnabled) }
+                    )
+                )
+
+                    add(
+                        Material3SettingsItem(
+                            icon = painterResource(R.drawable.baseline_event_repeat_24),
+                            title = { Text(stringResource(R.string.sleep_timer_repeat)) },
+                            description = {
+                                Text(
+                                    stringResource(R.string.sleep_timer_repeat_description)
+                                )
+                            },
+                            trailingContent = {
+                                Switch(
+                                    checked = sleepTimerEnabled,
+                                    onCheckedChange = {showSleepTimerDialog = true},
+                                    thumbContent = {
+                                        Icon(
+                                            painter = painterResource(
+                                                id = if (sleepTimerEnabled) R.drawable.check else R.drawable.close
+                                            ),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize)
+                                        )
+                                    }
+                                )
+                            },
+                            onClick = { showSleepTimerDialog = true }
+                        )
+                    )
+
+
+                add(
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.more_time),
+                        title = { Text(stringResource(R.string.sleep_timer_stop_after_current_song_title)) },
+                        description = { Text(stringResource(R.string.sleep_timer_stop_after_current_song_description)) },
+                        trailingContent = {
+                            Switch(
+                                checked = sleepTimerStopAfterCurrentSong,
+                                onCheckedChange = onSleepTimerStopAfterCurrentSongChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (sleepTimerStopAfterCurrentSong) R.drawable.check else R.drawable.close
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            )
+                        },
+                        onClick = { onSleepTimerStopAfterCurrentSongChange(!sleepTimerStopAfterCurrentSong) }
+                    )
+                )
+
+                add(
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.timer_arrow_down),
+                        title = { Text(stringResource(R.string.sleep_timer_fade_out_title)) },
+                        description = { Text(stringResource(R.string.sleep_timer_fade_out_description)) },
+                        trailingContent = {
+                            Switch(
+                                checked = sleepTimerFadeOut,
+                                onCheckedChange = onSleepTimerFadeOutChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter = painterResource(
+                                            id = if (sleepTimerFadeOut) R.drawable.check else R.drawable.close
+                                        ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize)
+                                    )
+                                }
+                            )
+                        },
+                        onClick = { onSleepTimerFadeOutChange(!sleepTimerFadeOut) }
+                    )
+                )
+
+            }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        AlarmSettingsSection()
 
         Spacer(modifier = Modifier.height(27.dp))
 
