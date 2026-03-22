@@ -1089,9 +1089,7 @@ private fun AddToPlaylistButton(
     onClick: () -> Unit,
     outlineColor: Color,
     onSurfaceColor: Color,
-)
-
-{
+) {
     val contentDescription = stringResource(R.string.add_to_playlist_desc)
 
     Box(

@@ -491,6 +491,9 @@
     <string name="enable_dynamic_icon">Enable dynamic icon</string>
     <string name="mini_player">Mini-player</string>
     <string name="pure_black_mini_player">Pure black mini-player</string>
+    <string name="mini_player_background_style">Mini player background style</string>
+    <string name="transparent">Transparent</string>
+    <string name="mini_player_background_not_available">Not available when new mini player is disabled</string>
     <string name="cache_size_warning_title">Hold on!</string>
     <string name="cache_size_warning_message">You\'ve chosen a cache size limit smaller than what the app is currently using (%1$s). If you continue, the app may remove some cached %2$s to match the new limit. Proceed anyway?</string>
     <string name="cache_size_warning_confirm">Continue</string>

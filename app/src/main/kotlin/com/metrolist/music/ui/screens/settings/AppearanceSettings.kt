@@ -114,6 +114,8 @@ import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import com.metrolist.music.constants.MiniPlayerBackgroundStyle
+import com.metrolist.music.constants.MiniPlayerBackgroundStyleKey
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -166,6 +168,17 @@ fun AppearanceSettings(
         UseNewPlayerDesignKey,
         defaultValue = true
     )
+    val (miniPlayerBackground, onMiniPlayerBackgroundChange) = rememberEnumPreference(
+        MiniPlayerBackgroundStyleKey,
+        defaultValue = MiniPlayerBackgroundStyle.DEFAULT,
+    )
+
+    val availableMiniPlayerBackgroundStyles = MiniPlayerBackgroundStyle.entries.filter {
+        it != MiniPlayerBackgroundStyle.BLUR || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+    }
+
+    var showMiniPlayerBackgroundDialog by rememberSaveable { mutableStateOf(false) }
+
     val (useNewMiniPlayerDesign, onUseNewMiniPlayerDesignChange) = rememberPreference(
         UseNewMiniPlayerDesignKey,
         defaultValue = true
@@ -539,6 +552,28 @@ fun AppearanceSettings(
                     PlayerBackgroundStyle.BLUR -> stringResource(R.string.player_background_blur)
                 }
             }
+        )
+    }
+
+    if (showMiniPlayerBackgroundDialog) {
+        EnumDialog(
+            onDismiss = { showMiniPlayerBackgroundDialog = false },
+            onSelect = {
+                onMiniPlayerBackgroundChange(it)
+                showMiniPlayerBackgroundDialog = false
+            },
+            title = stringResource(R.string.mini_player_background_style),
+            current = miniPlayerBackground,
+            values = availableMiniPlayerBackgroundStyles,
+            valueText = {
+                when (it) {
+                    MiniPlayerBackgroundStyle.DEFAULT     -> stringResource(R.string.follow_theme)
+                    MiniPlayerBackgroundStyle.TRANSPARENT -> stringResource(R.string.transparent)
+                    MiniPlayerBackgroundStyle.BLUR        -> stringResource(R.string.player_background_blur)
+                    MiniPlayerBackgroundStyle.GRADIENT    -> stringResource(R.string.gradient)
+                    MiniPlayerBackgroundStyle.PURE_BLACK  -> stringResource(R.string.pure_black)
+                }
+            },
         )
     }
 
@@ -1003,25 +1038,37 @@ fun AppearanceSettings(
                 )
                 add(
                     Material3SettingsItem(
-                        icon = painterResource(R.drawable.contrast),
-                        title = { Text(stringResource(R.string.pure_black_mini_player)) },
-                        trailingContent = {
-                            Switch(
-                                checked = pureBlackMiniPlayer,
-                                onCheckedChange = onPureBlackMiniPlayerChange,
-                                thumbContent = {
-                                    Icon(
-                                        painter = painterResource(
-                                            id = if (pureBlackMiniPlayer) R.drawable.check else R.drawable.close
-                                        ),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize)
-                                    )
-                                }
+                        icon = painterResource(R.drawable.gradient),
+                        title = {
+                            Text(
+                                text = stringResource(R.string.mini_player_background_style),
+                                color = if (!useNewMiniPlayerDesign)
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                else
+                                    MaterialTheme.colorScheme.onSurface,
                             )
                         },
-                        onClick = { onPureBlackMiniPlayerChange(!pureBlackMiniPlayer) }
-                    )
+                        description = {
+                            Text(
+                                text = if (!useNewMiniPlayerDesign) {
+                                    stringResource(R.string.mini_player_background_not_available)
+                                } else {
+                                    when (miniPlayerBackground) {
+                                        MiniPlayerBackgroundStyle.DEFAULT     -> stringResource(R.string.follow_theme)
+                                        MiniPlayerBackgroundStyle.TRANSPARENT -> stringResource(R.string.transparent)
+                                        MiniPlayerBackgroundStyle.BLUR        -> stringResource(R.string.player_background_blur)
+                                        MiniPlayerBackgroundStyle.GRADIENT    -> stringResource(R.string.gradient)
+                                        MiniPlayerBackgroundStyle.PURE_BLACK  -> stringResource(R.string.pure_black)
+                                    }
+                                },
+                                color = if (!useNewMiniPlayerDesign)
+                                    MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                else
+                                    MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        },
+                        onClick = { if (useNewMiniPlayerDesign) showMiniPlayerBackgroundDialog = true },
+                    ),
                 )
             }
         )
