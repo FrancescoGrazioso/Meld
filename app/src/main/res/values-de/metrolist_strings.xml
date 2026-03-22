@@ -773,4 +773,11 @@
     <string name="android_auto_reorder_hint">Tippen Sie auf einen Abschnitt, um ihn zu aktivieren oder zu deaktivieren.\nHalten Sie den Ziehgriff gedrückt, um die Reihenfolge zu ändern. Standardmäßig wird der erste Abschnitt angezeigt.</string>
     <string name="android_auto_youtube_playlists">Von YouTube vorgeschlagene Playlists anzeigen</string>
     <string name="android_auto_youtube_playlists_desc">Zeige die von YouTube Music empfohlenen Playlisten im Bereich „Playlists“ an, wenn du mit Android Auto navigierst</string>
+    <string name="alarm_battery_optimization_desc">Deaktivieren Sie die Akkuoptimierung, um die Zuverlässigkeit des Alarms im Hintergrund zu verbessern.</string>
+    <string name="copy_all_lyrics">Alle Songtexte kopieren</string>
+    <string name="ai_system_prompt">Systemmeldung</string>
+    <string name="added_to_playlist">Zur Playliste hinzugefügt</string>
+    <string name="android_auto_target_playlist_not_set">Es wurde keine Playliste ausgewählt. Wähle eine in den Android Auto-Einstellungen aus.</string>
+    <string name="android_auto_target_playlist_desc">Wählen Sie die Playliste aus, in der die Titel gespeichert werden sollen, wenn Sie die Schnellhinzufügen-Schaltfläche in Android Auto verwenden</string>
+    <string name="android_auto_target_playlist_auto">Nicht festgelegt</string>
 </resources>
