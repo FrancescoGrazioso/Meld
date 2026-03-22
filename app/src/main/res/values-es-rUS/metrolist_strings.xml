@@ -569,4 +569,6 @@
     <string name="deleting">Borrando…</string>
     <string name="enable_lrclib_desc">Base de datos de letras sincronizada impulsada por la comunidad</string>
     <string name="youtube_music_lyrics_note">NOTA: Las letras de YouTube Music se mostrarán automáticamente cuando no haya otras letras disponibles. Las letras de YouTube Music no suelen estar sincronizadas.</string>
+    <string name="weekly_most_playlist_name">Lo más escuchado de la semana</string>
+    <string name="monthly_most_playlist_name">Lo más escuchado del mes</string>
 </resources>
