@@ -25,7 +25,10 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -47,6 +50,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalIsPlayerExpanded
@@ -67,7 +71,8 @@ import java.net.URLEncoder
 @Composable
 fun SearchScreen(
     navController: NavController,
-    pureBlack: Boolean
+    pureBlack: Boolean,
+    savedStateHandle: SavedStateHandle
 ) {
     val database = LocalDatabase.current
     val coroutineScope = rememberCoroutineScope()
@@ -77,13 +82,47 @@ fun SearchScreen(
     val isPlayerExpanded = LocalIsPlayerExpanded.current
     val lifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current
     val lazyListState = rememberLazyListState()
+    var isHandlingScrollToTop by remember { mutableStateOf(false) }
+
+    val scrollToTopCount by savedStateHandle .getStateFlow("scrollToTopCount", 0) .collectAsState(initial = 0)
+
+    var lastHandledCount by rememberSaveable { mutableIntStateOf(0) }
+    LaunchedEffect(Unit) {
+        if (!isPlayerExpanded) {
+            kotlinx.coroutines.delay(100)
+            try {
+                focusRequester.requestFocus()
+                keyboardController?.show()
+            } catch (e: Exception) { }
+        }
+    }
+    LaunchedEffect(scrollToTopCount) {
+        if (scrollToTopCount > lastHandledCount) {
+            lastHandledCount = scrollToTopCount
+            isHandlingScrollToTop = true
+
+            kotlinx.coroutines.delay(100)
+
+            if (!isPlayerExpanded) {
+                focusManager.clearFocus(force = true)
+                kotlinx.coroutines.delay(50)
+                try {
+                    focusRequester.requestFocus()
+                    keyboardController?.show()
+                } catch (e: Exception) {
+                }
+            }
+
+            kotlinx.coroutines.delay(500)
+            isHandlingScrollToTop = false
+        }
+    }
 
     var searchSource by rememberEnumPreference(SearchSourceKey, SearchSource.ONLINE)
     var query by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
     }
     val pauseSearchHistory by rememberPreference(PauseSearchHistoryKey, defaultValue = false)
-    var isFirstLaunch by rememberSaveable { mutableStateOf(true) }
 
     val onSearch: (String) -> Unit = remember {
         { searchQuery ->
@@ -253,21 +292,15 @@ fun SearchScreen(
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> {
+                    if (isHandlingScrollToTop) return@LifecycleEventObserver
                     // Always hide keyboard when resuming if player is expanded
                     if (isPlayerExpanded) {
                         keyboardController?.hide()
                         focusManager.clearFocus()
-                    } else if (isFirstLaunch) {
-                        // Only request focus on first launch when player is not expanded
-                        try {
-                            focusRequester.requestFocus()
-                        } catch (e: Exception) {
-                            // Ignore focus request failures
-                        }
-                        isFirstLaunch = false
                     }
                 }
                 Lifecycle.Event.ON_PAUSE -> {
+                    if (isHandlingScrollToTop) return@LifecycleEventObserver
                     // Clear focus when pausing to prevent keyboard from showing on resume
                     focusManager.clearFocus()
                     keyboardController?.hide()

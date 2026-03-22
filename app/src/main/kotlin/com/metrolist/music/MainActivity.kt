@@ -40,7 +40,6 @@ import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -579,7 +578,6 @@ class MainActivity : ComponentActivity() {
                         .fillMaxSize()
                         .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface),
             ) {
-                val focusManager = LocalFocusManager.current
                 val density = LocalDensity.current
                 val configuration = LocalWindowInfo.current
                 val cutoutInsets = WindowInsets.displayCutout
@@ -975,15 +973,30 @@ class MainActivity : ComponentActivity() {
                             }
                         },
                         bottomBar = {
+                            val currentBackStackEntry = navController.currentBackStackEntry // reads reactively outside remember
+
                             val onNavItemClick: (Screens, Boolean) -> Unit =
-                                remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState) {
+                                remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState, currentBackStackEntry) {
                                     { screen: Screens, isSelected: Boolean ->
                                         if (playerBottomSheetState.isExpanded) {
                                             playerBottomSheetState.collapseSoft()
                                         }
-
                                         if (isSelected) {
-                                            navController.currentBackStackEntry?.savedStateHandle?.set("scrollToTop", true)
+                                            val targetEntry = try {
+                                                val route = navController.currentBackStackEntry?.destination?.route
+                                                if (route == "search/{query}") {
+                                                    // Always use the LIVE currentBackStackEntry, not the captured one
+                                                    navController.currentBackStackEntry
+                                                } else {
+                                                    navController.getBackStackEntry("search_input")
+                                                }
+                                            } catch (e: Exception) {
+                                                null
+                                            }
+
+                                            val current = targetEntry?.savedStateHandle?.get<Int>("scrollToTopCount") ?: 0
+                                            targetEntry?.savedStateHandle?.set("scrollToTopCount", current + 1)
+
                                             coroutineScope.launch {
                                                 topAppBarScrollBehavior.state.resetHeightOffset()
                                             }
