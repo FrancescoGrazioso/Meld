@@ -115,7 +115,7 @@ fun AppNavigationRail(
                 selected = isSelected,
                 onClick = {
                     if (!isSearchItem) {
-                        onItemClick(screen, isSelected)
+                        onItemClick(screen, currentIsSelected)
                     }
                     // For search item, click is handled via InteractionSource
                 },
@@ -195,7 +195,7 @@ fun AppNavigationBar(
                 selected = isSelected,
                 onClick = {
                     if (!isSearchItem) {
-                        onItemClick(screen, isSelected)
+                        onItemClick(screen, currentIsSelected)
                     }
                     // For search item, click is handled via InteractionSource
                 },

@@ -984,18 +984,24 @@ class MainActivity : ComponentActivity() {
                                         if (isSelected) {
                                             val targetEntry = try {
                                                 val route = navController.currentBackStackEntry?.destination?.route
-                                                if (route == "search/{query}") {
-                                                    // Always use the LIVE currentBackStackEntry, not the captured one
-                                                    navController.currentBackStackEntry
-                                                } else {
+                                                if (route == "search/{query}" || route == "search_input") {
+                                                    // For search screens, use search_input entry
                                                     navController.getBackStackEntry("search_input")
+                                                } else {
+                                                    // For other screens, use current entry
+                                                    navController.currentBackStackEntry
                                                 }
                                             } catch (e: Exception) {
                                                 null
                                             }
 
-                                            val current = targetEntry?.savedStateHandle?.get<Int>("scrollToTopCount") ?: 0
-                                            targetEntry?.savedStateHandle?.set("scrollToTopCount", current + 1)
+                                            // Use appropriate key based on screen type
+                                            if (screen == Screens.Search) {
+                                                val current = targetEntry?.savedStateHandle?.get<Int>("scrollToTopCount") ?: 0
+                                                targetEntry?.savedStateHandle?.set("scrollToTopCount", current + 1)
+                                            } else {
+                                                targetEntry?.savedStateHandle?.set("scrollToTop", true)
+                                            }
 
                                             coroutineScope.launch {
                                                 topAppBarScrollBehavior.state.resetHeightOffset()
