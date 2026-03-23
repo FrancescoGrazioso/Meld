@@ -205,6 +205,11 @@ val ArtistSongSortDescendingKey = booleanPreferencesKey("artistSongSortDescendin
 val MixSortTypeKey = stringPreferencesKey("mixSortType")
 val MixSortDescendingKey = booleanPreferencesKey("albumSortDescending")
 
+val SpotifyPlaylistSortTypeKey = stringPreferencesKey("spotifyPlaylistSortType")
+val SpotifyPlaylistSortDescendingKey = booleanPreferencesKey("spotifyPlaylistSortDescending")
+val SpotifyLikedSortTypeKey = stringPreferencesKey("spotifyLikedSortType")
+val SpotifyLikedSortDescendingKey = booleanPreferencesKey("spotifyLikedSortDescending")
+
 val SongFilterKey = stringPreferencesKey("songFilter")
 val ArtistFilterKey = stringPreferencesKey("artistFilter")
 val AlbumFilterKey = stringPreferencesKey("albumFilter")
@@ -325,6 +330,13 @@ enum class MixSortType {
     CREATE_DATE,
     NAME,
     LAST_UPDATED,
+}
+
+enum class SpotifySortType {
+    ORIGINAL,
+    NAME,
+    ARTIST,
+    DURATION,
 }
 
 enum class GridItemSize {

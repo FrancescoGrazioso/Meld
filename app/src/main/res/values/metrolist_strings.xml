@@ -439,6 +439,9 @@
     <string name="spotify_track_not_found_on_spotify">Could not find this track on Spotify</string>
     <string name="spotify_searching">Searching on Spotify…</string>
 
+    <string name="sort_by_original">Original order</string>
+    <string name="sort_by_duration">Duration</string>
+
     <string name="details_desc">View the song\'s information</string>
     <string name="edit_desc">Change the title or artist</string>
     <string name="start_radio_desc">Create a station based on this item</string>

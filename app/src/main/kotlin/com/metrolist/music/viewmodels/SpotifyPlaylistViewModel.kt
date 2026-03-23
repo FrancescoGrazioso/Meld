@@ -48,6 +48,9 @@ constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
@@ -62,46 +65,58 @@ constructor(
         loadPlaylist()
     }
 
+    fun refresh() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isRefreshing.value = true
+            loadPlaylistInternal()
+            _isRefreshing.value = false
+        }
+    }
+
     private fun loadPlaylist() {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.value = true
-            _error.value = null
+            loadPlaylistInternal()
+        }
+    }
 
-            Spotify.playlist(playlistId).onSuccess { pl ->
-                _playlist.value = pl
-            }.onFailure { e ->
-                Timber.e(e, "Failed to load Spotify playlist metadata")
-                _error.value = e.message ?: "Failed to load playlist info"
+    private suspend fun loadPlaylistInternal() {
+        _error.value = null
+
+        Spotify.playlist(playlistId).onSuccess { pl ->
+            _playlist.value = pl
+        }.onFailure { e ->
+            Timber.e(e, "Failed to load Spotify playlist metadata")
+            _error.value = e.message ?: "Failed to load playlist info"
+        }
+
+        Spotify.playlistTracks(playlistId, limit = 100, offset = 0).onSuccess { paging ->
+            val allItems = paging.items
+                .filter { it.track != null && !it.isLocal }
+                .toMutableList()
+
+            var offset = allItems.size
+            val total = paging.total
+            while (offset < total) {
+                Spotify.playlistTracks(playlistId, limit = 100, offset = offset)
+                    .onSuccess { nextPage ->
+                        val nextItems = nextPage.items
+                            .filter { it.track != null && !it.isLocal }
+                        allItems.addAll(nextItems)
+                        offset += nextItems.size
+                    }
+                    .onFailure {
+                        offset = total
+                    }
             }
 
-            Spotify.playlistTracks(playlistId, limit = 100, offset = 0).onSuccess { paging ->
-                val allItems = paging.items
-                    .filter { it.track != null && !it.isLocal }
-                    .toMutableList()
-
-                var offset = allItems.size
-                val total = paging.total
-                while (offset < total) {
-                    Spotify.playlistTracks(playlistId, limit = 100, offset = offset)
-                        .onSuccess { nextPage ->
-                            val nextItems = nextPage.items
-                                .filter { it.track != null && !it.isLocal }
-                            allItems.addAll(nextItems)
-                            offset += nextItems.size
-                        }
-                        .onFailure {
-                            offset = total
-                        }
-                }
-
-                _playlistItems.value = allItems
-                _tracks.value = allItems.mapNotNull { it.track }
-                _isLoading.value = false
-            }.onFailure { e ->
-                _error.value = e.message ?: "Failed to load playlist tracks"
-                _isLoading.value = false
-                Timber.e(e, "Failed to load Spotify playlist tracks")
-            }
+            _playlistItems.value = allItems
+            _tracks.value = allItems.mapNotNull { it.track }
+            _isLoading.value = false
+        }.onFailure { e ->
+            _error.value = e.message ?: "Failed to load playlist tracks"
+            _isLoading.value = false
+            Timber.e(e, "Failed to load Spotify playlist tracks")
         }
     }
 

@@ -27,6 +27,9 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -57,6 +60,9 @@ import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
 import com.metrolist.music.constants.ListThumbnailSize
+import com.metrolist.music.constants.SpotifyLikedSortDescendingKey
+import com.metrolist.music.constants.SpotifyLikedSortTypeKey
+import com.metrolist.music.constants.SpotifySortType
 import com.metrolist.music.constants.ThumbnailCornerRadius
 import com.metrolist.music.playback.queues.SpotifyLikedSongsQueue
 import com.metrolist.music.ui.component.DraggableScrollbar
@@ -64,10 +70,13 @@ import com.metrolist.music.ui.component.IconButton
 import com.metrolist.music.ui.component.ItemThumbnail
 import com.metrolist.music.ui.component.ListItem
 import com.metrolist.music.ui.component.LocalMenuState
+import com.metrolist.music.ui.component.SortHeader
 import com.metrolist.music.ui.menu.SpotifyTrackMenu
 import com.metrolist.music.ui.utils.backToMain
 import com.metrolist.music.utils.joinByBullet
 import com.metrolist.music.utils.makeTimeString
+import com.metrolist.music.utils.rememberEnumPreference
+import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.playback.SpotifyYouTubeMapper
 import com.metrolist.music.viewmodels.SpotifyLikedSongsViewModel
@@ -88,9 +97,20 @@ fun SpotifyLikedSongsScreen(
     val tracks by viewModel.tracks.collectAsState()
     val total by viewModel.total.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsState()
     val error by viewModel.error.collectAsState()
 
+    val (sortType, onSortTypeChange) = rememberEnumPreference(
+        SpotifyLikedSortTypeKey,
+        SpotifySortType.ORIGINAL,
+    )
+    val (sortDescending, onSortDescendingChange) = rememberPreference(
+        SpotifyLikedSortDescendingKey,
+        true,
+    )
+
     val lazyListState = rememberLazyListState()
+    val pullRefreshState = rememberPullToRefreshState()
 
     val mapper = remember { SpotifyYouTubeMapper(database) }
 
@@ -99,11 +119,23 @@ fun SpotifyLikedSongsScreen(
         mutableStateOf(TextFieldValue())
     }
 
-    val filteredTracks = remember(tracks, query) {
+    val sortedTracks = remember(tracks, sortType, sortDescending) {
+        val sorted = when (sortType) {
+            SpotifySortType.ORIGINAL -> tracks
+            SpotifySortType.NAME -> tracks.sortedBy { it.name.lowercase() }
+            SpotifySortType.ARTIST -> tracks.sortedBy {
+                it.artists.firstOrNull()?.name?.lowercase() ?: ""
+            }
+            SpotifySortType.DURATION -> tracks.sortedBy { it.durationMs }
+        }
+        if (sortDescending && sortType != SpotifySortType.ORIGINAL) sorted.reversed() else sorted
+    }
+
+    val filteredTracks = remember(sortedTracks, query) {
         if (query.text.isEmpty()) {
-            tracks
+            sortedTracks
         } else {
-            tracks.filter { track ->
+            sortedTracks.filter { track ->
                 track.name.contains(query.text, ignoreCase = true) ||
                     track.artists.any { it.name.contains(query.text, ignoreCase = true) }
             }
@@ -122,7 +154,21 @@ fun SpotifyLikedSongsScreen(
         query = TextFieldValue()
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    PullToRefreshBox(
+        state = pullRefreshState,
+        isRefreshing = isRefreshing,
+        onRefresh = viewModel::refresh,
+        indicator = {
+            Indicator(
+                isRefreshing = isRefreshing,
+                state = pullRefreshState,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(LocalPlayerAwareWindowInsets.current.asPaddingValues()),
+            )
+        },
+        modifier = Modifier.fillMaxSize(),
+    ) {
         LazyColumn(
             state = lazyListState,
             contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
@@ -167,6 +213,30 @@ fun SpotifyLikedSongsScreen(
                                 Text(stringResource(R.string.play))
                             }
                         }
+                    }
+                }
+            }
+
+            if (!isLoading && tracks.isNotEmpty()) {
+                item(key = "sort") {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    ) {
+                        SortHeader(
+                            sortType = sortType,
+                            sortDescending = sortDescending,
+                            onSortTypeChange = onSortTypeChange,
+                            onSortDescendingChange = onSortDescendingChange,
+                            sortTypeText = { type ->
+                                when (type) {
+                                    SpotifySortType.ORIGINAL -> R.string.sort_by_original
+                                    SpotifySortType.NAME -> R.string.sort_by_name
+                                    SpotifySortType.ARTIST -> R.string.sort_by_artist
+                                    SpotifySortType.DURATION -> R.string.sort_by_duration
+                                }
+                            },
+                        )
                     }
                 }
             }
@@ -223,13 +293,13 @@ fun SpotifyLikedSongsScreen(
             }
 
             // Track list
-            val displayTracks = if (isSearching) filteredTracks else tracks
+            val displayTracks = if (isSearching) filteredTracks else sortedTracks
             itemsIndexed(
                 items = displayTracks,
                 key = { index, track -> "liked_${track.id}_$index" },
             ) { index, track ->
                 val thumbnailUrl = SpotifyMapper.getTrackThumbnail(track)
-                val originalIndex = if (isSearching) tracks.indexOf(track).coerceAtLeast(0) else index
+                val originalIndex = if (isSearching) sortedTracks.indexOf(track).coerceAtLeast(0) else index
 
                 ListItem(
                     title = track.name,

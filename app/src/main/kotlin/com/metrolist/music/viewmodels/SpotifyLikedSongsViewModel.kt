@@ -39,6 +39,9 @@ constructor(
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
     private val _error = MutableStateFlow<String?>(null)
     val error = _error.asStateFlow()
 
@@ -46,44 +49,55 @@ constructor(
         loadLikedSongs()
     }
 
+    fun refresh() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isRefreshing.value = true
+            loadLikedSongsInternal()
+            _isRefreshing.value = false
+        }
+    }
+
     private fun loadLikedSongs() {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoading.value = true
-            _error.value = null
+            loadLikedSongsInternal()
+        }
+    }
 
-            Spotify.likedSongs(limit = 50, offset = 0).onSuccess { paging ->
-                val allTracks = paging.items
-                    .map { it.track }
-                    .filter { !it.isLocal }
-                    .toMutableList()
+    private suspend fun loadLikedSongsInternal() {
+        _error.value = null
 
-                _total.value = paging.total
+        Spotify.likedSongs(limit = 50, offset = 0).onSuccess { paging ->
+            val allTracks = paging.items
+                .map { it.track }
+                .filter { !it.isLocal }
+                .toMutableList()
 
-                // Load remaining pages
-                var offset = paging.items.size
-                while (offset < paging.total) {
-                    Spotify.likedSongs(limit = 50, offset = offset)
-                        .onSuccess { nextPage ->
-                            val nextTracks = nextPage.items
-                                .map { it.track }
-                                .filter { !it.isLocal }
-                            allTracks.addAll(nextTracks)
-                            offset += nextPage.items.size
-                        }
-                        .onFailure {
-                            offset = paging.total // Stop pagination on error
-                            Timber.e(it, "Failed to load next page of liked songs at offset $offset")
-                        }
-                }
+            _total.value = paging.total
 
-                _tracks.value = allTracks
-                _isLoading.value = false
-                Timber.d("SpotifyLikedSongs: Loaded ${allTracks.size} tracks (total=${paging.total})")
-            }.onFailure { e ->
-                _error.value = e.message ?: "Failed to load liked songs"
-                _isLoading.value = false
-                Timber.e(e, "Failed to load Spotify liked songs")
+            var offset = paging.items.size
+            while (offset < paging.total) {
+                Spotify.likedSongs(limit = 50, offset = offset)
+                    .onSuccess { nextPage ->
+                        val nextTracks = nextPage.items
+                            .map { it.track }
+                            .filter { !it.isLocal }
+                        allTracks.addAll(nextTracks)
+                        offset += nextPage.items.size
+                    }
+                    .onFailure {
+                        offset = paging.total
+                        Timber.e(it, "Failed to load next page of liked songs at offset $offset")
+                    }
             }
+
+            _tracks.value = allTracks
+            _isLoading.value = false
+            Timber.d("SpotifyLikedSongs: Loaded ${allTracks.size} tracks (total=${paging.total})")
+        }.onFailure { e ->
+            _error.value = e.message ?: "Failed to load liked songs"
+            _isLoading.value = false
+            Timber.e(e, "Failed to load Spotify liked songs")
         }
     }
 
