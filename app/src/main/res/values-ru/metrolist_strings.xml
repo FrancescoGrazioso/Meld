@@ -53,7 +53,7 @@
     <string name="trending">Тренды</string>
     <string name="generating_image">Генерация изображения</string>
     <string name="local_history">Локальная</string>
-    <string name="remote_history">Удалённая</string>
+    <string name="remote_history">Удаленная</string>
     <string name="text_color">Цвет текста</string>
     <string name="background_color">Цвет фона</string>
     <string name="continuous">Непрерывно</string>
@@ -181,7 +181,7 @@
     <string name="scrobble_delay_percent">Задержка скробблинга (в процентах)</string>
     <string name="scrobble_delay_minutes">Задержка скробблинга (в минутах)</string>
     <string name="swipe_song_to_remove">Свайп по песне, чтобы удалить её из плейлиста</string>
-    <string name="last_fm_send_likes">Отправлять лайки/дизлайки</string>
+    <string name="last_fm_send_likes">Отправлять отметки «Нравится»</string>
     <string name="last_fm_send_likes_description">Добавлять/убирать отметку «любимая» на Last.fm, когда ставится/снимается отметка «Нравится» в Metrolist</string>
     <string name="lyrics_romanize_chinese">Романизировать тексты на китайском</string>
     <string name="google_cast">Google Cast</string>
@@ -332,7 +332,7 @@
     <string name="crop_album_art">Обрезать обложку альбома</string>
     <string name="crop_album_art_desc">Принудительно использовать квадратное соотношение сторон, обрезая миниатюры видео</string>
     <string name="keep_screen_on_when_player_is_expanded">Не выключать экран при развернутом плеере</string>
-    <string name="listen_together">Совместное прослушивание</string>
+    <string name="listen_together">Слушать вместе</string>
     <string name="listen_together_server_url">Адрес сервера</string>
     <string name="listen_together_username">Имя пользователя</string>
     <string name="listen_together_connected">Подключено</string>
@@ -353,12 +353,12 @@
     <string name="listen_together_no_logs">Логов пока нет</string>
     <string name="listen_together_description">Слушайте музыку с друзьями в реальном времени. Создайте комнату или присоединитесь к существующей по коду.</string>
     <string name="listen_together_background_disconnect_note">Примечание: возможно отключение, если вы создадите комнату без воспроизведения музыки и затем переключитесь в другое приложение.</string>
-    <string name="listen_together_not_configured">Совместное прослушивание не настроено. Укажите адрес сервера в разделе «Настройки → Интеграции → Совместное прослушивание».</string>
+    <string name="listen_together_not_configured">«Слушать вместе» не настроено. Укажите адрес сервера в разделе «Настройки → Интеграции → Слушать вместе».</string>
     <string name="listen_together_suggestion_received">%1$s предложил(а): %2$s</string>
     <string name="listen_together_suggestion_sent">Предложение отправлено хосту!</string>
     <string name="listen_together_join_request_notification">%1$s хочет присоединиться к комнате</string>
-    <string name="listen_together_notification_channel_name">Совместное прослушивание</string>
-    <string name="listen_together_notification_channel_desc">Уведомления о событиях совместного прослушивания</string>
+    <string name="listen_together_notification_channel_name">Слушать вместе</string>
+    <string name="listen_together_notification_channel_desc">Уведомления о событиях «Слушать вместе»</string>
     <string name="listen_together_room_created">Комната создана: %s</string>
     <string name="listen_together_cannot_edit_username_in_room">Нельзя изменить имя пользователя, находясь в комнате</string>
     <string name="waiting_for_approval">Ожидание одобрения от хоста</string>
@@ -428,9 +428,11 @@
     <string name="cd_dark_mode">Тёмный режим</string>
     <string name="cd_system_mode">Системный режим</string>
     <string name="cd_palette_item">Палитра «%1$s»</string>
-    <string name="listen_together_choose_server">Выбрать сервер</string>
-    <string name="listen_together_custom_server">Пользовательский сервер</string>
-    <string name="listen_together_use_custom_server">Использовать пользовательский сервер</string>
+    <string name="listen_together_choose_server">Выберите сервер</string>
+    <string name="listen_together_custom_server">Свой сервер</string>
+    <string name="listen_together_use_custom_server">Использовать свой сервер</string>
+    <string name="listen_together_auto_approval_joins">Автоодобрение запросов на вход</string>
+    <string name="listen_together_auto_approval_joins_desc">Запросы на вход будут одобряться автоматически, без ручной проверки</string>
     <string name="listen_together_sync_volume">Синхронизация громкости хоста</string>
     <string name="listen_together_sync_volume_desc">У гостей будет та же громкость, что и у хоста</string>
     <string name="copy_code">Скопировать код</string>
@@ -507,8 +509,8 @@
     <string name="crossfade_beta_message">Кроссфейд - новая функция, которая может работать нестабильно. Пожалуйста, сообщите нам, если столкнётесь с ошибками.\n\nЭта функция отключает аппаратное ускорение аудио из-за технических ограничений.</string>
     <string name="audio_offload_disabled_by_crossfade">Отключено, так как включён кроссфейд</string>
     <string name="hide_youtube_shorts">Скрыть YouTube Shorts</string>
-    <string name="listen_together_in_top_bar">Совместное прослушивание в верхней панели</string>
-    <string name="listen_together_in_top_bar_desc">Показывать «Совместное прослушивание» на верхней панели вместо панели навигации</string>
+    <string name="listen_together_in_top_bar">«Слушать вместе» в верхней панели</string>
+    <string name="listen_together_in_top_bar_desc">Показывать «Слушать вместе» в верхней панели вместо панели навигации</string>
     <string name="discord_advanced_mode_description">Показать дополнительные параметры настройки Rich Presence</string>
     <string name="discord_activity_playing">Играет</string>
     <string name="discord_activity_listening">Слушает</string>
@@ -732,7 +734,7 @@
     <string name="sort_ascending">Сортировать по возрастанию</string>
     <string name="sort_descending">Сортировать по убыванию</string>
     <string name="time_transfer_title">Перенос времени</string>
-    <string name="time_transfer_warning">ВНИМАНИЕ: это действие невозможно отменить после завершения. Перед продолжением следует создать резервную копию. В качестве целевой можно выбрать только ту песню, для которой зарегистрировано хотя бы одно событие/прослушивание.</string>
+    <string name="time_transfer_warning">ВНИМАНИЕ: Это действие нельзя отменить после выполнения. Перед продолжением следует создать резервную копию. Вы можете выбрать только те треки, для которых зарегистрировано хотя бы одно событие/прослушивание.</string>
     <string name="time_transfer_source_song">Исходный трек</string>
     <string name="time_transfer_target_song">Целевой трек</string>
     <string name="time_transfer_listen_time_label">Время прослушивания:</string>
@@ -795,4 +797,8 @@
     <string name="android_auto_target_playlist_auto">Не указано</string>
     <string name="added_to_playlist">Добавлено в плейлист</string>
     <string name="android_auto_target_playlist_not_set">Плейлист не выбран. Выберите его в настройках Android Auto.</string>
+    <string name="mini_player_background_style">Стиль фона мини‑плеера</string>
+    <string name="transparent">Прозрачный</string>
+    <string name="mini_player_background_not_available">Недоступно, если отключен новый дизайн мини‑плеера</string>
+    <string name="your_daily_discover">Ваши открытия дня</string>
 </resources>
