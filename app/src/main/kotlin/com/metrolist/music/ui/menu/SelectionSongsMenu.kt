@@ -536,6 +536,7 @@ fun SelectionMediaMetadataMenu(
     val downloadUtil = LocalDownloadUtil.current
     val coroutineScope = rememberCoroutineScope()
     val playerConnection = LocalPlayerConnection.current ?: return
+    val syncUtils = LocalSyncUtils.current
     val listenTogetherManager = com.metrolist.music.LocalListenTogetherManager.current
     val isGuest = listenTogetherManager?.isInRoom == true && listenTogetherManager.isHost == false
 
@@ -772,11 +773,15 @@ fun SelectionMediaMetadataMenu(
                                 database.query {
                                     if (allLiked) {
                                         songSelection.forEach { song ->
-                                            update(song.toSongEntity().toggleLike())
+                                            val s = song.toSongEntity().toggleLike()
+                                            update(s)
+                                            syncUtils.likeSong(s)
                                         }
                                     } else {
                                         songSelection.filter { !it.liked }.forEach { song ->
-                                            update(song.toSongEntity().toggleLike())
+                                            val s = song.toSongEntity().toggleLike()
+                                            update(s)
+                                            syncUtils.likeSong(s)
                                         }
                                     }
                                 }

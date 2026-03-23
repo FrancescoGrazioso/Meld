@@ -70,11 +70,7 @@ data class SongEntity(
         liked = !liked,
         likedDate = if (!liked) LocalDateTime.now() else null,
         inLibrary = if (!liked) inLibrary ?: LocalDateTime.now() else inLibrary
-    ).also {
-        CoroutineScope(Dispatchers.IO).launch {
-            YouTube.likeVideo(id, !liked)
-        }
-    }
+    )
 
     fun toggleLibrary(syncToYouTube: Boolean = true) = copy(
         liked = if (inLibrary == null) liked else false,

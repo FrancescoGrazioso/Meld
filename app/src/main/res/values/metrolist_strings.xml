@@ -438,6 +438,11 @@
     <string name="spotify_no_playlists">No playlists found</string>
     <string name="spotify_track_not_found_on_spotify">Could not find this track on Spotify</string>
     <string name="spotify_searching">Searching on Spotify…</string>
+    <string name="spotify_sync_likes">Sync likes with Spotify</string>
+    <string name="spotify_sync_likes_description">Replace liked songs with Spotify likes. New likes will be synced to Spotify.</string>
+    <string name="spotify_sync_likes_syncing">Syncing liked songs from Spotify… (%1$d/%2$d)</string>
+    <string name="spotify_sync_likes_complete">Synced %1$d songs from Spotify</string>
+    <string name="spotify_sync_likes_failed">Failed to sync liked songs from Spotify</string>
 
     <string name="sort_by_original">Original order</string>
     <string name="sort_by_duration">Duration</string>
