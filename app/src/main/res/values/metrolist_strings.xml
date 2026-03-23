@@ -425,6 +425,28 @@
     <string name="new_releases_discover">Discover</string>
     <string name="spotify_because_you_like">Because you like %s</string>
 
+    <!-- Spotify playlist editing -->
+    <string name="spotify_remove_from_playlist">Remove from playlist</string>
+    <string name="spotify_remove_from_playlist_desc">Remove this track from the Spotify playlist</string>
+    <string name="spotify_track_removed">Track removed from playlist</string>
+    <string name="spotify_rename_playlist">Rename playlist</string>
+    <string name="spotify_playlist_name_label">Playlist name</string>
+    <string name="spotify_add_to_playlist">Add to Spotify playlist</string>
+    <string name="spotify_add_to_playlist_desc">Add this track to one of your Spotify playlists</string>
+    <string name="spotify_track_added_to_playlist">Added to %s</string>
+    <string name="spotify_add_to_playlist_failed">Failed to add track to playlist</string>
+    <string name="spotify_no_playlists">No playlists found</string>
+    <string name="spotify_track_not_found_on_spotify">Could not find this track on Spotify</string>
+    <string name="spotify_searching">Searching on Spotify…</string>
+    <string name="spotify_sync_likes">Sync likes with Spotify</string>
+    <string name="spotify_sync_likes_description">Replace liked songs with Spotify likes. New likes will be synced to Spotify.</string>
+    <string name="spotify_sync_likes_syncing">Syncing liked songs from Spotify… (%1$d/%2$d)</string>
+    <string name="spotify_sync_likes_complete">Synced %1$d songs from Spotify</string>
+    <string name="spotify_sync_likes_failed">Failed to sync liked songs from Spotify</string>
+
+    <string name="sort_by_original">Original order</string>
+    <string name="sort_by_duration">Duration</string>
+
     <string name="details_desc">View the song\'s information</string>
     <string name="edit_desc">Change the title or artist</string>
     <string name="start_radio_desc">Create a station based on this item</string>

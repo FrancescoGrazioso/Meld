@@ -115,6 +115,8 @@ class SyncUtils @Inject constructor(
     val syncState: StateFlow<SyncState> = _syncState.asStateFlow()
 
     private var lastfmSendLikes = false
+    private var spotifySyncLikes = false
+    private val spotifyMapper by lazy { com.metrolist.music.playback.SpotifyYouTubeMapper(database) }
 
     companion object {
         private const val MAX_RETRIES = 3
@@ -128,6 +130,13 @@ class SyncUtils @Inject constructor(
             .distinctUntilChanged()
             .collectLatest(syncScope) {
                 lastfmSendLikes = it
+            }
+
+        context.dataStore.data
+            .map { it[com.metrolist.music.constants.SpotifySyncLikesKey] ?: false }
+            .distinctUntilChanged()
+            .collectLatest(syncScope) {
+                spotifySyncLikes = it
             }
 
         startProcessingQueue()
@@ -519,15 +528,14 @@ class SyncUtils @Inject constructor(
     }
 
     private suspend fun executeLikeSong(s: SongEntity) = withContext(Dispatchers.IO) {
-        if (!isLoggedIn()) {
-            Timber.w("Skipping likeSong - user not logged in")
-            return@withContext
-        }
-
-        withRetry {
-            YouTube.likeVideo(s.id, s.liked)
-        }.onFailure { e ->
-            Timber.e(e, "Failed to like song on YouTube: ${s.id}")
+        if (isLoggedIn()) {
+            withRetry {
+                YouTube.likeVideo(s.id, s.liked)
+            }.onFailure { e ->
+                Timber.e(e, "Failed to like song on YouTube: ${s.id}")
+            }
+        } else {
+            Timber.d("YouTube not logged in, skipping YouTube like sync for ${s.id}")
         }
 
         if (lastfmSendLikes) {
@@ -540,6 +548,30 @@ class SyncUtils @Inject constructor(
                 )
             } catch (e: Exception) {
                 Timber.e(e, "Failed to update LastFM love status")
+            }
+        }
+
+        if (spotifySyncLikes) {
+            try {
+                val dbSong = database.song(s.id).firstOrNull()
+                val artist = dbSong?.artists?.firstOrNull()?.name ?: ""
+                val durationSec = s.duration
+                val spotifyUri = spotifyMapper.resolveToSpotifyUri(s.id, s.title, artist, durationSec)
+                if (spotifyUri != null) {
+                    if (s.liked) {
+                        com.metrolist.spotify.Spotify.addToLibrary(listOf(spotifyUri))
+                            .onSuccess { Timber.d("Synced like to Spotify: $spotifyUri") }
+                            .onFailure { e -> Timber.e(e, "Failed to sync like to Spotify: $spotifyUri") }
+                    } else {
+                        com.metrolist.spotify.Spotify.removeFromLibrary(listOf(spotifyUri))
+                            .onSuccess { Timber.d("Synced unlike to Spotify: $spotifyUri") }
+                            .onFailure { e -> Timber.e(e, "Failed to sync unlike to Spotify: $spotifyUri") }
+                    }
+                } else {
+                    Timber.w("Spotify like sync: no Spotify match found for ${s.id}")
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to sync like to Spotify for ${s.id}")
             }
         }
     }

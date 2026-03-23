@@ -34,11 +34,15 @@ data class SpotifyPlaylistTracksRef(
 )
 
 /**
- * Full playlist track item returned by /playlists/{id}/tracks
+ * Full playlist track item returned by /playlists/{id}/tracks.
+ * [uid] is the playlist-scoped item identifier required by GQL mutations
+ * (removeFromPlaylist, moveItemsInPlaylist). It is only populated when
+ * tracks are fetched via the GQL fetchPlaylist endpoint.
  */
 @Serializable
 data class SpotifyPlaylistTrack(
     @SerialName("added_at") val addedAt: String? = null,
     val track: SpotifyTrack? = null,
     @SerialName("is_local") val isLocal: Boolean = false,
+    val uid: String? = null,
 )

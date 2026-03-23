@@ -7,6 +7,7 @@ package com.metrolist.music.ui.component
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -36,6 +37,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 import kotlin.math.max
@@ -60,11 +62,20 @@ fun DraggableScrollbar(
     var lastScrollTime by remember { mutableLongStateOf(0L) }
     var smoothedY by remember { mutableFloatStateOf(0f) }
     var smoothedThumbY by remember { mutableFloatStateOf(0f) }
-    var lastThumbPosition by remember { mutableFloatStateOf(0f) }
     val animatedThumbY = remember { Animatable(0f) }
+    val thumbAlpha = remember { Animatable(0f) }
 
     val isUserScrolling by remember(scrollState) {
         derivedStateOf { scrollState.isScrollInProgress }
+    }
+
+    LaunchedEffect(isUserScrolling, isDragging) {
+        if (isUserScrolling || isDragging) {
+            thumbAlpha.animateTo(1f, animationSpec = tween(150))
+        } else {
+            delay(1200L)
+            thumbAlpha.animateTo(0f, animationSpec = tween(400))
+        }
     }
 
     val isScrollable by remember {
@@ -168,60 +179,32 @@ fun DraggableScrollbar(
             derivedStateOf {
                 val layoutInfo = scrollState.layoutInfo
                 val visibleItems = layoutInfo.visibleItemsInfo
-                if (visibleItems.isEmpty()) return@derivedStateOf lastThumbPosition
+                if (visibleItems.isEmpty()) return@derivedStateOf 0f
 
                 val totalContentItems = layoutInfo.totalItemsCount - headerItems
                 val maxScrollIndex = max(1, totalContentItems - visibleItems.size)
-                if (maxScrollIndex <= minScrollRangeForDrag) return@derivedStateOf lastThumbPosition
+                if (maxScrollIndex <= minScrollRangeForDrag) return@derivedStateOf 0f
 
                 val rawIndex = (scrollState.firstVisibleItemIndex - headerItems).coerceAtLeast(0)
-
-                val scrollProgress = if (totalContentItems < 30) {
-
-                    val currentProgress = rawIndex.toFloat() / maxScrollIndex
-                    val smoothingFactor = 0.2f
-                    val previousProgress = lastThumbPosition / (viewportHeight - constThumbHeight)
-                    previousProgress * (1f - smoothingFactor) + currentProgress * smoothingFactor
-                } else {
-                    rawIndex.toFloat() / maxScrollIndex
-                }
+                val scrollProgress = rawIndex.toFloat() / maxScrollIndex
 
                 val maxThumbY = viewportHeight - constThumbHeight
-                val newPosition = (scrollProgress * maxThumbY).coerceIn(0f, maxThumbY)
-
-                lastThumbPosition = newPosition
-                newPosition
+                (scrollProgress * maxThumbY).coerceIn(0f, maxThumbY)
             }
         }
 
         LaunchedEffect(targetThumbY, isDragging, isUserScrolling, smoothedThumbY) {
-            val layoutInfo = scrollState.layoutInfo
-            val totalContentItems = layoutInfo.totalItemsCount - headerItems
-            
             when {
                 isDragging -> {
                     animatedThumbY.snapTo(smoothedThumbY)
                 }
                 isUserScrolling -> {
-                    if (totalContentItems < 30) {
-                        animatedThumbY.animateTo(
-                            targetValue = targetThumbY,
-                            animationSpec = spring(
-                                stiffness = 100f,
-                                dampingRatio = 1.2f
-                            )
-                        )
-                    } else {
-                        animatedThumbY.snapTo(targetThumbY)
-                    }
+                    animatedThumbY.snapTo(targetThumbY)
                 }
                 else -> {
                     animatedThumbY.animateTo(
                         targetValue = targetThumbY,
-                        animationSpec = spring(
-                            stiffness = if (totalContentItems < 30) 80f else 150f,
-                            dampingRatio = if (totalContentItems < 30) 1.5f else 0.9f
-                        )
+                        animationSpec = spring(stiffness = 200f, dampingRatio = 1f),
                     )
                 }
             }
@@ -231,16 +214,18 @@ fun DraggableScrollbar(
             modifier = Modifier
                 .width(thumbWidth)
                 .fillMaxHeight()
-                .align(Alignment.CenterEnd)
+                .align(Alignment.CenterEnd),
         ) {
-            val color = if (isDragging) thumbColorActive else thumbColor
+            val alpha = thumbAlpha.value
+            if (alpha <= 0f) return@Canvas
+            val color = (if (isDragging) thumbColorActive else thumbColor).copy(alpha = alpha)
             val cornerRadiusPx = thumbCornerRadius.toPx()
 
             drawRoundRect(
                 color = color,
                 topLeft = Offset(0f, animatedThumbY.value),
                 size = Size(this.size.width, constThumbHeight),
-                cornerRadius = CornerRadius(cornerRadiusPx)
+                cornerRadius = CornerRadius(cornerRadiusPx),
             )
         }
     }

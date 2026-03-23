@@ -12,6 +12,7 @@ import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.db.entities.SpotifyMatchEntity
 import com.metrolist.music.extensions.toMediaItem
 import com.metrolist.music.models.MediaMetadata
+import com.metrolist.spotify.Spotify
 import com.metrolist.spotify.SpotifyMapper
 import com.metrolist.spotify.models.SpotifyTrack
 import kotlinx.coroutines.Dispatchers
@@ -187,6 +188,76 @@ class SpotifyYouTubeMapper(
         val explicit: Boolean,
         val score: Double,
     )
+
+    /**
+     * Reverse lookup: given a YouTube track's metadata, finds the corresponding
+     * Spotify URI. Uses a two-tier strategy:
+     * 1. Fast path — checks the local cache for an existing Spotify↔YouTube match.
+     * 2. Slow path — searches Spotify by title+artist and picks the best match.
+     *
+     * @return A full Spotify URI (e.g. "spotify:track:abc123") or null if not found.
+     */
+    suspend fun resolveToSpotifyUri(
+        youtubeId: String,
+        title: String,
+        artist: String,
+        durationSec: Int = -1,
+    ): String? = withContext(Dispatchers.IO) {
+        database.getSpotifyMatchByYouTubeId(youtubeId)?.let { cached ->
+            Timber.d("Reverse lookup cache hit: $youtubeId -> spotify:track:${cached.spotifyId}")
+            return@withContext "spotify:track:${cached.spotifyId}"
+        }
+
+        val query = if (artist.isBlank()) title else "$artist $title"
+        Timber.d("Reverse lookup: searching Spotify for '$query'")
+
+        val results = Spotify.search(query, types = listOf("track"), limit = 5)
+            .getOrNull()?.tracks?.items
+        if (results.isNullOrEmpty()) {
+            Timber.w("Reverse lookup: no Spotify results for '$query'")
+            return@withContext null
+        }
+
+        val durationMs = if (durationSec > 0) durationSec * 1000 else 0
+        val best = results.maxByOrNull { candidate ->
+            SpotifyMapper.matchScore(
+                spotifyTitle = candidate.name,
+                spotifyArtist = candidate.artists.firstOrNull()?.name ?: "",
+                spotifyDurationMs = candidate.durationMs,
+                candidateTitle = title,
+                candidateArtist = artist,
+                candidateDurationSec = if (durationSec > 0) durationSec else null,
+            )
+        }
+
+        if (best != null) {
+            val score = SpotifyMapper.matchScore(
+                spotifyTitle = best.name,
+                spotifyArtist = best.artists.firstOrNull()?.name ?: "",
+                spotifyDurationMs = best.durationMs,
+                candidateTitle = title,
+                candidateArtist = artist,
+                candidateDurationSec = if (durationSec > 0) durationSec else null,
+            )
+            if (score >= MIN_MATCH_THRESHOLD) {
+                val uri = best.uri ?: "spotify:track:${best.id}"
+                Timber.d("Reverse lookup found: $youtubeId -> $uri (score=$score)")
+                database.upsertSpotifyMatch(
+                    SpotifyMatchEntity(
+                        spotifyId = best.id,
+                        youtubeId = youtubeId,
+                        title = title,
+                        artist = artist,
+                        matchScore = score,
+                    ),
+                )
+                return@withContext uri
+            }
+        }
+
+        Timber.w("Reverse lookup: no match above threshold for '$query'")
+        null
+    }
 
     companion object {
         private const val MIN_MATCH_THRESHOLD = 0.35

@@ -64,6 +64,7 @@ import com.metrolist.music.constants.PlaylistViewTypeKey
 import com.metrolist.music.constants.ShowCachedPlaylistKey
 import com.metrolist.music.constants.ShowDownloadedPlaylistKey
 import com.metrolist.music.constants.ShowLikedPlaylistKey
+import com.metrolist.music.constants.SpotifySyncLikesKey
 import com.metrolist.music.constants.ShowTopPlaylistKey
 import com.metrolist.music.constants.ShowUploadedPlaylistKey
 import com.metrolist.music.constants.YtmSyncKey
@@ -182,6 +183,7 @@ fun LibraryPlaylistsScreen(
         )
 
     val (showLiked) = rememberPreference(ShowLikedPlaylistKey, true)
+    val (spotifySyncLikes) = rememberPreference(SpotifySyncLikesKey, false)
     val (showDownloaded) = rememberPreference(ShowDownloadedPlaylistKey, true)
     val (showTop) = rememberPreference(ShowTopPlaylistKey, true)
     val (showCached) = rememberPreference(ShowCachedPlaylistKey, true)
@@ -308,7 +310,7 @@ fun LibraryPlaylistsScreen(
                         headerContent()
                     }
 
-                    if (showLiked) {
+                    if (showLiked && !spotifySyncLikes) {
                         item(
                             key = "likedPlaylist",
                             contentType = { CONTENT_TYPE_PLAYLIST },
@@ -624,7 +626,7 @@ fun LibraryPlaylistsScreen(
                         headerContent()
                     }
 
-                    if (showLiked) {
+                    if (showLiked && !spotifySyncLikes) {
                         item(
                             key = "likedPlaylist",
                             contentType = { CONTENT_TYPE_PLAYLIST },

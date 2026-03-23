@@ -153,6 +153,9 @@ fun PlayerMenu(
         mutableStateOf(false)
     }
 
+    var showAddToSpotifyPlaylist by rememberSaveable { mutableStateOf(false) }
+    val spotifyMapper = remember { SpotifyYouTubeMapper(database) }
+
     val resolvedSpotifyMatch by produceState<com.metrolist.music.db.entities.SpotifyMatchEntity?>(
         initialValue = null,
         mediaMetadata.id,
@@ -161,6 +164,17 @@ fun PlayerMenu(
             value = database.getSpotifyMatchByYouTubeId(mediaMetadata.id)
         }
     }
+
+    AddToSpotifyPlaylistFlow(
+        showDialog = showAddToSpotifyPlaylist,
+        youtubeId = mediaMetadata.id,
+        title = mediaMetadata.title,
+        artist = mediaMetadata.artists.firstOrNull()?.name ?: "",
+        durationSec = mediaMetadata.duration,
+        spotifyUri = resolvedSpotifyMatch?.spotifyId?.let { "spotify:track:$it" },
+        mapper = spotifyMapper,
+        onDismiss = { showAddToSpotifyPlaylist = false },
+    )
 
     if (showYouTubeMatchDialog) {
         val mapper = remember { SpotifyYouTubeMapper(database) }
@@ -380,8 +394,25 @@ fun PlayerMenu(
                             android.widget.Toast.makeText(context, R.string.link_copied, android.widget.Toast.LENGTH_SHORT).show()
                             onDismiss()
                         }
+                    ),
+                ) + if (com.metrolist.spotify.Spotify.isAuthenticated()) {
+                    listOf(
+                        NewAction(
+                            icon = {
+                                Icon(
+                                    painter = painterResource(R.drawable.spotify),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            },
+                            text = stringResource(R.string.spotify_add_to_playlist),
+                            onClick = { showAddToSpotifyPlaylist = true },
+                        ),
                     )
-                ),
+                } else {
+                    emptyList()
+                },
                 columns = if (isListenTogetherGuest) 2 else 3,
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp)
             )
