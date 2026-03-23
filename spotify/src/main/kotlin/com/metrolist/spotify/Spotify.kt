@@ -721,6 +721,41 @@ object Spotify {
         }
 
     /**
+     * Moves items within a Spotify playlist via GQL mutation.
+     * [uids] are playlist-scoped item identifiers returned by fetchPlaylist.
+     * [beforeUid] is the uid of the item the moved items should be placed before,
+     * or null to move to the end of the playlist.
+     */
+    suspend fun moveItemsInPlaylist(
+        playlistId: String,
+        uids: List<String>,
+        beforeUid: String?,
+    ): Result<Unit> =
+        runCatching {
+            val vars = buildJsonObject {
+                put("playlistUri", "spotify:playlist:$playlistId")
+                putJsonArray("uids") {
+                    uids.forEach { add(it) }
+                }
+                putJsonObject("newPosition") {
+                    if (beforeUid != null) {
+                        put("moveType", "BEFORE_UID")
+                        put("fromUid", beforeUid)
+                    } else {
+                        put("moveType", "BOTTOM_OF_PLAYLIST")
+                        put("fromUid", JsonNull)
+                    }
+                }
+            }
+            graphqlPost(
+                operationName = "moveItemsInPlaylist",
+                sha256Hash = PLAYLIST_OPS_HASH,
+                variables = vars,
+            )
+            log("D", "moveItemsInPlaylist: moved ${uids.size} items (before=$beforeUid) in $playlistId")
+        }
+
+    /**
      * Renames a playlist and/or updates its description via GQL mutation.
      */
     suspend fun editPlaylistAttributes(

@@ -44,6 +44,7 @@ constructor(
 
     /** Raw playlist items including uid, needed for mutations */
     private val _playlistItems = MutableStateFlow<List<SpotifyPlaylistTrack>>(emptyList())
+    val playlistItems = _playlistItems.asStateFlow()
 
     private val _isLoading = MutableStateFlow(true)
     val isLoading = _isLoading.asStateFlow()
@@ -194,6 +195,55 @@ constructor(
                 .onFailure { e ->
                     Timber.e(e, "addTracks: failed")
                     _mutationError.value = e.message ?: "Failed to add tracks"
+                }
+        }
+    }
+
+    /**
+     * Moves a track from [fromIndex] to [toIndex] with optimistic local update.
+     * On failure the full playlist is re-fetched from Spotify.
+     */
+    fun moveTrack(fromIndex: Int, toIndex: Int) {
+        if (fromIndex == toIndex) return
+        val currentItems = _playlistItems.value.toMutableList()
+        val currentTracks = _tracks.value.toMutableList()
+        if (fromIndex !in currentItems.indices || toIndex !in currentItems.indices) return
+
+        val movedItem = currentItems[fromIndex]
+        val uid = movedItem.uid
+        if (uid == null) {
+            Timber.w("moveTrack: uid not found at index $fromIndex, skipping API call")
+            return
+        }
+
+        // Determine the uid of the item the moved item should be placed before.
+        // Must be computed BEFORE the local reorder since the API operates on
+        // the server-side order which hasn't changed yet.
+        val beforeUid = if (fromIndex < toIndex) {
+            // Moving down: place before the item originally after the target
+            currentItems.getOrNull(toIndex + 1)?.uid
+        } else {
+            // Moving up: place before the item originally at the target
+            currentItems[toIndex].uid
+        }
+
+        val movedFromList = currentItems.removeAt(fromIndex)
+        currentItems.add(toIndex, movedFromList)
+        val movedTrack = currentTracks.removeAt(fromIndex)
+        currentTracks.add(toIndex, movedTrack)
+
+        _playlistItems.value = currentItems
+        _tracks.value = currentTracks
+
+        viewModelScope.launch(Dispatchers.IO) {
+            Spotify.moveItemsInPlaylist(playlistId, listOf(uid), beforeUid)
+                .onSuccess {
+                    Timber.d("moveTrack: moved item from $fromIndex to $toIndex in $playlistId")
+                }
+                .onFailure { e ->
+                    Timber.e(e, "moveTrack: failed, re-fetching playlist")
+                    loadPlaylistInternal()
+                    _mutationError.value = e.message ?: "Failed to move track"
                 }
         }
     }
