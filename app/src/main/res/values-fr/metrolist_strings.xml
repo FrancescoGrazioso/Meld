@@ -788,4 +788,8 @@
     <string name="android_auto_target_playlist_auto">Non défini</string>
     <string name="added_to_playlist">Ajouté à la playlist</string>
     <string name="android_auto_target_playlist_not_set">Aucune playlist n\'est sélectionnée. Choisissez-en une dans les paramètres d\'Android Auto.</string>
+    <string name="mini_player_background_style">Style d\'arrière-plan du mini-lecteur</string>
+    <string name="transparent">Transparent</string>
+    <string name="mini_player_background_not_available">Indisponible lorsque le nouveau mini-lecteur est désactivé</string>
+    <string name="your_daily_discover">Votre découverte du jour</string>
 </resources>
