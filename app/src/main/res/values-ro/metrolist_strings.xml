@@ -376,7 +376,7 @@
     <string name="clear">Elimină</string>
     <string name="copy">Copiază</string>
     <string name="copied_to_clipboard">Copiat în clipboard</string>
-    <string name="not_set">Nesetat</string>
+    <string name="not_set">Nesetat(ă)</string>
     <string name="hosting_room">Găzduiește o cameră</string>
     <string name="in_room">În cameră</string>
     <string name="pending_requests">Cereri în așteptare</string>
@@ -785,7 +785,11 @@
     <string name="android_auto_youtube_playlists_desc">Arată playlisturi recomandate de YouTube Music în secțiunea Playlisturi atunci când navighezi pe Android Auto</string>
     <string name="android_auto_target_playlist_desc">Selectează playlistul unde melodiile vor fi salvate atunci când folosești butonul de adăugare rapidă în Android Auto</string>
     <string name="android_auto_target_playlist">Destinație adăugare rapidă</string>
-    <string name="android_auto_target_playlist_auto">Nesetat</string>
+    <string name="android_auto_target_playlist_auto">Nesetată</string>
     <string name="added_to_playlist">Adăugată în playlist</string>
     <string name="android_auto_target_playlist_not_set">Niciun playlist selectat. Alege unul în setările Android Auto.</string>
+    <string name="mini_player_background_style">Stilul fundalului mini playerului</string>
+    <string name="transparent">Transparent</string>
+    <string name="mini_player_background_not_available">Indisponibilă dacă mini playerul nou este dezactivat</string>
+    <string name="your_daily_discover">Descoperirile tale zilnice</string>
 </resources>
