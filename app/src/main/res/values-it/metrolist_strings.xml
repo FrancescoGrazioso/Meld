@@ -100,7 +100,7 @@
     <string name="auto_download_on_like">Scarica automaticamente quando si mette Mi piace</string>
     <string name="auto_download_on_like_desc">Scarica automaticamente i brani quando si mette Mi piace</string>
     <string name="lyrics_auto_scroll">Scorri il testo automaticamente</string>
-    <string name="import_csv">Importa una playlist csv</string>
+    <string name="import_csv">Importa una playlist in formato csv</string>
     <string name="playlist_add_local_to_synced_note">Nota: non è supportata l\'importazione di brani locali in una playlist sincronizzata o remota. Qualsiasi altra combinazione è valida</string>
     <string name="import_online">Importa una playlist in formato \"m3u\"</string>
     <string name="more_content">Altri contenuti</string>
@@ -707,9 +707,9 @@
     <string name="sleeptimer_description">Abilita automaticamente il timer di spegnimento con il valore predefinito entro un orario personalizzato</string>
     <string name="sleep_timer_repeat_description">Imposta un giorno e un\'ora personalizzati in cui il timer di spegnimento deve attivarsi automaticamente</string>
     <string name="export_playlist">Esporta playlist</string>
-    <string name="export_as_csv">Esporta come CSV</string>
-    <string name="export_as_m3u">Esporta come M3U</string>
-    <string name="export_success">Playlist esportata correttamente</string>
+    <string name="export_as_csv">Esporta in formato csv</string>
+    <string name="export_as_m3u">Esporta in formato M3U</string>
+    <string name="export_success">Playlist esportata con successo</string>
     <string name="export_failed">Impossibile esportare la playlist</string>
     <string name="export_option_share">Condividi</string>
     <string name="export_option_save">Salva in Documenti</string>
@@ -781,7 +781,7 @@
     <string name="alarm_battery_optimization_desc">Disabilita l\'ottimizzazione della batteria per una migliore affidabilità degli allarmi in background.</string>
     <string name="alarm_exact_permission_desc">L\'autorizzazione esatta dell\'allarme migliora l\'affidabilità quando l\'app è in background.</string>
     <string name="alarm_exact_permission_title">Consenti allarmi esatti</string>
-    <string name="alarm_duplicate_time_warning">Un altro allarme esiste già in questo momento. Se entrambi si attivano insieme, solo uno può effettivamente funzionare.</string>
+    <string name="alarm_duplicate_time_warning">Esiste un\'altra sveglia impostata a quest\'ora. Se scattano insieme, solo una delle due potrebbe suonare.</string>
     <string name="song_dropdown_more_results">Digita altro per restringere i risultati (%d in più)</string>
     <string name="time_transfer_convert">Convertire</string>
     <string name="time_transfer_listen_time_label">Tempo di ascolto:</string>
