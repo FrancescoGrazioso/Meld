@@ -788,4 +788,8 @@
     <string name="time_transfer_listen_time_label">Tempo de reprodução:</string>
     <string name="time_transfer_convert">Converter</string>
     <string name="song_dropdown_more_results">Digite mais para reduzir os resultados (%d mais)</string>
+    <string name="mini_player_background_style">Estilo do plano de fundo do mini reprodutor</string>
+    <string name="transparent">Transparente</string>
+    <string name="mini_player_background_not_available">Não disponível quando o novo mini reprodutor está desativado</string>
+    <string name="your_daily_discover">Sua Descuberta Diária</string>
 </resources>
