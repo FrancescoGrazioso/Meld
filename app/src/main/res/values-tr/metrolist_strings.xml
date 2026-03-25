@@ -781,4 +781,8 @@
     <string name="alarm_time">Alarm zamanı</string>
     <string name="alarm_enabled">Alarmı etkinleştir</string>
     <string name="alarm">Alarm</string>
+    <string name="mini_player_background_style">Mini oyuncu arka plan stili</string>
+    <string name="transparent">Şeffaf</string>
+    <string name="mini_player_background_not_available">Yeni mini oynatıcı devre dışı bırakıldığında kullanılamaz</string>
+    <string name="your_daily_discover">Günlük Keşifleriniz</string>
 </resources>
