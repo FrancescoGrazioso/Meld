@@ -1,5 +1,5 @@
-# Metrolist Dev Guide
-This file outlines the process of setting up a local dev environment for Metrolist.
+# Meld Dev Guide
+This file outlines the process of setting up a local dev environment for Meld.
 
 ## Prerequisites
 - Java JDK 21
@@ -9,8 +9,8 @@ This file outlines the process of setting up a local dev environment for Metroli
 
 ## Basic setup
 ```bash
-git clone https://github.com/MetrolistGroup/Metrolist
-cd Metrolist
+git clone https://github.com/FrancescoGrazioso/Meld
+cd Meld
 git submodule update --init --recursive
 cd app
 bash generate_proto.sh
