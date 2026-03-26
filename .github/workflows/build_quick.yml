@@ -22,8 +22,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
-        with:
-          submodules: recursive
+
+      - name: Init metroproto submodule
+        run: git submodule update --init metroproto
 
       - name: Set up JDK 21
         uses: actions/setup-java@v5

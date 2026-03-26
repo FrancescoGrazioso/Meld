@@ -33,6 +33,7 @@ import com.metrolist.music.di.ApplicationScope
 import com.metrolist.music.extensions.toEnum
 import com.metrolist.music.extensions.toInetSocketAddress
 import com.metrolist.music.utils.CrashHandler
+import com.metrolist.music.utils.SpotifyHashSync
 import com.metrolist.music.utils.SpotifyTokenManager
 import com.metrolist.music.utils.cipher.PlayerJsFetcher
 import com.metrolist.music.utils.dataStore
@@ -111,6 +112,16 @@ class App : Application(), SingletonImageLoader.Factory {
                 "W" -> Timber.tag("SpotifyAPI").w(message)
                 else -> Timber.tag("SpotifyAPI").d(message)
             }
+        }
+
+        // Initialize GQL hash sync: load cached hashes immediately,
+        // then always fetch fresh hashes from remote in background.
+        val hashSync = SpotifyHashSync(this@App)
+        hashSync.loadCachedHashes()
+        applicationScope.launch(Dispatchers.IO) { hashSync.sync() }
+        Spotify.onHashExpired = { operationName ->
+            Timber.tag("HashSync").w("Hash expired for %s, forcing remote refresh", operationName)
+            applicationScope.launch(Dispatchers.IO) { hashSync.forceRefresh() }
         }
 
         // Initialize centralized token manager and restore/refresh Spotify token

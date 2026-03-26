@@ -166,9 +166,15 @@ object Spotify {
 
     // ── GraphQL core ─────────────────────────────────────────────────────
 
+    /**
+     * Callback invoked when a GQL hash is rejected (PersistedQueryNotFound).
+     * The app module sets this to trigger a remote hash refresh.
+     */
+    @Volatile
+    var onHashExpired: ((operationName: String) -> Unit)? = null
+
     private suspend fun graphqlPost(
         operationName: String,
-        sha256Hash: String,
         variables: JsonObject = buildJsonObject {},
     ): JsonObject {
         val token =
@@ -176,18 +182,60 @@ object Spotify {
                 log("E", "GQL $operationName — no token")
             }
 
-        val body =
-            buildJsonObject {
-                put("variables", variables)
-                put("operationName", operationName)
-                putJsonObject("extensions") {
-                    putJsonObject("persistedQuery") {
-                        put("version", 1)
-                        put("sha256Hash", sha256Hash)
-                    }
+        val primaryHash = SpotifyHashProvider.getHash(operationName)
+        val hashCandidates = buildList {
+            add(primaryHash)
+            SpotifyHashProvider.getPreviousHash(operationName)?.let { prev ->
+                if (prev != primaryHash) add(prev)
+            }
+        }
+
+        for ((hashIdx, sha256Hash) in hashCandidates.withIndex()) {
+            val body = buildGqlBody(operationName, sha256Hash, variables)
+            val result = executeGqlWithRetries(operationName, token, body)
+
+            if (result.isPersistedQueryNotFound) {
+                if (hashIdx < hashCandidates.lastIndex) {
+                    log("W", "GQL $operationName hash rejected, trying previous_hash")
+                    continue
                 }
+                log("E", "GQL $operationName all known hashes rejected, triggering remote refresh")
+                onHashExpired?.invoke(operationName)
+                throw SpotifyException(412, "PersistedQueryNotFound for $operationName — hash may have rotated")
             }
 
+            return result.json!!
+        }
+
+        throw SpotifyException(412, "No valid hash found for $operationName")
+    }
+
+    private fun buildGqlBody(
+        operationName: String,
+        sha256Hash: String,
+        variables: JsonObject,
+    ): JsonObject =
+        buildJsonObject {
+            put("variables", variables)
+            put("operationName", operationName)
+            putJsonObject("extensions") {
+                putJsonObject("persistedQuery") {
+                    put("version", 1)
+                    put("sha256Hash", sha256Hash)
+                }
+            }
+        }
+
+    private class GqlResult(
+        val json: JsonObject?,
+        val isPersistedQueryNotFound: Boolean,
+    )
+
+    private suspend fun executeGqlWithRetries(
+        operationName: String,
+        token: String,
+        body: JsonObject,
+    ): GqlResult {
         val maxRetries = 3
         for (attempt in 0 until maxRetries) {
             log(
@@ -221,6 +269,9 @@ object Spotify {
                 }
                 throw SpotifyException(429, "Rate limited", retryAfterSec = retryAfter)
             }
+            if (response.status == HttpStatusCode.PreconditionFailed) {
+                return GqlResult(json = null, isPersistedQueryNotFound = true)
+            }
             if (response.status.value !in 200..299) {
                 val bodyText = response.bodyAsText()
                 log("E", "GQL $operationName FAILED: ${response.status.value} — ${bodyText.take(200)}")
@@ -232,11 +283,14 @@ object Spotify {
             val errors = responseJson.arr("errors")
             if (errors != null && errors.isNotEmpty()) {
                 val errorMsg = errors[0].jsonObject.str("message") ?: "Unknown GraphQL error"
+                if (errorMsg.contains("PersistedQueryNotFound", ignoreCase = true)) {
+                    return GqlResult(json = null, isPersistedQueryNotFound = true)
+                }
                 log("E", "GQL $operationName returned error: $errorMsg")
                 throw SpotifyException(400, "GraphQL: $errorMsg")
             }
 
-            return responseJson
+            return GqlResult(json = responseJson, isPersistedQueryNotFound = false)
         }
 
         throw SpotifyException(429, "Rate limited after $maxRetries retries")
@@ -395,7 +449,6 @@ object Spotify {
                 val response =
                     graphqlPost(
                         operationName = "profileAttributes",
-                        sha256Hash = "53bcb064f6cd18c23f752bc324a791194d20df612d8e1239c735144ab0399ced",
                     )
                 val profile =
                     response.obj("data")?.obj("me")?.obj("profile")
@@ -443,7 +496,6 @@ object Spotify {
             val response =
                 graphqlPost(
                     operationName = "libraryV3",
-                    sha256Hash = "973e511ca44261fda7eebac8b653155e7caee3675abb4fb110cc1b8c78b091c3",
                     variables = vars,
                 )
 
@@ -521,7 +573,6 @@ object Spotify {
             val response =
                 graphqlPost(
                     operationName = "libraryV3",
-                    sha256Hash = "973e511ca44261fda7eebac8b653155e7caee3675abb4fb110cc1b8c78b091c3",
                     variables = vars,
                 )
 
@@ -581,7 +632,6 @@ object Spotify {
             val response =
                 graphqlPost(
                     operationName = "fetchPlaylist",
-                    sha256Hash = "346811f856fb0b7e4f6c59f8ebea78dd081c6e2fb01b77c954b26259d5fc6763",
                     variables = vars,
                 )
 
@@ -630,7 +680,6 @@ object Spotify {
             val response =
                 graphqlPost(
                     operationName = "fetchPlaylist",
-                    sha256Hash = "346811f856fb0b7e4f6c59f8ebea78dd081c6e2fb01b77c954b26259d5fc6763",
                     variables = vars,
                 )
 
@@ -660,11 +709,6 @@ object Spotify {
 
     // ── Playlist Mutations (GQL) ──────────────────────────────────────
 
-    private const val PLAYLIST_OPS_HASH =
-        "47b2a1234b17748d332dd0431534f22450e9ecbb3d5ddcdacbd83368636a0990"
-    private const val PLAYLIST_MGMT_HASH =
-        "35a1a9ce3a2f4f8c32ee0e24c63c2069c6613c0a0b7e56d0e40dabe69a0b4f80"
-
     /**
      * Adds tracks to a Spotify playlist via GQL mutation.
      * @param playlistId Playlist ID (without the `spotify:playlist:` prefix).
@@ -689,7 +733,6 @@ object Spotify {
             kotlinx.coroutines.withTimeout(20_000L) {
                 graphqlPost(
                     operationName = "addToPlaylist",
-                    sha256Hash = PLAYLIST_OPS_HASH,
                     variables = vars,
                 )
             }
@@ -714,7 +757,6 @@ object Spotify {
             }
             graphqlPost(
                 operationName = "removeFromPlaylist",
-                sha256Hash = PLAYLIST_OPS_HASH,
                 variables = vars,
             )
             log("D", "removeTracksFromPlaylist: removed ${items.size} items from $playlistId")
@@ -749,7 +791,6 @@ object Spotify {
             }
             graphqlPost(
                 operationName = "moveItemsInPlaylist",
-                sha256Hash = PLAYLIST_OPS_HASH,
                 variables = vars,
             )
             log("D", "moveItemsInPlaylist: moved ${uids.size} items (before=$beforeUid) in $playlistId")
@@ -771,7 +812,6 @@ object Spotify {
             }
             graphqlPost(
                 operationName = "editPlaylistAttributes",
-                sha256Hash = PLAYLIST_MGMT_HASH,
                 variables = vars,
             )
             log("D", "editPlaylistAttributes: updated $playlistId (name=$newName)")
@@ -801,7 +841,6 @@ object Spotify {
             val response =
                 graphqlPost(
                     operationName = "fetchLibraryTracks",
-                    sha256Hash = "087278b20b743578a6262c2b0b4bcd20d879c503cc359a2285baf083ef944240",
                     variables = vars,
                 )
 
@@ -827,11 +866,6 @@ object Spotify {
 
     // ── Library Mutations (GQL: addToLibrary / removeFromLibrary) ──────
 
-    private const val ADD_TO_LIBRARY_HASH =
-        "7c5a69420e2bfae3da5cc4e14cbc8bb3f6090f80afc00ffc179177f19be3f33d"
-    private const val REMOVE_FROM_LIBRARY_HASH =
-        "7c5a69420e2bfae3da5cc4e14cbc8bb3f6090f80afc00ffc179177f19be3f33d"
-
     /**
      * Saves tracks/albums/playlists to the user's Spotify library (like).
      * @param uris Full Spotify URIs, e.g. `["spotify:track:abc123"]`.
@@ -845,7 +879,6 @@ object Spotify {
             }
             graphqlPost(
                 operationName = "addToLibrary",
-                sha256Hash = ADD_TO_LIBRARY_HASH,
                 variables = vars,
             )
             log("D", "addToLibrary: added ${uris.size} items")
@@ -864,7 +897,6 @@ object Spotify {
             }
             graphqlPost(
                 operationName = "removeFromLibrary",
-                sha256Hash = REMOVE_FROM_LIBRARY_HASH,
                 variables = vars,
             )
             log("D", "removeFromLibrary: removed ${uris.size} items")
@@ -942,7 +974,6 @@ object Spotify {
             val response =
                 graphqlPost(
                     operationName = "searchDesktop",
-                    sha256Hash = "4801118d4a100f756e833d33984436a3899cff359c532f8fd3aaf174b60b3b49",
                     variables = vars,
                 )
 
@@ -1084,7 +1115,6 @@ object Spotify {
             val response =
                 graphqlPost(
                     operationName = "queryWhatsNewFeed",
-                    sha256Hash = "3b53dede3c6054e8b7c962dd280eb6761c5d1c82b06b039f4110d76a62b4966b",
                     variables = vars,
                 )
 
@@ -1142,7 +1172,6 @@ object Spotify {
             val response =
                 graphqlPost(
                     operationName = "getAlbum",
-                    sha256Hash = "b9bfabef66ed756e5e13f68a942deb60bd4125ec1f1be8cc42769dc0259b4b10",
                     variables = vars,
                 )
 
@@ -1201,7 +1230,6 @@ object Spotify {
             val response =
                 graphqlPost(
                     operationName = "queryArtistOverview",
-                    sha256Hash = "5b9e64f43843fa3a9b6a98543600299b0a2cbbbccfdcdcef2402eb9c1017ca4c",
                     variables = vars,
                 )
 
@@ -1231,7 +1259,6 @@ object Spotify {
             val response =
                 graphqlPost(
                     operationName = "queryArtistOverview",
-                    sha256Hash = "5b9e64f43843fa3a9b6a98543600299b0a2cbbbccfdcdcef2402eb9c1017ca4c",
                     variables = vars,
                 )
 
@@ -1267,7 +1294,6 @@ object Spotify {
             val response =
                 graphqlPost(
                     operationName = "queryArtistOverview",
-                    sha256Hash = "5b9e64f43843fa3a9b6a98543600299b0a2cbbbccfdcdcef2402eb9c1017ca4c",
                     variables = vars,
                 )
 
