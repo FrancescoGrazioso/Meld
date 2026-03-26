@@ -50,12 +50,20 @@ class SpotifyHashSync(private val context: Context) {
         withContext(Dispatchers.IO) {
             try {
                 val prefs = context.dataStore.data.first()
-                val cachedJson = prefs[CACHED_JSON_KEY] ?: return@withContext
+                val cachedJson = prefs[CACHED_JSON_KEY] ?: run {
+                    Timber.tag("HashSync").d("No cached hashes in DataStore, using hardcoded defaults")
+                    logCurrentHashes("after-init")
+                    return@withContext
+                }
                 val parsed = parseRemoteJson(cachedJson)
                 if (parsed.isNotEmpty()) {
-                    SpotifyHashProvider.updateHashes(parsed, SpotifyHashProvider.HashSource.CACHED)
-                    Timber.tag("HashSync").d("Loaded %d cached hashes from DataStore", parsed.size)
+                    val result = SpotifyHashProvider.updateHashes(parsed, SpotifyHashProvider.HashSource.CACHED)
+                    Timber.tag("HashSync").d(
+                        "Loaded %d cached hashes from DataStore (%d updated, %d unchanged)",
+                        parsed.size, result.updated, result.unchanged,
+                    )
                 }
+                logCurrentHashes("after-cache-load")
             } catch (e: Exception) {
                 Timber.tag("HashSync").w(e, "Failed to load cached hashes")
             }
@@ -63,25 +71,16 @@ class SpotifyHashSync(private val context: Context) {
     }
 
     /**
-     * Fetches remote hashes only if the cache is older than 24 hours.
-     * Safe to call on every app launch — no-ops if hashes are fresh.
+     * Fetches remote hashes unconditionally.
+     * Called at every app startup to ensure maximum freshness.
      */
-    suspend fun syncIfStale() {
+    suspend fun sync() {
         withContext(Dispatchers.IO) {
             try {
-                val prefs = context.dataStore.data.first()
-                val lastFetch = prefs[LAST_FETCH_KEY] ?: 0L
-                val age = System.currentTimeMillis() - lastFetch
-                if (age < STALE_THRESHOLD_MS) {
-                    Timber.tag("HashSync").d(
-                        "Hashes are fresh (age: %dh), skipping remote fetch",
-                        age / (60 * 60 * 1000),
-                    )
-                    return@withContext
-                }
+                Timber.tag("HashSync").d("Startup sync: fetching remote hashes...")
                 fetchAndUpdate()
             } catch (e: Exception) {
-                Timber.tag("HashSync").w(e, "syncIfStale failed")
+                Timber.tag("HashSync").w(e, "Startup sync failed (will use cached/hardcoded)")
             }
         }
     }
@@ -110,14 +109,35 @@ class SpotifyHashSync(private val context: Context) {
                 return
             }
 
-            SpotifyHashProvider.updateHashes(parsed, SpotifyHashProvider.HashSource.REMOTE)
+            val result = SpotifyHashProvider.updateHashes(parsed, SpotifyHashProvider.HashSource.REMOTE)
 
             context.dataStore.edit { prefs ->
                 prefs[CACHED_JSON_KEY] = responseBody
                 prefs[LAST_FETCH_KEY] = System.currentTimeMillis()
             }
 
-            Timber.tag("HashSync").i("Updated %d hashes from remote registry", parsed.size)
+            Timber.tag("HashSync").i(
+                "Remote sync complete: %d operations (%d rotated, %d unchanged)",
+                parsed.size, result.updated, result.unchanged,
+            )
+            if (result.updated > 0) {
+                logCurrentHashes("after-remote-update")
+            }
+        }
+    }
+
+    private fun logCurrentHashes(phase: String) {
+        val all = SpotifyHashProvider.getAll()
+        Timber.tag("HashSync").d("=== Hash state [%s] ===", phase)
+        all.entries.sortedBy { it.key }.forEach { (op, entry) ->
+            Timber.tag("HashSync").d(
+                "  %s: %s...%s [%s]%s",
+                op,
+                entry.hash.take(8),
+                entry.hash.takeLast(8),
+                entry.source.name,
+                if (entry.previousHash != null) " (prev: ${entry.previousHash!!.take(8)}...)" else "",
+            )
         }
     }
 

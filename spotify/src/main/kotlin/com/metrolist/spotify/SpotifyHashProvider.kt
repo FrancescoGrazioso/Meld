@@ -76,10 +76,14 @@ object SpotifyHashProvider {
     fun updateHashes(
         remoteHashes: Map<String, RemoteHashEntry>,
         source: HashSource,
-    ) {
+    ): UpdateResult {
+        var updated = 0
+        var unchanged = 0
         remoteHashes.forEach { (op, remote) ->
             val current = hashes[op]
             if (current != null) {
+                val hashChanged = current.hash != remote.hash
+                if (hashChanged) updated++ else unchanged++
                 hashes[op] = GqlHashEntry(
                     hash = remote.hash,
                     previousHash = remote.previousHash,
@@ -87,7 +91,10 @@ object SpotifyHashProvider {
                 )
             }
         }
+        return UpdateResult(updated = updated, unchanged = unchanged)
     }
+
+    data class UpdateResult(val updated: Int, val unchanged: Int)
 
     fun getAll(): Map<String, GqlHashEntry> = hashes.toMap()
 

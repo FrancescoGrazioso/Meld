@@ -114,11 +114,11 @@ class App : Application(), SingletonImageLoader.Factory {
             }
         }
 
-        // Initialize GQL hash sync: load cached hashes immediately (blocking),
-        // then schedule a background refresh if the cache is stale (>24h).
+        // Initialize GQL hash sync: load cached hashes immediately,
+        // then always fetch fresh hashes from remote in background.
         val hashSync = SpotifyHashSync(this@App)
         hashSync.loadCachedHashes()
-        applicationScope.launch(Dispatchers.IO) { hashSync.syncIfStale() }
+        applicationScope.launch(Dispatchers.IO) { hashSync.sync() }
         Spotify.onHashExpired = { operationName ->
             Timber.tag("HashSync").w("Hash expired for %s, forcing remote refresh", operationName)
             applicationScope.launch(Dispatchers.IO) { hashSync.forceRefresh() }
