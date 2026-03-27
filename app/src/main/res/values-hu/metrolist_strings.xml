@@ -17,7 +17,7 @@
     <string name="cached_playlist">Cache-elt</string>
     <string name="sync_playlist">Lejátszásilista szinkronizálása</string>
     <string name="sync_disabled">Szinkronizálás kikapcsolva</string>
-    <string name="allows_for_sync_witch_youtube">Figyelem: Ez lehetővé teszi a YouTube Music-al való szinkronizálást. Ez később NEM megváltoztatható.</string>
+    <string name="allows_for_sync_witch_youtube">Figyelem: Ez lehetővé teszi a YouTube Music-al való szinkronizálást. Ez NEM változtatható meg később.</string>
     <string name="generating_image">Kép generálása</string>
     <string name="please_wait">Kérem várjon</string>
     <string name="cancel">Mégse</string>
@@ -30,18 +30,18 @@
     <string name="text_color">Szöveg szín</string>
     <string name="secondary_text_color">Másodlagos szöveg szín</string>
     <string name="background_color">Háttér szín</string>
-    <string name="remove_from_cache">Eltávolítva a cache-ből</string>
+    <string name="remove_from_cache">Eltávolítás a cache-ből</string>
     <string name="copy_link">Hivatkozás másolása</string>
     <string name="select">Összes kijelölése</string>
     <string name="like_all">Összes kedvelése</string>
     <string name="dislike_all">Összes nem kedvelése</string>
     <string name="sort_by_last_updated">Dátum frissítve</string>
-    <string name="link_copied">Hivatkozás kimásolva a vágólapra</string>
+    <string name="link_copied">Hivatkozás vágólapra másolva</string>
     <string name="lyrics">Dalszöveg</string>
     <string name="already_in_playlist">Már a lejátszásilistában:</string>
     <plurals name="n_time">
-        <item quantity="one">%d alkalom</item>
-        <item quantity="other">%d alkalmak</item>
+        <item quantity="one">%d alkalommal</item>
+        <item quantity="other">%d alkalommal</item>
     </plurals>
     <string name="similar_content">Hasonló tartalom</string>
     <string name="player_background_style">Lejátszó háttér stílus</string>
@@ -112,11 +112,11 @@
         <item quantity="one">1 másodperc</item>
         <item quantity="other">%d másodperc</item>
     </plurals>
-    <string name="now_playing">Most játszva</string>
+    <string name="now_playing">Lejátszás alatt</string>
     <string name="close">Bezárás</string>
-    <string name="hide_player_thumbnail">A lejátszó gomb elrejtése</string>
-    <string name="hide_player_thumbnail_desc">Az album dizájnjának kicserélése az applikáció logójára</string>
-    <string name="seek_forward_dynamic">%1$dmásodperc előre</string>
+    <string name="hide_player_thumbnail">Lejátszó előkép elrejtése</string>
+    <string name="hide_player_thumbnail_desc">Az albumborító lecserélése az applikáció logójára</string>
+    <string name="seek_forward_dynamic">+%1$d másodperccel előre</string>
     <string name="seek_seconds_addup">Progresszív keresés</string>
     <string name="seek_seconds_addup_description">Amennyiben elfogadja, minden egyes átugrás után 5 másodperc összeadódik</string>
     <string name="new_mini_player_design">Új mini lejátszó dizájn</string>
@@ -126,7 +126,7 @@
     <string name="settings_section_player_content">Lejátszó és tartalom</string>
     <string name="settings_section_storage">Tároló és adat</string>
     <string name="settings_section_system">Rendszer és történet</string>
-    <string name="seek_backward_dynamic">%1$d másodperc visszafelé</string>
+    <string name="seek_backward_dynamic">%1$d másodperccel hátra</string>
     <string name="settings_section_ui">Felület</string>
     <string name="uploaded_playlist">Feltöltve</string>
     <string name="filter_uploaded">Feltöltve</string>
@@ -205,8 +205,8 @@
     <string name="show_more">Több mutatása</string>
     <string name="show_less">Kevesebb mutatása</string>
     <string name="artist_page_settings">Előadói oldal</string>
-    <string name="show_artist_description">Előadó leírása</string>
-    <string name="show_artist_subscriber_count">Feliratkozószám mutatása</string>
+    <string name="show_artist_description">Előadó leírás megjelenítése</string>
+    <string name="show_artist_subscriber_count">Feliratkozószám megjelenítése</string>
     <string name="show_artist_monthly_listeners">Havi hallgatók megjelenítése</string>
     <string name="wavy">Hullámzó</string>
     <string name="enable_simpmusic">SimpMusic dalszövegek engedélyezése</string>
@@ -232,7 +232,7 @@
     <string name="weekly_most_playlist_name">Heti Top</string>
     <string name="monthly_most_playlist_name">Havi Top</string>
     <string name="enable">Engedélyez</string>
-    <string name="crop_album_art">Albumborító Kivágása</string>
+    <string name="crop_album_art">Albumborító levágása</string>
     <string name="crop_album_art_desc">Videó előnézeti képek négyzet alakúra vágása</string>
     <string name="player_background_solid">Egyszínű</string>
     <string name="display_density">Megjelenítési sűrűség</string>
