@@ -38,7 +38,7 @@
     </plurals>
     <string name="similar_content">相似内容</string>
     <string name="player_background_style">播放器背景样式</string>
-    <string name="follow_theme">跟随主题</string>
+    <string name="follow_theme">遵循主题</string>
     <string name="gradient">渐变</string>
     <string name="player_background_blur">模糊</string>
     <string name="player_buttons_style">播放器按钮颜色</string>
@@ -96,8 +96,8 @@
     <string name="likes">点赞</string>
     <string name="dislikes">倒赞</string>
     <string name="now_playing">正在播放</string>
-    <string name="new_player_design">新的播放器外观</string>
-    <string name="new_mini_player_design">新的播放控件外观</string>
+    <string name="new_player_design">新播放器设计</string>
+    <string name="new_mini_player_design">新迷你播放器设计</string>
     <string name="lyrics_auto_scroll">歌词自动滚动</string>
     <string name="lyrics_romanize_japanese">使用日文（罗马音）</string>
     <string name="lyrics_romanize_korean">使用韩文（罗马音）</string>
@@ -106,7 +106,7 @@
     <string name="import_online">导入 M3U 格式的播放列表</string>
     <string name="import_csv">导入 CSV 格式的播放列表</string>
     <string name="playlist_add_local_to_synced_note">注意：不支持将本地歌曲添加到同步/远程播放列表，其他组合均有效</string>
-    <string name="swipe_sensitivity">播放控件灵敏度</string>
+    <string name="swipe_sensitivity">迷你播放器滑动灵敏度</string>
     <string name="clear_image_cache_dialog">您确定要清除所有缓存的图片吗？</string>
     <string name="disable">禁用</string>
     <string name="subscribe">订阅</string>
@@ -774,4 +774,8 @@
     <string name="ai_system_prompt_default">默认</string>
     <string name="ai_system_prompt_reset">重置为默认</string>
     <string name="added_to_playlist">已添加到播放列表</string>
+    <string name="mini_player_background_style">迷你播放器背景样式</string>
+    <string name="transparent">透明</string>
+    <string name="mini_player_background_not_available">禁用新迷你播放器时不可用</string>
+    <string name="your_daily_discover">您的每日发现</string>
 </resources>
