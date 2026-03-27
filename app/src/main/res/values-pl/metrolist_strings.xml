@@ -726,4 +726,9 @@
     <string name="enable_song_cache">Włącz buforowanie utworów</string>
     <string name="enable_song_cache_desc">Automatycznie dodaj piosenki do pamięci podręcznej dla późniejszego odsłuchu</string>
     <string name="sleep_timer_stop_after_current_song_title">Zatrzymaj gdy piosenka się skończy</string>
+    <string name="weekly_most_playlist_name">Najpopularniejsze w tym tygodniu</string>
+    <string name="monthly_most_playlist_name">Najpopularniejsze w tym miesiącu</string>
+    <string name="sort_ascending">Sortuj rosnąco</string>
+    <string name="sort_descending">Sortuj malejąco</string>
+    <string name="sleep_timer_stop_after_current_song_description">Zatrzymuje wyłącznik czasowy na końcu aktualnie grającej piosenki</string>
 </resources>
