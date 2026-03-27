@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 36,
-    "identityHash": "164758dd80fe7cbd518fca38d09d754f",
+    "identityHash": "0873cb260a68737e9a4e9ae674fb5d4c",
     "entities": [
       {
         "tableName": "song",
@@ -1359,6 +1359,61 @@
             "spotifyId"
           ]
         }
+      },
+      {
+        "tableName": "soundcloud_match",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`soundCloudId` INTEGER NOT NULL, `youtubeId` TEXT NOT NULL, `title` TEXT NOT NULL, `artist` TEXT NOT NULL, `matchScore` REAL NOT NULL, `cachedAt` INTEGER NOT NULL, `isManualOverride` INTEGER NOT NULL DEFAULT 0, PRIMARY KEY(`soundCloudId`))",
+        "fields": [
+          {
+            "fieldPath": "soundCloudId",
+            "columnName": "soundCloudId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "youtubeId",
+            "columnName": "youtubeId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "artist",
+            "columnName": "artist",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "matchScore",
+            "columnName": "matchScore",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "cachedAt",
+            "columnName": "cachedAt",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isManualOverride",
+            "columnName": "isManualOverride",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "0"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "soundCloudId"
+          ]
+        }
       }
     ],
     "views": [
@@ -1377,7 +1432,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '164758dd80fe7cbd518fca38d09d754f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0873cb260a68737e9a4e9ae674fb5d4c')"
     ]
   }
 }

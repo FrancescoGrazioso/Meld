@@ -16,7 +16,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
-import timber.log.Timber
 
 /**
  * SoundCloud API client that uses the internal Web API (api-v2.soundcloud.com)

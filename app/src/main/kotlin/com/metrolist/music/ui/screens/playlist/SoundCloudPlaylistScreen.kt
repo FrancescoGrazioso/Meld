@@ -38,8 +38,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.LocalPlayerConnection
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.metrolist.music.R
 import com.metrolist.music.constants.ListThumbnailSize
+import com.metrolist.music.constants.ThumbnailCornerRadius
 import com.metrolist.music.playback.queues.SoundCloudPlaylistQueue
 import com.metrolist.music.ui.component.IconButton
 import com.metrolist.music.ui.component.ItemThumbnail
@@ -88,16 +90,20 @@ fun SoundCloudPlaylistScreen(
             },
             navigationIcon = {
                 IconButton(
-                    icon = R.drawable.chevron_back,
-                    onClick = { navController.popBackStack() }
-                )
+                    onClick = { navController.popBackStack() },
+                    onLongClick = {},
+                ) {
+                    Icon(painterResource(R.drawable.arrow_back), contentDescription = null)
+                }
             },
             actions = {
                 IconButton(
-                    icon = R.drawable.play,
                     onClick = { playTracks(0) },
+                    onLongClick = {},
                     enabled = !isLoading && tracks.isNotEmpty()
-                )
+                ) {
+                    Icon(painterResource(R.drawable.play), contentDescription = null)
+                }
             }
         )
 
@@ -122,8 +128,11 @@ fun SoundCloudPlaylistScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         ItemThumbnail(
-                            url = playlist?.artwork_url,
-                            modifier = Modifier.size(200.dp)
+                            thumbnailUrl = playlist?.artwork_url,
+                            modifier = Modifier.size(200.dp),
+                            isActive = false,
+                            isPlaying = false,
+                            shape = RoundedCornerShape(ThumbnailCornerRadius)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
@@ -146,8 +155,11 @@ fun SoundCloudPlaylistScreen(
                         subtitle = track.user?.username ?: "",
                         thumbnailContent = {
                             ItemThumbnail(
-                                url = track.artwork_url,
-                                modifier = Modifier.size(ListThumbnailSize)
+                                thumbnailUrl = track.artwork_url,
+                                modifier = Modifier.size(ListThumbnailSize),
+                                isActive = false,
+                                isPlaying = false,
+                                shape = RoundedCornerShape(ThumbnailCornerRadius)
                             )
                         },
                         modifier = Modifier.clickable { playTracks(index) }

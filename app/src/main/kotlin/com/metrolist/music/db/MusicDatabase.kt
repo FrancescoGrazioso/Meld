@@ -21,6 +21,7 @@ import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
+import com.metrolist.music.db.dao.SoundCloudDao
 import com.metrolist.music.db.daos.SpeedDialDao
 import com.metrolist.music.db.entities.AlbumArtistMap
 import com.metrolist.music.db.entities.AlbumEntity
@@ -56,6 +57,9 @@ class MusicDatabase(
 ) : DatabaseDao by delegate.dao {
     val speedDialDao: SpeedDialDao
         get() = delegate.speedDialDao
+
+    val soundCloudDao: SoundCloudDao
+        get() = delegate.soundCloudDao
 
     val openHelper: SupportSQLiteOpenHelper
         get() = delegate.openHelper
@@ -110,7 +114,8 @@ class MusicDatabase(
         RecognitionHistory::class,
         SpeedDialItem::class,
         PodcastEntity::class,
-        SpotifyMatchEntity::class
+        SpotifyMatchEntity::class,
+        com.metrolist.music.db.entities.SoundCloudMatchEntity::class
     ],
     views = [
         SortedSongArtistMap::class,
@@ -160,6 +165,7 @@ class MusicDatabase(
 abstract class InternalDatabase : RoomDatabase() {
     abstract val dao: DatabaseDao
     abstract val speedDialDao: SpeedDialDao
+    abstract val soundCloudDao: SoundCloudDao
 
     companion object {
         const val DB_NAME = "song.db"

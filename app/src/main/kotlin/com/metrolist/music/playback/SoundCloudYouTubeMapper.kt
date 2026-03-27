@@ -31,7 +31,7 @@ class SoundCloudYouTubeMapper(
      * Returns null if no suitable match is found.
      */
     suspend fun mapToYouTube(track: SoundCloudTrack): MediaMetadata? = withContext(Dispatchers.IO) {
-        val cached = database.getSoundCloudMatch(track.id)
+        val cached = database.soundCloudDao.getSoundCloudMatch(track.id)
         if (cached != null) {
             Timber.d("SoundCloud match cache hit: ${track.title} -> ${cached.youtubeId} (manual=${cached.isManualOverride})")
             return@withContext buildMediaMetadata(cached.youtubeId, track, cached.title, cached.artist)
@@ -45,7 +45,7 @@ class SoundCloudYouTubeMapper(
         val bestMatch = findBestMatch(track, searchResult)
 
         if (bestMatch != null) {
-            database.upsertSoundCloudMatch(
+            database.soundCloudDao.upsertSoundCloudMatch(
                 SoundCloudMatchEntity(
                     soundCloudId = track.id,
                     youtubeId = bestMatch.id,
@@ -77,7 +77,7 @@ class SoundCloudYouTubeMapper(
         title: String,
         artist: String,
     ) = withContext(Dispatchers.IO) {
-        database.upsertSoundCloudMatch(
+        database.soundCloudDao.upsertSoundCloudMatch(
             SoundCloudMatchEntity(
                 soundCloudId = soundCloudId,
                 youtubeId = youtubeId,

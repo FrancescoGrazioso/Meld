@@ -27,6 +27,7 @@ include(":betterlyrics")
 include(":simpmusic")
 include(":shazamkit")
 include(":spotify")
+include(":soundcloud")
 
 // Use a local copy of NewPipe Extractor by uncommenting the lines below.
 // We assume, that Metrolist and NewPipe Extractor have the same parent directory.

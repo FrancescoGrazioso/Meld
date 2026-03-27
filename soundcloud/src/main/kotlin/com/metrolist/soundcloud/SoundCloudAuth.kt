@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.net.HttpURLConnection
 import java.net.URL
-import timber.log.Timber
 
 /**
  * Handles SoundCloud authentication and Client ID generation.

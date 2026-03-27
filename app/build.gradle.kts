@@ -258,6 +258,7 @@ dependencies {
     implementation(project(":simpmusic"))
     implementation(project(":shazamkit"))
     implementation(project(":spotify"))
+    implementation(project(":soundcloud"))
 
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.cio)
