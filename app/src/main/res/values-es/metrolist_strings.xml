@@ -696,7 +696,7 @@
     <string name="upload_progress">%1$d de %2$d</string>
     <string name="upload_complete">Subida completada</string>
     <string name="upload_failed">Subida fallida</string>
-    <string name="upload_file_too_large">Archivo demasiado grande (máx. 300 MB)</string>
+    <string name="upload_file_too_large">Archivo demasiado grande (máx. 300 MB)</string>
     <string name="upload_unsupported_format">Formato no compatible. Usa mp3, m4a, wma, flac u ogg</string>
     <string name="delete_uploaded_song">Eliminar canción subida</string>
     <string name="delete_uploaded_song_confirm">¿Seguro que quieres eliminar esta canción subida? Esta acción no se puede deshacer.</string>
