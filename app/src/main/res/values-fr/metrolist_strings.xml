@@ -701,11 +701,11 @@
     <string name="upload_file_too_large">Fichier trop volumineux (maximum 300 Mo)</string>
     <string name="upload_unsupported_format">Format non pris en charge. Formats pris en charge : MP3, M4A, WMA, FLAC, OGG</string>
     <string name="delete_uploaded_song">Supprimer le titre téléchargé</string>
-    <string name="delete_uploaded_song_confirm">Êtes-vous sûr de vouloir supprimer ce titre ? Cette action est irréversible.</string>
+    <string name="delete_uploaded_song_confirm">Êtes-vous sûr de vouloir supprimer ce titre que vous avez mis en ligne ? Cette action ne peut pas être annulée.</string>
     <string name="delete_uploaded_song_success">Titre téléchargé supprimé</string>
     <string name="delete_uploaded_song_failed">Échec de la suppression du titre téléchargé</string>
     <string name="delete_uploaded_songs">Supprimer les titres téléchargés</string>
-    <string name="delete_uploaded_songs_confirm">Êtes-vous sûr de vouloir supprimer %1$d titres téléchargés ? Cette action est irréversible.</string>
+    <string name="delete_uploaded_songs_confirm">Êtes-vous sûr de vouloir supprimer %1$d titres téléchargés ? Cette action ne peut pas être annulée.</string>
     <string name="deleted_n_songs">Suppression de %1$d titres</string>
     <string name="deleting">Suppression en cours…</string>
     <string name="export_playlist">Exporter la playlist</string>
@@ -727,12 +727,12 @@
     <string name="sleep_timer_fade_out_description">Le volume diminue progressivement au cours de la dernière minute</string>
     <string name="sort_ascending">Trier par ordre croissant</string>
     <string name="sort_descending">Trier par ordre décroissant</string>
-    <string name="time_transfer_warning">AVERTISSEMENT : cette action ne peut pas être annulée une fois effectuée. Il est recommandé de créer un fichier de sauvegarde avant de continuer. Vous ne pouvez sélectionner que les titres comportant au moins un événement ou une lecture enregistrée.</string>
+    <string name="time_transfer_warning">AVERTISSEMENT : cette opération est irréversible. Effectuez une sauvegarde avant de continuer. Seuls les morceaux ayant été écoutés au moins une fois sont concernés.</string>
     <string name="time_transfer_target_song">Titre cible</string>
     <string name="time_transfer_source_song">Titre source</string>
     <string name="time_transfer_listen_time_label">Durée d\'écoute :</string>
     <string name="time_transfer_convert">Convertir</string>
-    <string name="song_dropdown_more_results">Saisissez davantage de caractères pour affiner les résultats (%d de plus)</string>
+    <string name="song_dropdown_more_results">Continuez à saisir pour affiner les résultats (%d de plus)</string>
     <string name="time_transfer_title">Temps de transfert</string>
     <string name="alarm">Alarme</string>
     <string name="alarm_enabled">Activer l\'alarme</string>
@@ -786,7 +786,7 @@
     <string name="android_auto_youtube_playlists">Afficher les playlists suggérées par YouTube</string>
     <string name="android_auto_youtube_playlists_desc">Afficher les playlists recommandées par YouTube Music dans la section « Playlists » lors de la navigation avec Android Auto</string>
     <string name="android_auto_target_playlist">Ajout rapide d\'une destination</string>
-    <string name="android_auto_target_playlist_desc">Sélectionnez la playlist dans laquelle les titres seront enregistrés lorsque vous utilisez le bouton d\'ajout rapide dans Android Auto</string>
+    <string name="android_auto_target_playlist_desc">Choisissez la playlist dans laquelle les titres sont enregistrés lorsque vous utilisez le bouton d\'ajout rapide dans Android Auto</string>
     <string name="android_auto_target_playlist_auto">Non défini</string>
     <string name="added_to_playlist">Ajouté à la playlist</string>
     <string name="android_auto_target_playlist_not_set">Aucune playlist n\'est sélectionnée. Choisissez-en une dans les paramètres d\'Android Auto.</string>
