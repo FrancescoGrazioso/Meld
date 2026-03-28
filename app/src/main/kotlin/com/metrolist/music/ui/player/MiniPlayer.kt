@@ -104,6 +104,22 @@ import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import com.metrolist.music.ui.component.Icon as MIcon
+import androidx.compose.ui.draw.blur
+import com.metrolist.music.constants.MiniPlayerBackgroundStyle
+import com.metrolist.music.constants.MiniPlayerBackgroundStyleKey
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.platform.LocalContext
+import androidx.palette.graphics.Palette
+import coil3.imageLoader
+import coil3.request.ImageRequest
+import coil3.request.allowHardware
+import coil3.toBitmap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import com.metrolist.music.ui.theme.PlayerColorExtractor
+import com.metrolist.music.ui.component.LocalMenuState
+import com.metrolist.music.ui.menu.AddToPlaylistDialog
 
 /**
  * Stable wrapper for progress state - reads values only during draw phase
@@ -157,9 +173,15 @@ private fun NewMiniPlayer(
     modifier: Modifier = Modifier,
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
+    val menuState = LocalMenuState.current
 
     // Theme settings - these rarely change
-    val pureBlack by rememberPreference(PureBlackMiniPlayerKey, defaultValue = false)
+    val miniPlayerBackground by rememberEnumPreference(
+        MiniPlayerBackgroundStyleKey,
+        defaultValue = MiniPlayerBackgroundStyle.DEFAULT,
+    )
+    val context = LocalContext.current
+    var gradientColors by remember { mutableStateOf<List<Color>>(emptyList()) }
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
     val useDarkTheme =
@@ -219,12 +241,61 @@ private fun NewMiniPlayer(
             (600 / (1f + kotlin.math.exp(-(-11.44748 * swipeSensitivity + 9.04945)))).roundToInt()
         }
 
+    LaunchedEffect(mediaMetadata?.id, miniPlayerBackground) {
+        gradientColors = emptyList()
+        if (miniPlayerBackground == MiniPlayerBackgroundStyle.GRADIENT) {
+            val url = mediaMetadata?.thumbnailUrl
+            if (url != null) {
+                withContext(Dispatchers.IO) {
+                    val request = ImageRequest.Builder(context)
+                        .data(url)
+                        .size(100, 100)
+                        .allowHardware(false)
+                        .build()
+                    val result = runCatching { context.imageLoader.execute(request) }.getOrNull()
+                    val bitmap = result?.image?.toBitmap()
+                    if (bitmap != null) {
+                        val palette = withContext(Dispatchers.Default) {
+                            Palette.from(bitmap)
+                                .maximumColorCount(8)
+                                .resizeBitmapArea(100 * 100)
+                                .generate()
+                        }
+                        val extracted = PlayerColorExtractor.extractGradientColors(
+                            palette = palette,
+                            fallbackColor = 0xFF000000.toInt(),
+                        )
+                        withContext(Dispatchers.Main) {
+                            gradientColors = extracted
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            gradientColors = emptyList()
+                        }
+                    }
+                }
+            }
+        } else {
+            gradientColors = emptyList()
+        }
+    }
+
     // Memoize colors
-    val backgroundColor = if (pureBlack && useDarkTheme) Color.Black else MaterialTheme.colorScheme.surfaceContainer
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val outlineColor = MaterialTheme.colorScheme.outline
-    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
-    val errorColor = MaterialTheme.colorScheme.error
+    val backgroundColor = when (miniPlayerBackground) {
+        MiniPlayerBackgroundStyle.DEFAULT    -> MaterialTheme.colorScheme.surfaceContainer
+        MiniPlayerBackgroundStyle.TRANSPARENT -> Color.Black.copy(alpha = 0.25f)
+        MiniPlayerBackgroundStyle.BLUR       -> MaterialTheme.colorScheme.surfaceContainer
+        MiniPlayerBackgroundStyle.GRADIENT   -> MaterialTheme.colorScheme.surfaceContainer
+        MiniPlayerBackgroundStyle.PURE_BLACK -> Color.Black
+    }
+    val forceLightColors = !useDarkTheme && (miniPlayerBackground == MiniPlayerBackgroundStyle.PURE_BLACK ||
+            miniPlayerBackground == MiniPlayerBackgroundStyle.BLUR ||
+            miniPlayerBackground == MiniPlayerBackgroundStyle.GRADIENT)
+
+    val primaryColor = if (forceLightColors) Color.White else MaterialTheme.colorScheme.primary
+    val outlineColor = if (forceLightColors) Color.White else MaterialTheme.colorScheme.outline
+    val onSurfaceColor = if (forceLightColors) Color.White else MaterialTheme.colorScheme.onSurface
+    val errorColor = if (forceLightColors) Color(0xFFFF6B6B) else MaterialTheme.colorScheme.error
 
     Box(
         modifier =
@@ -306,6 +377,43 @@ private fun NewMiniPlayer(
                     .background(color = backgroundColor)
                     .border(1.dp, outlineColor.copy(alpha = 0.3f), RoundedCornerShape(32.dp)),
         ) {
+            when (miniPlayerBackground) {
+                MiniPlayerBackgroundStyle.BLUR -> {
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+                        mediaMetadata?.thumbnailUrl?.let { url ->
+                            AsyncImage(
+                                model = url,
+                                contentDescription = null,
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .blur(60.dp),
+                            )
+                            Box(
+                                Modifier
+                                    .fillMaxSize()
+                                    .background(Color.Black.copy(alpha = 0.45f)),
+                            )
+                        }
+                    }
+                }
+                MiniPlayerBackgroundStyle.GRADIENT -> {
+                    val colors = if (gradientColors.isNotEmpty()) gradientColors
+                    else listOf(
+                        MaterialTheme.colorScheme.surfaceContainer,
+                        MaterialTheme.colorScheme.surfaceContainer,
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.horizontalGradient(colors)
+                            )
+                            .background(Color.Black.copy(alpha = 0.15f)),
+                    )
+                }
+                else -> {}
+            }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 8.dp),
@@ -346,15 +454,46 @@ private fun NewMiniPlayer(
                     Spacer(modifier = Modifier.width(12.dp))
                 }
 
-                // Subscribe button - isolated composable
+// Subscribe button - isolated composable
                 mediaMetadata?.artists?.firstOrNull()?.id?.let { artistId ->
-                    SubscribeButton(artistId = artistId, metadata = mediaMetadata!!)
+                    SubscribeButton(
+                        artistId = artistId,
+                        metadata = mediaMetadata!!,
+                        primaryColor = primaryColor,
+                        outlineColor = outlineColor,
+                        onSurfaceColor = onSurfaceColor,
+                    )
                 }
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // Favorite button - isolated composable
-                mediaMetadata?.let { FavoriteButton(songId = it.id) }
+// Add to playlist button - isolated composable
+                mediaMetadata?.let { metadata ->
+                    AddToPlaylistButton(
+                        onClick = {
+                            menuState.show {
+                                AddToPlaylistDialog(
+                                    isVisible = true,
+                                    onGetSong = { listOf(metadata.id) },
+                                    onDismiss = menuState::dismiss,
+                                )
+                            }
+                        },
+                        outlineColor = outlineColor,
+                        onSurfaceColor = onSurfaceColor,
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+// Favorite button - isolated composable
+                mediaMetadata?.let { FavoriteButton(
+                    songId = it.id,
+                    errorColor = errorColor,
+                    outlineColor = outlineColor,
+                    onSurfaceColor = onSurfaceColor,
+                )
+                }
             }
         }
     }
@@ -511,7 +650,7 @@ private fun NewMiniPlayerSongInfo(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
+                overflow = TextOverflow.Clip,
                 modifier = Modifier.basicMarquee(iterations = 1, initialDelayMillis = 3000, velocity = 30.dp),
             )
             Row(
@@ -525,7 +664,7 @@ private fun NewMiniPlayerSongInfo(
                         color = onSurfaceColor.copy(alpha = 0.7f),
                         fontSize = 12.sp,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+                        overflow = TextOverflow.Clip,
                         modifier = Modifier.basicMarquee(iterations = 1, initialDelayMillis = 3000, velocity = 30.dp),
                     )
                 }
@@ -894,14 +1033,14 @@ private fun LegacyMiniMediaInfo(
 private fun SubscribeButton(
     artistId: String,
     metadata: MediaMetadata,
+    primaryColor: Color,
+    outlineColor: Color,
+    onSurfaceColor: Color,
 ) {
     val database = LocalDatabase.current
     val libraryArtist by database.artist(artistId).collectAsState(initial = null)
     val isSubscribed = libraryArtist?.artist?.bookmarkedAt != null
 
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val outlineColor = MaterialTheme.colorScheme.outline
-    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
     Box(
         contentAlignment = Alignment.Center,
@@ -946,17 +1085,53 @@ private fun SubscribeButton(
 }
 
 @Composable
-private fun FavoriteButton(songId: String) {
+private fun AddToPlaylistButton(
+    onClick: () -> Unit,
+    outlineColor: Color,
+    onSurfaceColor: Color,
+)
+
+{
+    val contentDescription = stringResource(R.string.add_to_playlist_desc)
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(40.dp)
+            .clip(CircleShape)
+            .border(
+                width = 1.dp,
+                color = outlineColor.copy(alpha = 0.3f),
+                shape = CircleShape,
+            )
+            .background(
+                color = Color.Transparent,
+                shape = CircleShape,
+            )
+            .clickable { onClick() },
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.add),
+            contentDescription = contentDescription,
+            tint = onSurfaceColor.copy(alpha = 0.7f),
+            modifier = Modifier.size(20.dp),
+        )
+    }
+}
+
+@Composable
+private fun FavoriteButton(
+    songId: String,
+    errorColor: Color,
+    outlineColor: Color,
+    onSurfaceColor: Color,
+) {
     val database = LocalDatabase.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val librarySong by database.song(songId).collectAsState(initial = null)
     // For episodes, show saved state (inLibrary); for songs, show liked state
     val isEpisode = librarySong?.song?.isEpisode == true
     val isLiked = if (isEpisode) librarySong?.song?.inLibrary != null else librarySong?.song?.liked == true
-
-    val errorColor = MaterialTheme.colorScheme.error
-    val outlineColor = MaterialTheme.colorScheme.outline
-    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
 
     Box(
         contentAlignment = Alignment.Center,
