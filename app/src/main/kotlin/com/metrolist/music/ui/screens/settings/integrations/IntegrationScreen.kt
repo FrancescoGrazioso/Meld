@@ -36,13 +36,7 @@ fun IntegrationScreen(
 ) {
     Column(
         Modifier
-            .windowInsetsPadding(LocalPlayerAwareWindowInsets.current)
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 16.dp),
-    ) {
-        IntegrationCard(
-            title = stringResource(R.string.general),
-                        items = listOf(
+            .            items = listOf(
                 IntegrationCardItem(
                     icon = painterResource(R.drawable.discord),
                     title = { Text(stringResource(R.string.discord_integration)) },
@@ -72,3 +66,10 @@ fun IntegrationScreen(
                     }
                 )
             )
+windowInsetsPadding(LocalPlayerAwareWindowInsets.current)
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp),
+    ) {
+        IntegrationCard(
+            title = stringResource(R.string.general),
+                        
