@@ -54,7 +54,7 @@
     <string name="similar_content">Ähnlicher Inhalt</string>
     <string name="clear_song_cache_dialog">Bist du sicher dass du den Song-Cache leeren willst?</string>
     <string name="copy_link">Link kopieren</string>
-    <string name="allows_for_sync_witch_youtube">Hinweis: Dies syncronisiert die Playlist mit YouTube Music. Das kann danach NICHT mehr geändert werden.</string>
+    <string name="allows_for_sync_witch_youtube">Hinweis: Diese Option aktiviert die Synchronisierung mit YouTube Music und kann später NICHT mehr geändert werden</string>
     <string name="default_style">Standard</string>
     <string name="clear_downloads_dialog">Bist du sicher dass du alle Downloads löschen willst?</string>
     <string name="months">Monate</string>
@@ -90,7 +90,7 @@
     <string name="share_as_text">Als Text teilen</string>
     <string name="share_as_image">Als Bild teilen</string>
     <string name="generating_image">Generiere Bild</string>
-    <string name="max_selection_limit">Höchstgrenze der Auswahl</string>
+    <string name="max_selection_limit">Die maximale Auswahlgrenze ist erreicht</string>
     <string name="show_liked_playlist">\"Favoriten\"-Playlist anzeigen</string>
     <string name="show_downloaded_playlist">„Heruntergeladen“-Playlist anzeigen</string>
     <string name="show_top_playlist">„Top“-Playlist anzeigen</string>
@@ -116,7 +116,7 @@
     <string name="new_mini_player_design">Neues Design für den Mini-Player</string>
     <string name="seek_forward_dynamic">+%1$d Sekunden vorspulen</string>
     <string name="seek_backward_dynamic">-%1$d Sekunden zurückspulen</string>
-    <string name="seek_seconds_addup_description">Wenn aktiviert, werden bei jedem Spulen schrittweise 5 zusätzliche Sekunden hinzugefügt</string>
+    <string name="seek_seconds_addup_description">Wenn diese Option aktiviert ist, werden bei jedem Sprung jeweils 5 Sekunden hinzugefügt</string>
     <string name="seek_seconds_addup">Progressives Spulen</string>
     <string name="close">Schließen</string>
     <string name="disable_load_more_when_repeat_all">Mehr Laden deaktivieren, wenn alles wiederholen aktiv ist</string>
@@ -176,7 +176,7 @@
     <string name="scrobble_min_track_duration">Lieder scrobbeln, die länger sind als</string>
     <string name="scrobble_delay_percent">Scrobble Verzögerung (%)</string>
     <string name="scrobble_delay_minutes">Scrobble Verzögerung (min)</string>
-    <string name="swipe_song_to_remove">Wische den Song zur Seite, um ihn aus der Playlist zu entfernen</string>
+    <string name="swipe_song_to_remove">Wische, um den Titel aus der Wiedergabeliste zu entfernen</string>
     <string name="download_playlist_desc">Alle Songs für die Offline-Wiedergabe herunterladen</string>
     <string name="remove_download_playlist_desc">Alle heruntergeladenen Songs aus dieser Wiedergabeliste entfernen</string>
     <string name="download_in_progress_desc">Der Download läuft</string>
@@ -228,7 +228,7 @@
     <string name="lyrics_line_spacing">Zeilenabstand im Liedtext</string>
     <string name="album_art_for">Albumcover für %s</string>
     <string name="lyrics_glow_effect">Leuchtenden Text-Effekt aktivieren</string>
-    <string name="lyrics_glow_effect_desc">Leuchtanimation und Bounce-Effekt zu aktiven Textzeilen hinzufügen</string>
+    <string name="lyrics_glow_effect_desc">Fügt der aktiven Textzeile eine Leuchtanimation und einen Wippeffekt hinzu</string>
     <string name="wrapped_top_album_title">Dein Top-Album ist</string>
     <string name="wrapped_album_listening_time_minutes">%d Minuten</string>
     <string name="wrapped_no_data">Keine Daten</string>
