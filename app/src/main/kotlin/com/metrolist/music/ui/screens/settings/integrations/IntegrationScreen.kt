@@ -42,7 +42,7 @@ fun IntegrationScreen(
     ) {
         IntegrationCard(
             title = stringResource(R.string.general),
-            items = listOf(
+                        items = listOf(
                 IntegrationCardItem(
                     icon = painterResource(R.drawable.discord),
                     title = { Text(stringResource(R.string.discord_integration)) },
@@ -63,23 +63,12 @@ fun IntegrationScreen(
                     onClick = {
                         navController.navigate("settings/integrations/spotify")
                     }
+                ), // Обратите внимание: тут появилась запятая!
+                IntegrationCardItem(
+                    icon = painterResource(R.drawable.music_note), // Временно ставим иконку ноты, чтобы не было ошибки отсутствующей картинки
+                    title = { Text("SoundCloud Integration") },
+                    onClick = {
+                        navController.navigate("settings/integrations/soundcloud")
+                    }
                 )
             )
-        )
-    }
-
-    TopAppBar(
-        title = { Text(stringResource(R.string.integrations)) },
-        navigationIcon = {
-            IconButton(
-                onClick = navController::navigateUp,
-                onLongClick = navController::backToMain,
-            ) {
-                Icon(
-                    painterResource(R.drawable.arrow_back),
-                    contentDescription = null,
-                )
-            }
-        }
-    )
-}
