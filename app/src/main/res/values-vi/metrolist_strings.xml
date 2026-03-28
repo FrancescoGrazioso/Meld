@@ -641,4 +641,26 @@
     <string name="ai_provider_openai_help">Truy cập https://platform.openai.com/api-keys</string>
     <string name="ai_provider_claude_help">Truy cập https://console.anthropic.com/settings/keys</string>
     <string name="ai_provider_gemini_help">Truy cập https://aistudio.google.com/apikey</string>
+    <string name="progress_percent">Tiến trình %s%%</string>
+    <string name="error_playing">Lỗi phát lại</string>
+    <string name="ai_api_key">Chìa khoá API</string>
+    <string name="ai_provider_perplexity_help">Truy cập https://perplexity.ai/settings/api</string>
+    <string name="ai_provider_xai_help">Truy cập https://console.x.ai</string>
+    <string name="ai_provider_deepl_help">Truy cập https://deepl.com/pro-api cho các chìa khoá miễn phí và trả phí</string>
+    <string name="ai_provider_mistral_help">Truy cập https://console.mistral.ai/api-keys</string>
+    <string name="ai_deepl_formality">Tính trang trọng</string>
+    <string name="ai_deepl_formality_default">Mặc định</string>
+    <string name="ai_deepl_formality_more">Trang trọng hơn</string>
+    <string name="ai_deepl_formality_less">Ít trang trọng hơn</string>
+    <string name="ai_system_prompt">Lời nhắc hệ thống</string>
+    <string name="ai_system_prompt_desc">Hướng dẫn tùy chỉnh đã đuợc gửi đến mô hình AI. Để trống nếu muốn sử dụng lời nhắc mặc định</string>
+    <string name="ai_system_prompt_default">Mặc định</string>
+    <string name="ai_system_prompt_reset">Reset về mặc định</string>
+    <string name="cd_back">Mặt sau</string>
+    <string name="cd_pure_black_mode">Chế độ đen tuyền</string>
+    <string name="play_all">Phát tất cả</string>
+    <string name="enable_high_refresh_rate">Bật tốc độ làm mới cao</string>
+    <string name="enable_high_refresh_rate_desc">Buộc màn hình hoạt động ở tốc độ làm mới cao nhất được hỗ trợ (ví dụ: 120Hz)</string>
+    <string name="recognize_music">Nhận dạng âm nhạc</string>
+    <string name="tap_to_recognize">Ấn để nhận dạng</string>
 </resources>
