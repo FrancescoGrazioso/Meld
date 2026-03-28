@@ -566,8 +566,8 @@
     <string name="no_account_found">Aucun compte trouvé</string>
     <string name="checking_previous_account">Vérification du compte précédent…</string>
     <string name="restore">Restaurer</string>
-    <string name="restore_account_warning">Vous devrez vous reconnecter après la restauration. Le compte suivant sera déconnecté :</string>
-    <string name="restore_confirm_message">Cela restaurera les données de votre application à partir de la sauvegarde.</string>
+    <string name="restore_account_warning">Vous devrez vous reconnecter après la restauration. La session du compte suivant sera déconnectée :</string>
+    <string name="restore_confirm_message">Cela permettra de restaurer les données de votre application à partir de la sauvegarde sélectionnée.</string>
     <string name="restore_confirm_title">Restaurer la sauvegarde ?</string>
     <plurals name="n_episode">
         <item quantity="one">%d épisode</item>
@@ -634,7 +634,7 @@
     <string name="buy_mo_a_coffee">Offrez-moi un café !</string>
     <string name="community_and_info">Communauté &amp; Informations</string>
     <string name="wanna_play_favorite_song">Envie de jouer leur titre préféré ?</string>
-    <string name="yeah">Oui</string>
+    <string name="yeah">Oui !</string>
     <string name="stands_with_palestine">Ce projet soutient la Palestine 🇵🇸</string>
     <string name="filter_podcasts">Podcasts</string>
     <string name="view_podcast">Voir le podcast</string>
@@ -698,8 +698,8 @@
     <string name="upload_progress">%1$d de %2$d</string>
     <string name="upload_complete">Téléchargement terminé</string>
     <string name="upload_failed">Échec du téléchargement</string>
-    <string name="upload_file_too_large">Fichier trop volumineux (max. 300 Mo)</string>
-    <string name="upload_unsupported_format">Format non pris en charge. Utilisez les formats mp3, m4a, wma, flac ou ogg.</string>
+    <string name="upload_file_too_large">Fichier trop volumineux (maximum 300 Mo)</string>
+    <string name="upload_unsupported_format">Format non pris en charge. Formats pris en charge : MP3, M4A, WMA, FLAC, OGG</string>
     <string name="delete_uploaded_song">Supprimer le titre téléchargé</string>
     <string name="delete_uploaded_song_confirm">Êtes-vous sûr de vouloir supprimer ce titre ? Cette action est irréversible.</string>
     <string name="delete_uploaded_song_success">Titre téléchargé supprimé</string>
