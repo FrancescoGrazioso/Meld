@@ -690,7 +690,7 @@
     <string name="sort_descending">下降排序</string>
     <string name="alarm">鬧鐘</string>
     <string name="alarm_enabled">啟用鬧鐘</string>
-    <string name="alarm_time">鬧鐘時間</string>
+    <string name="alarm_time">睡眠定時器</string>
     <string name="alarm_playlist">播放清單</string>
     <string name="alarm_select_playlist">選擇播放清單</string>
     <string name="alarm_no_playlists">未找到播放清單</string>
