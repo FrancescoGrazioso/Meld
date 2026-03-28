@@ -65,6 +65,8 @@ import com.metrolist.music.ui.screens.settings.integrations.SpotifySettings
 import com.metrolist.music.ui.screens.recognition.RecognitionScreen
 import com.metrolist.music.ui.screens.recognition.RecognitionHistoryScreen
 import com.metrolist.music.ui.screens.wrapped.WrappedScreen
+import com.metrolist.music.ui.screens.settings.integrations.SoundCloudSettings
+import com.metrolist.music.ui.screens.playlist.SoundCloudPlaylistScreen
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 
@@ -397,6 +399,21 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("settings/integrations/spotify/preload") {
         SpotifyPreloadScreen(navController, scrollBehavior)
+    }
+    
+    composable("settings/integrations/soundcloud") {
+        SoundCloudSettings(navController)
+    }
+
+    composable(
+        route = "soundcloud_playlist/{playlistId}",
+        arguments = listOf(
+            navArgument("playlistId") {
+                type = NavType.LongType
+            },
+        ),
+    ) {
+        SoundCloudPlaylistScreen(navController)
     }
 
     composable("settings/spotify/login") {
