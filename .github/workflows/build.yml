@@ -119,8 +119,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: Restore Persistent Keystore
-        run: |
-          echo "${{ secrets.DEBUG_KEYSTORE }}" | base64 -d > ./app/persistent-debug.keystore
+        run: keytool -genkey -v -keystore ./app/persistent-debug.keystore -alias androiddebugkey -storepass android -keypass android -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US"
 
       - name: Build Universal Debug APK and Run Lint
         run: ./gradlew --console=plain assembleUniversal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}Debug :app:lintUniversal${{ matrix.variant == 'foss' && 'Foss' || 'Gms' }}Debug --warning-mode summary
