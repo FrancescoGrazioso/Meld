@@ -62,8 +62,6 @@ import com.metrolist.music.ui.screens.settings.integrations.LastFMSettings
 import com.metrolist.music.ui.screens.settings.integrations.ListenTogetherSettings
 import com.metrolist.music.ui.screens.settings.integrations.SpotifyPreloadScreen
 import com.metrolist.music.ui.screens.settings.integrations.SpotifySettings
-import com.metrolist.music.ui.screens.settings.integrations.SoundCloudSettings
-import com.metrolist.music.ui.screens.playlist.SoundCloudPlaylistScreen
 import com.metrolist.music.ui.screens.recognition.RecognitionScreen
 import com.metrolist.music.ui.screens.recognition.RecognitionHistoryScreen
 import com.metrolist.music.ui.screens.wrapped.WrappedScreen
@@ -429,17 +427,6 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("spotify_liked_songs") {
         SpotifyLikedSongsScreen(navController, scrollBehavior)
-    }
-
-    composable("settings/integrations/soundcloud") {
-        SoundCloudSettings(navController = navController)
-    }
-
-    composable(
-        route = "soundcloud_playlist/{playlistId}",
-        arguments = listOf(navArgument("playlistId") { type = androidx.navigation.NavType.LongType })
-    ) {
-        SoundCloudPlaylistScreen(navController = navController)
     }
 
     composable("settings/discord/login") {
