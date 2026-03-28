@@ -686,7 +686,7 @@
     <string name="sleep_timer_repeat_description">Установите дни и время для автоматического включения таймера сна</string>
     <string name="sleep_timer_repeat">Повтор</string>
     <string name="sleep_timer_daily">Ежедневно</string>
-    <string name="sleep_timer_weekdays">По будням</string>
+    <string name="sleep_timer_weekdays">Понедельник – Пятница</string>
     <string name="sleep_timer_weekdays_weekends">Будни / Выходные</string>
     <string name="sleep_timer_weekends">Суббота – Воскресенье</string>
     <string name="sleep_timer_custom">Выборочно</string>
