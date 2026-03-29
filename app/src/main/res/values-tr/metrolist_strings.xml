@@ -17,7 +17,7 @@
     <string name="cached_playlist">Önbelleğe Alınan</string>
     <string name="sync_playlist">Oynatma listesini senkronize et</string>
     <string name="sync_disabled">Senkronizasyon devre dışı</string>
-    <string name="allows_for_sync_witch_youtube">Not: Bu, YouTube Music senkronizasyonuna izin verir. Sonradan DEĞİŞTİRİLEMEZ.</string>
+    <string name="allows_for_sync_witch_youtube">NOT: Bu seçenek YouTube Music ile senkronizasyonu etkinleştirir ve daha sonra DEĞİŞTİRİLEMEZ</string>
     <string name="remove_from_cache">Önbellekten kaldır</string>
     <string name="copy_link">Bağlantıyı kopyala</string>
     <string name="select">Tümünü seç</string>
@@ -88,7 +88,7 @@
     <string name="share_lyrics">Şarkı sözlerini paylaş</string>
     <string name="share_as_text">Metin olarak paylaş</string>
     <string name="share_as_image">Görsel olarak paylaş</string>
-    <string name="max_selection_limit">Maksimum seçim sınırı</string>
+    <string name="max_selection_limit">Maksimum seçim sınırına ulaşıldı</string>
     <string name="share_selected">Seçilenleri paylaş</string>
     <string name="customize_colors">Renkleri düzenle</string>
     <string name="text_color">Metin rengi</string>
@@ -111,7 +111,7 @@
     <string name="disable">Devre dışı bırak</string>
     <string name="subscribe">Abone ol</string>
     <string name="subscribed">Abone olundu</string>
-    <string name="generating_image">Görüntü oluşturuluyor</string>
+    <string name="generating_image">Görüntü oluşturuluyor…</string>
     <string name="now_playing">Şimdi Oynatılıyor</string>
     <string name="new_mini_player_design">Yeni mini oynatıcı tasarımı</string>
     <string name="close">Kapat</string>
@@ -121,14 +121,14 @@
     <string name="seek_seconds_addup_description">Eğer etkinleştirilirse, her ileri/geri sarma atlamasında kademeli olarak fazladan 5 saniye ekler</string>
     <string name="disable_load_more_when_repeat_all">Tümünü tekrarla açıkken daha fazla yükle seçeneğini devre dışı bırak</string>
     <string name="disable_load_more_when_repeat_all_desc">Tümünü tekrarla modu açıkken daha fazla şarkı veya benzer içerik yükleme</string>
-    <string name="hide_player_thumbnail">Oynatıcı Küçük Resmini Gizle</string>
+    <string name="hide_player_thumbnail">Oynatıcı küçük resmini gizle</string>
     <string name="hide_player_thumbnail_desc">Oynatıcıdaki albüm resmini uygulama logosuyla değiştirin</string>
     <string name="settings_section_ui">Arayüz</string>
     <string name="settings_section_privacy">Gizlilik ve Güvenlik</string>
     <string name="settings_section_player_content">Oynatıcı ve İçerik</string>
     <string name="settings_section_storage">Depolama ve Veri</string>
     <string name="settings_section_system">Sistem ve Hakkında</string>
-    <string name="starting_radio">Radyo başlatılıyor</string>
+    <string name="starting_radio">Radyo başlatılıyor…</string>
     <string name="edit_playlist_cover">Oynatma listesi kapağını düzenle</string>
     <string name="edit_playlist_cover_note">Not: Oynatma listesi kapağını değiştirmek için hesabınızın bir telefon numarasına bağlı olması ve YouTube Music\'te doğrulanmış olması gerekir.</string>
     <string name="edit_playlist_cover_note_wait">Bir resim seçtikten sonra lütfen yeni kapağın oynatma listenizde görünmesi için bir süre bekleyin.</string>
@@ -211,7 +211,7 @@
     <string name="download_in_progress_desc">İndirme işlemi devam ediyor</string>
     <string name="share_playlist_desc">Bu oynatma listesini başkalarıyla paylaş</string>
     <string name="delete_playlist_desc">Bu oynatma listesini kalıcı olarak sil</string>
-    <string name="sync_playlist_desc">Oynatma listesini YouTube Music ile senkronize et</string>
+    <string name="sync_playlist_desc">Bu oynatma listesini YouTube Music ile senkronize edin</string>
     <string name="enable_better_lyrics">Better Lyrics\'i Etkinleştir</string>
     <string name="enable_better_lyrics_desc">Herhangi bir şarkı için karaoke tarzı, hece senkronizasyonlu sözler</string>
     <string name="lyrics_animation_style">Kelime kelime animasyon stili</string>
@@ -321,7 +321,7 @@
     <string name="error_playback_failed">Oynatma başarısız</string>
     <string name="error_title">Hata</string>
     <string name="error_eq_apply_failed">Ekolayzır profilini kaydederken sorun oluştu: %1$s</string>
-    <string name="crop_album_art">Albüm Resmini Kırp</string>
+    <string name="crop_album_art">Albüm resmini kırp</string>
     <string name="crop_album_art_desc">Video küçük resimlerini kırparak kare en boy oranını zorlayın</string>
     <string name="keep_screen_on_when_player_is_expanded">Oynatıcı genişletildiğinde ekranı açık tut</string>
     <string name="listen_together">Birlikte Dinle</string>
