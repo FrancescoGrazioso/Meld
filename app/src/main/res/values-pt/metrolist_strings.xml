@@ -13,12 +13,12 @@
     <string name="continuous">Contínuo</string>
     <string name="liked">Favoritas</string>
     <string name="offline">Transferido</string>
-    <string name="my_top">O meu top</string>
+    <string name="my_top">Meu Top</string>
     <string name="cached_playlist">Em cache</string>
     <string name="sync_playlist">Sincronizar lista de reprodução</string>
     <string name="sync_disabled">Sincronização desativada</string>
-    <string name="allows_for_sync_witch_youtube">Observação: Isto permite a sincronização com o YouTube Music. Isto NÃO pode ser alterado mais tarde.</string>
-    <string name="generating_image">A gerar imagem</string>
+    <string name="allows_for_sync_witch_youtube">OBSERVAÇÃO: Isto permite a sincronização com o YouTube Music. Isto NÃO pode ser alterado mais tarde.</string>
+    <string name="generating_image">A gerar imagem…</string>
     <string name="please_wait">Por favor, aguarde</string>
     <string name="cancel">Cancelar</string>
     <string name="share_lyrics">Partilhar letra</string>
@@ -129,11 +129,11 @@
     <string name="filter_uploaded">Carregado</string>
     <string name="download_playlist_desc">Descarregar todas as músicas para ouvir offline</string>
     <string name="remove_download_playlist_desc">Remover todas as músicas descarregadas desta lista de reprodução</string>
-    <string name="download_in_progress_desc">Descarregamento em progresso</string>
+    <string name="download_in_progress_desc">Download em progresso</string>
     <string name="share_playlist_desc">Partilhar esta lista de reprodução com os outros</string>
     <string name="delete_playlist_desc">Remover esta lista de reprodução permanentemente</string>
     <string name="sync_playlist_desc">Sincronizar lista de reprodução com o YouTube Music</string>
-    <string name="starting_radio">A começar rádio</string>
+    <string name="starting_radio">A ligar o rádio…</string>
     <string name="primary_color_style">Cor primária</string>
     <string name="swipe_song_to_remove">Arrastar música para a remover da lista de reprodução</string>
     <string name="lyrics_glow_effect">Habilitar efeito de letras brilhantes</string>
@@ -332,4 +332,6 @@
     <string name="crossfade">Transição suave</string>
     <string name="crossfade_desc">Transição suave entre músicas</string>
     <string name="crossfade_duration">Duração da transição suave</string>
+    <string name="weekly_most_playlist_name">Mais populares da semana</string>
+    <string name="monthly_most_playlist_name">Mais populares do mês</string>
 </resources>
