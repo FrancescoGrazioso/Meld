@@ -641,7 +641,7 @@
     <string name="credits_instagram">Instagram</string>
     <string name="credits_github">GitHub</string>
     <string name="credits_view_repo">Lihat Repositori</string>
-    <string name="app_version_info">"%1$s -  %2$s"</string>
+    <string name="app_version_info">%1$s • %2$s</string>
     <string name="like_what_i_do">Suka dengan yang saya lakukan?</string>
     <string name="buy_mo_a_coffee">Belikan saya kopi</string>
     <string name="community_and_info">Komunitas &amp; Info</string>
@@ -707,4 +707,7 @@
     <string name="enable_song_cache">Aktifkan cache lagu</string>
     <string name="enable_song_cache_desc">Otomatis simpan cache untuk diputar nanti</string>
     <string name="sleep_timer_stop_after_current_song_title">Berhenti di akhir lagu saat ini</string>
+    <string name="sort_ascending">Urutkan secara menaik</string>
+    <string name="sort_descending">Urutkan menurun</string>
+    <string name="sleep_timer_stop_after_current_song_description">Menunggu lagu yang sedang diputar selesai sebelum berhenti</string>
 </resources>
