@@ -19,8 +19,8 @@
     <string name="top_length">Délka mého Seznamu nejlepších</string>
     <string name="share_as_image">Sdílet jako obrázek</string>
     <string name="player_background_style">Styl pozadí přehrávače</string>
-    <string name="generating_image">Generování obrázku</string>
-    <string name="max_selection_limit">Maximální limit výběru</string>
+    <string name="generating_image">Generování obrázku…</string>
+    <string name="max_selection_limit">Dosaženo maximálního limitu výběru</string>
     <string name="share_as_text">Sdílet jako text</string>
     <string name="token_adv_login_description">Toto je POKROČILÝ způsob přihlášení. Jako alternativu k webovému portálu zde můžete přímo zadat nebo aktualizovat váš přihlašovací token. Můžete tím například urychlit přihlašování na více zařízeních. Upozorňujeme, že jakékoli neplatné formáty tokenu, které aplikace nedokáže zpracovat, nebudou přijaty</string>
     <string name="share_selected">Sdílet vybrané</string>
@@ -69,7 +69,7 @@
     <string name="cached_playlist">V mezipaměti</string>
     <string name="sync_playlist">Synchronizovat playlist</string>
     <string name="sync_disabled">Synchronizace zakázána</string>
-    <string name="allows_for_sync_witch_youtube">Upozornění: tato funkce umožňuje synchronizaci se službou YouTube Music. Tuto možnost NELZE později změnit.</string>
+    <string name="allows_for_sync_witch_youtube">UPOZORNĚNÍ: Tato funkce povolí synchronizaci se službou YouTube Music a NELZE ji později změnit</string>
     <string name="remove_from_cache">Odstranit z mezipaměti</string>
     <string name="copy_link">Kopírovat odkaz</string>
     <string name="dislike_all">Nelíbí se u všeho</string>
@@ -132,7 +132,7 @@
     <string name="settings_section_player_content">Přehrávač a obsah</string>
     <string name="settings_section_storage">Úložiště a data</string>
     <string name="settings_section_system">Systém a informace</string>
-    <string name="starting_radio">Spouštím rádio</string>
+    <string name="starting_radio">Spouštím rádio…</string>
     <string name="config_proxy">Nastavit síť proxy</string>
     <string name="proxy_username">Uživatelské jméno sítě proxy</string>
     <string name="proxy_password">Heslo sítě proxy</string>
@@ -215,7 +215,7 @@
     <string name="download_in_progress_desc">Probíhá stahování</string>
     <string name="share_playlist_desc">Sdílejte tento playlist s ostatními</string>
     <string name="delete_playlist_desc">Trvale odstranit tento playlist</string>
-    <string name="sync_playlist_desc">Synchronizovat playlist s YouTube Music</string>
+    <string name="sync_playlist_desc">Synchronizovat tento playlist s YouTube Music</string>
     <string name="enable_better_lyrics">Povolit Better Lyrics</string>
     <string name="enable_better_lyrics_desc">Texty synchronizované slovo po slově, pro karaoke</string>
     <string name="lyrics_animation_style">Styl animace slovo po slově</string>
