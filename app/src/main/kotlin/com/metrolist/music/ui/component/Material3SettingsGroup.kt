@@ -110,8 +110,11 @@ private fun Material3SettingsItemRow(
             .padding(horizontal = 20.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Icon with background
-        item.icon?.let { icon ->
+        // Custom leading content or Icon with background
+        if (item.leadingContent != null) {
+            item.leadingContent.invoke()
+            Spacer(modifier = Modifier.width(16.dp))
+        } else if (item.icon != null) {
             Box(
                 modifier = Modifier
                     .size(40.dp)
@@ -132,7 +135,7 @@ private fun Material3SettingsItemRow(
                         }
                     ) {
                         Icon(
-                            painter = icon,
+                            painter = item.icon,
                             contentDescription = null,
                             tint = if (!item.enabled)
                                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
@@ -145,7 +148,7 @@ private fun Material3SettingsItemRow(
                     }
                 } else {
                     Icon(
-                        painter = icon,
+                        painter = item.icon,
                         contentDescription = null,
                         tint = if (!item.enabled)
                             MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
@@ -206,6 +209,7 @@ private fun Material3SettingsItemRow(
  */
 data class Material3SettingsItem(
     val icon: Painter? = null,
+    val leadingContent: (@Composable () -> Unit)? = null,
     val title: @Composable () -> Unit,
     val description: (@Composable () -> Unit)? = null,
     val trailingContent: (@Composable () -> Unit)? = null,
