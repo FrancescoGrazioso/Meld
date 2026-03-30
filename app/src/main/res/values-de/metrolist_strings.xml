@@ -182,7 +182,7 @@
     <string name="download_in_progress_desc">Ein Download läuft</string>
     <string name="share_playlist_desc">Diese Wiedergabeliste mit anderen teilen</string>
     <string name="delete_playlist_desc">Diese Wiedergabeliste dauerhaft entfernen</string>
-    <string name="sync_playlist_desc">Playlist mit YouTube Music synchronisieren</string>
+    <string name="sync_playlist_desc">Diese Playlist mit YouTube Music synchronisieren</string>
     <string name="primary_color_style">Primärfarbe</string>
     <string name="tertiary_color_style">Tertiärfarbe</string>
     <string name="enable_better_lyrics">Better Lyrics-Songtext-Anbieter aktivieren</string>
@@ -664,7 +664,7 @@
     </plurals>
     <string name="sleep_timer_daily">Täglich</string>
     <string name="sleep_timer_weekdays">Montag bis Freitag</string>
-    <string name="sleep_timer_weekends">Am Wochenende (Sa.–So.)</string>
+    <string name="sleep_timer_weekends">Samstag bis Sonntag</string>
     <string name="sleep_timer_start_time">Startzeit</string>
     <string name="sleep_timer_end_time">Endzeit</string>
     <string name="sleep_timer_monday">Montags</string>
@@ -679,8 +679,8 @@
     <string name="export_as_m3u">Als M3U exportieren</string>
     <string name="export_failed">Exportieren der Playliste fehlgeschlagen</string>
     <string name="enable_automatic_sleeptimer">Automatischen Sleep-Timer aktivieren</string>
-    <string name="sleeptimer_description">Aktiviert den Sleep-Timer automatisch mit dem Standardwert für eine benutzerdefinierte Zeit.</string>
-    <string name="sleep_timer_repeat_description">Legen Sie einen benutzerdefinierten Tag und eine benutzerdefinierte Uhrzeit fest, zu denen der Sleep-Timer automatisch aktiviert werden soll.</string>
+    <string name="sleeptimer_description">Aktiviert den Sleep-Timer automatisch zur gewählten Zeit mit der Standard-Dauer</string>
+    <string name="sleep_timer_repeat_description">Legen Sie einen wiederkehrenden Tag und eine Uhrzeit fest, zu denen der Sleep-Timer automatisch aktiviert werden soll</string>
     <string name="sleep_timer_repeat">Wiederholen</string>
     <string name="sleep_timer_weekdays_weekends">Wochentage / Wochenenden</string>
     <string name="sleep_timer_custom">Benutzerdefiniert</string>
@@ -714,8 +714,8 @@
     <string name="monthly_most_playlist_name">Monatlich meiste</string>
     <string name="enable_song_cache">Aktiviere Song cache</string>
     <string name="enable_song_cache_desc">Cache Songs automatisch für schnellere Wiedergabe in der Zukunft</string>
-    <string name="sleep_timer_stop_after_current_song_title">Stoppe am Ende vom derzeitigen Song</string>
-    <string name="sleep_timer_stop_after_current_song_description">Stoppt den Sleeptimer am Ende vom Song der zurzeit gespielt wird</string>
+    <string name="sleep_timer_stop_after_current_song_title">Am Ende des derzeitigen Songs stoppen</string>
+    <string name="sleep_timer_stop_after_current_song_description">Wartet bis zum Ende des Songs, der zurzeit abgespielt wird, bevor gestoppt wird</string>
     <string name="sleep_timer_fade_out_title">Langsames verringern der Lautstärke am Ende</string>
     <string name="sleep_timer_fade_out_description">Verringert die Lautstärke langsam in der letzten Minute</string>
     <string name="ai_provider_mistral_help">Besuche https://console.mistral.ai/api-keys</string>
@@ -739,9 +739,9 @@
         <item quantity="other">%d Titel</item>
     </plurals>
     <string name="alarm_selected">Ausgewählt</string>
-    <string name="alarm_playlist_helper">Wähle aus, welche Playlist der Wecker abspielen soll.</string>
+    <string name="alarm_playlist_helper">Wähle aus, welche Playlist der Wecker abspielt</string>
     <string name="alarm_add">Alarm hinzufügen</string>
-    <string name="alarm_empty">Noch keine Alarme. Füge einen hinzu, um die geplante Wiedergabe zu starten.</string>
+    <string name="alarm_empty">Noch keine Alarme. Füge einen hinzu, um die geplante Wiedergabe zu starten</string>
     <string name="alarm_disabled">Deaktiviert</string>
     <string name="alarm_random_enabled">Zufällig</string>
     <string name="alarm_random_disabled">In Reihenfolge</string>
@@ -751,12 +751,12 @@
     <string name="alarm_save">Speichern</string>
     <string name="alarm_time_picker_value">Zeit: %s</string>
     <string name="alarm_delete">Alarm löschen</string>
-    <string name="alarm_duplicate_time_warning">Zu diesem Zeitpunkt ist bereits ein anderer Alarm aktiv. Wenn beide gleichzeitig ausgelöst werden, kann nur einer davon tatsächlich abgespielt werden.</string>
-    <string name="alarm_random_song">Spiele einen zufälligen Song von der Playlist</string>
+    <string name="alarm_duplicate_time_warning">Zu diesem Zeitpunkt ist bereits ein anderer Alarm aktiv. Wenn beide gleichzeitig ausgelöst werden, kann nur einer davon abgespielt werden</string>
+    <string name="alarm_random_song">Spiele einen zufälligen Song aus der Playlist</string>
     <string name="alarm_next_trigger">Nächster Auslöser</string>
     <string name="alarm_not_scheduled">Nicht geplant</string>
     <string name="alarm_exact_permission_title">Erlaub exakte Alarme</string>
-    <string name="alarm_exact_permission_desc">Die Berechtigung für exakte Benachrichtigungen erhöht die Zuverlässigkeit, wenn die App im Hintergrund läuft.</string>
+    <string name="alarm_exact_permission_desc">Erfragt die Berechtigung für Wecker und Erinnerungen, die die Zuverlässigkeit erhöht, wenn die App im Hintergrund läuft</string>
     <string name="alarm_battery_optimization_title">Batterieoptimierung</string>
     <string name="change">Änderung</string>
     <string name="ai_system_prompt_desc">Benutzerdefinierte Anweisungen, die an das KI-Modell gesendet werden. Lassen Sie das Feld leer, um die Standard-Eingabeaufforderung zu verwenden.</string>
@@ -775,7 +775,7 @@
     <string name="android_auto_reorder_hint">Tippen Sie auf einen Abschnitt, um ihn zu aktivieren oder zu deaktivieren.\nHalten Sie den Ziehgriff gedrückt, um die Reihenfolge zu ändern. Standardmäßig wird der erste Abschnitt angezeigt.</string>
     <string name="android_auto_youtube_playlists">Von YouTube vorgeschlagene Playlists anzeigen</string>
     <string name="android_auto_youtube_playlists_desc">Zeige die von YouTube Music empfohlenen Playlisten im Bereich „Playlists“ an, wenn du mit Android Auto navigierst</string>
-    <string name="alarm_battery_optimization_desc">Deaktivieren Sie die Akkuoptimierung, um die Zuverlässigkeit des Alarms im Hintergrund zu verbessern.</string>
+    <string name="alarm_battery_optimization_desc">Deaktivieren Sie die Akkuoptimierung, um die Zuverlässigkeit des Alarms im Hintergrund zu verbessern</string>
     <string name="copy_all_lyrics">Alle Songtexte kopieren</string>
     <string name="ai_system_prompt">Systemmeldung</string>
     <string name="added_to_playlist">Zur Playliste hinzugefügt</string>
