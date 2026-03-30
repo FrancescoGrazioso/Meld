@@ -180,7 +180,7 @@ fun LocalSearchScreen(
 
                 items(
                     items = items.distinctBy { it.id },
-                    key = { it.id },
+                    key = { "search_local_${it.id}" },
                     contentType = { CONTENT_TYPE_LIST },
                 ) { item ->
                     when (item) {

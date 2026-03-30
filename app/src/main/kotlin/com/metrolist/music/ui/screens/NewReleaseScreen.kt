@@ -95,7 +95,7 @@ fun NewReleaseScreen(
 
         items(
             items = displayedReleases.distinctBy { it.albumItem.id },
-            key = { it.albumItem.id },
+            key = { "newrelease_${it.albumItem.id}" },
         ) { releaseItem ->
             val album = releaseItem.albumItem
             YouTubeGridItem(

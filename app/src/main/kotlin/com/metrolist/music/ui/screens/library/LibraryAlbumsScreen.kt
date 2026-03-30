@@ -90,10 +90,11 @@ fun LibraryAlbumsScreen(
 
     var viewType by rememberEnumPreference(AlbumViewTypeKey, LibraryViewType.GRID)
     var filter by rememberEnumPreference(AlbumFilterKey, AlbumFilter.LIKED)
-    val (sortType, onSortTypeChange) = rememberEnumPreference(
-        AlbumSortTypeKey,
-        AlbumSortType.CREATE_DATE
-    )
+    val (sortType, onSortTypeChange) =
+        rememberEnumPreference(
+            AlbumSortTypeKey,
+            AlbumSortType.CREATE_DATE,
+        )
     val (sortDescending, onSortDescendingChange) = rememberPreference(AlbumSortDescendingKey, true)
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
 
@@ -115,11 +116,11 @@ fun LibraryAlbumsScreen(
             )
             ChipsRow(
                 chips =
-                listOf(
-                    AlbumFilter.LIKED to stringResource(R.string.filter_liked),
-                    AlbumFilter.LIBRARY to stringResource(R.string.filter_library),
-                    AlbumFilter.UPLOADED to stringResource(R.string.filter_uploaded)
-                ),
+                    listOf(
+                        AlbumFilter.LIKED to stringResource(R.string.filter_liked),
+                        AlbumFilter.LIBRARY to stringResource(R.string.filter_library),
+                        AlbumFilter.UPLOADED to stringResource(R.string.filter_uploaded),
+                    ),
                 currentValue = filter,
                 onValueUpdate = {
                     filter = it
@@ -194,12 +195,12 @@ fun LibraryAlbumsScreen(
             ) {
                 Icon(
                     painter =
-                    painterResource(
-                        when (viewType) {
-                            LibraryViewType.LIST -> R.drawable.list
-                            LibraryViewType.GRID -> R.drawable.grid_view
-                        },
-                    ),
+                        painterResource(
+                            when (viewType) {
+                                LibraryViewType.LIST -> R.drawable.list
+                                LibraryViewType.GRID -> R.drawable.grid_view
+                            },
+                        ),
                     contentDescription = null,
                 )
             }
@@ -210,7 +211,7 @@ fun LibraryAlbumsScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
         when (viewType) {
-            LibraryViewType.LIST ->
+            LibraryViewType.LIST -> {
                 LazyColumn(
                     state = lazyListState,
                     contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
@@ -235,19 +236,20 @@ fun LibraryAlbumsScreen(
                                 EmptyPlaceholder(
                                     icon = R.drawable.album,
                                     text = stringResource(R.string.library_album_empty),
-                                    modifier = Modifier.animateItem()
+                                    modifier = Modifier.animateItem(),
                                 )
                             }
                         }
 
-                        val filteredAlbumsForList = if (hideExplicit) {
-                            albums.filter { !it.album.explicit }
-                        } else {
-                            albums
-                        }
+                        val filteredAlbumsForList =
+                            if (hideExplicit) {
+                                albums.filter { !it.album.explicit }
+                            } else {
+                                albums
+                            }
                         items(
                             items = filteredAlbumsForList.distinctBy { it.id },
-                            key = { it.id },
+                            key = { "lib_album_list_${it.id}" },
                             contentType = { CONTENT_TYPE_ALBUM },
                         ) { album ->
                             LibraryAlbumListItem(
@@ -256,20 +258,22 @@ fun LibraryAlbumsScreen(
                                 album = album,
                                 isActive = album.id == mediaMetadata?.album?.id,
                                 isPlaying = isPlaying,
-                                modifier = Modifier
-                                    .animateItem()
+                                modifier =
+                                    Modifier
+                                        .animateItem(),
                             )
                         }
                     }
                 }
+            }
 
-            LibraryViewType.GRID ->
+            LibraryViewType.GRID -> {
                 LazyVerticalGrid(
                     state = lazyGridState,
                     columns =
-                    GridCells.Adaptive(
-                        minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
-                    ),
+                        GridCells.Adaptive(
+                            minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
+                        ),
                     contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
                 ) {
                     item(
@@ -294,19 +298,20 @@ fun LibraryAlbumsScreen(
                                 EmptyPlaceholder(
                                     icon = R.drawable.album,
                                     text = stringResource(R.string.library_album_empty),
-                                    modifier = Modifier.animateItem()
+                                    modifier = Modifier.animateItem(),
                                 )
                             }
                         }
 
-                        val filteredAlbumsForGrid = if (hideExplicit) {
-                            albums.filter { !it.album.explicit }
-                        } else {
-                            albums
-                        }
+                        val filteredAlbumsForGrid =
+                            if (hideExplicit) {
+                                albums.filter { !it.album.explicit }
+                            } else {
+                                albums
+                            }
                         items(
                             items = filteredAlbumsForGrid.distinctBy { it.id },
-                            key = { it.id },
+                            key = { "lib_album_grid_${it.id}" },
                             contentType = { CONTENT_TYPE_ALBUM },
                         ) { album ->
                             LibraryAlbumGridItem(
@@ -316,12 +321,14 @@ fun LibraryAlbumsScreen(
                                 album = album,
                                 isActive = album.id == mediaMetadata?.album?.id,
                                 isPlaying = isPlaying,
-                                modifier = Modifier
-                                    .animateItem()
+                                modifier =
+                                    Modifier
+                                        .animateItem(),
                             )
                         }
                     }
                 }
+            }
         }
     }
 }

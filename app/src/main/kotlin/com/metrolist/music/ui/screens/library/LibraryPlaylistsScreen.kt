@@ -104,14 +104,16 @@ fun LibraryPlaylistsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     var viewType by rememberEnumPreference(PlaylistViewTypeKey, LibraryViewType.GRID)
-    val (sortType, onSortTypeChange) = rememberEnumPreference(
-        PlaylistSortTypeKey,
-        PlaylistSortType.CREATE_DATE
-    )
-    val (sortDescending, onSortDescendingChange) = rememberPreference(
-        PlaylistSortDescendingKey,
-        true
-    )
+    val (sortType, onSortTypeChange) =
+        rememberEnumPreference(
+            PlaylistSortTypeKey,
+            PlaylistSortType.CREATE_DATE,
+        )
+    val (sortDescending, onSortDescendingChange) =
+        rememberPreference(
+            PlaylistSortDescendingKey,
+            true,
+        )
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
 
     val playlists by viewModel.allPlaylists.collectAsState()
@@ -134,51 +136,55 @@ fun LibraryPlaylistsScreen(
 
     val likedPlaylist =
         Playlist(
-            playlist = PlaylistEntity(
-                id = UUID.randomUUID().toString(),
-                name = stringResource(R.string.liked)
-            ),
+            playlist =
+                PlaylistEntity(
+                    id = UUID.randomUUID().toString(),
+                    name = stringResource(R.string.liked),
+                ),
             songCount = 0,
             songThumbnails = emptyList(),
         )
 
     val downloadPlaylist =
         Playlist(
-            playlist = PlaylistEntity(
-                id = UUID.randomUUID().toString(),
-                name = stringResource(R.string.offline)
-            ),
+            playlist =
+                PlaylistEntity(
+                    id = UUID.randomUUID().toString(),
+                    name = stringResource(R.string.offline),
+                ),
             songCount = 0,
             songThumbnails = emptyList(),
         )
 
     val topPlaylist =
         Playlist(
-            playlist = PlaylistEntity(
-                id = UUID.randomUUID().toString(),
-                name = stringResource(R.string.my_top) + " $topSize"
-            ),
+            playlist =
+                PlaylistEntity(
+                    id = UUID.randomUUID().toString(),
+                    name = stringResource(R.string.my_top) + " $topSize",
+                ),
             songCount = 0,
             songThumbnails = emptyList(),
         )
 
-
     val uploadedPlaylist =
         Playlist(
-            playlist = PlaylistEntity(
-                id = UUID.randomUUID().toString(),
-                name = stringResource(R.string.uploaded_playlist)
-            ),
+            playlist =
+                PlaylistEntity(
+                    id = UUID.randomUUID().toString(),
+                    name = stringResource(R.string.uploaded_playlist),
+                ),
             songCount = 0,
             songThumbnails = emptyList(),
         )
 
     val cachedPlaylist =
         Playlist(
-            playlist = PlaylistEntity(
-                id = UUID.randomUUID().toString(),
-                name = stringResource(R.string.cached_playlist)
-            ),
+            playlist =
+                PlaylistEntity(
+                    id = UUID.randomUUID().toString(),
+                    name = stringResource(R.string.cached_playlist),
+                ),
             songCount = 0,
             songThumbnails = emptyList(),
         )
@@ -198,9 +204,10 @@ fun LibraryPlaylistsScreen(
         backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
 
     val (innerTubeCookie) = rememberPreference(InnerTubeCookieKey, "")
-    val isLoggedIn = remember(innerTubeCookie) {
-        "SAPISID" in parseCookieString(innerTubeCookie)
-    }
+    val isLoggedIn =
+        remember(innerTubeCookie) {
+            "SAPISID" in parseCookieString(innerTubeCookie)
+        }
 
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
 
@@ -232,7 +239,7 @@ fun LibraryPlaylistsScreen(
             onPlaylistCreated = { playlistId ->
                 showCreatePlaylistDialog = false
                 navController.navigate("local_playlist/$playlistId")
-            }
+            },
         )
     }
 
@@ -259,11 +266,12 @@ fun LibraryPlaylistsScreen(
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = pluralStringResource(
-                    R.plurals.n_playlist,
-                    playlists.size,
-                    playlists.size
-                ),
+                text =
+                    pluralStringResource(
+                        R.plurals.n_playlist,
+                        playlists.size,
+                        playlists.size,
+                    ),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.secondary,
             )
@@ -276,12 +284,12 @@ fun LibraryPlaylistsScreen(
             ) {
                 Icon(
                     painter =
-                    painterResource(
-                        when (viewType) {
-                            LibraryViewType.LIST -> R.drawable.list
-                            LibraryViewType.GRID -> R.drawable.grid_view
-                        },
-                    ),
+                        painterResource(
+                            when (viewType) {
+                                LibraryViewType.LIST -> R.drawable.list
+                                LibraryViewType.GRID -> R.drawable.grid_view
+                            },
+                        ),
                     contentDescription = null,
                 )
             }
@@ -320,12 +328,11 @@ fun LibraryPlaylistsScreen(
                                 playlist = likedPlaylist,
                                 autoPlaylist = true,
                                 modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("auto_playlist/liked")
-                                    }
-                                    .animateItem(),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            navController.navigate("auto_playlist/liked")
+                                        }.animateItem(),
                             )
                         }
                     }
@@ -339,12 +346,11 @@ fun LibraryPlaylistsScreen(
                                 playlist = downloadPlaylist,
                                 autoPlaylist = true,
                                 modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("auto_playlist/downloaded")
-                                    }
-                                    .animateItem(),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            navController.navigate("auto_playlist/downloaded")
+                                        }.animateItem(),
                             )
                         }
                     }
@@ -358,12 +364,11 @@ fun LibraryPlaylistsScreen(
                                 playlist = cachedPlaylist,
                                 autoPlaylist = true,
                                 modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("cache_playlist/cached")
-                                    }
-                                    .animateItem(),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            navController.navigate("cache_playlist/cached")
+                                        }.animateItem(),
                             )
                         }
                     }
@@ -377,16 +382,14 @@ fun LibraryPlaylistsScreen(
                                 playlist = topPlaylist,
                                 autoPlaylist = true,
                                 modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("top_playlist/$topSize")
-                                    }
-                                    .animateItem(),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            navController.navigate("top_playlist/$topSize")
+                                        }.animateItem(),
                             )
                         }
                     }
-
 
                     if (showUploaded) {
                         item(
@@ -401,8 +404,7 @@ fun LibraryPlaylistsScreen(
                                         .fillMaxWidth()
                                         .clickable {
                                             navController.navigate("auto_playlist/uploaded")
-                                        }
-                                        .animateItem(),
+                                        }.animateItem(),
                             )
                         }
                     }
@@ -415,7 +417,7 @@ fun LibraryPlaylistsScreen(
 
                         items(
                             items = playlists.distinctBy { it.id },
-                            key = { it.id },
+                            key = { "lib_playlist_list_${it.id}" },
                             contentType = { CONTENT_TYPE_PLAYLIST },
                         ) { playlist ->
                             LibraryPlaylistListItem(
@@ -423,7 +425,7 @@ fun LibraryPlaylistsScreen(
                                 menuState = menuState,
                                 coroutineScope = coroutineScope,
                                 playlist = playlist,
-                                modifier = Modifier.animateItem()
+                                modifier = Modifier.animateItem(),
                             )
                         }
                     }
@@ -607,9 +609,9 @@ fun LibraryPlaylistsScreen(
                 LazyVerticalGrid(
                     state = lazyGridState,
                     columns =
-                    GridCells.Adaptive(
-                        minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
-                    ),
+                        GridCells.Adaptive(
+                            minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
+                        ),
                     contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
                 ) {
                     item(
@@ -638,14 +640,13 @@ fun LibraryPlaylistsScreen(
                                 fillMaxWidth = true,
                                 autoPlaylist = true,
                                 modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .combinedClickable(
-                                        onClick = {
-                                            navController.navigate("auto_playlist/liked")
-                                        },
-                                    )
-                                    .animateItem(),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .combinedClickable(
+                                            onClick = {
+                                                navController.navigate("auto_playlist/liked")
+                                            },
+                                        ).animateItem(),
                             )
                         }
                     }
@@ -660,14 +661,13 @@ fun LibraryPlaylistsScreen(
                                 fillMaxWidth = true,
                                 autoPlaylist = true,
                                 modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .combinedClickable(
-                                        onClick = {
-                                            navController.navigate("auto_playlist/downloaded")
-                                        },
-                                    )
-                                    .animateItem(),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .combinedClickable(
+                                            onClick = {
+                                                navController.navigate("auto_playlist/downloaded")
+                                            },
+                                        ).animateItem(),
                             )
                         }
                     }
@@ -682,14 +682,13 @@ fun LibraryPlaylistsScreen(
                                 fillMaxWidth = true,
                                 autoPlaylist = true,
                                 modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .combinedClickable(
-                                        onClick = {
-                                            navController.navigate("cache_playlist/cached")
-                                        },
-                                    )
-                                    .animateItem(),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .combinedClickable(
+                                            onClick = {
+                                                navController.navigate("cache_playlist/cached")
+                                            },
+                                        ).animateItem(),
                             )
                         }
                     }
@@ -704,14 +703,13 @@ fun LibraryPlaylistsScreen(
                                 fillMaxWidth = true,
                                 autoPlaylist = true,
                                 modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .combinedClickable(
-                                        onClick = {
-                                            navController.navigate("top_playlist/$topSize")
-                                        },
-                                    )
-                                    .animateItem(),
+                                    Modifier
+                                        .fillMaxWidth()
+                                        .combinedClickable(
+                                            onClick = {
+                                                navController.navigate("top_playlist/$topSize")
+                                            },
+                                        ).animateItem(),
                             )
                         }
                     }
@@ -730,8 +728,7 @@ fun LibraryPlaylistsScreen(
                                         .fillMaxWidth()
                                         .clickable {
                                             navController.navigate("auto_playlist/uploaded")
-                                        }
-                                        .animateItem(),
+                                        }.animateItem(),
                             )
                         }
                     }
@@ -744,7 +741,7 @@ fun LibraryPlaylistsScreen(
 
                         items(
                             items = playlists.distinctBy { it.id },
-                            key = { it.id },
+                            key = { "lib_playlist_grid_${it.id}" },
                             contentType = { CONTENT_TYPE_PLAYLIST },
                         ) { playlist ->
                             LibraryPlaylistGridItem(
@@ -752,7 +749,7 @@ fun LibraryPlaylistsScreen(
                                 menuState = menuState,
                                 coroutineScope = coroutineScope,
                                 playlist = playlist,
-                                modifier = Modifier.animateItem()
+                                modifier = Modifier.animateItem(),
                             )
                         }
                     }

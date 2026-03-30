@@ -10,8 +10,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,9 +37,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -84,8 +84,8 @@ import com.metrolist.music.ui.component.LocalArtistsGrid
 import com.metrolist.music.ui.component.LocalMenuState
 import com.metrolist.music.ui.component.LocalSongsGrid
 import com.metrolist.music.ui.component.NavigationTitle
-import com.metrolist.music.ui.component.TimeTransfer
 import com.metrolist.music.ui.component.PlaylistGridItem
+import com.metrolist.music.ui.component.TimeTransfer
 import com.metrolist.music.ui.menu.AlbumMenu
 import com.metrolist.music.ui.menu.ArtistMenu
 import com.metrolist.music.ui.menu.SongMenu
@@ -125,12 +125,14 @@ fun StatsScreen(
     val context = LocalContext.current
 
     var inSelectMode by rememberSaveable { mutableStateOf(false) }
-    val selection = rememberSaveable(
-        saver = listSaver<MutableList<Long>, Long>(
-            save = { it.toList() },
-            restore = { it.toMutableStateList() }
-        )
-    ) { mutableStateListOf() }
+    val selection =
+        rememberSaveable(
+            saver =
+                listSaver<MutableList<Long>, Long>(
+                    save = { it.toList() },
+                    restore = { it.toMutableStateList() },
+                ),
+        ) { mutableStateListOf() }
     val onExitSelectionMode = {
         inSelectMode = false
         selection.clear()
@@ -166,10 +168,11 @@ fun StatsScreen(
     val monthlyMostPlaylist by viewModel.monthlyMostPlaylist.collectAsState()
     val recapPlaylists by viewModel.recapPlaylists.collectAsState()
     val currentDate = LocalDateTime.now()
-    val orderedMostPlayedSongs = remember(mostPlayedSongsStats, mostPlayedSongs) {
-        val songsById = mostPlayedSongs.associateBy { it.song.id }
-        mostPlayedSongsStats.mapNotNull { statsSong -> songsById[statsSong.id] }
-    }
+    val orderedMostPlayedSongs =
+        remember(mostPlayedSongsStats, mostPlayedSongs) {
+            val songsById = mostPlayedSongs.associateBy { it.song.id }
+            mostPlayedSongsStats.mapNotNull { statsSong -> songsById[statsSong.id] }
+        }
     val mostPeriodPlaylists = listOfNotNull(weeklyMostPlaylist, monthlyMostPlaylist)
     val (innerTubeCookie) = rememberPreference(InnerTubeCookieKey, "")
     val isLoggedIn =
@@ -205,14 +208,14 @@ fun StatsScreen(
     if (showTimeTransfer) {
         TimeTransfer(
             onDismiss = {
-                            showTimeTransfer = false
-                            prevOptionOrdinal?.let { viewModel.selectedOption.value = it }
-                            prevIndexChips?.let { viewModel.indexChips.value = it }
+                showTimeTransfer = false
+                prevOptionOrdinal?.let { viewModel.selectedOption.value = it }
+                prevIndexChips?.let { viewModel.indexChips.value = it }
 
-                            // Clear snapshots for the next open
-                            prevOptionOrdinal = null
-                            prevIndexChips = null
-                        },
+                // Clear snapshots for the next open
+                prevOptionOrdinal = null
+                prevIndexChips = null
+            },
         )
     }
 
@@ -308,49 +311,65 @@ fun StatsScreen(
                     LocalPlayerAwareWindowInsets.current.only(WindowInsetsSides.Top),
                 ),
         ) {
-            val filteredArtists = allArtists.map { artistWrapper ->
-                Artist(
-                    id = artistWrapper.artist.id,
-                    name = artistWrapper.artist.name,
-                )
-            }.filter { artist ->
-                artist.name.contains(query.text, ignoreCase = true)
-            }
+            val filteredArtists =
+                allArtists
+                    .map { artistWrapper ->
+                        Artist(
+                            id = artistWrapper.artist.id,
+                            name = artistWrapper.artist.name,
+                        )
+                    }.filter { artist ->
+                        artist.name.contains(query.text, ignoreCase = true)
+                    }
 
             item(key = "choice_chips") {
                 ChoiceChipsRow(
                     chips =
                         when (selectedOption) {
-                            OptionStats.WEEKS -> weeklyDates
-                            OptionStats.MONTHS -> monthlyDates
-                            OptionStats.YEARS -> yearlyDates
+                            OptionStats.WEEKS -> {
+                                weeklyDates
+                            }
+
+                            OptionStats.MONTHS -> {
+                                monthlyDates
+                            }
+
+                            OptionStats.YEARS -> {
+                                yearlyDates
+                            }
+
                             OptionStats.CONTINUOUS -> {
                                 listOf(
-                                    StatPeriod.WEEK_1.ordinal to pluralStringResource(
-                                        R.plurals.n_week,
-                                        1,
-                                        1
-                                    ),
-                                    StatPeriod.MONTH_1.ordinal to pluralStringResource(
-                                        R.plurals.n_month,
-                                        1,
-                                        1
-                                    ),
-                                    StatPeriod.MONTH_3.ordinal to pluralStringResource(
-                                        R.plurals.n_month,
-                                        3,
-                                        3
-                                    ),
-                                    StatPeriod.MONTH_6.ordinal to pluralStringResource(
-                                        R.plurals.n_month,
-                                        6,
-                                        6
-                                    ),
-                                    StatPeriod.YEAR_1.ordinal to pluralStringResource(
-                                        R.plurals.n_year,
-                                        1,
-                                        1
-                                    ),
+                                    StatPeriod.WEEK_1.ordinal to
+                                        pluralStringResource(
+                                            R.plurals.n_week,
+                                            1,
+                                            1,
+                                        ),
+                                    StatPeriod.MONTH_1.ordinal to
+                                        pluralStringResource(
+                                            R.plurals.n_month,
+                                            1,
+                                            1,
+                                        ),
+                                    StatPeriod.MONTH_3.ordinal to
+                                        pluralStringResource(
+                                            R.plurals.n_month,
+                                            3,
+                                            3,
+                                        ),
+                                    StatPeriod.MONTH_6.ordinal to
+                                        pluralStringResource(
+                                            R.plurals.n_month,
+                                            6,
+                                            6,
+                                        ),
+                                    StatPeriod.YEAR_1.ordinal to
+                                        pluralStringResource(
+                                            R.plurals.n_year,
+                                            1,
+                                            1,
+                                        ),
                                     StatPeriod.ALL.ordinal to stringResource(R.string.filter_all),
                                 )
                             }
@@ -410,7 +429,6 @@ fun StatsScreen(
                 }
             }
 
-
             if (!isSearching) {
                 item(key = "mostPlayedSongs") {
                     NavigationTitle(
@@ -422,7 +440,7 @@ fun StatsScreen(
                                         ListQueue(
                                             title = context.getString(R.string.most_played_songs),
                                             items = orderedMostPlayedSongs.map { it.toMediaMetadata().toMediaItem() },
-                                        )
+                                        ),
                                     )
                                 }
                             } else {
@@ -484,8 +502,7 @@ fun StatsScreen(
                                                     }
                                                 }
                                             },
-                                        )
-                                        .animateItem(),
+                                        ).animateItem(),
                             )
                         }
 
@@ -549,83 +566,83 @@ fun StatsScreen(
                         modifier = Modifier.animateItem(),
                     )
 
-                if (mostPlayedAlbums.isNotEmpty()) {
-                    LazyRow(
-                        modifier = Modifier.animateItem(),
-                    ) {
-                        itemsIndexed(
-                            items = mostPlayedAlbums,
-                            key = { _, album -> album.id },
-                        ) { index, album ->
-                            LocalAlbumsGrid(
-                                title = "${index + 1}. ${album.album.title}",
-                                subtitle =
-                                    joinByBullet(
-                                        pluralStringResource(
-                                            R.plurals.n_time,
-                                            album.songCountListened ?: 0,
-                                            album.songCountListened ?: 0,
+                    if (mostPlayedAlbums.isNotEmpty()) {
+                        LazyRow(
+                            modifier = Modifier.animateItem(),
+                        ) {
+                            itemsIndexed(
+                                items = mostPlayedAlbums,
+                                key = { _, album -> album.id },
+                            ) { index, album ->
+                                LocalAlbumsGrid(
+                                    title = "${index + 1}. ${album.album.title}",
+                                    subtitle =
+                                        joinByBullet(
+                                            pluralStringResource(
+                                                R.plurals.n_time,
+                                                album.songCountListened ?: 0,
+                                                album.songCountListened ?: 0,
+                                            ),
+                                            makeTimeString(album.timeListened),
                                         ),
-                                        makeTimeString(album.timeListened),
-                                    ),
-                                thumbnailUrl = album.album.thumbnailUrl,
-                                isActive = album.id == mediaMetadata?.album?.id,
-                                isPlaying = isPlaying,
-                                modifier =
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .combinedClickable(
-                                            onClick = {
-                                                navController.navigate("album/${album.id}")
-                                            },
-                                            onLongClick = {
-                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                                menuState.show {
-                                                    AlbumMenu(
-                                                        originalAlbum = album,
-                                                        navController = navController,
-                                                        onDismiss = menuState::dismiss,
-                                                    )
-                                                }
-                                            },
-                                        ).animateItem(),
-                            )
+                                    thumbnailUrl = album.album.thumbnailUrl,
+                                    isActive = album.id == mediaMetadata?.album?.id,
+                                    isPlaying = isPlaying,
+                                    modifier =
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .combinedClickable(
+                                                onClick = {
+                                                    navController.navigate("album/${album.id}")
+                                                },
+                                                onLongClick = {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                    menuState.show {
+                                                        AlbumMenu(
+                                                            originalAlbum = album,
+                                                            navController = navController,
+                                                            onDismiss = menuState::dismiss,
+                                                        )
+                                                    }
+                                                },
+                                            ).animateItem(),
+                                )
+                            }
                         }
                     }
                 }
             }
-            }
 
             if (isSearching) {
                 items(
-                    items = allArtists.filter { artist ->
-                        artist.artist.name.contains(query.text, ignoreCase = true)
-                    },
-                    key = { it.id },
+                    items =
+                        allArtists.filter { artist ->
+                            artist.artist.name.contains(query.text, ignoreCase = true)
+                        },
+                    key = { "stats_artist_${it.id}" },
                     contentType = { CONTENT_TYPE_ARTIST },
                 ) { artist ->
                     val uiArtist = Artist(name = artist.artist.name, id = artist.id)
                     val isChecked = sArtists.any { it.id == uiArtist.id }
                     Row( // Use a row to arrange the checkbox and ArtistListItem horizontally
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable {
-                                toggleArtistSelection(uiArtist)
-                            }
-                            .padding(8.dp)
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    toggleArtistSelection(uiArtist)
+                                }.padding(8.dp),
                     ) {
                         ArtistListItem(
                             artist = artist,
-                            modifier = Modifier.weight(1f) // Allow ArtistListItem to take remaining space
+                            modifier = Modifier.weight(1f), // Allow ArtistListItem to take remaining space
                         )
 
                         Checkbox(
-
                             checked = sArtists.contains(Artist(name = artist.artist.name, id = artist.id)), // Get the current checked state
                             onCheckedChange = {
                                 toggleArtistSelection(uiArtist)
-                            }
+                            },
                         )
                     }
                 }
@@ -658,8 +675,6 @@ fun StatsScreen(
         }
     }
 
-
-
     TopAppBar(
         title = {
             if (inSelectMode) {
@@ -672,22 +687,24 @@ fun StatsScreen(
                         placeholder = {
                             Text(
                                 text = stringResource(R.string.search),
-                                style = MaterialTheme.typography.titleLarge
+                                style = MaterialTheme.typography.titleLarge,
                             )
                         },
                         singleLine = true,
                         textStyle = MaterialTheme.typography.titleLarge,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                        colors = TextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                        ),
-                        modifier = Modifier
-                            .weight(1f)
-                            .focusRequester(focusRequester)
+                        colors =
+                            TextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedIndicatorColor = Color.Transparent,
+                                unfocusedIndicatorColor = Color.Transparent,
+                                disabledIndicatorColor = Color.Transparent,
+                            ),
+                        modifier =
+                            Modifier
+                                .weight(1f)
+                                .focusRequester(focusRequester),
                     )
 
                     if (sArtists.isNotEmpty()) {
@@ -695,12 +712,11 @@ fun StatsScreen(
                             Icon(
                                 painter = painterResource(R.drawable.close),
                                 contentDescription = "Clear Artists",
-                                tint = MaterialTheme.colorScheme.onSurface
+                                tint = MaterialTheme.colorScheme.onSurface,
                             )
                         }
                     }
                 }
-
             } else {
                 Text(stringResource(R.string.stats))
             }
@@ -727,11 +743,11 @@ fun StatsScreen(
                         if (!isSearching) {
                             navController.backToMain()
                         }
-                    }
+                    },
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.arrow_back),
-                        contentDescription = "Back Button"
+                        contentDescription = "Back Button",
                     )
                 }
             }
@@ -741,30 +757,30 @@ fun StatsScreen(
                 Checkbox(
                     checked = true,
                     onCheckedChange = {
-                    }
+                    },
                 )
                 androidx.compose.material3.IconButton(
                     enabled = selection.isNotEmpty(),
                     onClick = {
-                    }
+                    },
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.more_vert),
-                        contentDescription = "More Button"
+                        contentDescription = "More Button",
                     )
                 }
             } else if (!isSearching) {
                 androidx.compose.material3.IconButton(
-                    onClick = { isSearching = true }
+                    onClick = { isSearching = true },
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.search),
-                        contentDescription = "Search Button"
+                        contentDescription = "Search Button",
                     )
                 }
                 IconButton(
-                    onClick = {showTimeTransfer = true},
-                    onLongClick = {showTimeTransfer = true},
+                    onClick = { showTimeTransfer = true },
+                    onLongClick = { showTimeTransfer = true },
                 ) {
                     Icon(
                         painterResource(R.drawable.sync),
@@ -772,9 +788,8 @@ fun StatsScreen(
                     )
                 }
             }
-        }
+        },
     )
 }
-
 
 enum class OptionStats { WEEKS, MONTHS, YEARS, CONTINUOUS }

@@ -52,11 +52,11 @@ import com.metrolist.music.R
 import com.metrolist.music.constants.GridItemSize
 import com.metrolist.music.constants.GridItemsSizeKey
 import com.metrolist.music.constants.GridThumbnailHeight
+import com.metrolist.music.db.entities.PodcastEntity
 import com.metrolist.music.ui.component.ChipsRow
 import com.metrolist.music.ui.component.IconButton
 import com.metrolist.music.ui.component.LocalMenuState
 import com.metrolist.music.ui.component.YouTubeGridItem
-import com.metrolist.music.db.entities.PodcastEntity
 import com.metrolist.music.ui.component.shimmer.GridItemPlaceHolder
 import com.metrolist.music.ui.component.shimmer.ListItemPlaceHolder
 import com.metrolist.music.ui.component.shimmer.ShimmerHost
@@ -95,12 +95,13 @@ fun AccountScreen(
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) {
             ChipsRow(
-                chips = listOf(
-                    AccountContentType.PLAYLISTS to stringResource(R.string.filter_playlists),
-                    AccountContentType.ALBUMS to stringResource(R.string.filter_albums),
-                    AccountContentType.ARTISTS to stringResource(R.string.filter_artists),
-                    AccountContentType.PODCASTS to stringResource(R.string.filter_podcasts),
-                ),
+                chips =
+                    listOf(
+                        AccountContentType.PLAYLISTS to stringResource(R.string.filter_playlists),
+                        AccountContentType.ALBUMS to stringResource(R.string.filter_albums),
+                        AccountContentType.ARTISTS to stringResource(R.string.filter_artists),
+                        AccountContentType.PODCASTS to stringResource(R.string.filter_podcasts),
+                    ),
                 currentValue = selectedContentType,
                 onValueUpdate = { viewModel.setSelectedContentType(it) },
             )
@@ -110,27 +111,28 @@ fun AccountScreen(
             AccountContentType.PLAYLISTS -> {
                 items(
                     items = playlists.orEmpty().distinctBy { it.id },
-                    key = { it.id },
+                    key = { "account_playlist_${it.id}" },
                 ) { item ->
                     YouTubeGridItem(
                         item = item,
                         fillMaxWidth = true,
-                        modifier = Modifier
-                            .combinedClickable(
-                                onClick = {
-                                    navController.navigate("online_playlist/${item.id}")
-                                },
-                                onLongClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    menuState.show {
-                                        YouTubePlaylistMenu(
-                                            playlist = item,
-                                            coroutineScope = coroutineScope,
-                                            onDismiss = menuState::dismiss,
-                                        )
-                                    }
-                                },
-                            ),
+                        modifier =
+                            Modifier
+                                .combinedClickable(
+                                    onClick = {
+                                        navController.navigate("online_playlist/${item.id}")
+                                    },
+                                    onLongClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        menuState.show {
+                                            YouTubePlaylistMenu(
+                                                playlist = item,
+                                                coroutineScope = coroutineScope,
+                                                onDismiss = menuState::dismiss,
+                                            )
+                                        }
+                                    },
+                                ),
                     )
                 }
 
@@ -146,27 +148,28 @@ fun AccountScreen(
             AccountContentType.ALBUMS -> {
                 items(
                     items = albums.orEmpty().distinctBy { it.id },
-                    key = { it.id }
+                    key = { "account_album_${it.id}" },
                 ) { item ->
                     YouTubeGridItem(
                         item = item,
                         fillMaxWidth = true,
-                        modifier = Modifier
-                            .combinedClickable(
-                                onClick = {
-                                    navController.navigate("album/${item.id}")
-                                },
-                                onLongClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    menuState.show {
-                                        YouTubeAlbumMenu(
-                                            albumItem = item,
-                                            navController = navController,
-                                            onDismiss = menuState::dismiss
-                                        )
-                                    }
-                                }
-                            )
+                        modifier =
+                            Modifier
+                                .combinedClickable(
+                                    onClick = {
+                                        navController.navigate("album/${item.id}")
+                                    },
+                                    onLongClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        menuState.show {
+                                            YouTubeAlbumMenu(
+                                                albumItem = item,
+                                                navController = navController,
+                                                onDismiss = menuState::dismiss,
+                                            )
+                                        }
+                                    },
+                                ),
                     )
                 }
 
@@ -182,26 +185,27 @@ fun AccountScreen(
             AccountContentType.ARTISTS -> {
                 items(
                     items = artists.orEmpty().distinctBy { it.id },
-                    key = { it.id }
+                    key = { "account_artist_${it.id}" },
                 ) { item ->
                     YouTubeGridItem(
                         item = item,
                         fillMaxWidth = true,
-                        modifier = Modifier
-                            .combinedClickable(
-                                onClick = {
-                                    navController.navigate("artist/${item.id}")
-                                },
-                                onLongClick = {
-                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                    menuState.show {
-                                        YouTubeArtistMenu(
-                                            artist = item,
-                                            onDismiss = menuState::dismiss
-                                        )
-                                    }
-                                }
-                            )
+                        modifier =
+                            Modifier
+                                .combinedClickable(
+                                    onClick = {
+                                        navController.navigate("artist/${item.id}")
+                                    },
+                                    onLongClick = {
+                                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        menuState.show {
+                                            YouTubeArtistMenu(
+                                                artist = item,
+                                                onDismiss = menuState::dismiss,
+                                            )
+                                        }
+                                    },
+                                ),
                     )
                 }
 
@@ -255,9 +259,10 @@ fun AccountScreen(
                             text = stringResource(R.string.filter_podcasts),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
                         )
                     }
                     itemsIndexed(
@@ -284,9 +289,10 @@ fun AccountScreen(
                             text = stringResource(R.string.filter_channels),
                             style = MaterialTheme.typography.titleSmall,
                             color = MaterialTheme.colorScheme.secondary,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp, vertical = 8.dp),
                         )
                     }
                     itemsIndexed(
@@ -339,16 +345,18 @@ private fun SePlaylistAccountItem(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
     ) {
         Box(
-            modifier = Modifier
-                .size(56.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer),
+            modifier =
+                Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center,
         ) {
             if (thumbnailUrl != null) {
@@ -356,9 +364,10 @@ private fun SePlaylistAccountItem(
                     model = thumbnailUrl,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(RoundedCornerShape(8.dp)),
+                    modifier =
+                        Modifier
+                            .size(56.dp)
+                            .clip(RoundedCornerShape(8.dp)),
                 )
             } else {
                 Icon(
@@ -405,16 +414,18 @@ private fun PodcastAccountItem(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         Box(
-            modifier = Modifier
-                .size(56.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.primaryContainer),
+            modifier =
+                Modifier
+                    .size(56.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer),
             contentAlignment = Alignment.Center,
         ) {
             if (thumbnailUrl != null) {
@@ -422,9 +433,10 @@ private fun PodcastAccountItem(
                     model = thumbnailUrl,
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(RoundedCornerShape(8.dp)),
+                    modifier =
+                        Modifier
+                            .size(56.dp)
+                            .clip(RoundedCornerShape(8.dp)),
                 )
             } else {
                 Icon(
@@ -465,18 +477,20 @@ private fun PodcastChannelAccountItem(
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
     ) {
         AsyncImage(
             model = thumbnailUrl,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(56.dp)
-                .clip(CircleShape),
+            modifier =
+                Modifier
+                    .size(56.dp)
+                    .clip(CircleShape),
         )
         Spacer(Modifier.width(12.dp))
         Text(

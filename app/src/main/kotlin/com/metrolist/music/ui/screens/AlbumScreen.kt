@@ -500,7 +500,7 @@ fun AlbumScreen(
                     ) {
                         items(
                             items = otherVersions.distinctBy { it.id },
-                            key = { it.id },
+                            key = { "album_other_${it.id}" },
                         ) { item ->
                             YouTubeGridItem(
                                 item = item,

@@ -1469,7 +1469,14 @@ fun HomeScreen(
                                     val targetItemSize = 160.dp
                                     val availableWidth = maxWidth - 32.dp
                                     val columns = (availableWidth / targetItemSize).toInt().coerceAtLeast(3)
-                                    val rows = if (columns >= 6) 1 else if (columns >= 4) 2 else 3
+                                    val rows =
+                                        if (columns >= 6) {
+                                            1
+                                        } else if (columns >= 4) {
+                                            2
+                                        } else {
+                                            3
+                                        }
                                     val itemsPerPage = columns * rows
                                     val itemWidth = availableWidth / columns
 
@@ -1798,7 +1805,7 @@ fun HomeScreen(
                                     ) {
                                         items(
                                             items = quickPicks.distinctBy { it.id },
-                                            key = { it.id },
+                                            key = { "home_quickpick_${it.id}" },
                                         ) { originalSong ->
                                             // fetch song from database to keep updated
                                             val song by database
@@ -1909,19 +1916,20 @@ fun HomeScreen(
                                     NavigationTitle(
                                         title = title,
                                         onPlayAllClick = {
-                                            val queueItems = discoverList.mapNotNull {
-                                                (it.recommendation as? SongItem)?.toMediaMetadata()
-                                            }
+                                            val queueItems =
+                                                discoverList.mapNotNull {
+                                                    (it.recommendation as? SongItem)?.toMediaMetadata()
+                                                }
 
                                             if (queueItems.isNotEmpty()) {
                                                 playerConnection.playQueue(
                                                     ListQueue(
                                                         title = title,
-                                                        items = queueItems.map { it.toMediaItem() }
-                                                    )
+                                                        items = queueItems.map { it.toMediaItem() },
+                                                    ),
                                                 )
                                             }
-                                        }
+                                        },
                                     )
                                 }
 
@@ -2062,7 +2070,7 @@ fun HomeScreen(
                                     ) {
                                         items(
                                             items = accountPlaylists.distinctBy { it.id },
-                                            key = { it.id },
+                                            key = { "home_account_playlist_${it.id}" },
                                         ) { item ->
                                             ytGridItem(item)
                                         }
@@ -2116,7 +2124,7 @@ fun HomeScreen(
                                     ) {
                                         items(
                                             items = forgottenFavorites.distinctBy { it.id },
-                                            key = { it.id },
+                                            key = { "home_forgotten_${it.id}" },
                                         ) { originalSong ->
                                             val song by database
                                                 .song(originalSong.id)
@@ -2349,7 +2357,7 @@ fun HomeScreen(
                                         ) {
                                             items(
                                                 items = sectionSongs.distinctBy { it.id },
-                                                key = { it.id },
+                                                key = { "home_section_${section.index}_song_${it.id}" },
                                             ) { song ->
                                                 YouTubeListItem(
                                                     item = song,
@@ -2391,27 +2399,27 @@ fun HomeScreen(
                                                                             }
                                                                         }
 
-                                                                        // TODO: this will trigger an error in future kotlin releases, make sure it doesnt 
+                                                                        // TODO: this will trigger an error in future kotlin releases, make sure it doesnt
 
-                                                                        //is AlbumItem -> {
+                                                                        // is AlbumItem -> {
                                                                         //    navController.navigate("album/${song.id}")
-                                                                        //}
+                                                                        // }
 
-                                                                        //is ArtistItem -> {
+                                                                        // is ArtistItem -> {
                                                                         //    navController.navigate("artist/${song.id}")
-                                                                        //}
+                                                                        // }
 
-                                                                        //is PlaylistItem -> {
+                                                                        // is PlaylistItem -> {
                                                                         //    navController.navigate(
                                                                         //        "online_playlist/${song.id.removePrefix("VL")}",
                                                                         //    )
-                                                                        //}
+                                                                        // }
 
-                                                                        //is PodcastItem -> {
+                                                                        // is PodcastItem -> {
                                                                         //    navController.navigate("online_podcast/${song.id}")
-                                                                        //}
+                                                                        // }
 
-                                                                        //is EpisodeItem -> {
+                                                                        // is EpisodeItem -> {
                                                                         //    if (!isListenTogetherGuest) {
                                                                         //        playerConnection.playQueue(
                                                                         //            ListQueue(
@@ -2425,7 +2433,7 @@ fun HomeScreen(
                                                                         //            ),
                                                                         //        )
                                                                         //    }
-                                                                        //}
+                                                                        // }
                                                                     }
                                                                 },
                                                                 onLongClick = {
@@ -2452,7 +2460,10 @@ fun HomeScreen(
                                                     .asPaddingValues(),
                                             modifier = Modifier.animateItem(),
                                         ) {
-                                            items(sectionData.items) { item ->
+                                            items(
+                                                items = sectionData.items.distinctBy { it.id },
+                                                key = { "home_section_${section.index}_item_${it.id}" },
+                                            ) { item ->
                                                 ytGridItem(item)
                                             }
                                         }

@@ -225,7 +225,7 @@ fun AlbumMenu(
         ) {
             items(
                 items = album.artists.distinctBy { it.id },
-                key = { it.id },
+                key = { "menu_album_artist_${it.id}" },
             ) { artist ->
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

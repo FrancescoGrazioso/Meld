@@ -85,10 +85,11 @@ fun LibraryArtistsScreen(
     var viewType by rememberEnumPreference(ArtistViewTypeKey, LibraryViewType.GRID)
 
     var filter by rememberEnumPreference(ArtistFilterKey, ArtistFilter.LIKED)
-    val (sortType, onSortTypeChange) = rememberEnumPreference(
-        ArtistSortTypeKey,
-        ArtistSortType.CREATE_DATE
-    )
+    val (sortType, onSortTypeChange) =
+        rememberEnumPreference(
+            ArtistSortTypeKey,
+            ArtistSortType.CREATE_DATE,
+        )
     val (sortDescending, onSortDescendingChange) = rememberPreference(ArtistSortDescendingKey, true)
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
@@ -108,10 +109,10 @@ fun LibraryArtistsScreen(
             )
             ChipsRow(
                 chips =
-                listOf(
-                    ArtistFilter.LIKED to stringResource(R.string.filter_liked),
-                    ArtistFilter.LIBRARY to stringResource(R.string.filter_library)
-                ),
+                    listOf(
+                        ArtistFilter.LIKED to stringResource(R.string.filter_liked),
+                        ArtistFilter.LIBRARY to stringResource(R.string.filter_library),
+                    ),
                 currentValue = filter,
                 onValueUpdate = {
                     filter = it
@@ -170,11 +171,12 @@ fun LibraryArtistsScreen(
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = pluralStringResource(
-                    R.plurals.n_artist,
-                    artists.size,
-                    artists.size
-                ),
+                text =
+                    pluralStringResource(
+                        R.plurals.n_artist,
+                        artists.size,
+                        artists.size,
+                    ),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.secondary,
             )
@@ -187,12 +189,12 @@ fun LibraryArtistsScreen(
             ) {
                 Icon(
                     painter =
-                    painterResource(
-                        when (viewType) {
-                            LibraryViewType.LIST -> R.drawable.list
-                            LibraryViewType.GRID -> R.drawable.grid_view
-                        },
-                    ),
+                        painterResource(
+                            when (viewType) {
+                                LibraryViewType.LIST -> R.drawable.list
+                                LibraryViewType.GRID -> R.drawable.grid_view
+                            },
+                        ),
                     contentDescription = null,
                 )
             }
@@ -203,7 +205,7 @@ fun LibraryArtistsScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
         when (viewType) {
-            LibraryViewType.LIST ->
+            LibraryViewType.LIST -> {
                 LazyColumn(
                     state = lazyListState,
                     contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
@@ -228,14 +230,14 @@ fun LibraryArtistsScreen(
                                 EmptyPlaceholder(
                                     icon = R.drawable.artist,
                                     text = stringResource(R.string.library_artist_empty),
-                                    modifier = Modifier.animateItem()
+                                    modifier = Modifier.animateItem(),
                                 )
                             }
                         }
 
                         items(
                             items = artists.distinctBy { it.id },
-                            key = { it.id },
+                            key = { "lib_artist_list_${it.id}" },
                             contentType = { CONTENT_TYPE_ARTIST },
                         ) { artist ->
                             LibraryArtistListItem(
@@ -243,19 +245,20 @@ fun LibraryArtistsScreen(
                                 menuState = menuState,
                                 coroutineScope = coroutineScope,
                                 modifier = Modifier.animateItem(),
-                                artist = artist
+                                artist = artist,
                             )
                         }
                     }
                 }
+            }
 
-            LibraryViewType.GRID ->
+            LibraryViewType.GRID -> {
                 LazyVerticalGrid(
                     state = lazyGridState,
                     columns =
-                    GridCells.Adaptive(
-                        minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
-                    ),
+                        GridCells.Adaptive(
+                            minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
+                        ),
                     contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
                 ) {
                     item(
@@ -280,14 +283,14 @@ fun LibraryArtistsScreen(
                                 EmptyPlaceholder(
                                     icon = R.drawable.artist,
                                     text = stringResource(R.string.library_artist_empty),
-                                    modifier = Modifier.animateItem()
+                                    modifier = Modifier.animateItem(),
                                 )
                             }
                         }
 
                         items(
                             items = artists.distinctBy { it.id },
-                            key = { it.id },
+                            key = { "lib_artist_grid_${it.id}" },
                             contentType = { CONTENT_TYPE_ARTIST },
                         ) { artist ->
                             LibraryArtistGridItem(
@@ -295,11 +298,12 @@ fun LibraryArtistsScreen(
                                 menuState = menuState,
                                 coroutineScope = coroutineScope,
                                 modifier = Modifier.animateItem(),
-                                artist = artist
+                                artist = artist,
                             )
                         }
                     }
                 }
+            }
         }
     }
 }
