@@ -283,8 +283,6 @@
     <string name="error_file_read">Datei konnte nicht gelesen werden</string>
     <string name="error_file_open">Datei konnte nicht geöffnet werden: %1$s</string>
     <string name="import_error_title">Importfehler</string>
-    <string name="enable_simpmusic">SimpMusic-Songtext-Anbieter aktivieren</string>
-    <string name="enable_simpmusic_desc">Holt automatisch Songtexte von Musixmatch und YouTube Transcript</string>
     <plurals name="profiles_count">
         <item quantity="one">%d Profil</item>
         <item quantity="other">%d Profile</item>

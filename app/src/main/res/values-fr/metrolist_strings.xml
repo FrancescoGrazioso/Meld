@@ -295,8 +295,6 @@
         <item quantity="other">%d bandes</item>
     </plurals>
     <string name="pause_music_when_media_is_muted">Mettre la musique en pause lorsque le son est coupé</string>
-    <string name="enable_simpmusic">Activer les paroles de SimpMusic</string>
-    <string name="enable_simpmusic_desc">Récupère automatiquement les paroles à partir de Musixmatch et de la transcription YouTube</string>
     <string name="system_equalizer">Égaliseur système</string>
     <string name="album_art">Pochette d\'album</string>
     <string name="no_song_playing">Aucun titre en cours de lecture</string>
