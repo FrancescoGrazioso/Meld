@@ -299,8 +299,6 @@
     <string name="import_error_title">Chyba importu</string>
     <string name="wavy">Vlnitý</string>
     <string name="pause_music_when_media_is_muted">Pozastavit hudbu při ztlumení médií</string>
-    <string name="enable_simpmusic">Povolit texty SimpMusic</string>
-    <string name="enable_simpmusic_desc">Automaticky získávané texty ze služby Musixmatch a přepisu YouTube</string>
     <string name="system_equalizer">Systémový ekvalizér</string>
     <string name="album_art">Obal alba</string>
     <string name="no_song_playing">Nehraje žádná skladba</string>

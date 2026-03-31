@@ -295,8 +295,6 @@
     <string name="error_playing">Erro de reprodução</string>
     <string name="failed_to_parse_proxy">Falhou ao analisar o URL do proxy</string>
     <string name="pause_music_when_media_is_muted">Pausar a música quando o dispositivo estiver sem som</string>
-    <string name="enable_simpmusic">Habilitar letras do SimpMusic</string>
-    <string name="enable_simpmusic_desc">Automaticamente busca letras do Musixmatch e Youtube Transcript</string>
     <string name="remember_shuffle_and_repeat">Memorizar aleatório e repetir</string>
     <string name="remember_shuffle_and_repeat_desc">Memorizar aleatório e modo de repetição quando o app for reiniciado</string>
     <string name="system_equalizer">Equalizador do Sistema</string>

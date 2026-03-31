@@ -90,8 +90,6 @@
     <string name="lyrics_glow_effect_desc">เพิ่มแอนิเมชันเรืองแสงและเอฟเฟกต์เด้งให้กับเนื้อเพลงที่กำลังแสดง</string>
     <string name="enable_better_lyrics">เปิดใช้งาน Better Lyrics</string>
     <string name="enable_better_lyrics_desc">เนื้อเพลงแบบซิงค์ระดับพยางค์สำหรับทุกเพลง เหมาะสำหรับร้องคาราโอเกะ</string>
-    <string name="enable_simpmusic">เปิดใช้งาน SimpMusic Lyrics</string>
-    <string name="enable_simpmusic_desc">ดึงเนื้อเพลงอัตโนมัติจาก Musixmatch และ YouTube Transcript</string>
     <string name="auto_scroll">ซิงค์ใหม่</string>
     <string name="slim">บาง</string>
     <string name="slim_navbar">แถบนำทางด้านล่างแบบบาง</string>

@@ -340,8 +340,6 @@
     <string name="lyrics_text_size">Cỡ chữ lời bài hát</string>
     <string name="lyrics_line_spacing">Giãn dòng lời bài hát</string>
     <string name="wavy">Lượn sóng</string>
-    <string name="enable_simpmusic">Kiếm lời nhạc từ SimpMusic</string>
-    <string name="enable_simpmusic_desc">Tự động lấy lời bài hát từ Musixmatch và Bản ghi YouTube</string>
     <string name="lyrics_offset">Độ trễ của lời bài hát</string>
     <string name="play_next_desc">Thêm vào đầu danh sách phát nhạc</string>
     <string name="add_to_queue_desc">Thêm vào cuối danh sách phát nhạc</string>

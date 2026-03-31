@@ -291,8 +291,6 @@
     <string name="error_file_open">Dosya açılamadı: %1$s</string>
     <string name="import_error_title">İçe Aktarma Hatası</string>
     <string name="pause_music_when_media_is_muted">Medya sesi kapatıldığında müziği duraklat</string>
-    <string name="enable_simpmusic">SimpMusic\'in şarkı sözlerini etkinleştir</string>
-    <string name="enable_simpmusic_desc">Şarkı sözleri Musixmatch ve YouTube Transcript üzerinden otomatik olarak sağlanmıştır</string>
     <string name="remember_shuffle_and_repeat">Karışık listeyi hatırla ve tekrarla</string>
     <string name="remember_shuffle_and_repeat_desc">Karışık listeyi hatırla ve uygulama yeniden başlatıldığında tekrarla</string>
     <string name="system_equalizer">Sistem Ekolayzeri</string>

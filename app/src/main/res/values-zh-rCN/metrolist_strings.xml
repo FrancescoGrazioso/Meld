@@ -287,8 +287,6 @@
     </plurals>
     <string name="wavy">波浪</string>
     <string name="pause_music_when_media_is_muted">在静音时暂停播放</string>
-    <string name="enable_simpmusic">启用 SimpMusic 提供歌词</string>
-    <string name="enable_simpmusic_desc">自动从 Musixmatch 和 YouTube Transcript 获取歌词</string>
     <string name="system_equalizer">系统均衡器</string>
     <string name="album_art">专辑封面</string>
     <string name="no_song_playing">没有音乐正在播放</string>

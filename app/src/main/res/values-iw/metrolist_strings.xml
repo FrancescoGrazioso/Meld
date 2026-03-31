@@ -71,8 +71,6 @@
     <string name="lyrics_glow_effect_desc">הוספת הנפשות זוהר וקפיצה למילות השיר הפעילות</string>
     <string name="enable_better_lyrics">הפעלת מילות שיר משופרות</string>
     <string name="enable_better_lyrics_desc">שימוש בספק מילות שירים משופר לסנכרון מילה-למילה של מילות השיר</string>
-    <string name="enable_simpmusic">הפעלת מילות שיר סימפלמיוזיק</string>
-    <string name="enable_simpmusic_desc">השג באופן ממוכן מילות שיר מתעתיק ממיוזיקסמאטץ׳ ויוטיוב</string>
     <string name="similar_content">תוכן דומה</string>
     <string name="player_background_style">סגנון הרקע של הנגן</string>
     <string name="player_background_solid">מלא</string>

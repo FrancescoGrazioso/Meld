@@ -121,7 +121,6 @@
     <string name="wrapped_album_listening_time">이 앨범을 %d 분들을 들었습니다</string>
     <string name="wrapped_ready_subtitle">올해 사랑하는 것을 볼 시간.</string>
     <string name="wrapped_special_thanks">Metrolist를 만들기위한 MO Agamy의 특별한 감사</string>
-    <string name="enable_simpmusic_desc">MusixMatch 및 YouTube 성적표의 자동차 소스 가사</string>
     <string name="turntable_widget_description">놀이와 같은 컨트롤과 원형 음악 위젯</string>
     <string name="transfer_ownership_desc">해당 이용 후기에 달린 코멘트가 없습니다</string>
     <string name="listen_together_auto_approval_suggestions_desc">고객의 소리와 노래 제안</string>

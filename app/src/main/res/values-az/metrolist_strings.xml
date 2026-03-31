@@ -93,8 +93,6 @@
     <string name="youtube_music_lyrics_note">QEYD: Başqa platformalarda liriklər tapılmasa avtomatik YouTube Music-dən götürür. Adətən belə götürülmüş liriklər avtomatik sinxron olmur.</string>
     <string name="enable_better_lyrics">Better Lyrics yandır</string>
     <string name="enable_better_lyrics_desc">Karaoke üçün sinxron olunmuş liriklər</string>
-    <string name="enable_simpmusic">SimpMusic Lyrics yandır</string>
-    <string name="enable_simpmusic_desc">Avtomatik olaraq Musixmatch və YouTube Transcripdən götürülmüş liriklər</string>
     <string name="enable_lyricsplus">LyricsPlus yandır</string>
     <string name="enable_lyricsplus_desc">Bir neçə mövqedən alınmış liriklər</string>
     <string name="lyrics_provider_selection">Provayder seçimi</string>

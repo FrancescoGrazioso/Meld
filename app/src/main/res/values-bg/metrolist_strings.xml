@@ -222,8 +222,6 @@
     <string name="enable_kugou_desc">Изтегля текстове на песни от KuGou, популярна китайска музикална платформа</string>
     <string name="youtube_music_lyrics_note">ЗАБЕЛЕЖКА: Текстовете на песни от YouTube Music ще се показват автоматично, ако няма други източници. Обикновено не са синхронизирани.</string>
     <string name="enable_better_lyrics_desc">Синхронизирайте текста по срички за всяка песен, идеално за караоке</string>
-    <string name="enable_simpmusic">Активиране на SimpMusic Lyrics</string>
-    <string name="enable_simpmusic_desc">Автоматично изтегля текстове на песни от Musixmatch и субтитри от YouTube</string>
     <string name="enable_lyricsplus">Активиране на LyricsPlus</string>
     <string name="enable_lyricsplus_desc">Синхронизирани текстове на песни от множество източници</string>
     <string name="lyrics_provider_selection">Избор на доставчик</string>
