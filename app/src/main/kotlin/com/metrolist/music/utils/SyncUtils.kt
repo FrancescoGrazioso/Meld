@@ -1749,7 +1749,7 @@ class SyncUtils @Inject constructor(
 
                     deferredRemoval = pendingRemovals[browseId]?.find { it.first == songId }
                     if (deferredRemoval != null) {
-                        pendingRemovals[browseId]?.remove(deferredRemoval!!)
+                        pendingRemovals[browseId]?.remove(deferredRemoval)
                         Timber.d("unregisterPendingAdd: Captured deferred remove for songId=$songId, routing through removeFromPlaylistAndAwaitSync")
                     }
                 }
