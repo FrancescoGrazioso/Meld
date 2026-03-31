@@ -99,6 +99,7 @@ import com.metrolist.music.ui.component.YouTubeMatchDialog
 import com.metrolist.music.ui.utils.ShowMediaInfo
 import com.metrolist.music.viewmodels.CachePlaylistViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -296,6 +297,7 @@ fun SongMenu(
             }
             listOf(song.id)
         },
+        onGetSongIds = { listOf(song.id) },
         onDismiss = {
             showChoosePlaylistDialog = false
         },
@@ -723,8 +725,34 @@ fun SongMenu(
                                     )
                                 },
                                 onClick = {
-                                    onDismiss()
-                                    playerConnection.playNext(song.toMediaItem())
+                                    playlistSong?.let { ps ->
+                                        database.transaction {
+                                            move(
+                                                ps.map.playlistId,
+                                                ps.map.position,
+                                                Int.MAX_VALUE
+                                            )
+                                            delete(ps.map.copy(position = Int.MAX_VALUE))
+                                        }
+                                        playlistBrowseId?.let { browseId ->
+                                            syncUtils.scheduleRemoveFromPlaylist(
+                                                browseId,
+                                                ps.map.songId,
+                                                ps.map.playlistId
+                                            ) {
+                                                // Poll DB until setVideoId is available — it's written during first sync
+                                                var setVideoId: String? = null
+                                                for (attempt in 0 until 10) {
+                                                    setVideoId = database.getSetVideoId(ps.map.songId)?.setVideoId
+                                                    if (setVideoId != null) break
+                                                    delay(3_000L)
+                                                }
+                                                setVideoId
+                                            }
+                                        }
+                                        onDismiss()
+                                        playerConnection.playNext(song.toMediaItem())
+                                    }
                                 },
                             )
                         } else {

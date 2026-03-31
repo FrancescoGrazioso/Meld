@@ -163,7 +163,8 @@ fun YouTubeAlbumMenu(
             }
             album?.songs?.map { it.id }.orEmpty()
         },
-        onDismiss = { showChoosePlaylistDialog = false },
+        onGetSongIds = { album?.songs?.map { it.id }.orEmpty() },
+        onDismiss = { showChoosePlaylistDialog = false }
     )
 
     if (showErrorPlaylistAddDialog) {

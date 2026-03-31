@@ -149,6 +149,7 @@ fun SelectionSongMenu(
             }
             songSelection.map { it.id }
         },
+        onGetSongIds = { songSelection.map { it.id } },
         onDismiss = {
             showChoosePlaylistDialog = false
         },
@@ -701,6 +702,7 @@ fun SelectionMediaMetadataMenu(
                 it.id
             }
         },
+        onGetSongIds = { songSelection.map { it.id } },
         onDismiss = { showChoosePlaylistDialog = false },
     )
 

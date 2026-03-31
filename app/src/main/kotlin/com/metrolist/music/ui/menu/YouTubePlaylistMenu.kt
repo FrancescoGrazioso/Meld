@@ -149,6 +149,9 @@ fun YouTubePlaylistMenu(
             }
             allSongs.map { it.id }
         },
+        onGetSongIds = {
+            songs.map { it.id }
+        },
         onDismiss = { showChoosePlaylistDialog = false },
     )
 

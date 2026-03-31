@@ -126,6 +126,7 @@ fun QueueMenu(
             }
             listOf(mediaMetadata.id)
         },
+        onGetSongIds = { listOf(mediaMetadata.id) },
         onDismiss = {
             showChoosePlaylistDialog = false
         }

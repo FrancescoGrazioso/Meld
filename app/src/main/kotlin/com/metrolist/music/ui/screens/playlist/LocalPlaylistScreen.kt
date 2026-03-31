@@ -150,6 +150,7 @@ import com.metrolist.music.viewmodels.LocalPlaylistViewModel
 import com.yalantis.ucrop.UCrop
 import io.ktor.client.plugins.ClientRequestException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import sh.calvin.reorderable.ReorderableItem
@@ -191,6 +192,7 @@ fun LocalPlaylistScreen(
     var locked by rememberPreference(PlaylistEditLockKey, defaultValue = true)
 
     val coroutineScope = rememberCoroutineScope()
+    val syncUtils = LocalSyncUtils.current
     val snackbarHostState = remember { SnackbarHostState() }
 
     var isSearching by rememberSaveable { mutableStateOf(false) }
@@ -564,25 +566,33 @@ fun LocalPlaylistScreen(
                     val currentItem by rememberUpdatedState(song)
 
                     fun deleteFromPlaylist() {
+                        // Capture values before deletion — DB entry will be gone afterwards
+                        val browseId = playlist?.playlist?.browseId
+                        val setVideoId = currentItem.map.setVideoId
+                        val songId = currentItem.map.songId
+                        val playlistId = currentItem.map.playlistId
+
                         database.transaction {
-                            coroutineScope.launch {
-                                playlist?.playlist?.browseId?.let { browseId ->
-                                    val setVideoId = getSetVideoId(currentItem.map.songId)
-                                    setVideoId?.setVideoId?.let { setVideoIdValue ->
-                                        YouTube.removeFromPlaylist(
-                                            browseId,
-                                            currentItem.map.songId,
-                                            setVideoIdValue,
-                                        )
+                            move(playlistId, currentItem.map.position, Int.MAX_VALUE)
+                            delete(currentItem.map.copy(position = Int.MAX_VALUE))
+                        }
+
+                        if (browseId != null) {
+                            syncUtils.scheduleRemoveFromPlaylist(
+                                browseId,
+                                songId,
+                                playlistId
+                            ) {
+                                var setVideoId: String? = setVideoId  // already captured before deletion
+                                if (setVideoId == null) {
+                                    for (attempt in 0 until 10) {
+                                        setVideoId = database.getSetVideoId(songId)?.setVideoId
+                                        if (setVideoId != null) break
+                                        delay(3_000L)
                                     }
                                 }
+                                setVideoId
                             }
-                            move(
-                                currentItem.map.playlistId,
-                                currentItem.map.position,
-                                Int.MAX_VALUE,
-                            )
-                            delete(currentItem.map.copy(position = Int.MAX_VALUE))
                         }
                     }
 

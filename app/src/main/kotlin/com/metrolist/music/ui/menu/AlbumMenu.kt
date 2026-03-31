@@ -184,6 +184,7 @@ fun AlbumMenu(
             }
             songs.map { it.id }
         },
+        onGetSongIds = { songs.map { it.id } },
         onDismiss = {
             showChoosePlaylistDialog = false
         },

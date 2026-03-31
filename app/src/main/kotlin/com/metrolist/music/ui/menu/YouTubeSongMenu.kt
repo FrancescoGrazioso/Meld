@@ -149,6 +149,7 @@ fun YouTubeSongMenu(
             }
             listOf(song.id)
         },
+        onGetSongIds = { listOf(song.id) },
         onDismiss = { showChoosePlaylistDialog = false }
     )  
 
