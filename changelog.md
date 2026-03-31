@@ -1,3 +1,52 @@
+---v13.4.0
+# MAINTENANCE MODE
+Metrolist is currently in maintenance mode. This means we will only be fixing bugs and making minor improvements. Please do not submit PRs for new features or major changes, as they will not be accepted.
+
+No, this is not an April Fools joke, even though this update is being released on April 1st.
+
+We are working on something big for the future of Metrolist - this is not the end of the project.
+
+# Major changes
+- Multiple playback fixes and reliability improvements (@alltechdev)
+- Revamped the entire Lyrics engine, improving lyric accuracy and usability (@adrielGGmotion)
+- Fixed multiple crash issues (@kairosci, @nyxiereal)
+- Multiple improvements to Android Auto support (@andker87)
+- Fixed multiple grammar and text inconsistency issues in the project (@TheRebo)
+
+## Notable new features
+- Added support for treating cached songs as offline songs (@kairosci)
+- Added music alarm scheduling (@0xarchit)
+- Added miniplayer styles (@johannesbrauer)
+- Added a button to copy all song lyrics to the clipboard (@kairosci)
+- Added a time transfer feature to move listening time between songs in the stats page (@finley-webber)
+- Added customization support for the AI prompt used for translations (@nyxiereal)
+- Added a notification-based music recognition for the QS tile shortcut (@isotjs)
+
+## Other improvements
+- Fixed incorrect artist order for multi-artist songs (@AntonioDionisio05)
+- Fixed playtime in the stats page not being fully visible (@David-2765)
+- Improved radio to start seamlessly when initiated from the currently playing track (@luigiwwmf)
+- Improved the UI for tablets (@adrielGGmotion)
+- Improved the About Screen layout (@adrielGGmotion)
+- Fixed ghost adds on playlists (@johannesbrauer)
+- Improved search focus and navigation behavior (@saivijaychandan)
+- Added album navigation on song title click regardless of play source (@gergesh)
+- Prevented UI state reset when switching apps (@mostafaalagamy)
+- Restored the Daily Discover title in the Home screen (@mostafaalagamy)
+- Fixed listen together audio choppiness (@nyxiereal)
+- Redesigned romanization and account settings (@omardotdev)
+- Improved the design of the sleep timer dialog (@johannesbrauer)
+- Redesigned some components to use Material 3 Expressive (@johannesbrauer)
+- Fixed links in the README (@Lolen10 @nyxiereal)
+
+## New Contributors
+* @AntonioDionisio05 made their first contribution in https://github.com/MetrolistGroup/Metrolist/pull/3255
+* @David-2765 made their first contribution in https://github.com/MetrolistGroup/Metrolist/pull/3271
+* @luigiwwmf made their first contribution in https://github.com/MetrolistGroup/Metrolist/pull/3293
+* @gergesh made their first contribution in https://github.com/MetrolistGroup/Metrolist/pull/3300
+* @Lolen10 made their first contribution in https://github.com/MetrolistGroup/Metrolist/pull/3328
+
+**Full Changelog**: https://github.com/MetrolistGroup/Metrolist/compare/v13.3.0...v13.3.1
 ---v13.3.0
 # Major changes
 - Implemented song upload and delete functionality (@alltechdev)
