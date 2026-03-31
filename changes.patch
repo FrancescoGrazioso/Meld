@@ -1,0 +1,119 @@
+diff --git a/app/src/main/kotlin/com/metrolist/music/constants/PreferenceKeys.kt b/app/src/main/kotlin/com/metrolist/music/constants/PreferenceKeys.kt
+index 62e65070..8c04fb69 100644
+--- a/app/src/main/kotlin/com/metrolist/music/constants/PreferenceKeys.kt
++++ b/app/src/main/kotlin/com/metrolist/music/constants/PreferenceKeys.kt
+@@ -435,6 +435,10 @@ val OpenRouterApiKey = stringPreferencesKey("openRouterApiKey")
+ val AiProviderKey = stringPreferencesKey("aiProvider")
+ val OpenRouterBaseUrlKey = stringPreferencesKey("openRouterBaseUrl")
+ val OpenRouterModelKey = stringPreferencesKey("openRouterModel")
++
++const val OpenRouterDefaultBaseUrl = "https://openrouter.ai/api/v1/chat/completions"
++const val OpenRouterDefaultModel = "google/gemini-2.5-flash-lite"
++
+ val TranslateModeKey = stringPreferencesKey("translateMode")
+ val TranslateLanguageKey = stringPreferencesKey("translateLanguage")
+ val DeeplApiKey = stringPreferencesKey("deeplApiKey")
+diff --git a/app/src/main/kotlin/com/metrolist/music/lyrics/LyricsTranslationHelper.kt b/app/src/main/kotlin/com/metrolist/music/lyrics/LyricsTranslationHelper.kt
+index ee2f1b50..4b041177 100644
+--- a/app/src/main/kotlin/com/metrolist/music/lyrics/LyricsTranslationHelper.kt
++++ b/app/src/main/kotlin/com/metrolist/music/lyrics/LyricsTranslationHelper.kt
+@@ -1,3 +1,8 @@
++/**
++ * Metrolist Project (C) 2026
++ * Licensed under GPL-3.0 | See git history for contributors
++ */
++
+ package com.metrolist.music.lyrics
+ 
+ import android.content.Context
+diff --git a/app/src/main/kotlin/com/metrolist/music/ui/component/ExperimentalLyrics.kt b/app/src/main/kotlin/com/metrolist/music/ui/component/ExperimentalLyrics.kt
+index 9fc87b67..a0adad18 100644
+--- a/app/src/main/kotlin/com/metrolist/music/ui/component/ExperimentalLyrics.kt
++++ b/app/src/main/kotlin/com/metrolist/music/ui/component/ExperimentalLyrics.kt
+@@ -97,6 +97,8 @@ import com.metrolist.music.constants.LyricsRomanizeList
+ import com.metrolist.music.constants.LyricsTextPositionKey
+ import com.metrolist.music.constants.OpenRouterApiKey
+ import com.metrolist.music.constants.OpenRouterBaseUrlKey
++import com.metrolist.music.constants.OpenRouterDefaultBaseUrl
++import com.metrolist.music.constants.OpenRouterDefaultModel
+ import com.metrolist.music.constants.OpenRouterModelKey
+ import com.metrolist.music.constants.PlayerBackgroundStyle
+ import com.metrolist.music.constants.PlayerBackgroundStyleKey
+@@ -165,8 +167,8 @@ fun ExperimentalLyrics(
+     val openRouterApiKey by rememberPreference(OpenRouterApiKey, "")
+     val deeplApiKey by rememberPreference(DeeplApiKey, "")
+     val aiProvider by rememberPreference(AiProviderKey, "OpenRouter")
+-    val openRouterBaseUrl by rememberPreference(OpenRouterBaseUrlKey, "https://openrouter.ai/api/v1/chat/completions")
+-    val openRouterModel by rememberPreference(OpenRouterModelKey, "google/gemini-2.5-flash-lite")
++    val openRouterBaseUrl by rememberPreference(OpenRouterBaseUrlKey, OpenRouterDefaultBaseUrl)
++    val openRouterModel by rememberPreference(OpenRouterModelKey, OpenRouterDefaultModel)
+     val translateLanguage by rememberPreference(TranslateLanguageKey, "en")
+     val translateMode by rememberPreference(TranslateModeKey, "Literal")
+     val deeplFormality by rememberPreference(DeeplFormalityKey, "default")
+diff --git a/app/src/main/kotlin/com/metrolist/music/ui/component/LyricsImageCard.kt b/app/src/main/kotlin/com/metrolist/music/ui/component/LyricsImageCard.kt
+index 843bf3d7..07f07221 100644
+--- a/app/src/main/kotlin/com/metrolist/music/ui/component/LyricsImageCard.kt
++++ b/app/src/main/kotlin/com/metrolist/music/ui/component/LyricsImageCard.kt
+@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
+ import androidx.compose.ui.platform.LocalContext
+ import androidx.compose.ui.platform.LocalDensity
+ import androidx.compose.ui.res.painterResource
++import androidx.compose.ui.res.stringResource
+ import androidx.compose.ui.text.AnnotatedString
+ import androidx.compose.ui.text.TextStyle
+ import androidx.compose.ui.text.font.FontWeight
+@@ -413,7 +414,7 @@ fun LyricsImageCard(
+                     Spacer(modifier = Modifier.width(8.dp))
+ 
+                     Text(
+-                        text = context.getString(R.string.app_name),
++                        text = stringResource(R.string.app_name),
+                         color = secondaryColor,
+                         fontSize = 14.sp,
+                         fontWeight = FontWeight.Bold
+diff --git a/app/src/main/kotlin/com/metrolist/music/ui/menu/LyricsMenu.kt b/app/src/main/kotlin/com/metrolist/music/ui/menu/LyricsMenu.kt
+index 9367ac34..c38bc7e9 100644
+--- a/app/src/main/kotlin/com/metrolist/music/ui/menu/LyricsMenu.kt
++++ b/app/src/main/kotlin/com/metrolist/music/ui/menu/LyricsMenu.kt
+@@ -84,6 +84,8 @@ import com.metrolist.music.constants.TranslateModeKey
+ import com.metrolist.music.constants.RespectAgentPositioningKey
+ import com.metrolist.music.constants.ShowIntervalIndicatorKey
+ import com.metrolist.music.constants.OpenRouterBaseUrlKey
++import com.metrolist.music.constants.OpenRouterDefaultBaseUrl
++import com.metrolist.music.constants.OpenRouterDefaultModel
+ import com.metrolist.music.constants.OpenRouterModelKey
+ import com.metrolist.music.constants.DeeplFormalityKey
+ import com.metrolist.music.utils.rememberPreference
+@@ -106,8 +108,8 @@ fun LyricsMenu(
+     val aiProvider by rememberPreference(AiProviderKey, "OpenRouter")
+     val translateLanguage by rememberPreference(TranslateLanguageKey, "en")
+     val translateMode by rememberPreference(TranslateModeKey, "Literal")
+-    val openRouterBaseUrl by rememberPreference(OpenRouterBaseUrlKey, "https://openrouter.ai/api/v1/chat/completions")
+-    val openRouterModel by rememberPreference(OpenRouterModelKey, "google/gemini-2.5-flash-lite")
++    val openRouterBaseUrl by rememberPreference(OpenRouterBaseUrlKey, OpenRouterDefaultBaseUrl)
++    val openRouterModel by rememberPreference(OpenRouterModelKey, OpenRouterDefaultModel)
+     val deeplFormality by rememberPreference(DeeplFormalityKey, "default")
+     var respectAgentPositioning by rememberPreference(RespectAgentPositioningKey, true)
+     var showIntervalIndicator by rememberPreference(ShowIntervalIndicatorKey, true)
+diff --git a/app/src/main/res/values-ar/metrolist_strings.xml b/app/src/main/res/values-ar/metrolist_strings.xml
+index 71ea0e85..e0897d30 100644
+--- a/app/src/main/res/values-ar/metrolist_strings.xml
++++ b/app/src/main/res/values-ar/metrolist_strings.xml
+@@ -107,7 +107,7 @@
+     <string name="release_notes">ملاحظات الاصدار الجديد</string>
+     <string name="lyrics_auto_scroll">تمرير كلمات الأغاني تلقائياً</string>
+     <string name="playlist_add_local_to_synced_note">ملاحظة: إضافة الأغاني المحلية إلى قوائم التشغيل المتزامنة / قوائم التشغيل عن بعد غير مدعومة. أي نوع آخر منها صالح</string>
+-    <string name="import_csv">استيراد قوائم تشغيل csv</string>
++    <string name="import_csv">استيراد قوائم التشغيل من نوع \"csv\"</string>
+     <string name="import_online">استيراد قوائم التشغيل من نوع \"m3u\"</string>
+     <string name="lyrics_romanize_japanese">كلمات الأغاني اليابانيه الرومانيه</string>
+     <string name="lyrics_romanize_korean">كلمات الأغاني الكوريه الرومانيه</string>
+@@ -512,7 +512,7 @@
+     <string name="crossfade_gapless">تعطيل للألبومات بدون فواصل</string>
+     <string name="crossfade_gapless_desc">لا تقم بالتلاشي التدريجي إذا كان الألبوم بدون فواصل</string>
+     <string name="crossfade_beta_title">ميزة تجريبية</string>
+-    <string name="crossfade_beta_message">خاصية التلاشي المتقاطع ميزة جديدة وقد تحتوي على بعض الأخطاء. إذا واجهت أي مشاكل، يرجى الإبلاغ عنها.\nهذه الخاصية تعطل نقل الصوت (تفريغ الصوت) بسبب قيود تقنية.</string>
++    <string name="crossfade_beta_message">التلاشي التدريجي ميزة جديدة وقد تحتوي على أخطاء إذا واجهت أي مشاكل يُرجى الإبلاغ عنها هذه الميزة تُعطّل إخراج الصوت بسبب قيود تقنية</string>
+     <string name="audio_offload_disabled_by_crossfade">معطل لأن التلاشي المتقاطع نشط</string>
+     <string name="hide_youtube_shorts">إخفاء مقاطع يوتيوب القصيرة</string>
+     <string name="listen_together_in_top_bar">استمع معًا من شريط الأعلى</string>

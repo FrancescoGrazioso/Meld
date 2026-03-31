@@ -60,10 +60,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -89,6 +89,10 @@ constructor(
     var addToTargetPlaylist: () -> Unit = {}
 
     private val spotifyMapper by lazy { SpotifyYouTubeMapper(database) }
+
+    fun release() {
+        scope.cancel()
+    }
 
     companion object {
         private const val TAG = "MediaLibraryCallback"
@@ -290,7 +294,7 @@ constructor(
 
                         // Fetch YouTube playlists asynchronously if enabled
                         if (showYoutubePlaylists) {
-                            GlobalScope.launch(Dispatchers.IO) {
+                            scope.launch(Dispatchers.IO) {
                                try {
                                     val youtubePlaylists = YouTube.home().getOrNull()?.sections
                                         ?.flatMap { it.items }

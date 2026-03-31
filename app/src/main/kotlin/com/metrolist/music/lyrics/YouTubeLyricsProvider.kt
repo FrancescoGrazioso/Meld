@@ -8,7 +8,6 @@ package com.metrolist.music.lyrics
 import android.content.Context
 import com.metrolist.innertube.YouTube
 import com.metrolist.innertube.models.WatchEndpoint
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -25,18 +24,13 @@ object YouTubeLyricsProvider : LyricsProvider {
         duration: Int,
         album: String?,
     ): Result<String> = withContext(Dispatchers.IO) {
-        try {
+        runCatching {
             val nextResult = YouTube.next(WatchEndpoint(videoId = id)).getOrThrow()
-            Result.success(
-                YouTube
-                    .lyrics(
-                        endpoint = nextResult.lyricsEndpoint
-                            ?: throw IllegalStateException("Lyrics endpoint not found"),
-                    ).getOrThrow() ?: throw IllegalStateException("Lyrics unavailable")
-            )
-        } catch (e: Exception) {
-            if (e is CancellationException) throw e
-            Result.failure(e)
+            YouTube
+                .lyrics(
+                    endpoint = nextResult.lyricsEndpoint
+                        ?: throw IllegalStateException("Lyrics endpoint not found"),
+                ).getOrThrow() ?: throw IllegalStateException("Lyrics unavailable")
         }
     }
 }

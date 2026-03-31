@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.metrolist.betterlyrics"
+    namespace = "com.metrolist.paxsenix"
     compileSdk = 36
 
     defaultConfig {
@@ -24,12 +24,15 @@ kotlin {
 
 dependencies {
     implementation(libs.ktor.client.core)
+    implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.client.cio)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.serialization.json)
+    implementation(libs.ktor.client.encoding)
     implementation(libs.timber)
+    testImplementation(libs.junit)
+
+    implementation(project(":betterlyrics"))
 
     coreLibraryDesugaring(libs.desugaring)
-    
-    testImplementation(libs.junit)
 }

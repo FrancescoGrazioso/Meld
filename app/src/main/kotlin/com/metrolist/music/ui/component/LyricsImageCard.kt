@@ -36,6 +36,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -64,7 +65,6 @@ import coil3.request.allowHardware
 import coil3.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import androidx.compose.ui.res.stringResource
 
 @Composable
 fun rememberAdjustedFontSize(
@@ -146,12 +146,6 @@ fun rememberAdjustedFontSize(
     }
 
     return calculatedFontSize
-}
-
-enum class LyricsBackgroundStyle {
-    SOLID,
-    BLUR,
-    GRADIENT
 }
 
 @SuppressLint("UnusedBoxWithConstraintsScope")

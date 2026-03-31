@@ -49,7 +49,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.Spring
-import androidx.compose.material3.ButtonGroup
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 
@@ -549,16 +548,15 @@ fun SleepTimerDialog(
                         .padding(horizontal = 16.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.End,
             ) {
-                ButtonGroup {
-                    TextButton(
-                        onClick = onDismiss,
-                        shapes = ButtonDefaults.shapes(),
-                    ) {
-                        Text(stringResource(android.R.string.cancel))
-                    }
-                    androidx.compose.material3.Button(
-                        shapes = ButtonDefaults.shapes(),
-                        onClick = {
+                TextButton(
+                    onClick = onDismiss,
+                    shapes = ButtonDefaults.shapes(),
+                ) {
+                    Text(stringResource(android.R.string.cancel))
+                }
+                androidx.compose.material3.Button(
+                    shapes = ButtonDefaults.shapes(),
+                    onClick = {
                             val (finalRepeat, finalDayTimes) =
                                 when (selectedRepeat) {
                                     "weekdays_weekends" -> {
@@ -590,7 +588,6 @@ fun SleepTimerDialog(
                     ) {
                         Text(stringResource(android.R.string.ok))
                     }
-                }
             }
         }
     }

@@ -131,9 +131,11 @@ import com.metrolist.music.constants.DefaultOpenTabKey
 import com.metrolist.music.constants.DisableScreenshotKey
 import com.metrolist.music.constants.DynamicThemeKey
 import com.metrolist.music.constants.EnableHighRefreshRateKey
+import com.metrolist.music.constants.ExperimentalLyricsKey
 import com.metrolist.music.constants.LastSeenVersionKey
 import com.metrolist.music.constants.ListenTogetherInTopBarKey
 import com.metrolist.music.constants.ListenTogetherUsernameKey
+import com.metrolist.music.constants.LyricsProviderOrderKey
 import com.metrolist.music.constants.SpotifyAccessTokenKey
 import com.metrolist.music.constants.MiniPlayerBottomSpacing
 import com.metrolist.music.constants.MiniPlayerHeight
@@ -141,9 +143,12 @@ import com.metrolist.music.constants.NavigationBarAnimationSpec
 import com.metrolist.music.constants.NavigationBarHeight
 import com.metrolist.music.constants.PauseListenHistoryKey
 import com.metrolist.music.constants.PauseSearchHistoryKey
+import com.metrolist.music.constants.PreferredLyricsProvider
+import com.metrolist.music.constants.PreferredLyricsProviderKey
 import com.metrolist.music.constants.PureBlackKey
 import com.metrolist.music.constants.SYSTEM_DEFAULT
 import com.metrolist.music.constants.SelectedThemeColorKey
+import com.metrolist.music.constants.SimpMusicMigrationDoneKey
 import com.metrolist.music.constants.SlimNavBarHeight
 import com.metrolist.music.constants.SlimNavBarKey
 import com.metrolist.music.constants.StopMusicOnTaskClearKey
@@ -152,6 +157,7 @@ import com.metrolist.music.constants.UseNewMiniPlayerDesignKey
 import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.db.entities.SearchHistory
 import com.metrolist.music.extensions.toEnum
+import com.metrolist.music.lyrics.LyricsProviderRegistry
 import com.metrolist.music.models.toMediaMetadata
 import com.metrolist.music.playback.DownloadUtil
 import com.metrolist.music.playback.MusicService
@@ -593,6 +599,34 @@ class MainActivity : ComponentActivity() {
                     if (lastSeenVersion != currentVersion) {
                         showChangelog.value = true
                     }
+
+                    // SimpMusic Removal Migration
+                    if (dataStore.data.first()[SimpMusicMigrationDoneKey] != true) {
+                        dataStore.edit { settings ->
+                            // Remove SimpMusic from serialized order string and append Paxsenix if missing
+                            val currentOrder = settings[LyricsProviderOrderKey] ?: ""
+                            if (currentOrder.contains("SimpMusic") || !currentOrder.contains("Paxsenix")) {
+                                val orderList = currentOrder.split(",")
+                                    .map { it.trim() }
+                                    .filter { it.isNotBlank() && it != "SimpMusic" }
+                                    .toMutableList()
+                                
+                                if (!orderList.contains("Paxsenix")) {
+                                    orderList.add("Paxsenix")
+                                }
+                                
+                                settings[LyricsProviderOrderKey] = orderList.joinToString(",")
+                            }
+
+                            // Reset preferred provider if it was SimpMusic
+                            if (settings[PreferredLyricsProviderKey] == "SIMPMUSIC") {
+                                settings[PreferredLyricsProviderKey] = PreferredLyricsProvider.LRCLIB.name
+                            }
+
+                            settings[SimpMusicMigrationDoneKey] = true
+                        }
+                    }
+
                     dataStore.edit { settings ->
                         settings[LastSeenVersionKey] = currentVersion
                     }
