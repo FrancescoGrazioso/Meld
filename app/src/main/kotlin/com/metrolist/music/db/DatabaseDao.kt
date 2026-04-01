@@ -1116,15 +1116,15 @@ interface DatabaseDao {
     }.map { it.reversed(descending) }
 
     @Transaction
-    @Query("SELECT * FROM song WHERE (isDownloaded = 1 OR isCached = 1) AND (isEpisode = 0 OR isEpisode IS NULL) ORDER BY dateDownload")
+    @Query("SELECT * FROM song WHERE isDownloaded = 1 AND (isEpisode = 0 OR isEpisode IS NULL) ORDER BY dateDownload")
     fun downloadedSongsByCreateDateAsc(): Flow<List<Song>>
 
     @Transaction
-    @Query("SELECT * FROM song WHERE (isDownloaded = 1 OR isCached = 1) AND (isEpisode = 0 OR isEpisode IS NULL) ORDER BY title")
+    @Query("SELECT * FROM song WHERE isDownloaded = 1 AND (isEpisode = 0 OR isEpisode IS NULL) ORDER BY title")
     fun downloadedSongsByNameAsc(): Flow<List<Song>>
 
     @Transaction
-    @Query("SELECT * FROM song WHERE (isDownloaded = 1 OR isCached = 1) AND (isEpisode = 0 OR isEpisode IS NULL) ORDER BY totalPlayTime")
+    @Query("SELECT * FROM song WHERE isDownloaded = 1 AND (isEpisode = 0 OR isEpisode IS NULL) ORDER BY totalPlayTime")
     fun downloadedSongsByPlayTimeAsc(): Flow<List<Song>>
 
     @Query("UPDATE song SET isDownloaded = :downloaded, dateDownload = :date WHERE id = :songId")
@@ -1170,11 +1170,6 @@ interface DatabaseDao {
     @Query("SELECT COUNT(*) FROM song WHERE isLocal = 1 AND localPath IS NOT NULL")
     fun localSongsCount(): Flow<Int>
 
-    @Query("UPDATE song SET isCached = :cached WHERE id = :songId")
-    fun updateCachedInfo(songId: String, cached: Boolean)
-
-    @Query("UPDATE song SET isCached = 1 WHERE id IN (:songIds)")
-    fun updateCachedInfoMany(songIds: List<String>)
 
     @Query("UPDATE song SET playbackPosition = :position WHERE id = :songId")
     fun updatePlaybackPosition(songId: String, position: Long?)
@@ -1286,15 +1281,15 @@ interface DatabaseDao {
     }.map { it.reversed(descending) }
 
     @Transaction
-    @Query("SELECT * FROM song WHERE isEpisode = 1 AND (isDownloaded = 1 OR isCached = 1) ORDER BY dateDownload")
+    @Query("SELECT * FROM song WHERE isEpisode = 1 AND isDownloaded = 1 ORDER BY dateDownload")
     fun downloadedPodcastEpisodesByCreateDateAsc(): Flow<List<Song>>
 
     @Transaction
-    @Query("SELECT * FROM song WHERE isEpisode = 1 AND (isDownloaded = 1 OR isCached = 1) ORDER BY title")
+    @Query("SELECT * FROM song WHERE isEpisode = 1 AND isDownloaded = 1 ORDER BY title")
     fun downloadedPodcastEpisodesByNameAsc(): Flow<List<Song>>
 
     @Transaction
-    @Query("SELECT * FROM song WHERE isEpisode = 1 AND (isDownloaded = 1 OR isCached = 1) ORDER BY totalPlayTime")
+    @Query("SELECT * FROM song WHERE isEpisode = 1 AND isDownloaded = 1 ORDER BY totalPlayTime")
     fun downloadedPodcastEpisodesByPlayTimeAsc(): Flow<List<Song>>
 
     // Saved episodes (in library but not necessarily downloaded)
