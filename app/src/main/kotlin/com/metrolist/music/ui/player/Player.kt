@@ -5,6 +5,7 @@
 
 package com.metrolist.music.ui.player
 
+import androidx.activity.compose.BackHandler
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -269,6 +270,11 @@ fun BottomSheetPlayer(
             }
         }
     }
+
+    BackHandler(enabled = state.isExpanded) {
+        state.collapseSoft()
+    }
+
     val onBackgroundColor =
         when (playerBackground) {
             PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.secondary
