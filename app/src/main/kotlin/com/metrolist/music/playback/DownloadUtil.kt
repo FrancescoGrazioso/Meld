@@ -192,6 +192,21 @@ constructor(
                             }
                         }
                     }
+
+                    override fun onDownloadRemoved(
+                        downloadManager: DownloadManager,
+                        download: Download,
+                    ) {
+                        downloads.update { map ->
+                            map.toMutableMap().apply {
+                                remove(download.request.id)
+                            }
+                        }
+
+                        scope.launch {
+                            database.updateDownloadedInfo(download.request.id, false, null)
+                        }
+                    }
                 }
             )
         }
