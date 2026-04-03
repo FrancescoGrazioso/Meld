@@ -482,7 +482,7 @@ fun OriginalLyrics(
     val selectedIndices = remember { mutableStateListOf<Int>() }
     var showMaxSelectionToast by remember { mutableStateOf(false) } // State for showing max selection toast
 
-    val isLyricsProviderShown = lyricsEntity?.provider != null && lyricsEntity?.provider != "Unknown" && !isSelectionModeActive
+    val isLyricsProviderShown = lyricsEntity?.provider != null && lyricsEntity?.provider != "Unknown" && lyricsEntity?.provider != "Manual" && !isSelectionModeActive
 
     val lazyListState = rememberLazyListState()
 

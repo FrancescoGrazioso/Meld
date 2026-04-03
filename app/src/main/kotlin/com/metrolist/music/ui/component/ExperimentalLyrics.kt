@@ -311,7 +311,7 @@ fun ExperimentalLyrics(
     var isSelectionModeActive by rememberSaveable { mutableStateOf(false) }
     val selectedIndices = remember { mutableStateListOf<Int>() }
     var showMaxSelectionToast by remember { mutableStateOf(false) }
-    val isLyricsProviderShown = lyricsEntity != null && lyricsEntity.provider != "Unknown" && !isSelectionModeActive
+    val isLyricsProviderShown = lyricsEntity != null && lyricsEntity.provider != "Unknown" && lyricsEntity.provider != "Manual" && !isSelectionModeActive
     var isAutoScrollEnabled by rememberSaveable { mutableStateOf(true) }
 
     BackHandler(enabled = isSelectionModeActive) {
