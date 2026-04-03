@@ -9,6 +9,7 @@
     <string name="album_cover_desc">Album cover</string>
     <string name="top_music_videos">Top music videos</string>
     <string name="trending">Trending</string>
+    <string name="parsed_from_link">Parsed from link</string>
 
     <string name="weeks">Weeks</string>
     <string name="months">Months</string>
