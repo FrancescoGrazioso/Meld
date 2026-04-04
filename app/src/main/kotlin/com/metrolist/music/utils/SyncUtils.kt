@@ -1516,6 +1516,12 @@ class SyncUtils @Inject constructor(
 
                     Timber.d("syncPlaylist: Updating local playlist (remote: ${remoteIds.size}, local: ${localIds.size})")
 
+                    val localSongsBeforeSync = database.playlistSongs(playlistId).first()
+                    val downloadedSongIds = localSongsBeforeSync
+                        .filter { it.song.song.isDownloaded || it.song.song.dateDownload != null }
+                        .map { it.song.id }
+                        .toSet()
+
                     database.withTransaction {
                         database.clearPlaylist(playlistId)
                         songs.forEachIndexed { idx, song ->
@@ -1533,6 +1539,24 @@ class SyncUtils @Inject constructor(
                                 )
                             } else {
                                 Timber.w("syncPlaylist: skipping song ${song.id} — failed to insert into database")
+                            }
+                        }
+
+                        downloadedSongIds.forEach { songId ->
+                            if (songId !in remoteIds) {
+                                val existingSong = database.song(songId).firstOrNull()
+                                if (existingSong != null) {
+                                    val maxPosition = database.playlistSongs(playlistId).first()
+                                        .maxOfOrNull { it.map.position } ?: -1
+                                    database.insert(
+                                        PlaylistSongMap(
+                                            songId = songId,
+                                            playlistId = playlistId,
+                                            position = maxPosition + 1
+                                        )
+                                    )
+                                    Timber.d("syncPlaylist: Preserved downloaded song $songId in playlist")
+                                }
                             }
                         }
                     }

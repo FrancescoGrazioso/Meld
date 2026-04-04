@@ -63,6 +63,9 @@ constructor(
     val romanizeLyrics: Boolean
         get() = song.romanizeLyrics
 
+    val isDownloaded: Boolean
+        get() = song.isDownloaded
+
     val orderedArtists: List<ArtistEntity>
         get() {
             if (artistMaps.isEmpty()) return artists
