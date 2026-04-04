@@ -82,6 +82,7 @@ import com.metrolist.music.LocalListenTogetherManager
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
 import com.metrolist.music.constants.ListItemHeight
+import com.metrolist.music.constants.VarispeedKey
 import com.metrolist.music.listentogether.ConnectionState
 import com.metrolist.music.listentogether.ListenTogetherEvent
 import com.metrolist.music.models.MediaMetadata
@@ -130,6 +131,8 @@ fun PlayerMenu(
     val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
     val castVolume by castHandler?.castVolume?.collectAsState() ?: remember { mutableFloatStateOf(1f) }
     val castDeviceName by castHandler?.castDeviceName?.collectAsState() ?: remember { mutableStateOf<String?>(null) }
+
+    val varispeedMode by rememberPreference(VarispeedKey, defaultValue = false)
 
     val librarySong by database.song(mediaMetadata.id).collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
@@ -280,6 +283,16 @@ fun PlayerMenu(
     if (showPitchTempoDialog) {
         TempoPitchDialog(
             onDismiss = { showPitchTempoDialog = false },
+        )
+    }
+
+    var showSpeedDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    if (showSpeedDialog) {
+        SpeedDialog(
+            onDismiss = { showSpeedDialog = false },
         )
     }
 
@@ -766,7 +779,8 @@ fun PlayerMenu(
                                         )
                                     },
                                     onClick = {
-                                        showPitchTempoDialog = true
+                                        if (!varispeedMode) showPitchTempoDialog = true
+                                        else showSpeedDialog = true
                                     },
                                 ),
                             )
@@ -847,6 +861,58 @@ fun TempoPitchDialog(onDismiss: () -> Unit) {
     )
 }
 
+@Composable
+fun SpeedDialog(onDismiss: () -> Unit) {
+    val playerConnection = LocalPlayerConnection.current ?: return
+    var speed by remember {
+        mutableFloatStateOf(playerConnection.player.playbackParameters.speed)
+    }
+    val updatePlaybackParameters = {
+        playerConnection.player.playbackParameters =
+            PlaybackParameters(speed, speed)
+    }
+    val listenTogetherManager = com.metrolist.music.LocalListenTogetherManager.current
+
+    AlertDialog(
+        properties = DialogProperties(usePlatformDefaultWidth = false),
+        onDismissRequest = onDismiss,
+        title = {
+            Text(stringResource(R.string.speed))
+        },
+        dismissButton = {
+            TextButton(
+                onClick = {
+                    speed = 1f
+                    updatePlaybackParameters()
+                },
+            ) {
+                Text(stringResource(R.string.reset))
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = onDismiss,
+            ) {
+                Text(stringResource(android.R.string.ok))
+            }
+        },
+        text = {
+            Column {
+                ValueAdjuster(
+                    icon = R.drawable.speed,
+                    currentValue = speed,
+                    values = (0..35).map { round((0.25f + it * 0.05f) * 100) / 100 },
+                    onValueUpdate = {
+                        speed = it
+                        updatePlaybackParameters()
+                    },
+                    valueText = { "x$it" },
+                    modifier = Modifier.padding(bottom = 12.dp),
+                )
+            }
+        },
+    )
+}
 @Composable
 fun <T> ValueAdjuster(
     @DrawableRes icon: Int,

@@ -386,6 +386,11 @@
     <string name="audio_offload_description">Uses the hardware audio offload path for playback. Disabling this may increase battery usage, but can help if you experience issues with playback or audio post-processing</string>
     <string name="audio_offload_disabled_by_crossfade">Disabled because crossfade is active</string>
 
+    <!-- Varispeed -->
+    <string name="speed">Playback Speed</string>
+    <string name="varispeed">Enable varispeed</string>
+    <string name="varispeed_description">Link pitch to playback speed, resulting in tape-style speedup and slowdown effects</string>
+
     <!-- Google Cast -->
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Cast audio to Chromecast and other Cast-enabled devices</string>

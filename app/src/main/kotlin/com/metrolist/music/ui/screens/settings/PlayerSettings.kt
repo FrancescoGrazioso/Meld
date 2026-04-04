@@ -64,6 +64,7 @@ import com.metrolist.music.constants.SimilarContent
 import com.metrolist.music.constants.SkipSilenceInstantKey
 import com.metrolist.music.constants.SkipSilenceKey
 import com.metrolist.music.constants.StopMusicOnTaskClearKey
+import com.metrolist.music.constants.VarispeedKey
 import com.metrolist.music.ui.component.DefaultDialog
 import com.metrolist.music.ui.component.EnumDialog
 import com.metrolist.music.ui.component.IconButton
@@ -125,6 +126,11 @@ fun PlayerSettings(
 
     val (audioOffload, onAudioOffloadChange) = rememberPreference(
         key = AudioOffload,
+        defaultValue = false
+    )
+
+    val (varispeed, onVarispeedChange) = rememberPreference(
+        key = VarispeedKey,
         defaultValue = false
     )
 
@@ -451,6 +457,31 @@ fun PlayerSettings(
                         )
                     },
                     onClick = { if (!crossfadeEnabled) onAudioOffloadChange(!audioOffload) }
+                ))
+                add(Material3SettingsItem(
+                    icon = painterResource(R.drawable.graphic_eq),
+                    title = { Text(stringResource(R.string.varispeed)) },
+                    description = {
+                        Text(
+                            stringResource(R.string.varispeed_description)
+                        )
+                    },
+                    trailingContent = {
+                        Switch(
+                            checked = varispeed,
+                            onCheckedChange = onVarispeedChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (varispeed) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onVarispeedChange(!varispeed) }
                 ))
                 // Only show Cast setting in GMS builds (not in F-Droid/FOSS)
                 if (BuildConfig.CAST_AVAILABLE) {
