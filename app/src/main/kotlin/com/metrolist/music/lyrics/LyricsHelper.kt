@@ -17,6 +17,7 @@ import com.metrolist.music.utils.NetworkConnectivityObserver
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.reportException
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
@@ -25,8 +26,12 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 import javax.inject.Inject
+
+private const val MAX_LYRICS_FETCH_MS = 30000L
+private const val PROVIDER_NONE = ""
 
 class LyricsHelper
 @Inject
@@ -121,19 +126,20 @@ constructor(
         }
 
         if (!isNetworkAvailable) {
-            // Still proceed but return not found to avoid hanging
-            return LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
+            return LyricsWithProvider(LYRICS_NOT_FOUND, PROVIDER_NONE)
         }
 
-        val scope = CoroutineScope(SupervisorJob())
-        val deferred = scope.async {
+        val result = withTimeoutOrNull(MAX_LYRICS_FETCH_MS) {
             val cleanedTitle = LyricsUtils.cleanTitleForSearch(mediaMetadata.title)
-            for (provider in lyricsProviders) {
-                if (provider.isEnabled(context)) {
-                    try {
-                        Timber.tag("LyricsHelper")
-                            .d("Trying provider: ${provider.name} for $cleanedTitle")
-                        val result = provider.getLyrics(
+            val enabledProviders = lyricsProviders.filter { it.isEnabled(context) }
+            val perProviderTimeout = MAX_LYRICS_FETCH_MS / enabledProviders.size.coerceAtLeast(1)
+
+            for (provider in enabledProviders) {
+                try {
+                    Timber.tag("LyricsHelper")
+                        .d("Trying provider: ${provider.name} for $cleanedTitle (timeout: ${perProviderTimeout}ms)")
+                    val result = withTimeoutOrNull(perProviderTimeout) {
+                        provider.getLyrics(
                             context,
                             mediaMetadata.id,
                             cleanedTitle,
@@ -141,30 +147,30 @@ constructor(
                             mediaMetadata.duration,
                             mediaMetadata.album?.title,
                         )
-                        result.onSuccess { lyrics ->
-                            Timber.tag("LyricsHelper").i("Successfully got lyrics from ${provider.name}")
-                            val filteredLyrics = LyricsUtils.filterLyricsCreditLines(lyrics)
-                            return@async LyricsWithProvider(filteredLyrics, provider.name)
-                        }.onFailure { e ->
-                            Timber.tag("LyricsHelper").w("${provider.name} failed: ${e.message}")
-                            reportException(e)
-                        }
-                    } catch (e: Exception) {
-                        // Catch network-related exceptions like UnresolvedAddressException
-                        Timber.tag("LyricsHelper").w("${provider.name} threw exception: ${e.message}")
-                        reportException(e)
                     }
-                } else {
-                    Timber.tag("LyricsHelper").d("Provider ${provider.name} is disabled")
+                    when {
+                        result?.isSuccess == true -> {
+                            Timber.tag("LyricsHelper").i("Successfully got lyrics from ${provider.name}")
+                            val filteredLyrics = LyricsUtils.filterLyricsCreditLines(result.getOrNull()!!)
+                            return@withTimeoutOrNull LyricsWithProvider(filteredLyrics, provider.name)
+                        }
+                        result == null -> {
+                            Timber.tag("LyricsHelper").w("${provider.name} timed out after ${perProviderTimeout}ms")
+                        }
+                        else -> {
+                            Timber.tag("LyricsHelper").w("${provider.name} failed: ${result.exceptionOrNull()?.message}")
+                        }
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    Timber.tag("LyricsHelper").w("${provider.name} threw exception: ${e.message}")
                 }
             }
             Timber.tag("LyricsHelper").w("All providers failed for ${mediaMetadata.title}")
-            return@async LyricsWithProvider(LYRICS_NOT_FOUND, "Unknown")
+            return@withTimeoutOrNull LyricsWithProvider(LYRICS_NOT_FOUND, PROVIDER_NONE)
         }
-
-        val result = deferred.await()
-        scope.cancel()
-        return result
+        return result ?: LyricsWithProvider(LYRICS_NOT_FOUND, PROVIDER_NONE)
     }
 
     suspend fun getAllLyrics(
