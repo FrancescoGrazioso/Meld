@@ -1101,17 +1101,16 @@ interface DatabaseDao {
     fun addSongToPlaylist(playlist: Playlist, songIds: List<String>) {
         var position = playlist.songCount
         songIds.forEach { id ->
-            if (!songExistsBlocking(id)) {
-                Timber.w("addSongToPlaylist: skipping songId=$id — not found in database")
-                return@forEach
+            val existingSong = getSongByIdBlocking(id)
+            if (existingSong != null) {
+                insert(
+                    PlaylistSongMap(
+                        songId = id,
+                        playlistId = playlist.id,
+                        position = position++
+                    )
+                )
             }
-            insert(
-                PlaylistSongMap(
-                    songId = id,
-                    playlistId = playlist.id,
-                    position = position++,
-                ),
-            )
         }
         updatePlaylistLastUpdated(playlist.id)
     }
