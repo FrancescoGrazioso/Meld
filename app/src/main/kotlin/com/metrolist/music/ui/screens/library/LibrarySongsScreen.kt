@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -47,10 +48,11 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -71,12 +73,16 @@ import com.metrolist.music.constants.SongSortDescendingKey
 import com.metrolist.music.constants.SongSortType
 import com.metrolist.music.constants.SongSortTypeKey
 import com.metrolist.music.constants.YtmSyncKey
+import com.metrolist.music.extensions.matchesNormalizedQuery
+import com.metrolist.music.extensions.normalizeForSearch
 import com.metrolist.music.extensions.toMediaItem
 import com.metrolist.music.playback.queues.ListQueue
 import com.metrolist.music.ui.component.ChipsRow
 import com.metrolist.music.ui.component.DefaultDialog
 import com.metrolist.music.ui.component.DraggableScrollbar
 import com.metrolist.music.ui.component.HideOnScrollFAB
+import com.metrolist.music.ui.component.LibrarySearchEmptyPlaceholder
+import com.metrolist.music.ui.component.LibrarySearchHeader
 import com.metrolist.music.ui.component.LocalMenuState
 import com.metrolist.music.ui.component.SongListItem
 import com.metrolist.music.ui.component.SortHeader
@@ -97,6 +103,7 @@ fun LibrarySongsScreen(
     viewModel: LibrarySongsViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val menuState = LocalMenuState.current
     val uploadUnsupportedFormatStr = stringResource(R.string.upload_unsupported_format)
     val uploadFileTooLargeStr = stringResource(R.string.upload_file_too_large)
@@ -119,6 +126,10 @@ fun LibrarySongsScreen(
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
 
     val songs by viewModel.allSongs.collectAsState()
+    var isSearchActive by rememberSaveable { mutableStateOf(false) }
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val debouncedSearchQuery by viewModel.debouncedSearchQuery.collectAsState()
+    val normalizedQuery = remember(debouncedSearchQuery) { debouncedSearchQuery.normalizeForSearch() }
 
     var filter by rememberEnumPreference(SongFilterKey, SongFilter.LIKED)
 
@@ -260,10 +271,13 @@ fun LibrarySongsScreen(
     }
 
     val filteredSongs =
-        if (hideExplicit) {
+        (if (hideExplicit) {
             songs.filter { !it.song.explicit }
         } else {
             songs
+        }).filter { song ->
+            val artistNames = song.artists.map { it.name }.toTypedArray()
+            matchesNormalizedQuery(normalizedQuery, song.song.title, song.album?.title, *artistNames)
         }
 
     // Upload progress dialog
@@ -362,9 +376,16 @@ fun LibrarySongsScreen(
                 key = "header",
                 contentType = CONTENT_TYPE_HEADER,
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(horizontal = 16.dp),
+                LibrarySearchHeader(
+                    isSearchActive = isSearchActive,
+                    searchQuery = searchQuery,
+                    onSearchQueryChange = viewModel::updateSearchQuery,
+                    onBack = {
+                        isSearchActive = false
+                        viewModel.updateSearchQuery("")
+                    },
+                    keyboardController = keyboardController,
+                    modifier = Modifier.padding(start = 16.dp),
                 ) {
                     SortHeader(
                         sortType = sortType,
@@ -393,6 +414,25 @@ fun LibrarySongsScreen(
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.secondary,
                     )
+
+                    IconButton(
+                        onClick = { isSearchActive = true },
+                        modifier = Modifier.padding(start = 8.dp, end = 8.dp).size(40.dp),
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.search),
+                            contentDescription = stringResource(R.string.search),
+                        )
+                    }
+                }
+            }
+
+            if (filteredSongs.isEmpty() && searchQuery.isNotBlank()) {
+                item(
+                    key = "empty_search_result",
+                    contentType = CONTENT_TYPE_HEADER,
+                ) {
+                    LibrarySearchEmptyPlaceholder(modifier = Modifier.animateItem())
                 }
             }
 

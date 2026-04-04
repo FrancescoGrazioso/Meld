@@ -3,7 +3,7 @@
  * Licensed under GPL-3.0 | See git history for contributors
  */
 
-@file:OptIn(ExperimentalCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class, kotlinx.coroutines.FlowPreview::class)
 
 package com.metrolist.music.viewmodels
 
@@ -47,6 +47,8 @@ import com.metrolist.music.extensions.filterExplicit
 import com.metrolist.music.extensions.filterExplicitAlbums
 import com.metrolist.music.extensions.filterVideoSongs
 import com.metrolist.music.extensions.filterYoutubeShorts
+import com.metrolist.music.extensions.matchesNormalizedQuery
+import com.metrolist.music.extensions.normalizeForSearch
 import com.metrolist.music.extensions.toEnum
 import com.metrolist.music.playback.DownloadUtil
 import com.metrolist.music.utils.PodcastRefreshTrigger
@@ -61,6 +63,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -79,6 +83,16 @@ constructor(
     downloadUtil: DownloadUtil,
     private val syncUtils: SyncUtils,
 ) : ViewModel() {
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+    val debouncedSearchQuery = _searchQuery
+        .debounce(300)
+        .stateIn(viewModelScope, SharingStarted.Lazily, "")
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
     val allSongs =
         context.dataStore.data
             .map {
@@ -123,6 +137,16 @@ constructor(
     database: MusicDatabase,
     private val syncUtils: SyncUtils,
 ) : ViewModel() {
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+    val debouncedSearchQuery = _searchQuery
+        .debounce(300)
+        .stateIn(viewModelScope, SharingStarted.Lazily, "")
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
     val allArtists =
         context.dataStore.data
             .map {
@@ -138,6 +162,16 @@ constructor(
                     ArtistFilter.LIBRARY -> database.artists(sortType, descending)
                 }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
+    val filteredArtists =
+        combine(allArtists, searchQuery) { artists, query ->
+            val normalizedQuery = query.normalizeForSearch()
+            artists
+                .filter { artist ->
+                    matchesNormalizedQuery(normalizedQuery, artist.artist.name)
+                }
+                .distinctBy { it.id }
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun sync() {
         viewModelScope.launch(Dispatchers.IO) { syncUtils.syncArtistsSubscriptions() }
@@ -173,6 +207,16 @@ constructor(
     database: MusicDatabase,
     private val syncUtils: SyncUtils,
 ) : ViewModel() {
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+    val debouncedSearchQuery = _searchQuery
+        .debounce(300)
+        .stateIn(viewModelScope, SharingStarted.Lazily, "")
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
     val allAlbums =
         context.dataStore.data
             .map {
@@ -233,6 +277,16 @@ constructor(
     database: MusicDatabase,
     private val syncUtils: SyncUtils,
 ) : ViewModel() {
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+    val debouncedSearchQuery = _searchQuery
+        .debounce(300)
+        .stateIn(viewModelScope, SharingStarted.Lazily, "")
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
     val allPlaylists =
         context.dataStore.data
             .map {
@@ -297,6 +351,16 @@ constructor(
     private val _isRefreshing = MutableStateFlow(false)
     val isRefreshing = _isRefreshing.asStateFlow()
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+    val debouncedSearchQuery = _searchQuery
+        .debounce(300)
+        .stateIn(viewModelScope, SharingStarted.Lazily, "")
+
+    fun updateSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
     val syncAllLibrary = {
          viewModelScope.launch(Dispatchers.IO) {
              syncUtils.tryAutoSync()
@@ -326,6 +390,20 @@ constructor(
         .distinctUntilChanged()
         .flatMapLatest { hideExplicit ->
             database.albumsLiked(AlbumSortType.CREATE_DATE, true).map { it.filterExplicitAlbums(hideExplicit) }
+        }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+    var songs = context.dataStore.data
+        .map { Triple(it[HideExplicitKey] ?: false, it[HideVideoSongsKey] ?: false, it[HideYoutubeShortsKey] ?: false) }
+        .distinctUntilChanged()
+        .flatMapLatest { (hideExplicit, hideVideoSongs, _) ->
+            combine(
+                database.songs(SongSortType.CREATE_DATE, true),
+                database.songsInBookmarkedPlaylists()
+            ) { librarySongs, playlistSongs ->
+                (librarySongs + playlistSongs)
+                    .distinctBy { it.id }
+                    .filterExplicit(hideExplicit)
+                    .filterVideoSongs(hideVideoSongs)
+            }
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
     var playlists = context.dataStore.data
         .map { it[HideYoutubeShortsKey] ?: false }

@@ -192,7 +192,7 @@ fun LibraryPodcastsScreen(
                     leadingIcon = {
                         Icon(
                             painter = painterResource(R.drawable.close),
-                            contentDescription = null,
+                            contentDescription = stringResource(R.string.close_chip),
                         )
                     },
                 )
@@ -420,10 +420,10 @@ fun LibraryPodcastsScreen(
                                         }
                                     },
                                 ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.more_vert),
-                                        contentDescription = null,
-                                    )
+                                Icon(
+                                    painter = painterResource(R.drawable.more_vert),
+                                    contentDescription = stringResource(R.string.more_options),
+                                )
                                 }
                             },
                             modifier =
@@ -629,7 +629,7 @@ private fun PodcastEpisodePlaylistItem(
         IconButton(onClick = onMenuClick) {
             Icon(
                 painter = painterResource(R.drawable.more_vert),
-                contentDescription = null,
+                contentDescription = stringResource(R.string.more_options),
             )
         }
     }

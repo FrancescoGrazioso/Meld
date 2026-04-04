@@ -1013,4 +1013,12 @@
     <string name="time_transfer_listen_time_label">Listen time: </string>
     <string name="time_transfer_convert">Convert</string>
     <string name="song_dropdown_more_results">Keep typing to narrow results (%d more)</string>
+
+    <!-- Accessibility -->
+    <string name="back">Back</string>
+    <string name="clear_search">Clear search</string>
+    <string name="close_chip">Close</string>
+    <string name="switch_to_list_view">Switch to list view</string>
+    <string name="switch_to_grid_view">Switch to grid view</string>
+    <string name="more_options">More options</string>
 </resources>
