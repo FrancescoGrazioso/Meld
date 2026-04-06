@@ -19,7 +19,7 @@ cd app
 bash generate_proto.sh
 cd ..
 [ ! -f "app/persistent-debug.keystore" ] && keytool -genkeypair -v -keystore app/persistent-debug.keystore -storepass android -keypass android -alias androiddebugkey -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=Android Debug,O=Android,C=US" || echo "Keystore already exists."
-./gradlew :app:assembleuniversalFossDebug
+./gradlew :app:assembleFossDebug
 ls app/build/outputs/apk/universalFoss/debug/app-universal-foss-debug.apk
 ```
 

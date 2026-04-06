@@ -6,8 +6,8 @@ Metrolist is a 3rd party YouTube Music client written in Kotlin. It follows mate
 
 1. Always create a new branch for your feature work. Follow these naming conventions:
    - Bug fixes: `fix/short-description`
-   - New features: `feature/short-description`
-   - Refactoring: `refactor/short-description`
+   - New features: `feat/short-description`
+   - Refactoring: `ref/short-description`
    - Documentation: `docs/short-description`
    - Chores: `chore/short-description`
 2. Branch descriptions should be concise yet descriptive enough to understand the purpose of the branch at a glance.
@@ -27,8 +27,9 @@ Metrolist is a 3rd party YouTube Music client written in Kotlin. It follows mate
 4. Ensure the absolutely highest code quality in all contributions, including proper formatting, clear variable naming, and comprehensive comments where necessary.
 5. Comments should be added only for complex logic or non-obvious code. Avoid redundant comments that simply restate what the code does.
 6. Prioritize performance, battery efficiency, and maintainability in all code contributions. Always consider the impact of your changes on the overall user experience and app performance.
-7. If you have any doubts ask a human contributor. This can be done using the `askQuestions` tool if you're running in GitHub Copilot. I don't know if other agents have these type of tools.
+7. If you have any doubts ask a human contributor. Never make assumptions about the requirements or implementation details without clarification.
 8. If you do not test your changes using the instructions in the next section, you will be faced with reprimands from human contributors and may be asked to redo your work. Always ensure that you test your changes thoroughly before asking for a final review.
+9. You are absolutely **not allowed to bump the version** of the app in ANY way. Version bumps are only done by the core development team after manual review.
 
 ## Spotify GQL hash management
 
@@ -112,7 +113,7 @@ If you do not have access to the private repo, the `notes/` directory will be em
 1. After making changes to the code, you should build the app to ensure that there are no compilation errors. Use the following command from the root directory of the project. Before building  ask the user if it's necessary or if he will build and test:
 
 ```bash
-./gradlew :app:assembleuniversalFossDebug
+./gradlew :app:assembleFossDebug
 ```
 
 2. If the build is not successful, review the error messages, fix the issues in your code, and try building again.
