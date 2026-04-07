@@ -712,20 +712,6 @@ fun DiscordSettings(
                                 onClick = { showButton2TextDialog = true },
                             ),
                         ),
-                        Material3SettingsItem(
-                            title = { Text(stringResource(R.string.discord_button_2)) },
-                            description = {
-                                Text(button2Text.ifEmpty { "Visit Meld" })
-                            },
-                            trailingContent = {
-                                Switch(
-                                    checked = button2Visible,
-                                    onCheckedChange = { button2Visible = it },
-                                )
-                            },
-                            onClick = { showButton2TextDialog = true },
-                        ),
-                    ),
                 )
 
                 // Variable hint

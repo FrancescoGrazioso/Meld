@@ -6,6 +6,8 @@
 
     <string name="charts">Charts</string>
     <string name="back_button_desc">Back</string>
+    <string name="retry_button">Retry</string>
+    <string name="library_playlist_empty">Your playlists will appear here</string>
     <string name="album_cover_desc">Album cover</string>
     <string name="top_music_videos">Top music videos</string>
     <string name="trending">Trending</string>
@@ -64,6 +66,8 @@
     <string name="like_all">Like all</string>
     <string name="dislike_all">Dislike all</string>
     <string name="sort_by_last_updated">Date updated</string>
+    <string name="sort_by_original">Original order</string>
+    <string name="sort_by_duration">Duration</string>
     <string name="link_copied">Link copied to clipboard</string>
     <string name="starting_radio">Starting radio…</string>
     <string name="now_playing">Now Playing</string>
@@ -483,6 +487,12 @@
     <string name="spotify_no_playlists">No playlists found</string>
     <string name="spotify_track_not_found_on_spotify">Could not find this track on Spotify</string>
     <string name="spotify_searching">Searching on Spotify…</string>
+    <string name="change_youtube_version">Change YouTube version</string>
+    <string name="change_youtube_version_desc">Pick a different YouTube match for this Spotify track</string>
+    <string name="current_match">Current match</string>
+    <string name="new_match">New match</string>
+    <string name="paste_youtube_url">Paste here the new YouTube URL</string>
+    <string name="searching">Searching…</string>
     <string name="spotify_sync_likes">Sync likes with Spotify</string>
     <string name="spotify_sync_likes_description">Replace liked songs with Spotify likes. New likes will be synced to Spotify.</string>
     <string name="spotify_sync_likes_syncing">Syncing liked songs from Spotify… (%1$d/%2$d)</string>
@@ -494,6 +504,8 @@
     <string name="start_radio_desc">Start a radio based on this item</string>
     <string name="play_next_desc">Play next in the queue</string>
     <string name="add_to_queue_desc">Add to the end of the queue</string>
+    <string name="added_to_play_next">Added to play next</string>
+    <string name="added_to_queue">Added to the queue</string>
     <string name="add_to_library_desc">Save to your library</string>
     <string name="download_desc">Download for offline playback</string>
     <string name="add_to_playlist_desc">Add to a playlist</string>
@@ -503,6 +515,7 @@
     <string name="equalizer_desc">Open the audio equalizer</string>
     <string name="enable_dynamic_icon">Enable dynamic icon</string>
     <string name="mini_player">Mini-player</string>
+    <string name="pure_black">Pure black</string>
     <string name="pure_black_mini_player">Pure black mini-player</string>
     <string name="mini_player_background_style">Mini-player background style</string>
     <string name="transparent">Transparent</string>

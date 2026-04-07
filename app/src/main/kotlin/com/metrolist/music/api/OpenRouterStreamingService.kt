@@ -105,7 +105,6 @@ $text
 Output MUST be a JSON array with EXACTLY $lineCount strings."""
                         }
                     }
-                }
 
                 val messages =
                     JSONArray().apply {

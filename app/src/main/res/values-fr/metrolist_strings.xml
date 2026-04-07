@@ -560,7 +560,7 @@
     <string name="credits_github">GitHub</string>
     <string name="credits_view_repo">Consulter le dépôt</string>
     <string name="app_version_info">%1$s • %2$s</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="no_account_found">Aucun compte trouvé</string>
     <string name="checking_previous_account">Vérification du compte précédent…</string>
     <string name="restore">Restaurer</string>

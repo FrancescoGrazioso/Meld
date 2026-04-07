@@ -30,6 +30,19 @@ import androidx.compose.ui.unit.dp
 import com.metrolist.music.R
 
 @Composable
+fun PreferenceGroupTitle(
+    title: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = title.uppercase(),
+        style = MaterialTheme.typography.labelLarge,
+        color = MaterialTheme.colorScheme.primary,
+        modifier = modifier.padding(16.dp),
+    )
+}
+
+@Composable
 @Deprecated("Use Material3SettingsGroup instead :)")
 fun PreferenceEntry(
     modifier: Modifier = Modifier,

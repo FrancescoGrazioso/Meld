@@ -611,57 +611,24 @@ fun SongMenu(
                                 context.startActivity(Intent.createChooser(intent, null))
                             },
                         ),
-                    ),
-                    NewAction(
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.playlist_add),
-                                contentDescription = null,
-                                modifier = Modifier.size(28.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        },
-                        text = stringResource(R.string.add_to_playlist),
-                        onClick = { showChoosePlaylistDialog = true }
-                    ),
-                    NewAction(
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.share),
-                                contentDescription = null,
-                                modifier = Modifier.size(28.dp),
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        },
-                        text = stringResource(R.string.share),
-                        onClick = {
-                            onDismiss()
-                            val intent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                type = "text/plain"
-                                putExtra(Intent.EXTRA_TEXT, "https://music.youtube.com/watch?v=${song.id}")
-                            }
-                            context.startActivity(Intent.createChooser(intent, null))
-                        }
-                    ),
-                ) + if (com.metrolist.spotify.Spotify.isAuthenticated()) {
-                    listOf(
-                        NewAction(
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.spotify),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(28.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            },
-                            text = stringResource(R.string.spotify_add_to_playlist),
-                            onClick = { showAddToSpotifyPlaylist = true }
-                        ),
-                    )
-                } else {
-                    emptyList()
-                },
+                    ) + if (com.metrolist.spotify.Spotify.isAuthenticated()) {
+                        listOf(
+                            NewAction(
+                                icon = {
+                                    Icon(
+                                        painter = painterResource(R.drawable.spotify),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(28.dp),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                },
+                                text = stringResource(R.string.spotify_add_to_playlist),
+                                onClick = { showAddToSpotifyPlaylist = true }
+                            ),
+                        )
+                    } else {
+                        emptyList()
+                    },
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp),
             )
         }
@@ -1246,69 +1213,24 @@ fun SongMenu(
                                 },
                             ),
                         )
-                    }
-                    add(
-                        Material3MenuItemData(
-                            title = { Text(text = stringResource(R.string.refetch)) },
-                            description = { Text(text = stringResource(R.string.refetch_desc)) },
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.sync),
-                                    contentDescription = null,
-                                    modifier = Modifier.graphicsLayer(rotationZ = rotationAnimation),
-                                )
-                            },
-                            onClick = {
-                                refetchIconDegree -= 360
-                                scope.launch(Dispatchers.IO) {
-                                    YouTube.queue(listOf(song.id)).onSuccess {
-                                        val newSong = it.firstOrNull()
-                                        if (newSong != null) {
-                                            database.transaction {
-                                                update(song, newSong.toMediaMetadata())
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        )
-                    )
-                    if (resolvedSpotifyMatch != null) {
-                        add(
-                            Material3MenuItemData(
-                                title = { Text(text = stringResource(R.string.change_youtube_version)) },
-                                description = { Text(text = stringResource(R.string.change_youtube_version_desc)) },
-                                icon = {
-                                    Icon(
-                                        painter = painterResource(R.drawable.link),
-                                        contentDescription = null,
-                                    )
-                                },
-                                onClick = {
-                                    showYouTubeMatchDialog = true
-                                }
+                        if (resolvedSpotifyMatch != null) {
+                            add(
+                                Material3MenuItemData(
+                                    title = { Text(text = stringResource(R.string.change_youtube_version)) },
+                                    description = { Text(text = stringResource(R.string.change_youtube_version_desc)) },
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(R.drawable.link),
+                                            contentDescription = null,
+                                        )
+                                    },
+                                    onClick = {
+                                        showYouTubeMatchDialog = true
+                                    },
+                                ),
                             )
-                        )
-                    }
-                    add(
-                        Material3MenuItemData(
-                            title = { Text(text = stringResource(R.string.details)) },
-                            description = { Text(text = stringResource(R.string.details_desc)) },
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.info),
-                                    contentDescription = null,
-                                )
-                            },
-                            onClick = {
-                                onDismiss()
-                                bottomSheetPageState.show {
-                                    ShowMediaInfo(song.id)
-                                }
-                            }
-                        )
-                    )
-                },
+                        }
+                    },
             )
         }
     }
