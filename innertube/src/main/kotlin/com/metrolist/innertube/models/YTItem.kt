@@ -36,7 +36,8 @@ data class SongItem(
     val libraryAddToken: String? = null,
     val libraryRemoveToken: String? = null,
     val historyRemoveToken: String? = null,
-    val isEpisode: Boolean = false
+    val isEpisode: Boolean = false,
+    val uploadEntityId: String? = null
 ) : YTItem() {
     val isVideoSong: Boolean
         get() = musicVideoType != null && musicVideoType != MUSIC_VIDEO_TYPE_ATV
@@ -85,6 +86,7 @@ data class ArtistItem(
     val playEndpoint: WatchEndpoint? = null,
     val shuffleEndpoint: WatchEndpoint?,
     val radioEndpoint: WatchEndpoint?,
+    val isProfile: Boolean = false,
 ) : YTItem() {
     override val explicit: Boolean
         get() = false

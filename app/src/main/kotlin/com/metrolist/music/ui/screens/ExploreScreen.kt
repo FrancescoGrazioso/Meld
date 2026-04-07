@@ -100,8 +100,10 @@ fun ExploreScreen(
     val scrollState = rememberScrollState()
 
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val scrollToTop by backStackEntry?.savedStateHandle
-        ?.getStateFlow("scrollToTop", false)?.collectAsState() ?: return
+    val scrollToTop by backStackEntry
+        ?.savedStateHandle
+        ?.getStateFlow("scrollToTop", false)
+        ?.collectAsState() ?: return
 
     LaunchedEffect(Unit) {
         if (chartsPage == null) {
@@ -132,9 +134,10 @@ fun ExploreScreen(
                 ShimmerHost {
                     TextPlaceholder(
                         height = 36.dp,
-                        modifier = Modifier
-                            .padding(12.dp)
-                            .fillMaxWidth(0.5f),
+                        modifier =
+                            Modifier
+                                .padding(12.dp)
+                                .fillMaxWidth(0.5f),
                     )
                     BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
                         val horizontalLazyGridItemWidthFactor = if (maxWidth * 0.475f >= 320.dp) 0.475f else 0.9f
@@ -143,22 +146,25 @@ fun ExploreScreen(
                         LazyHorizontalGrid(
                             rows = GridCells.Fixed(4),
                             contentPadding = PaddingValues(start = 4.dp),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(ListItemHeight * 4),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(ListItemHeight * 4),
                         ) {
                             items(4) {
                                 Row(
-                                    modifier = Modifier
-                                        .width(horizontalLazyGridItemWidth)
-                                        .padding(8.dp),
+                                    modifier =
+                                        Modifier
+                                            .width(horizontalLazyGridItemWidth)
+                                            .padding(8.dp),
                                     verticalAlignment = Alignment.CenterVertically,
                                 ) {
                                     Box(
-                                        modifier = Modifier
-                                            .size(ListItemHeight - 16.dp)
-                                            .clip(RoundedCornerShape(4.dp))
-                                            .background(MaterialTheme.colorScheme.onSurface),
+                                        modifier =
+                                            Modifier
+                                                .size(ListItemHeight - 16.dp)
+                                                .clip(RoundedCornerShape(4.dp))
+                                                .background(MaterialTheme.colorScheme.onSurface),
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Column(
@@ -166,17 +172,19 @@ fun ExploreScreen(
                                         verticalArrangement = Arrangement.Center,
                                     ) {
                                         Box(
-                                            modifier = Modifier
-                                                .height(16.dp)
-                                                .width(120.dp)
-                                                .background(MaterialTheme.colorScheme.onSurface),
+                                            modifier =
+                                                Modifier
+                                                    .height(16.dp)
+                                                    .width(120.dp)
+                                                    .background(MaterialTheme.colorScheme.onSurface),
                                         )
                                         Spacer(modifier = Modifier.height(8.dp))
                                         Box(
-                                            modifier = Modifier
-                                                .height(12.dp)
-                                                .width(80.dp)
-                                                .background(MaterialTheme.colorScheme.onSurface),
+                                            modifier =
+                                                Modifier
+                                                    .height(12.dp)
+                                                    .width(80.dp)
+                                                    .background(MaterialTheme.colorScheme.onSurface),
                                         )
                                     }
                                 }
@@ -186,9 +194,10 @@ fun ExploreScreen(
 
                     TextPlaceholder(
                         height = 36.dp,
-                        modifier = Modifier
-                            .padding(vertical = 12.dp, horizontal = 12.dp)
-                            .width(250.dp),
+                        modifier =
+                            Modifier
+                                .padding(vertical = 12.dp, horizontal = 12.dp)
+                                .width(250.dp),
                     )
                     Row {
                         repeat(2) {
@@ -198,9 +207,10 @@ fun ExploreScreen(
 
                     TextPlaceholder(
                         height = 36.dp,
-                        modifier = Modifier
-                            .padding(vertical = 12.dp, horizontal = 12.dp)
-                            .width(250.dp),
+                        modifier =
+                            Modifier
+                                .padding(vertical = 12.dp, horizontal = 12.dp)
+                                .width(250.dp),
                     )
                     Row {
                         repeat(2) {
@@ -210,18 +220,20 @@ fun ExploreScreen(
 
                     TextPlaceholder(
                         height = 36.dp,
-                        modifier = Modifier
-                            .padding(vertical = 12.dp, horizontal = 12.dp)
-                            .width(250.dp),
+                        modifier =
+                            Modifier
+                                .padding(vertical = 12.dp, horizontal = 12.dp)
+                                .width(250.dp),
                     )
                     repeat(4) {
                         Row {
                             repeat(2) {
                                 TextPlaceholder(
                                     height = MoodAndGenresButtonHeight,
-                                    modifier = Modifier
-                                        .padding(horizontal = 6.dp)
-                                        .width(200.dp),
+                                    modifier =
+                                        Modifier
+                                            .padding(horizontal = 6.dp)
+                                            .width(200.dp),
                                 )
                             }
                         }
@@ -230,41 +242,45 @@ fun ExploreScreen(
             } else {
                 chartsPage?.sections?.filter { it.title != "Top music videos" }?.forEach { section ->
                     NavigationTitle(
-                        title = when (section.title) {
-                            "Trending" -> stringResource(R.string.trending)
-                            else -> section.title.ifEmpty { stringResource(R.string.charts) }
-                        },
+                        title =
+                            when (section.title) {
+                                "Trending" -> stringResource(R.string.trending)
+                                else -> section.title.ifEmpty { stringResource(R.string.charts) }
+                            },
                     )
                     BoxWithConstraints(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         val horizontalLazyGridItemWidthFactor = if (maxWidth * 0.475f >= 320.dp) 0.475f else 0.9f
                         val horizontalLazyGridItemWidth = maxWidth * horizontalLazyGridItemWidthFactor
 
                         val lazyGridState = rememberLazyGridState()
-                        val snapLayoutInfoProvider = remember(lazyGridState) {
-                            SnapLayoutInfoProvider(
-                                lazyGridState = lazyGridState,
-                                positionInLayout = { layoutSize, itemSize ->
-                                    (layoutSize * horizontalLazyGridItemWidthFactor / 2f - itemSize / 2f)
-                                },
-                            )
-                        }
+                        val snapLayoutInfoProvider =
+                            remember(lazyGridState) {
+                                SnapLayoutInfoProvider(
+                                    lazyGridState = lazyGridState,
+                                    positionInLayout = { layoutSize, itemSize ->
+                                        (layoutSize * horizontalLazyGridItemWidthFactor / 2f - itemSize / 2f)
+                                    },
+                                )
+                            }
 
                         LazyHorizontalGrid(
                             state = lazyGridState,
                             rows = GridCells.Fixed(4),
                             flingBehavior = rememberSnapFlingBehavior(snapLayoutInfoProvider),
-                            contentPadding = WindowInsets.systemBars
-                                .only(WindowInsetsSides.Horizontal)
-                                .asPaddingValues(),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(ListItemHeight * 4),
+                            contentPadding =
+                                WindowInsets.systemBars
+                                    .only(WindowInsetsSides.Horizontal)
+                                    .asPaddingValues(),
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(ListItemHeight * 4),
                         ) {
                             items(
                                 items = section.items.filterIsInstance<SongItem>().distinctBy { it.id },
-                                key = { it.id },
+                                key = { "explore_song_${it.id}" },
                             ) { song ->
                                 YouTubeListItem(
                                     item = song,
@@ -289,32 +305,33 @@ fun ExploreScreen(
                                             )
                                         }
                                     },
-                                    modifier = Modifier
-                                        .width(horizontalLazyGridItemWidth)
-                                        .combinedClickable(
-                                            onClick = {
-                                                if (song.id == mediaMetadata?.id) {
-                                                    playerConnection.togglePlayPause()
-                                                } else {
-                                                    playerConnection.playQueue(
-                                                        YouTubeQueue(
-                                                            endpoint = WatchEndpoint(videoId = song.id),
-                                                            preloadItem = song.toMediaMetadata(),
-                                                        ),
-                                                    )
-                                                }
-                                            },
-                                            onLongClick = {
-                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                                menuState.show {
-                                                    YouTubeSongMenu(
-                                                        song = song,
-                                                        navController = navController,
-                                                        onDismiss = menuState::dismiss,
-                                                    )
-                                                }
-                                            },
-                                        ),
+                                    modifier =
+                                        Modifier
+                                            .width(horizontalLazyGridItemWidth)
+                                            .combinedClickable(
+                                                onClick = {
+                                                    if (song.id == mediaMetadata?.id) {
+                                                        playerConnection.togglePlayPause()
+                                                    } else {
+                                                        playerConnection.playQueue(
+                                                            YouTubeQueue(
+                                                                endpoint = WatchEndpoint(videoId = song.id),
+                                                                preloadItem = song.toMediaMetadata(),
+                                                            ),
+                                                        )
+                                                    }
+                                                },
+                                                onLongClick = {
+                                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                    menuState.show {
+                                                        YouTubeSongMenu(
+                                                            song = song,
+                                                            navController = navController,
+                                                            onDismiss = menuState::dismiss,
+                                                        )
+                                                    }
+                                                },
+                                            ),
                                 )
                             }
                         }
@@ -329,36 +346,37 @@ fun ExploreScreen(
                         },
                     )
                     LazyRow(
-                        contentPadding = WindowInsets.systemBars
-                            .only(WindowInsetsSides.Horizontal)
-                            .asPaddingValues(),
+                        contentPadding =
+                            WindowInsets.systemBars
+                                .only(WindowInsetsSides.Horizontal)
+                                .asPaddingValues(),
                     ) {
                         items(
                             items = newReleaseAlbums.distinctBy { it.id },
-                            key = { it.id },
+                            key = { "explore_album_${it.id}" },
                         ) { album ->
                             YouTubeGridItem(
                                 item = album,
                                 isActive = mediaMetadata?.album?.id == album.id,
                                 isPlaying = isPlaying,
                                 coroutineScope = coroutineScope,
-                                modifier = Modifier
-                                    .combinedClickable(
-                                        onClick = {
-                                            navController.navigate("album/${album.id}")
-                                        },
-                                        onLongClick = {
-                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            menuState.show {
-                                                YouTubeAlbumMenu(
-                                                    albumItem = album,
-                                                    navController = navController,
-                                                    onDismiss = menuState::dismiss,
-                                                )
-                                            }
-                                        },
-                                    )
-                                    .animateItem(),
+                                modifier =
+                                    Modifier
+                                        .combinedClickable(
+                                            onClick = {
+                                                navController.navigate("album/${album.id}")
+                                            },
+                                            onLongClick = {
+                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                menuState.show {
+                                                    YouTubeAlbumMenu(
+                                                        albumItem = album,
+                                                        navController = navController,
+                                                        onDismiss = menuState::dismiss,
+                                                    )
+                                                }
+                                            },
+                                        ).animateItem(),
                             )
                         }
                     }
@@ -369,45 +387,46 @@ fun ExploreScreen(
                         title = stringResource(R.string.top_music_videos),
                     )
                     LazyRow(
-                        contentPadding = WindowInsets.systemBars
-                            .only(WindowInsetsSides.Horizontal)
-                            .asPaddingValues(),
+                        contentPadding =
+                            WindowInsets.systemBars
+                                .only(WindowInsetsSides.Horizontal)
+                                .asPaddingValues(),
                     ) {
                         items(
                             items = topVideosSection.items.filterIsInstance<SongItem>().distinctBy { it.id },
-                            key = { it.id },
+                            key = { "explore_video_${it.id}" },
                         ) { video ->
                             YouTubeGridItem(
                                 item = video,
                                 isActive = video.id == mediaMetadata?.id,
                                 isPlaying = isPlaying,
                                 coroutineScope = coroutineScope,
-                                modifier = Modifier
-                                    .combinedClickable(
-                                        onClick = {
-                                            if (video.id == mediaMetadata?.id) {
-                                                playerConnection.togglePlayPause()
-                                            } else {
-                                                playerConnection.playQueue(
-                                                    YouTubeQueue(
-                                                        endpoint = WatchEndpoint(videoId = video.id),
-                                                        preloadItem = video.toMediaMetadata(),
-                                                    ),
-                                                )
-                                            }
-                                        },
-                                        onLongClick = {
-                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            menuState.show {
-                                                YouTubeSongMenu(
-                                                    song = video,
-                                                    navController = navController,
-                                                    onDismiss = menuState::dismiss,
-                                                )
-                                            }
-                                        },
-                                    )
-                                    .animateItem(),
+                                modifier =
+                                    Modifier
+                                        .combinedClickable(
+                                            onClick = {
+                                                if (video.id == mediaMetadata?.id) {
+                                                    playerConnection.togglePlayPause()
+                                                } else {
+                                                    playerConnection.playQueue(
+                                                        YouTubeQueue(
+                                                            endpoint = WatchEndpoint(videoId = video.id),
+                                                            preloadItem = video.toMediaMetadata(),
+                                                        ),
+                                                    )
+                                                }
+                                            },
+                                            onLongClick = {
+                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                                menuState.show {
+                                                    YouTubeSongMenu(
+                                                        song = video,
+                                                        navController = navController,
+                                                        onDismiss = menuState::dismiss,
+                                                    )
+                                                }
+                                            },
+                                        ).animateItem(),
                             )
                         }
                     }
@@ -431,9 +450,10 @@ fun ExploreScreen(
                                 onClick = {
                                     navController.navigate("youtube_browse/${it.endpoint.browseId}?params=${it.endpoint.params}")
                                 },
-                                modifier = Modifier
-                                    .padding(6.dp)
-                                    .width(180.dp),
+                                modifier =
+                                    Modifier
+                                        .padding(6.dp)
+                                        .width(180.dp),
                             )
                         }
                     }
@@ -442,8 +462,8 @@ fun ExploreScreen(
 
             Spacer(
                 Modifier.height(
-                    LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding()
-                )
+                    LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding(),
+                ),
             )
         }
     }

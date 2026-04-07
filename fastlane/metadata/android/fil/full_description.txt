@@ -1,0 +1,23 @@
+Materyal 3 Youtube Music na kliyente na para sa Android
+
+Mga Katangian:
+
+- Magpatugtog ng kanta o bidyo na mula sa YT Music
+- Magpatugtog ng kanta na kahit wala sa aplikasyon
+- Personalisadong listahan ng mabilisang pagpilihan
+- Pamamahala ng Aklatan
+- Magdownload at magcache ng mga kanta para makapagpatugtog ng mga kanta na kahit walang internet
+- Maghanap ng mga kanta, mga album, mga artista at mga playlist
+- Mga Liriko
+- Suporta para sa paglogin sa iyong YouTube Music account
+- Singkronisadong mga kanta, mga artista, mga album, at mga playlist, mula at sa iyong account
+- Laktawan ang tahimik na parte ng kanta
+- Magimport ng mga playlist
+- Normalisasyon ng audio
+- I-adjust ang tempo/tinis ng kanta
+- Lokal na pamamahala sa iyong playlist
+- Iayos ang pagkakasunod-sunod ng mga kanta sa playlist o sa listahan ng mga kanta
+- Maliwanag - Madilim - Itim - Paiba-ibang tema
+- Orasan ang pagpatugtog ng mga kanta
+- Materyal 3
+- iba pa.

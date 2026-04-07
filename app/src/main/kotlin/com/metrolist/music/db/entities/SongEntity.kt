@@ -21,9 +21,9 @@ import java.time.LocalDateTime
     tableName = "song",
     indices = [
         Index(
-            value = ["albumId"]
-        )
-    ]
+            value = ["albumId"],
+        ),
+    ],
 )
 data class SongEntity(
     @PrimaryKey val id: String,
@@ -59,34 +59,48 @@ data class SongEntity(
     @ColumnInfo(name = "isEpisode", defaultValue = false.toString())
     val isEpisode: Boolean = false,
     @ColumnInfo(name = "localPath", defaultValue = "NULL")
-    val localPath: String? = null
+    val localPath: String? = null,
+    @ColumnInfo(name = "playbackPosition", defaultValue = "NULL")
+    val playbackPosition: Long? = null,
+    @ColumnInfo(name = "uploadEntityId", defaultValue = "NULL")
+    val uploadEntityId: String? = null,
+    @ColumnInfo(name = "isCached", defaultValue = "0")
+    val isCached: Boolean = false,
 ) {
-    fun localToggleLike() = copy(
-        liked = !liked,
-        likedDate = if (!liked) LocalDateTime.now() else null,
-    )
+    fun localToggleLike() =
+        copy(
+            liked = !liked,
+            likedDate = if (!liked) LocalDateTime.now() else null,
+        )
 
-    fun toggleLike() = copy(
-        liked = !liked,
-        likedDate = if (!liked) LocalDateTime.now() else null,
-        inLibrary = if (!liked) inLibrary ?: LocalDateTime.now() else inLibrary
-    )
-
-    fun toggleLibrary(syncToYouTube: Boolean = true) = copy(
-        liked = if (inLibrary == null) liked else false,
-        inLibrary = if (inLibrary == null) LocalDateTime.now() else null,
-        likedDate = if (inLibrary == null) likedDate else null
-    ).also {
-        if (syncToYouTube) {
+    fun toggleLike() =
+        copy(
+            liked = !liked,
+            likedDate = if (!liked) LocalDateTime.now() else null,
+            inLibrary = if (!liked) inLibrary ?: LocalDateTime.now() else inLibrary,
+        ).also {
             CoroutineScope(Dispatchers.IO).launch {
-                // Use the new reliable method that fetches fresh tokens
-                val addToLibrary = inLibrary == null
-                YouTube.toggleSongLibrary(id, addToLibrary)
+                YouTube.likeVideo(id, !liked)
             }
         }
-    }
 
-    fun toggleUploaded() = copy(
-        isUploaded = !isUploaded
-    )
+    fun toggleLibrary(syncToYouTube: Boolean = true) =
+        copy(
+            liked = if (inLibrary == null) liked else false,
+            inLibrary = if (inLibrary == null) LocalDateTime.now() else null,
+            likedDate = if (inLibrary == null) likedDate else null,
+        ).also {
+            if (syncToYouTube) {
+                CoroutineScope(Dispatchers.IO).launch {
+                    // Use the new reliable method that fetches fresh tokens
+                    val addToLibrary = inLibrary == null
+                    YouTube.toggleSongLibrary(id, addToLibrary)
+                }
+            }
+        }
+
+    fun toggleUploaded() =
+        copy(
+            isUploaded = !isUploaded,
+        )
 }

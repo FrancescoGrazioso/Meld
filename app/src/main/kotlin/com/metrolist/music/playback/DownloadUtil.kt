@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
+import timber.log.Timber
 import java.time.LocalDateTime
 import java.util.concurrent.Executor
 import javax.inject.Inject
@@ -56,6 +57,7 @@ constructor(
     @DownloadCache val downloadCache: SimpleCache,
     @PlayerCache val playerCache: SimpleCache,
 ) {
+    private val TAG = "DownloadUtil"
     private val connectivityManager = context.getSystemService<ConnectivityManager>()!!
     private val audioQuality by enumPreference(context, AudioQualityKey, AudioQuality.AUTO)
     private val songUrlCache = HashMap<String, Pair<String, Long>>()
@@ -190,6 +192,26 @@ constructor(
                                 else -> {
                                 }
                             }
+                        }
+                    }
+
+                    override fun onDownloadRemoved(
+                        downloadManager: DownloadManager,
+                        download: Download,
+                    ) {
+                        val downloadId = download.request.id
+
+                        runCatching {
+                            database.updateDownloadedInfo(downloadId, false, null)
+                        }.onSuccess {
+                            downloads.update { map ->
+                                map.toMutableMap().apply {
+                                    remove(downloadId)
+                                }
+                            }
+                            Timber.tag(TAG).d("Successfully removed download $downloadId from in-memory map")
+                        }.onFailure { error ->
+                            Timber.tag(TAG).e(error, "Failed to update database for removed download $downloadId, keeping in-memory entry")
                         }
                     }
                 }

@@ -21,20 +21,26 @@ import com.metrolist.music.constants.HideExplicitKey
 import com.metrolist.music.constants.HideVideoSongsKey
 import com.metrolist.music.constants.HideYoutubeShortsKey
 import com.metrolist.music.db.MusicDatabase
+import com.metrolist.music.db.entities.ArtistEntity
 import com.metrolist.music.extensions.filterExplicit
 import com.metrolist.music.extensions.filterExplicitAlbums
+import com.metrolist.music.utils.SyncUtils
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.get
 import com.metrolist.music.utils.reportException
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 import com.metrolist.music.extensions.filterVideoSongs as filterVideoSongsLocal
 
@@ -42,13 +48,28 @@ import com.metrolist.music.extensions.filterVideoSongs as filterVideoSongsLocal
 @HiltViewModel
 class ArtistViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    database: MusicDatabase,
+    private val database: MusicDatabase,
+    private val syncUtils: SyncUtils,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val artistId = savedStateHandle.get<String>("artistId")!!
+    private val isPodcastChannel = savedStateHandle.get<Boolean>("isPodcastChannel") ?: false
     var artistPage by mutableStateOf<ArtistPage?>(null)
+
+    // Track API subscription state separately
+    private val _apiSubscribed = MutableStateFlow<Boolean?>(null)
+
     val libraryArtist = database.artist(artistId)
         .stateIn(viewModelScope, SharingStarted.Lazily, null)
+
+    // Combine API state with local database state - local takes precedence when not logged in
+    val isChannelSubscribed = kotlinx.coroutines.flow.combine(
+        _apiSubscribed,
+        database.artist(artistId),
+    ) { apiState, localArtist ->
+        val locallyBookmarked = localArtist?.artist?.bookmarkedAt != null
+        locallyBookmarked || (apiState == true)
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, false)
     val librarySongs = context.dataStore.data
         .map { (it[HideExplicitKey] ?: false) to (it[HideVideoSongsKey] ?: false) }
         .distinctUntilChanged()
@@ -96,9 +117,65 @@ class ArtistViewModel @Inject constructor(
                         .filter { section -> section.items.isNotEmpty() }
 
                     artistPage = page.copy(sections = filteredSections)
+                    // Store API subscription state
+                    _apiSubscribed.value = page.isSubscribed
                 }.onFailure {
                     reportException(it)
                 }
+        }
+    }
+
+    fun toggleChannelSubscription() {
+        val channelId = artistPage?.artist?.channelId ?: artistId
+        val isCurrentlySubscribed = isChannelSubscribed.value
+        val shouldBeSubscribed = !isCurrentlySubscribed
+
+        Timber.d("[CHANNEL_TOGGLE] toggleChannelSubscription called: artistId=$artistId, channelId=$channelId, isCurrentlySubscribed=$isCurrentlySubscribed, shouldBeSubscribed=$shouldBeSubscribed")
+
+        // Optimistically update API state for immediate UI feedback
+        _apiSubscribed.value = shouldBeSubscribed
+
+        viewModelScope.launch(Dispatchers.IO) {
+            Timber.d("[CHANNEL_TOGGLE] Inside coroutine, updating database...")
+            // Update local database first (optimistic update)
+            // Call DAO methods directly - they're synchronous on IO dispatcher
+            val artist = libraryArtist.value?.artist
+            Timber.d("[CHANNEL_TOGGLE] libraryArtist.value?.artist = $artist")
+            if (artist != null) {
+                val newBookmark = if (shouldBeSubscribed) {
+                    artist.bookmarkedAt ?: java.time.LocalDateTime.now()
+                } else {
+                    null
+                }
+                // Also set isPodcastChannel if subscribing from podcast context
+                val updatedArtist = artist.copy(
+                    bookmarkedAt = newBookmark,
+                    isPodcastChannel = if (shouldBeSubscribed && isPodcastChannel) true else artist.isPodcastChannel
+                )
+                Timber.d("[CHANNEL_TOGGLE] Updating existing artist: ${artist.id} -> bookmarkedAt=$newBookmark, isPodcastChannel=${updatedArtist.isPodcastChannel}")
+                database.update(updatedArtist)
+            } else if (shouldBeSubscribed) {
+                Timber.d("[CHANNEL_TOGGLE] No existing artist, inserting new one")
+                artistPage?.artist?.let {
+                    database.insert(
+                        ArtistEntity(
+                            id = artistId,
+                            name = it.title,
+                            channelId = it.channelId,
+                            thumbnailUrl = it.thumbnail,
+                            bookmarkedAt = java.time.LocalDateTime.now(),
+                            isPodcastChannel = isPodcastChannel,
+                        )
+                    )
+                    Timber.d("[CHANNEL_TOGGLE] Inserted new artist: $artistId, isPodcastChannel=$isPodcastChannel")
+                } ?: Timber.d("[CHANNEL_TOGGLE] artistPage?.artist is null, cannot insert")
+            } else {
+                Timber.d("[CHANNEL_TOGGLE] No artist and shouldBeSubscribed=false, nothing to do")
+            }
+
+            Timber.d("[CHANNEL_TOGGLE] Calling syncUtils.subscribeChannel($channelId, $shouldBeSubscribed)")
+            // Sync with YouTube (handles login check internally)
+            syncUtils.subscribeChannel(channelId, shouldBeSubscribed)
         }
     }
 }

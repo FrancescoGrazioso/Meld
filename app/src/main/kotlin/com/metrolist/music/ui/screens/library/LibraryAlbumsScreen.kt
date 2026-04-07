@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -33,11 +34,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -62,8 +66,12 @@ import com.metrolist.music.constants.GridThumbnailHeight
 import com.metrolist.music.constants.HideExplicitKey
 import com.metrolist.music.constants.LibraryViewType
 import com.metrolist.music.constants.YtmSyncKey
+import com.metrolist.music.extensions.matchesNormalizedQuery
+import com.metrolist.music.extensions.normalizeForSearch
 import com.metrolist.music.ui.component.ChipsRow
 import com.metrolist.music.ui.component.EmptyPlaceholder
+import com.metrolist.music.ui.component.LibrarySearchEmptyPlaceholder
+import com.metrolist.music.ui.component.LibrarySearchHeader
 import com.metrolist.music.ui.component.LibraryAlbumGridItem
 import com.metrolist.music.ui.component.LibraryAlbumListItem
 import com.metrolist.music.ui.component.LocalMenuState
@@ -83,6 +91,7 @@ fun LibraryAlbumsScreen(
 ) {
     val menuState = LocalMenuState.current
     val haptic = LocalHapticFeedback.current
+    val keyboardController = LocalSoftwareKeyboardController.current
     val coroutineScope = rememberCoroutineScope()
     val playerConnection = LocalPlayerConnection.current ?: return
     val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
@@ -90,10 +99,11 @@ fun LibraryAlbumsScreen(
 
     var viewType by rememberEnumPreference(AlbumViewTypeKey, LibraryViewType.GRID)
     var filter by rememberEnumPreference(AlbumFilterKey, AlbumFilter.LIKED)
-    val (sortType, onSortTypeChange) = rememberEnumPreference(
-        AlbumSortTypeKey,
-        AlbumSortType.CREATE_DATE
-    )
+    val (sortType, onSortTypeChange) =
+        rememberEnumPreference(
+            AlbumSortTypeKey,
+            AlbumSortType.CREATE_DATE,
+        )
     val (sortDescending, onSortDescendingChange) = rememberPreference(AlbumSortDescendingKey, true)
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
 
@@ -115,11 +125,11 @@ fun LibraryAlbumsScreen(
             )
             ChipsRow(
                 chips =
-                listOf(
-                    AlbumFilter.LIKED to stringResource(R.string.filter_liked),
-                    AlbumFilter.LIBRARY to stringResource(R.string.filter_library),
-                    AlbumFilter.UPLOADED to stringResource(R.string.filter_uploaded)
-                ),
+                    listOf(
+                        AlbumFilter.LIKED to stringResource(R.string.filter_liked),
+                        AlbumFilter.LIBRARY to stringResource(R.string.filter_library),
+                        AlbumFilter.UPLOADED to stringResource(R.string.filter_uploaded),
+                    ),
                 currentValue = filter,
                 onValueUpdate = {
                     filter = it
@@ -138,6 +148,17 @@ fun LibraryAlbumsScreen(
     }
 
     val albums by viewModel.allAlbums.collectAsState()
+    var isSearchActive by rememberSaveable { mutableStateOf(false) }
+    val searchQuery by viewModel.searchQuery.collectAsState()
+    val normalizedQuery = remember(searchQuery) { searchQuery.normalizeForSearch() }
+
+    val filteredAlbums = remember(albums, hideExplicit, normalizedQuery) {
+        val visibleAlbums = if (hideExplicit) albums.filter { !it.album.explicit } else albums
+        visibleAlbums.filter { album ->
+            val artistNames = album.artists.map { it.name }.toTypedArray()
+            matchesNormalizedQuery(normalizedQuery, album.album.title, *artistNames)
+        }.distinctBy { it.id }
+    }
 
     val lazyListState = rememberLazyListState()
     val lazyGridState = rememberLazyGridState()
@@ -156,8 +177,15 @@ fun LibraryAlbumsScreen(
     }
 
     val headerContent = @Composable {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
+        LibrarySearchHeader(
+            isSearchActive = isSearchActive,
+            searchQuery = searchQuery,
+            onSearchQueryChange = viewModel::updateSearchQuery,
+            onBack = {
+                isSearchActive = false
+                viewModel.updateSearchQuery("")
+            },
+            keyboardController = keyboardController,
             modifier = Modifier.padding(start = 16.dp),
         ) {
             SortHeader(
@@ -181,16 +209,26 @@ fun LibraryAlbumsScreen(
             Spacer(Modifier.weight(1f))
 
             Text(
-                text = pluralStringResource(R.plurals.n_album, albums.size, albums.size),
+                text = pluralStringResource(R.plurals.n_album, filteredAlbums.size, filteredAlbums.size),
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.secondary,
             )
 
             IconButton(
+                onClick = { isSearchActive = true },
+                modifier = Modifier.padding(start = 8.dp).size(40.dp),
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.search),
+                    contentDescription = stringResource(R.string.search),
+                )
+            }
+
+            IconButton(
                 onClick = {
                     viewType = viewType.toggle()
                 },
-                modifier = Modifier.padding(start = 6.dp, end = 6.dp),
+                modifier = Modifier.padding(end = 8.dp).size(40.dp),
             ) {
                 Icon(
                     painter =
@@ -200,7 +238,12 @@ fun LibraryAlbumsScreen(
                             LibraryViewType.GRID -> R.drawable.grid_view
                         },
                     ),
-                    contentDescription = null,
+                    contentDescription = stringResource(
+                        when (viewType) {
+                            LibraryViewType.LIST -> R.string.switch_to_grid_view
+                            LibraryViewType.GRID -> R.string.switch_to_list_view
+                        },
+                    ),
                 )
             }
         }
@@ -210,7 +253,7 @@ fun LibraryAlbumsScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
         when (viewType) {
-            LibraryViewType.LIST ->
+            LibraryViewType.LIST -> {
                 LazyColumn(
                     state = lazyListState,
                     contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
@@ -229,24 +272,22 @@ fun LibraryAlbumsScreen(
                         headerContent()
                     }
 
-                    albums.let { albums ->
+                    filteredAlbums.let { albums ->
                         if (albums.isEmpty()) {
                             item(key = "empty_placeholder") {
-                                EmptyPlaceholder(
-                                    icon = R.drawable.album,
-                                    text = stringResource(R.string.library_album_empty),
-                                    modifier = Modifier.animateItem()
-                                )
+                                if (searchQuery.isNotBlank()) {
+                                    LibrarySearchEmptyPlaceholder(modifier = Modifier.animateItem())
+                                } else {
+                                    EmptyPlaceholder(
+                                        icon = R.drawable.album,
+                                        text = stringResource(R.string.library_album_empty),
+                                        modifier = Modifier.animateItem(),
+                                    )
+                                }
                             }
                         }
-
-                        val filteredAlbumsForList = if (hideExplicit) {
-                            albums.filter { !it.album.explicit }
-                        } else {
-                            albums
-                        }
                         items(
-                            items = filteredAlbumsForList.distinctBy { it.id },
+                            items = albums,
                             key = { it.id },
                             contentType = { CONTENT_TYPE_ALBUM },
                         ) { album ->
@@ -256,20 +297,22 @@ fun LibraryAlbumsScreen(
                                 album = album,
                                 isActive = album.id == mediaMetadata?.album?.id,
                                 isPlaying = isPlaying,
-                                modifier = Modifier
-                                    .animateItem()
+                                modifier =
+                                    Modifier
+                                        .animateItem(),
                             )
                         }
                     }
                 }
+            }
 
-            LibraryViewType.GRID ->
+            LibraryViewType.GRID -> {
                 LazyVerticalGrid(
                     state = lazyGridState,
                     columns =
-                    GridCells.Adaptive(
-                        minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
-                    ),
+                        GridCells.Adaptive(
+                            minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp,
+                        ),
                     contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
                 ) {
                     item(
@@ -288,24 +331,22 @@ fun LibraryAlbumsScreen(
                         headerContent()
                     }
 
-                    albums.let { albums ->
+                    filteredAlbums.let { albums ->
                         if (albums.isEmpty()) {
                             item(span = { GridItemSpan(maxLineSpan) }) {
-                                EmptyPlaceholder(
-                                    icon = R.drawable.album,
-                                    text = stringResource(R.string.library_album_empty),
-                                    modifier = Modifier.animateItem()
-                                )
+                                if (searchQuery.isNotBlank()) {
+                                    LibrarySearchEmptyPlaceholder(modifier = Modifier.animateItem())
+                                } else {
+                                    EmptyPlaceholder(
+                                        icon = R.drawable.album,
+                                        text = stringResource(R.string.library_album_empty),
+                                        modifier = Modifier.animateItem(),
+                                    )
+                                }
                             }
                         }
-
-                        val filteredAlbumsForGrid = if (hideExplicit) {
-                            albums.filter { !it.album.explicit }
-                        } else {
-                            albums
-                        }
                         items(
-                            items = filteredAlbumsForGrid.distinctBy { it.id },
+                            items = albums,
                             key = { it.id },
                             contentType = { CONTENT_TYPE_ALBUM },
                         ) { album ->
@@ -316,12 +357,14 @@ fun LibraryAlbumsScreen(
                                 album = album,
                                 isActive = album.id == mediaMetadata?.album?.id,
                                 isPlaying = isPlaying,
-                                modifier = Modifier
-                                    .animateItem()
+                                modifier =
+                                    Modifier
+                                        .animateItem(),
                             )
                         }
                     }
                 }
+            }
         }
     }
 }

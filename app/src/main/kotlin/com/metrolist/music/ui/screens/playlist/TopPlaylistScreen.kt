@@ -38,7 +38,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -105,7 +104,6 @@ import com.metrolist.music.viewmodels.TopPlaylistViewModel
 @Composable
 fun TopPlaylistScreen(
     navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
     viewModel: TopPlaylistViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -141,9 +139,11 @@ fun TopPlaylistScreen(
             restore = { it.toMutableStateList() }
         )
     ) { mutableStateListOf() }
+    var selectionAnchorSongId by rememberSaveable { mutableStateOf<String?>(null) }
     val onExitSelectionMode = {
         inSelectMode = false
         selection.clear()
+        selectionAnchorSongId = null
     }
 
     val filteredSongs = remember(songs, query) {
@@ -159,6 +159,10 @@ fun TopPlaylistScreen(
             if (filteredSongs.find { it.id == songId } == null) {
                 selection.remove(songId)
             }
+        }
+
+        if (selectionAnchorSongId != null && filteredSongs.none { it.id == selectionAnchorSongId }) {
+            selectionAnchorSongId = filteredSongs.firstOrNull { it.id in selection }?.id
         }
     }
 
@@ -365,6 +369,24 @@ fun TopPlaylistScreen(
                                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                             inSelectMode = true
                                             onCheckedChange(true)
+                                            selectionAnchorSongId = song.id
+                                        } else {
+                                            val anchorIndex = selectionAnchorSongId?.let { anchorSongId ->
+                                                filteredSongs.indexOfFirst { it.id == anchorSongId }
+                                            } ?: -1
+
+                                            if (anchorIndex == -1) {
+                                                onCheckedChange(true)
+                                                selectionAnchorSongId = song.id
+                                            } else {
+                                                val range = if (anchorIndex <= index) anchorIndex..index else index..anchorIndex
+                                                for (rangeIndex in range) {
+                                                    val rangeSongId = filteredSongs[rangeIndex].id
+                                                    if (rangeSongId !in selection) {
+                                                        selection.add(rangeSongId)
+                                                    }
+                                                }
+                                            }
                                         }
                                     },
                                 )

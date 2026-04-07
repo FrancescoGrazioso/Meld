@@ -376,6 +376,7 @@ fun SongListItem(
     showLikedIcon: Boolean = true,
     showInLibraryIcon: Boolean = false,
     showDownloadIcon: Boolean = true,
+    subtitleOverride: String? = null,
     badges: @Composable RowScope.() -> Unit = {
         if (showLikedIcon && song.song.liked) {
             Icon.Favorite()
@@ -403,8 +404,8 @@ fun SongListItem(
     val content: @Composable () -> Unit = {
         ListItem(
             title = song.song.title,
-            subtitle = joinByBullet(
-                song.artists.joinToString { it.name },
+            subtitle = subtitleOverride ?: joinByBullet(
+                song.orderedArtists.joinToString { it.name },
                 makeTimeString(song.song.duration * 1000L)
             ),
             badges = badges,
@@ -474,7 +475,7 @@ fun SongGridItem(
     subtitle = {
         Text(
             text = joinByBullet(
-                song.artists.joinToString { it.name },
+                song.orderedArtists.joinToString { it.name },
                 makeTimeString(song.song.duration * 1000L)
             ),
             style = MaterialTheme.typography.bodyMedium,
@@ -522,7 +523,7 @@ fun ArtistListItem(
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) = ListItem(
     title = artist.artist.name,
-    subtitle = pluralStringResource(R.plurals.n_song, artist.songCount, artist.songCount),
+    subtitle = if (artist.songCount > 0) pluralStringResource(R.plurals.n_song, artist.songCount, artist.songCount) else null,
     badges = badges,
     thumbnailContent = {
         AsyncImage(
@@ -554,7 +555,7 @@ fun ArtistGridItem(
     fillMaxWidth: Boolean = false,
 ) = GridItem(
     title = artist.artist.name,
-    subtitle = pluralStringResource(R.plurals.n_song, artist.songCount, artist.songCount),
+    subtitle = if (artist.songCount > 0) pluralStringResource(R.plurals.n_song, artist.songCount, artist.songCount) else "",
     badges = badges,
     thumbnailContent = {
         AsyncImage(
@@ -1167,8 +1168,21 @@ fun LocalSongsGrid(
     fillMaxWidth: Boolean = false,
     modifier: Modifier = Modifier
 ) = GridItem(
-    title = title,
-    subtitle = subtitle,
+    title = { Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+    subtitle = {
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.basicMarquee(
+                iterations = 3,
+                initialDelayMillis = 1000,
+                velocity = 30.dp
+            )
+        )
+    },
     badges = badges,
     thumbnailContent = {
         LocalThumbnail(
@@ -1196,8 +1210,21 @@ fun LocalArtistsGrid(
     fillMaxWidth: Boolean = false,
     modifier: Modifier = Modifier
 ) = GridItem(
-    title = title,
-    subtitle = subtitle,
+    title = { Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+    subtitle = {
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.basicMarquee(
+                iterations = 3,
+                initialDelayMillis = 1000,
+                velocity = 30.dp
+            )
+        )
+    },
     badges = badges,
     thumbnailContent = {
         LocalThumbnail(
@@ -1225,8 +1252,21 @@ fun LocalAlbumsGrid(
     fillMaxWidth: Boolean = false,
     modifier: Modifier = Modifier
 ) = GridItem(
-    title = title,
-    subtitle = subtitle,
+    title = { Text(title, style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+    subtitle = {
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.basicMarquee(
+                iterations = 3,
+                initialDelayMillis = 1000,
+                velocity = 30.dp
+            )
+        )
+    },
     badges = badges,
     thumbnailContent = {
         LocalThumbnail(

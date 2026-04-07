@@ -34,7 +34,6 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -62,7 +61,7 @@ import com.metrolist.music.constants.CountryCodeToName
 import com.metrolist.music.constants.EnableBetterLyricsKey
 import com.metrolist.music.constants.EnableKugouKey
 import com.metrolist.music.constants.EnableLrcLibKey
-import com.metrolist.music.constants.EnableSimpMusicKey
+import com.metrolist.music.constants.EnablePaxsenixKey
 import com.metrolist.music.constants.EnableLyricsPlus
 import com.metrolist.music.constants.HideExplicitKey
 import com.metrolist.music.constants.HideVideoSongsKey
@@ -98,8 +97,7 @@ import java.net.Proxy
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ContentSettings(
-    navController: NavController,
-    scrollBehavior: TopAppBarScrollBehavior,
+    navController: NavController
 ) {
     val context = LocalContext.current
     // Used only before Android 13
@@ -121,7 +119,7 @@ fun ContentSettings(
     val (enableKugou, onEnableKugouChange) = rememberPreference(key = EnableKugouKey, defaultValue = true)
     val (enableLrclib, onEnableLrclibChange) = rememberPreference(key = EnableLrcLibKey, defaultValue = true)
     val (enableBetterLyrics, onEnableBetterLyricsChange) = rememberPreference(key = EnableBetterLyricsKey, defaultValue = true)
-    val (enableSimpMusic, onEnableSimpMusicChange) = rememberPreference(key = EnableSimpMusicKey, defaultValue = true)
+    val (enablePaxsenix, onEnablePaxsenixChange) = rememberPreference(key = EnablePaxsenixKey, defaultValue = true)
     val (enableLyricsPlus, onEnableLyricsPlusChange) = rememberPreference(key = EnableLyricsPlus, defaultValue = false)
     val (lyricsProviderOrder, onLyricsProviderOrderChange) = rememberPreference(
         key = LyricsProviderOrderKey,
@@ -138,7 +136,7 @@ fun ContentSettings(
     val providerDisplayNames =
         mapOf(
             "BetterLyrics" to "Better Lyrics",
-            "SimpMusic" to "SimpMusic",
+            "Paxsenix" to "Paxsenix",
             "LrcLib" to "LrcLib",
             "KuGou" to "KuGou",
             "LyricsPlus" to "LyricsPlus",
@@ -439,20 +437,20 @@ fun ContentSettings(
                         Column(
                             modifier = Modifier.weight(1f)
                         ) {
-                            Text(stringResource(R.string.enable_simpmusic))
+                            Text(stringResource(R.string.enable_paxsenix))
                             Text(
-                                text = stringResource(R.string.enable_simpmusic_desc),
+                                text = stringResource(R.string.enable_paxsenix_desc),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                         Switch(
-                            checked = enableSimpMusic,
-                            onCheckedChange = onEnableSimpMusicChange,
+                            checked = enablePaxsenix,
+                            onCheckedChange = onEnablePaxsenixChange,
                             thumbContent = {
                                 Icon(
                                     painter = painterResource(
-                                        id = if (enableSimpMusic) R.drawable.check else R.drawable.close
+                                        id = if (enablePaxsenix) R.drawable.check else R.drawable.close
                                     ),
                                     contentDescription = null,
                                     modifier = Modifier.size(SwitchDefaults.IconSize)
@@ -575,18 +573,22 @@ fun ContentSettings(
 
     if (showProviderPriorityDialog) {
         val currentOrder = LyricsProviderRegistry.deserializeProviderOrder(lyricsProviderOrder)
+        val defaultOrder = LyricsProviderRegistry.getDefaultProviderOrder()
+        val normalizedOrder = currentOrder.filter { it in defaultOrder } +
+            defaultOrder.filter { it !in currentOrder }
+
         val enabledProviders = setOf(
             "LrcLib".takeIf { enableLrclib },
             "KuGou".takeIf { enableKugou },
             "BetterLyrics".takeIf { enableBetterLyrics },
-            "SimpMusic".takeIf { enableSimpMusic },
+            "Paxsenix".takeIf { enablePaxsenix },
             "LyricsPlus".takeIf { enableLyricsPlus },
         ).filterNotNull().toSet()
         val lyricsIcon = painterResource(R.drawable.lyrics)
         val draggableItems = remember { mutableStateListOf<DraggableLyricsProviderItem>() }
 
-        LaunchedEffect(currentOrder, enableLrclib, enableKugou, enableBetterLyrics, enableSimpMusic, enableLyricsPlus) {
-            val orderedEnabledProviders = currentOrder.filter { it in enabledProviders }
+        LaunchedEffect(normalizedOrder, enableLrclib, enableKugou, enableBetterLyrics, enablePaxsenix, enableLyricsPlus) {
+            val orderedEnabledProviders = normalizedOrder.filter { it in enabledProviders }
             draggableItems.clear()
             draggableItems.addAll(
                 orderedEnabledProviders.mapNotNull { providerName ->
@@ -619,7 +621,7 @@ fun ContentSettings(
                         items = draggableItems,
                         onItemsReordered = { reorderedItems ->
                             val enabledOrder = reorderedItems.map { it.id }
-                            val disabledOrder = currentOrder.filter { it !in enabledProviders }
+                            val disabledOrder = normalizedOrder.filter { it !in enabledProviders }
                             onLyricsProviderOrderChange(
                                 LyricsProviderRegistry.serializeProviderOrder(enabledOrder + disabledOrder)
                             )

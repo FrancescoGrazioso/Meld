@@ -27,6 +27,7 @@ import java.io.IOException
 import kotlinx.coroutines.delay
 import java.util.*
 import kotlin.io.encoding.Base64
+import timber.log.Timber
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 /**
@@ -427,13 +428,15 @@ class InnerTube {
     suspend fun subscribeChannel(
         client: YouTubeClient,
         channelId: String,
+        params: String? = null,
     ) = withRetry {
         httpClient.post("subscription/subscribe") {
             ytClient(client, setLogin = true)
             setBody(
                 SubscribeBody(
                     context = client.toContext(locale, visitorData, dataSyncId),
-                    channelIds = listOf(channelId)
+                    channelIds = listOf(channelId),
+                    params = params
                 )
             )
         }
@@ -442,13 +445,15 @@ class InnerTube {
     suspend fun unsubscribeChannel(
         client: YouTubeClient,
         channelId: String,
+        params: String? = null,
     ) = withRetry {
         httpClient.post("subscription/unsubscribe") {
             ytClient(client, setLogin = true)
             setBody(
                 SubscribeBody(
                     context = client.toContext(locale, visitorData, dataSyncId),
-                    channelIds = listOf(channelId)
+                    channelIds = listOf(channelId),
+                    params = params
                 )
             )
         }
@@ -698,6 +703,92 @@ class InnerTube {
         }
     }
 
+
+    /**
+     * Initialize a song upload to YouTube Music.
+     * Returns the upload URL in the X-Goog-Upload-URL header.
+     */
+    suspend fun initSongUpload(
+        filename: String,
+        contentLength: Long
+    ) = withRetry {
+        val authUser = "0"
+        httpClient.post("https://upload.youtube.com/upload/usermusic/http?authuser=$authUser") {
+            headers {
+                append("X-Goog-Upload-Command", "start")
+                append("X-Goog-Upload-Protocol", "resumable")
+                append("X-Goog-Upload-Header-Content-Length", contentLength.toString())
+                append("X-Goog-AuthUser", authUser)
+                append("Origin", YouTubeClient.ORIGIN_YOUTUBE_MUSIC)
+                cookie?.let { cookie ->
+                    append("cookie", cookie)
+                    if ("SAPISID" !in cookieMap) return@let
+                    val currentTime = System.currentTimeMillis() / 1000
+                    val sapisidHash = sha1("$currentTime ${cookieMap["SAPISID"]} ${YouTubeClient.ORIGIN_YOUTUBE_MUSIC}")
+                    append("Authorization", "SAPISIDHASH ${currentTime}_${sapisidHash}")
+                }
+            }
+            contentType(ContentType.Application.FormUrlEncoded)
+            setBody("filename=$filename")
+        }
+    }
+
+    /**
+     * Upload song data to the provided upload URL.
+     */
+    suspend fun uploadSongData(
+        uploadUrl: String,
+        data: ByteArray,
+        onProgress: ((Float) -> Unit)? = null
+    ) = withRetry {
+        httpClient.post(uploadUrl) {
+            headers {
+                append("X-Goog-Upload-Command", "upload, finalize")
+                append("X-Goog-Upload-Offset", "0")
+                append("X-Goog-AuthUser", "0")
+                append("Origin", YouTubeClient.ORIGIN_YOUTUBE_MUSIC)
+                cookie?.let { cookie ->
+                    append("cookie", cookie)
+                    if ("SAPISID" !in cookieMap) return@let
+                    val currentTime = System.currentTimeMillis() / 1000
+                    val sapisidHash = sha1("$currentTime ${cookieMap["SAPISID"]} ${YouTubeClient.ORIGIN_YOUTUBE_MUSIC}")
+                    append("Authorization", "SAPISIDHASH ${currentTime}_${sapisidHash}")
+                }
+            }
+            contentType(ContentType.Application.FormUrlEncoded)
+            setBody(data)
+            onUpload { bytesSentTotal, contentLength ->
+                contentLength?.let {
+                    onProgress?.invoke(bytesSentTotal.toFloat() / it.toFloat())
+                }
+            }
+        }
+    }
+
+    /**
+     * Delete a privately owned (uploaded) song from YouTube Music.
+     */
+    suspend fun deletePrivatelyOwnedEntity(entityId: String) = withRetry {
+        val context = YouTubeClient.WEB_REMIX.toContext(locale, visitorData, null)
+        val requestBody = """{"context":${Json.encodeToString(context)},"entityId":"$entityId"}"""
+        httpClient.post("https://music.youtube.com/youtubei/v1/music/delete_privately_owned_entity") {
+            contentType(ContentType.Application.Json)
+            headers {
+                append("Referer", YouTubeClient.REFERER_YOUTUBE_MUSIC)
+                append("Origin", YouTubeClient.ORIGIN_YOUTUBE_MUSIC)
+                cookie?.let { cookie ->
+                    append("cookie", cookie)
+                    if ("SAPISID" !in cookieMap) return@let
+                    val currentTime = System.currentTimeMillis() / 1000
+                    val sapisidHash = sha1("$currentTime ${cookieMap["SAPISID"]} ${YouTubeClient.ORIGIN_YOUTUBE_MUSIC}")
+                    append("Authorization", "SAPISIDHASH ${currentTime}_${sapisidHash}")
+                }
+            }
+            parameter("key", "AIzaSyC9XL3ZjWddXya6X74dJoCTL-WEYFDNX3")
+            parameter("prettyPrint", false)
+            setBody(requestBody)
+        }
+    }
 
     suspend fun getMediaInfo(videoId: String): Result<MediaInfo> =
         runCatching {

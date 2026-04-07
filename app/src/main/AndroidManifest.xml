@@ -9,6 +9,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
@@ -26,6 +27,7 @@
         <intent>
             <action android:name="android.media.action.DISPLAY_AUDIO_EFFECT_CONTROL_PANEL" />
         </intent>
+        <package android:name="com.google.android.projection.gearhead" />
     </queries>
     <application
         android:name=".App"
@@ -219,6 +221,14 @@
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
+        <activity
+            android:name=".recognition.RecognitionLaunchActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:noHistory="true"
+            android:theme="@style/Theme.Metrolist.Transparent" />
+
         <service
             android:name=".playback.MusicService"
             android:exported="true"
@@ -245,6 +255,25 @@
         <receiver
             android:name=".listentogether.ListenTogetherActionReceiver"
             android:exported="false" />
+
+        <receiver
+            android:name=".playback.alarm.MusicAlarmReceiver"
+            android:enabled="true"
+            android:exported="false" />
+
+        <receiver
+            android:name=".playback.alarm.MusicAlarmRescheduleReceiver"
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
 
         <receiver
             android:name="androidx.media3.session.MediaButtonReceiver"
@@ -317,6 +346,23 @@
             android:name=".widget.MusicRecognizerWidgetService"
             android:exported="false"
             android:foregroundServiceType="microphone" />
+
+        <service
+            android:name=".recognition.RecognitionForegroundService"
+            android:exported="false"
+            android:foregroundServiceType="microphone" />
+
+        <!-- Music Recognizer Quick Settings Tile -->
+        <service
+            android:name=".quicksettings.MusicRecognizerTileService"
+            android:label="@string/qs_tile_music_recognizer"
+            android:icon="@drawable/mic"
+            android:exported="true"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
 
     </application>
 

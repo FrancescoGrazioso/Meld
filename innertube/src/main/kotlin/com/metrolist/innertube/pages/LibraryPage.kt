@@ -75,6 +75,19 @@ data class LibraryPage(
                     }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null,
                 )
 
+                // Podcast host channels use MUSIC_PAGE_TYPE_USER_CHANNEL (not ARTIST)
+                renderer.isUserChannel -> ArtistItem(
+                    id = renderer.navigationEndpoint.browseEndpoint?.browseId ?: return null,
+                    title = renderer.title.runs?.firstOrNull()?.text ?: return null,
+                    thumbnail = renderer.thumbnailRenderer.musicThumbnailRenderer?.getThumbnailUrl(),
+                    shuffleEndpoint = renderer.menu?.menuRenderer?.items?.find {
+                        it.menuNavigationItemRenderer?.icon?.iconType == "MUSIC_SHUFFLE"
+                    }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint,
+                    radioEndpoint = renderer.menu?.menuRenderer?.items?.find {
+                        it.menuNavigationItemRenderer?.icon?.iconType == "MIX"
+                    }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint,
+                )
+
                 renderer.isPodcast -> {
                     val libraryTokens = PageHelper.extractLibraryTokensFromMenuItems(renderer.menu?.menuRenderer?.items)
                     PodcastItem(
@@ -128,9 +141,9 @@ data class LibraryPage(
                             it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
                         } == true,
                         endpoint = renderer.thumbnailOverlay
-                            ?.musicItemThumbnailOverlayRenderer?.content
-                            ?.musicPlayButtonRenderer?.playNavigationEndpoint
-                            ?.watchEndpoint,
+                            .musicItemThumbnailOverlayRenderer.content
+                            .musicPlayButtonRenderer.playNavigationEndpoint
+                            .watchEndpoint,
                         libraryAddToken = libraryTokens.addToken,
                         libraryRemoveToken = libraryTokens.removeToken,
                         isEpisode = renderer.isEpisode,
@@ -147,56 +160,39 @@ data class LibraryPage(
 
             return when {
                 renderer.isSong -> {
-                    val videoId = renderer.playlistItemData?.videoId
-                    if (videoId == null) {
-                        println("[UPLOAD_DEBUG] LibraryPage.parse FAILED: videoId is null")
-                        return null
-                    }
-
+                    val videoId = renderer.playlistItemData?.videoId ?: return null
                     val title = renderer.flexColumns.firstOrNull()
                         ?.musicResponsiveListItemFlexColumnRenderer?.text
-                        ?.runs?.firstOrNull()?.text
-                    if (title == null) {
-                        println("[UPLOAD_DEBUG] LibraryPage.parse FAILED: title is null for videoId=$videoId")
-                        return null
-                    }
+                        ?.runs?.firstOrNull()?.text ?: return null
 
                     val artistRuns = renderer.flexColumns.getOrNull(1)?.musicResponsiveListItemFlexColumnRenderer?.text?.runs?.oddElements()
-                    println("[UPLOAD_DEBUG] LibraryPage.parse: videoId=$videoId, title=$title, artistRuns=${artistRuns?.map { "${it.text}(browseId=${it.navigationEndpoint?.browseEndpoint?.browseId})" }}")
 
                     // For uploaded songs, artists may not have browseEndpoint - make it optional
                     val artists = artistRuns?.mapNotNull {
                         val browseId = it.navigationEndpoint?.browseEndpoint?.browseId
-                        if (browseId == null) {
-                            println("[UPLOAD_DEBUG] LibraryPage.parse: Artist '${it.text}' has no browseId, using empty string")
-                            // For uploaded songs, use empty string for artist ID if not available
-                            Artist(name = it.text, id = "")
-                        } else {
-                            Artist(name = it.text, id = browseId)
-                        }
+                        // For uploaded songs, use empty string for artist ID if not available
+                        Artist(name = it.text, id = browseId ?: "")
                     } ?: emptyList()
 
                     val albumRun = renderer.flexColumns.getOrNull(2)?.musicResponsiveListItemFlexColumnRenderer?.text?.runs?.firstOrNull()
-                    println("[UPLOAD_DEBUG] LibraryPage.parse: albumRun=${albumRun?.text}, albumBrowseId=${albumRun?.navigationEndpoint?.browseEndpoint?.browseId}")
 
                     // For uploaded songs, album may not have browseEndpoint - make it optional
                     val album = albumRun?.let {
                         val albumBrowseId = it.navigationEndpoint?.browseEndpoint?.browseId
-                        if (albumBrowseId == null) {
-                            println("[UPLOAD_DEBUG] LibraryPage.parse: Album '${it.text}' has no browseId, using empty string")
-                            Album(name = it.text, id = "")
-                        } else {
-                            Album(name = it.text, id = albumBrowseId)
-                        }
+                        Album(name = it.text, id = albumBrowseId ?: "")
                     }
 
-                    val thumbnailUrl = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl()
-                    if (thumbnailUrl == null) {
-                        println("[UPLOAD_DEBUG] LibraryPage.parse FAILED: thumbnail is null for videoId=$videoId")
-                        return null
-                    }
+                    val thumbnailUrl = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null
 
-                    println("[UPLOAD_DEBUG] LibraryPage.parse SUCCESS: videoId=$videoId, title=$title, artists=${artists.map { it.name }}, album=${album?.name}")
+                    // Extract uploadEntityId from delete menu item (for uploaded songs)
+                    // The entityId is nested in confirmDialogEndpoint -> content -> confirmDialogRenderer ->
+                    // confirmButton -> buttonRenderer -> command -> musicDeletePrivatelyOwnedEntityCommand -> entityId
+                    val uploadEntityId = renderer.menu?.menuRenderer?.items?.firstNotNullOfOrNull { item ->
+                        item.menuNavigationItemRenderer?.navigationEndpoint?.confirmDialogEndpoint
+                            ?.content?.confirmDialogRenderer?.confirmButton?.buttonRenderer
+                            ?.command?.musicDeletePrivatelyOwnedEntityCommand?.entityId
+                    }
+                    timber.log.Timber.d("Parsed uploaded song: id=$videoId, entityId=$uploadEntityId")
 
                     SongItem(
                         id = videoId,
@@ -212,7 +208,8 @@ data class LibraryPage(
                         endpoint = renderer.overlay?.musicItemThumbnailOverlayRenderer?.content?.musicPlayButtonRenderer?.playNavigationEndpoint?.watchEndpoint,
                         libraryAddToken = libraryTokens.addToken,
                         libraryRemoveToken = libraryTokens.removeToken,
-                        isEpisode = renderer.isEpisode
+                        isEpisode = renderer.isEpisode,
+                        uploadEntityId = uploadEntityId
                     )
                 }
 
@@ -222,6 +219,20 @@ data class LibraryPage(
                         ?: return null,
                     thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl()
                         ?: return null,
+                    shuffleEndpoint = renderer.menu?.menuRenderer?.items
+                        ?.find { it.menuNavigationItemRenderer?.icon?.iconType == "MUSIC_SHUFFLE" }
+                        ?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint,
+                    radioEndpoint = renderer.menu?.menuRenderer?.items
+                        ?.find { it.menuNavigationItemRenderer?.icon?.iconType == "MIX" }
+                        ?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint
+                )
+
+                // Podcast host channels use MUSIC_PAGE_TYPE_USER_CHANNEL (not ARTIST)
+                renderer.isUserChannel -> ArtistItem(
+                    id = renderer.navigationEndpoint?.browseEndpoint?.browseId ?: return null,
+                    title = renderer.flexColumns.firstOrNull()?.musicResponsiveListItemFlexColumnRenderer?.text?.runs?.firstOrNull()?.text
+                        ?: return null,
+                    thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl(),
                     shuffleEndpoint = renderer.menu?.menuRenderer?.items
                         ?.find { it.menuNavigationItemRenderer?.icon?.iconType == "MUSIC_SHUFFLE" }
                         ?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint,
@@ -253,10 +264,7 @@ data class LibraryPage(
                     )
                 }
 
-                else -> {
-                    println("[UPLOAD_DEBUG] LibraryPage.parse: Not a song or artist, isSong=${renderer.isSong}, isArtist=${renderer.isArtist}")
-                    null
-                }
+                else -> null
             }
         }
 
