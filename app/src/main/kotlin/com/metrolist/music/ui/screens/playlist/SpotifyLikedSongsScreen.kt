@@ -24,6 +24,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +43,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -48,6 +51,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.net.toUri
+import androidx.media3.exoplayer.offline.DownloadRequest
+import androidx.media3.exoplayer.offline.DownloadService
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -78,7 +85,10 @@ import com.metrolist.music.utils.makeTimeString
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.LocalDatabase
+import com.metrolist.music.playback.ExoDownloadService
 import com.metrolist.music.playback.SpotifyYouTubeMapper
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import com.metrolist.music.viewmodels.SpotifyLikedSongsViewModel
 import com.metrolist.spotify.SpotifyMapper
 import com.metrolist.spotify.models.SpotifyTrack
@@ -90,9 +100,11 @@ fun SpotifyLikedSongsScreen(
     scrollBehavior: TopAppBarScrollBehavior,
     viewModel: SpotifyLikedSongsViewModel = hiltViewModel(),
 ) {
+    val context = LocalContext.current
     val playerConnection = LocalPlayerConnection.current ?: return
     val database = LocalDatabase.current
     val menuState = LocalMenuState.current
+    val coroutineScope = rememberCoroutineScope()
 
     val tracks by viewModel.tracks.collectAsState()
     val total by viewModel.total.collectAsState()
@@ -115,6 +127,7 @@ fun SpotifyLikedSongsScreen(
     val mapper = remember { SpotifyYouTubeMapper(database) }
 
     var isSearching by rememberSaveable { mutableStateOf(false) }
+    var showOverflowMenu by remember { mutableStateOf(false) }
     var query by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue())
     }
@@ -412,6 +425,61 @@ fun SpotifyLikedSongsScreen(
                             painterResource(R.drawable.search),
                             contentDescription = null,
                         )
+                    }
+                    Box {
+                        IconButton(
+                            onClick = { showOverflowMenu = true },
+                            onLongClick = {},
+                        ) {
+                            Icon(
+                                painterResource(R.drawable.more_vert),
+                                contentDescription = null,
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = showOverflowMenu,
+                            onDismissRequest = { showOverflowMenu = false },
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.action_download)) },
+                                leadingIcon = {
+                                    Icon(
+                                        painterResource(R.drawable.download),
+                                        contentDescription = null,
+                                    )
+                                },
+                                onClick = {
+                                    showOverflowMenu = false
+                                    Timber.d("SpotifyLikedDownload: started, ${sortedTracks.size} tracks")
+                                    coroutineScope.launch {
+                                        var resolved = 0
+                                        var skipped = 0
+                                        sortedTracks.forEach { track ->
+                                            val metadata = mapper.mapToYouTube(track)
+                                            if (metadata == null) {
+                                                skipped++
+                                                Timber.w("SpotifyLikedDownload: SKIP '${track.name}' — no YouTube match")
+                                                return@forEach
+                                            }
+                                            resolved++
+                                            Timber.d("SpotifyLikedDownload: queuing '${track.name}' -> yt:${metadata.id}")
+                                            val downloadRequest = DownloadRequest
+                                                .Builder(metadata.id, metadata.id.toUri())
+                                                .setCustomCacheKey(metadata.id)
+                                                .setData(metadata.title.toByteArray())
+                                                .build()
+                                            DownloadService.sendAddDownload(
+                                                context,
+                                                ExoDownloadService::class.java,
+                                                downloadRequest,
+                                                false,
+                                            )
+                                        }
+                                        Timber.d("SpotifyLikedDownload: done — $resolved queued, $skipped skipped")
+                                    }
+                                },
+                            )
+                        }
                     }
                 }
             },
