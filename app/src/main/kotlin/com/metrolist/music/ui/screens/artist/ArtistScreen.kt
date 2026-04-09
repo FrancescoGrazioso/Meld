@@ -174,9 +174,16 @@ fun ArtistScreen(
         }
     }
 
-    LaunchedEffect(libraryArtist) {
-        // always show local page for local artists. Show local page remote artist when offline
-        showLocal = libraryArtist?.artist?.isLocal == true
+    LaunchedEffect(libraryArtist, artistPage) {
+        val isYouTube = libraryArtist?.artist?.isYouTubeArtist == true
+        val isLocal = libraryArtist?.artist?.isLocal == true
+        val hasSpotifyId = libraryArtist?.artist?.spotifyId != null
+        showLocal = when {
+            isLocal -> true
+            hasSpotifyId && !isYouTube -> false
+            libraryArtist != null && !isYouTube -> true
+            else -> false
+        }
     }
 
     Box(
@@ -848,7 +855,7 @@ fun ArtistScreen(
         }
 
         val isScrollingUp = lazyListState.isScrollingUp()
-        val showLocalFab = librarySongs.isNotEmpty() && libraryArtist?.artist?.isLocal != true
+        val showLocalFab = librarySongs.isNotEmpty() && libraryArtist?.artist?.isYouTubeArtist == true
 
         // Library/Local Toggle FAB
         HideOnScrollFAB(

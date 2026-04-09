@@ -115,7 +115,8 @@ fun LibraryArtistsScreen(
                 chips =
                 listOf(
                     ArtistFilter.LIKED to stringResource(R.string.filter_liked),
-                    ArtistFilter.LIBRARY to stringResource(R.string.filter_library)
+                    ArtistFilter.LIBRARY to stringResource(R.string.filter_library),
+                    ArtistFilter.SPOTIFY to stringResource(R.string.filter_spotify)
                 ),
                 currentValue = filter,
                 onValueUpdate = {

@@ -76,6 +76,7 @@ sealed class SyncOperation {
     data class SubscribeChannel(val channelId: String, val subscribe: Boolean) : SyncOperation()
     data class SavePodcast(val podcastId: String, val save: Boolean) : SyncOperation()
     data class SaveEpisode(val episodeId: String, val save: Boolean, val setVideoId: String?) : SyncOperation()
+    data object SpotifyFollowedArtists : SyncOperation()
     data object CleanupDuplicates : SyncOperation()
     data object ClearAllSynced : SyncOperation()
     data object ClearPodcastData : SyncOperation()
@@ -196,6 +197,7 @@ class SyncUtils @Inject constructor(
             is SyncOperation.SubscribeChannel -> executeSubscribeChannel(operation.channelId, operation.subscribe)
             is SyncOperation.SavePodcast -> executeSavePodcast(operation.podcastId, operation.save)
             is SyncOperation.SaveEpisode -> executeSaveEpisode(operation.episodeId, operation.save, operation.setVideoId)
+            is SyncOperation.SpotifyFollowedArtists -> executeSyncSpotifyFollowedArtists()
             is SyncOperation.CleanupDuplicates -> executeCleanupDuplicatePlaylists()
             is SyncOperation.ClearAllSynced -> executeClearAllSyncedContent()
             is SyncOperation.ClearPodcastData -> executeClearPodcastData()
@@ -370,6 +372,13 @@ class SyncUtils @Inject constructor(
     fun syncAllArtists() {
         syncScope.launch {
             syncChannel.send(SyncOperation.ArtistsSubscriptions)
+            syncChannel.send(SyncOperation.SpotifyFollowedArtists)
+        }
+    }
+
+    fun syncSpotifyFollowedArtists() {
+        syncScope.launch {
+            syncChannel.send(SyncOperation.SpotifyFollowedArtists)
         }
     }
 
@@ -411,6 +420,7 @@ class SyncUtils @Inject constructor(
     suspend fun syncLikedAlbumsSuspend() = executeSyncLikedAlbums()
     suspend fun syncUploadedAlbumsSuspend() = executeSyncUploadedAlbums()
     suspend fun syncArtistsSubscriptionsSuspend() = executeSyncArtistsSubscriptions()
+    suspend fun syncSpotifyFollowedArtistsSuspend() = executeSyncSpotifyFollowedArtists()
     suspend fun syncPodcastSubscriptionsSuspend() = executeSyncPodcastSubscriptions()
     suspend fun syncEpisodesForLaterSuspend() = executeSyncEpisodesForLater()
     suspend fun syncSavedPlaylistsSuspend() = executeSyncSavedPlaylists()
@@ -523,6 +533,7 @@ class SyncUtils @Inject constructor(
 
     suspend fun syncAllArtistsSuspend() {
         executeSyncArtistsSubscriptions()
+        executeSyncSpotifyFollowedArtists()
     }
 
     // Private execution methods
@@ -553,6 +564,9 @@ class SyncUtils @Inject constructor(
             delay(DB_OPERATION_DELAY_MS)
 
             executeSyncArtistsSubscriptions()
+            delay(DB_OPERATION_DELAY_MS)
+
+            executeSyncSpotifyFollowedArtists()
             delay(DB_OPERATION_DELAY_MS)
 
             executeSyncPodcastSubscriptions()
@@ -1082,6 +1096,92 @@ class SyncUtils @Inject constructor(
         }.onFailure { e ->
             Timber.e(e, "Failed to sync artist subscriptions after retries")
             updateState { copy(artists = SyncStatus.Error(e.message ?: "Unknown error")) }
+        }
+    }
+
+    private suspend fun executeSyncSpotifyFollowedArtists() = withContext(Dispatchers.IO) {
+        if (!com.metrolist.spotify.Spotify.isAuthenticated()) {
+            Timber.d("Skipping Spotify followed artists sync - not authenticated with Spotify")
+            return@withContext
+        }
+
+        updateState { copy(currentOperation = "Syncing Spotify followed artists") }
+
+        try {
+            val followedArtists = com.metrolist.music.playback.SpotifyProfileCache
+                .getFollowedArtists(context, database, limit = 500)
+
+            if (followedArtists.isEmpty()) {
+                Timber.d("No Spotify followed artists found")
+                return@withContext
+            }
+
+            var synced = 0
+            for (spotifyArtist in followedArtists) {
+                try {
+                    val spotifyId = spotifyArtist.id
+                    if (spotifyId.isBlank()) continue
+
+                    database.transaction {
+                        // First check if we already have an artist linked to this spotifyId
+                        val existingBySpotifyId = artistBySpotifyId(spotifyId)
+                        if (existingBySpotifyId != null) {
+                            // Update name/thumbnail if changed
+                            val imageUrl = spotifyArtist.images.firstOrNull()?.url
+                            if (existingBySpotifyId.name != spotifyArtist.name ||
+                                (imageUrl != null && existingBySpotifyId.thumbnailUrl != imageUrl)
+                            ) {
+                                update(
+                                    existingBySpotifyId.copy(
+                                        name = spotifyArtist.name,
+                                        thumbnailUrl = imageUrl ?: existingBySpotifyId.thumbnailUrl,
+                                        lastUpdateTime = LocalDateTime.now()
+                                    )
+                                )
+                            }
+                            synced++
+                            return@transaction
+                        }
+
+                        // Try to match by name to an existing artist
+                        val existingByName = artistByName(spotifyArtist.name)
+                        if (existingByName != null) {
+                            // Link existing artist to Spotify
+                            val imageUrl = spotifyArtist.images.firstOrNull()?.url
+                            update(
+                                existingByName.copy(
+                                    spotifyId = spotifyId,
+                                    thumbnailUrl = imageUrl ?: existingByName.thumbnailUrl,
+                                    bookmarkedAt = existingByName.bookmarkedAt ?: LocalDateTime.now(),
+                                    lastUpdateTime = LocalDateTime.now()
+                                )
+                            )
+                            synced++
+                            return@transaction
+                        }
+
+                        // Create a new artist entry
+                        val imageUrl = spotifyArtist.images.firstOrNull()?.url
+                        insert(
+                            ArtistEntity(
+                                id = "SP_$spotifyId",
+                                name = spotifyArtist.name,
+                                thumbnailUrl = imageUrl,
+                                spotifyId = spotifyId,
+                                bookmarkedAt = LocalDateTime.now()
+                            )
+                        )
+                        synced++
+                    }
+                    delay(DB_OPERATION_DELAY_MS)
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to sync Spotify artist: ${spotifyArtist.name}")
+                }
+            }
+
+            Timber.d("Synced $synced/${followedArtists.size} Spotify followed artists")
+        } catch (e: Exception) {
+            Timber.e(e, "Error syncing Spotify followed artists")
         }
     }
 

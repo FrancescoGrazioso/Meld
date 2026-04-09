@@ -160,6 +160,7 @@ constructor(
                 when (filter) {
                     ArtistFilter.LIKED -> database.artistsBookmarked(sortType, descending)
                     ArtistFilter.LIBRARY -> database.artists(sortType, descending)
+                    ArtistFilter.SPOTIFY -> database.artistsSpotify(sortType, descending)
                 }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
@@ -174,7 +175,10 @@ constructor(
         }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun sync() {
-        viewModelScope.launch(Dispatchers.IO) { syncUtils.syncArtistsSubscriptions() }
+        viewModelScope.launch(Dispatchers.IO) {
+            syncUtils.syncArtistsSubscriptions()
+            syncUtils.syncSpotifyFollowedArtists()
+        }
     }
 
     init {
@@ -183,10 +187,12 @@ constructor(
                 artists
                     .map { it.artist }
                     .filter {
-                        it.thumbnailUrl == null || Duration.between(
-                            it.lastUpdateTime,
-                            LocalDateTime.now()
-                        ) > Duration.ofDays(10)
+                        it.isYouTubeArtist && (
+                            it.thumbnailUrl == null || Duration.between(
+                                it.lastUpdateTime,
+                                LocalDateTime.now()
+                            ) > Duration.ofDays(10)
+                        )
                     }.forEach { artist ->
                         YouTube.artist(artist.id).onSuccess { artistPage ->
                             database.query {

@@ -296,6 +296,7 @@ enum class SongFilter {
 enum class ArtistFilter {
     LIBRARY,
     LIKED,
+    SPOTIFY,
 }
 
 enum class AlbumFilter {

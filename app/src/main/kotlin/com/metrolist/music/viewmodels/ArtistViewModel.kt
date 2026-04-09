@@ -13,6 +13,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metrolist.innertube.YouTube
+import com.metrolist.innertube.models.ArtistItem
 import com.metrolist.innertube.models.filterExplicit
 import com.metrolist.innertube.models.filterVideoSongs
 import com.metrolist.innertube.models.filterYoutubeShorts
@@ -36,6 +37,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -86,29 +88,70 @@ class ArtistViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     init {
-        // Load artist page and reload when hide explicit setting changes
+        if (isYouTubeArtistId(artistId)) {
+            // YouTube artist: load page directly, reload when settings change
+            viewModelScope.launch {
+                context.dataStore.data
+                    .map {
+                        Triple(
+                            it[HideExplicitKey] ?: false,
+                            it[HideVideoSongsKey] ?: false,
+                            it[HideYoutubeShortsKey] ?: false
+                        )
+                    }
+                    .distinctUntilChanged()
+                    .collect {
+                        fetchArtistPage(artistId)
+                    }
+            }
+        } else {
+            // Non-YouTube artist (Spotify/local): wait for DB, then search YouTube by name
+            viewModelScope.launch {
+                libraryArtist.first { it != null }
+                resolveAndFetchByName()
+            }
+        }
+    }
+
+    private fun isYouTubeArtistId(id: String): Boolean =
+        id.startsWith("UC") || id.startsWith("FEmusic_library_privately_owned_artist")
+
+    // Resolved YouTube artist ID for non-YouTube artists (found via search)
+    private var resolvedYouTubeId: String? = null
+
+    fun fetchArtistsFromYTM() {
+        if (!isYouTubeArtistId(artistId)) {
+            resolveAndFetchByName()
+            return
+        }
+        fetchArtistPage(artistId)
+    }
+
+    private fun resolveAndFetchByName() {
         viewModelScope.launch {
-            context.dataStore.data
-                .map {
-                    Triple(
-                        it[HideExplicitKey] ?: false,
-                        it[HideVideoSongsKey] ?: false,
-                        it[HideYoutubeShortsKey] ?: false
-                    )
+            val artist = libraryArtist.value?.artist
+            val name = artist?.name ?: return@launch
+
+            YouTube.search(name, YouTube.SearchFilter.FILTER_ARTIST)
+                .onSuccess { result ->
+                    val match = result.items.filterIsInstance<ArtistItem>().firstOrNull()
+                    if (match != null && isYouTubeArtistId(match.id)) {
+                        resolvedYouTubeId = match.id
+                        fetchArtistPage(match.id)
+                    }
                 }
-                .distinctUntilChanged()
-                .collect {
-                    fetchArtistsFromYTM()
+                .onFailure {
+                    reportException(it)
                 }
         }
     }
 
-    fun fetchArtistsFromYTM() {
+    private fun fetchArtistPage(ytArtistId: String) {
         viewModelScope.launch {
             val hideExplicit = context.dataStore.get(HideExplicitKey, false)
             val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
             val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
-            YouTube.artist(artistId)
+            YouTube.artist(ytArtistId)
                 .onSuccess { page ->
                     val filteredSections = page.sections
                         .map { section ->

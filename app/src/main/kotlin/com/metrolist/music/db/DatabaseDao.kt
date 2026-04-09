@@ -817,6 +817,54 @@ interface DatabaseDao {
                 .reversed(descending)
         }
 
+    @Transaction
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @Query("SELECT *, (SELECT COUNT(1) FROM song_artist_map JOIN song ON song_artist_map.songId = song.id WHERE artistId = artist.id AND song.inLibrary IS NOT NULL) AS songCount FROM artist WHERE spotifyId IS NOT NULL ORDER BY bookmarkedAt")
+    fun artistsSpotifyByCreateDateAsc(): Flow<List<Artist>>
+
+    @Transaction
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @Query("SELECT *, (SELECT COUNT(1) FROM song_artist_map JOIN song ON song_artist_map.songId = song.id WHERE artistId = artist.id AND song.inLibrary IS NOT NULL) AS songCount FROM artist WHERE spotifyId IS NOT NULL ORDER BY name")
+    fun artistsSpotifyByNameAsc(): Flow<List<Artist>>
+
+    @Transaction
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @Query("SELECT *, (SELECT COUNT(1) FROM song_artist_map JOIN song ON song_artist_map.songId = song.id WHERE artistId = artist.id AND song.inLibrary IS NOT NULL) AS songCount FROM artist WHERE spotifyId IS NOT NULL ORDER BY songCount")
+    fun artistsSpotifyBySongCountAsc(): Flow<List<Artist>>
+
+    @Transaction
+    @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
+    @Query(
+        """
+        SELECT artist.*,
+               (SELECT COUNT(1)
+                FROM song_artist_map
+                         JOIN song ON song_artist_map.songId = song.id
+                WHERE artistId = artist.id
+                  AND song.inLibrary IS NOT NULL) AS songCount
+        FROM artist
+                 JOIN(SELECT artistId, SUM(totalPlayTime) AS totalPlayTime
+                      FROM song_artist_map
+                               JOIN song
+                                    ON song_artist_map.songId = song.id
+                      GROUP BY artistId
+                      ORDER BY totalPlayTime)
+                     ON artist.id = artistId
+        WHERE spotifyId IS NOT NULL
+    """
+    )
+    fun artistsSpotifyByPlayTimeAsc(): Flow<List<Artist>>
+
+    fun artistsSpotify(sortType: ArtistSortType, descending: Boolean) =
+        when (sortType) {
+            ArtistSortType.CREATE_DATE -> artistsSpotifyByCreateDateAsc()
+            ArtistSortType.NAME -> artistsSpotifyByNameAsc()
+            ArtistSortType.SONG_COUNT -> artistsSpotifyBySongCountAsc()
+            ArtistSortType.PLAY_TIME -> artistsSpotifyByPlayTimeAsc()
+        }.map { artists ->
+            artists.reversed(descending)
+        }
+
     @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
     @Query("SELECT *, (SELECT COUNT(1) FROM song_artist_map JOIN song ON song_artist_map.songId = song.id WHERE artistId = artist.id AND song.inLibrary IS NOT NULL) AS songCount FROM artist WHERE id = :id")
     fun artist(id: String): Flow<Artist?>
@@ -1549,6 +1597,9 @@ interface DatabaseDao {
     @Transaction
     @Query("SELECT * FROM artist WHERE name = :name")
     fun artistByName(name: String): ArtistEntity?
+
+    @Query("SELECT * FROM artist WHERE spotifyId = :spotifyId LIMIT 1")
+    fun artistBySpotifyId(spotifyId: String): ArtistEntity?
 
     @Query("SELECT * FROM artist WHERE id = :id LIMIT 1")
     fun getArtistById(id: String): ArtistEntity?
