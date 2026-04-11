@@ -51,11 +51,13 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.audio.SonicAudioProcessor
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.HttpDataSource
 import androidx.media3.datasource.ResolvingDataSource
 import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.cache.CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR
+import androidx.media3.datasource.cache.CacheWriter
 import androidx.media3.datasource.cache.SimpleCache
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.DefaultRenderersFactory
@@ -106,6 +108,8 @@ import com.metrolist.music.constants.DiscordUseDetailsKey
 import com.metrolist.music.constants.EnableDiscordRPCKey
 import com.metrolist.music.constants.EnableLastFMScrobblingKey
 import com.metrolist.music.constants.EnableSongCacheKey
+import com.metrolist.music.constants.PreCacheOnlyWifiKey
+import com.metrolist.music.constants.PreCacheTracksKey
 import com.metrolist.music.constants.HideExplicitKey
 import com.metrolist.music.constants.HideVideoSongsKey
 import com.metrolist.music.constants.HistoryDuration
@@ -147,6 +151,7 @@ import com.metrolist.music.eq.EqualizerService
 import com.metrolist.music.eq.audio.CustomEqualizerAudioProcessor
 import com.metrolist.music.eq.data.EQProfileRepository
 import com.metrolist.music.extensions.SilentHandler
+import com.metrolist.music.extensions.tryOrNull
 import com.metrolist.music.extensions.collect
 import com.metrolist.music.extensions.collectLatest
 import com.metrolist.music.extensions.currentMetadata
@@ -388,6 +393,7 @@ class MusicService :
     private var retryJob: Job? = null
     private var retryCount = 0
     private var silenceSkipJob: Job? = null
+    private var preCacheJob: Job? = null
 
     // URL cache for stream URLs - class-level so it can be invalidated on errors
     private val songUrlCache = HashMap<String, Pair<String, Long>>()
@@ -2164,6 +2170,9 @@ class MusicService :
             }
         }
 
+        // Pre-cache upcoming tracks for offline playback
+        triggerPreCache()
+
         // Save state when media item changes
         if (dataStore.get(PersistentQueueKey, true)) {
             saveQueueToDisk()
@@ -2910,6 +2919,168 @@ class MusicService :
         }
     }
 
+    /**
+     * Pre-caches the next N tracks in the queue for offline playback.
+     * Respects user preferences for track count and WiFi-only restriction.
+     */
+    private fun triggerPreCache() {
+        preCacheJob?.cancel()
+
+        val preCacheCount = dataStore.get(PreCacheTracksKey, 0)
+        if (preCacheCount <= 0) {
+            Timber.tag(PRECACHE_TAG).d("[PRECACHE] Skipped: pre-cache count is $preCacheCount (disabled)")
+            return
+        }
+        if (!dataStore.get(EnableSongCacheKey, true)) {
+            Timber.tag(PRECACHE_TAG).d("[PRECACHE] Skipped: song cache is disabled")
+            return
+        }
+
+        val wifiOnly = dataStore.get(PreCacheOnlyWifiKey, true)
+        val isMetered = connectivityManager.isActiveNetworkMetered
+        Timber.tag(PRECACHE_TAG).d("[PRECACHE] Network: metered=$isMetered, wifiOnly=$wifiOnly")
+        if (wifiOnly && isMetered) {
+            Timber.tag(PRECACHE_TAG).d("[PRECACHE] Skipped: on metered network and WiFi-only is enabled")
+            return
+        }
+
+        val currentIndex = player.currentMediaItemIndex
+        val itemCount = player.mediaItemCount
+        Timber.tag(PRECACHE_TAG).d("[PRECACHE] Queue: currentIndex=$currentIndex, totalItems=$itemCount, preCacheCount=$preCacheCount")
+        if (currentIndex >= itemCount - 1) {
+            Timber.tag(PRECACHE_TAG).d("[PRECACHE] Skipped: at end of queue")
+            return
+        }
+
+        val tracksToCache = mutableListOf<Pair<String, String>>() // mediaId to title
+        val endIndex = minOf(currentIndex + preCacheCount, itemCount - 1)
+
+        for (i in (currentIndex + 1)..endIndex) {
+            val mediaItem = player.getMediaItemAt(i)
+            val mediaId = mediaItem.mediaMetadata.extras?.getString("mediaId")
+                ?: mediaItem.mediaId
+            val title = mediaItem.mediaMetadata.title?.toString() ?: "unknown"
+            if (mediaId.startsWith("local:")) {
+                Timber.tag(PRECACHE_TAG).d("[PRECACHE] Skip local track [$i]: $title ($mediaId)")
+                continue
+            }
+            // Skip if already fully cached in download or player cache
+            val inDownload = downloadCache.isCached(mediaId, 0, CHUNK_LENGTH)
+            val inPlayer = playerCache.isCached(mediaId, 0, CHUNK_LENGTH)
+            if (inDownload || inPlayer) {
+                Timber.tag(PRECACHE_TAG).d("[PRECACHE] Already cached [$i]: $title ($mediaId) download=$inDownload player=$inPlayer")
+                continue
+            }
+            Timber.tag(PRECACHE_TAG).d("[PRECACHE] Will cache [$i]: $title ($mediaId)")
+            tracksToCache.add(mediaId to title)
+        }
+
+        if (tracksToCache.isEmpty()) {
+            Timber.tag(PRECACHE_TAG).d("[PRECACHE] Nothing to cache — all upcoming tracks already cached")
+            return
+        }
+
+        Timber.tag(PRECACHE_TAG).i("[PRECACHE] Starting pre-cache job for ${tracksToCache.size} tracks")
+
+        preCacheJob = scope.launch(Dispatchers.IO + SilentHandler) {
+            for ((index, pair) in tracksToCache.withIndex()) {
+                val (mediaId, title) = pair
+                if (!isActive) {
+                    Timber.tag(PRECACHE_TAG).d("[PRECACHE] Job cancelled, stopping at track $index")
+                    break
+                }
+                // Re-check network before each track
+                if (wifiOnly && connectivityManager.isActiveNetworkMetered) {
+                    Timber.tag(PRECACHE_TAG).d("[PRECACHE] Network became metered, stopping at track $index")
+                    break
+                }
+
+                try {
+                    Timber.tag(PRECACHE_TAG).d("[PRECACHE] [$index/${tracksToCache.size}] Resolving stream for: $title ($mediaId)")
+
+                    // Check if URL is already cached
+                    val cachedUrl = songUrlCache[mediaId]
+                        ?.takeIf { it.second > System.currentTimeMillis() }
+
+                    val streamUrl: String
+                    val contentLength: Long
+
+                    if (cachedUrl != null) {
+                        streamUrl = cachedUrl.first
+                        contentLength = database.format(mediaId).first()?.contentLength ?: C.LENGTH_UNSET.toLong()
+                        Timber.tag(PRECACHE_TAG).d("[PRECACHE] Using cached URL for $mediaId, contentLength=$contentLength")
+                    } else {
+                        Timber.tag(PRECACHE_TAG).d("[PRECACHE] Fetching fresh stream URL for: $title ($mediaId)")
+                        val playbackData = YTPlayerUtils.playerResponseForPlayback(
+                            mediaId,
+                            audioQuality = audioQuality,
+                            connectivityManager = connectivityManager,
+                        ).getOrNull()
+                        if (playbackData == null) {
+                            Timber.tag(PRECACHE_TAG).w("[PRECACHE] Failed to get playback data for: $title ($mediaId)")
+                            continue
+                        }
+
+                        streamUrl = playbackData.streamUrl
+                        contentLength = playbackData.format.contentLength ?: C.LENGTH_UNSET.toLong()
+
+                        songUrlCache[mediaId] =
+                            streamUrl to System.currentTimeMillis() + (playbackData.streamExpiresInSeconds * 1000L)
+                        Timber.tag(PRECACHE_TAG).d("[PRECACHE] Got stream URL for $mediaId: contentLength=$contentLength, expires in ${playbackData.streamExpiresInSeconds}s")
+                    }
+
+                    // Build a CacheDataSource that writes into playerCache
+                    val cacheDataSource = CacheDataSource(
+                        playerCache,
+                        DefaultDataSource.Factory(
+                            this@MusicService,
+                            OkHttpDataSource.Factory(
+                                OkHttpClient.Builder()
+                                    .proxy(YouTube.proxy)
+                                    .proxyAuthenticator { _, response ->
+                                        YouTube.proxyAuth?.let { auth ->
+                                            response.request
+                                                .newBuilder()
+                                                .header("Proxy-Authorization", auth)
+                                                .build()
+                                        } ?: response.request
+                                    }.build(),
+                            ),
+                        ).createDataSource(),
+                    )
+
+                    val dataSpec = DataSpec.Builder()
+                        .setUri(streamUrl.toUri())
+                        .setKey(mediaId)
+                        .setLength(if (contentLength > 0) contentLength else C.LENGTH_UNSET.toLong())
+                        .build()
+
+                    val startTime = System.currentTimeMillis()
+                    Timber.tag(PRECACHE_TAG).d("[PRECACHE] Starting download for: $title ($mediaId), length=${if (contentLength > 0) "${contentLength / 1024}KB" else "unknown"}")
+
+                    // CacheWriter downloads the entire stream into playerCache
+                    val cacheWriter = CacheWriter(
+                        cacheDataSource,
+                        dataSpec,
+                        null, // temporary buffer
+                        null, // no progress listener
+                    )
+                    // Cancel the CacheWriter when coroutine is cancelled
+                    coroutineContext[Job]?.invokeOnCompletion { cacheWriter.cancel() }
+                    cacheWriter.cache()
+
+                    val elapsed = System.currentTimeMillis() - startTime
+                    val cachedBytes = tryOrNull { playerCache.getCachedBytes(mediaId, 0, contentLength) } ?: 0
+                    Timber.tag(PRECACHE_TAG).i("[PRECACHE] ✓ Cached: $title ($mediaId) in ${elapsed}ms, cached=${cachedBytes / 1024}KB")
+                } catch (e: Exception) {
+                    if (e is kotlinx.coroutines.CancellationException) throw e
+                    Timber.tag(PRECACHE_TAG).e(e, "[PRECACHE] ✗ Failed to pre-cache: $title ($mediaId)")
+                }
+            }
+            Timber.tag(PRECACHE_TAG).i("[PRECACHE] Pre-cache job completed")
+        }
+    }
+
     private fun createCacheDataSource(): CacheDataSource.Factory =
         CacheDataSource
             .Factory()
@@ -3317,6 +3488,7 @@ class MusicService :
 
     override fun onDestroy() {
         isRunning = false
+        preCacheJob?.cancel()
 
         // Save episode position before destroying
         val currentMetadata = player.currentMediaItem?.metadata
@@ -3806,6 +3978,7 @@ class MusicService :
         private const val MIN_GAIN_MB = -1500 // Minimum gain in millibels (-15 dB)
 
         private const val TAG = "MusicService"
+        private const val PRECACHE_TAG = "MeldPreCache"
 
         @Volatile
         var isRunning = false

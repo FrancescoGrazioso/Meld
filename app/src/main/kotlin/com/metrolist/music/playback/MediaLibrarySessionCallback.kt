@@ -841,9 +841,16 @@ constructor(
         playlistId: String,
     ): List<MediaItem> {
         return try {
-            val result = Spotify.playlistTracks(playlistId, limit = SPOTIFY_MAX_PLAYLIST_TRACKS)
-                .getOrNull() ?: return emptyList()
-            val tracks = result.items.mapNotNull { it.track?.takeIf { t -> !t.isLocal } }
+            // Liked Songs uses a different endpoint than regular playlists
+            val tracks = if (playlistId == "liked_songs") {
+                val result = Spotify.likedSongs(limit = SPOTIFY_MAX_PLAYLIST_TRACKS)
+                    .getOrNull() ?: return emptyList()
+                result.items.map { it.track }.filter { !it.isLocal }
+            } else {
+                val result = Spotify.playlistTracks(playlistId, limit = SPOTIFY_MAX_PLAYLIST_TRACKS)
+                    .getOrNull() ?: return emptyList()
+                result.items.mapNotNull { it.track?.takeIf { t -> !t.isLocal } }
+            }
 
             val shuffleItem = MediaItem.Builder()
                 .setMediaId("$parentId/${MusicService.SHUFFLE_ACTION}")
@@ -884,15 +891,19 @@ constructor(
         trackId: String,
         startPositionMs: Long,
     ): MediaItemsWithStartPosition? {
-        val result = try {
-            Spotify.playlistTracks(playlistId, limit = SPOTIFY_MAX_PLAYLIST_TRACKS)
-                .getOrNull()
+        // Liked Songs uses a different endpoint than regular playlists
+        val tracks = try {
+            if (playlistId == "liked_songs") {
+                Spotify.likedSongs(limit = SPOTIFY_MAX_PLAYLIST_TRACKS)
+                    .getOrNull()?.items?.map { it.track }?.filter { !it.isLocal }
+            } else {
+                Spotify.playlistTracks(playlistId, limit = SPOTIFY_MAX_PLAYLIST_TRACKS)
+                    .getOrNull()?.items?.mapNotNull { it.track?.takeIf { t -> !t.isLocal } }
+            }
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "Failed to fetch Spotify playlist for playback")
             return null
         } ?: return null
-
-        val tracks = result.items.mapNotNull { it.track?.takeIf { t -> !t.isLocal } }
         if (tracks.isEmpty()) return null
 
         val isShuffle = trackId == MusicService.SHUFFLE_ACTION

@@ -272,6 +272,14 @@
     <string name="clear_image_cache">Clear image cache</string>
     <string name="max_song_cache_size">Max song cache size</string>
     <string name="clear_song_cache">Clear song cache</string>
+    <string name="pre_cache">Pre-cache</string>
+    <string name="pre_cache_tracks">Pre-cache upcoming tracks</string>
+    <string name="pre_cache_tracks_desc">Automatically cache the next tracks in queue for uninterrupted offline playback</string>
+    <string name="pre_cache_track_count">Tracks to pre-cache</string>
+    <string name="pre_cache_only_wifi">Pre-cache on Wi-Fi only</string>
+    <string name="pre_cache_only_wifi_desc">Only pre-cache tracks when connected to an unmetered network</string>
+    <string name="pre_cache_off">Off</string>
+    <string name="pre_cache_count">%d tracks</string>
 
     <string name="privacy">Privacy</string>
     <string name="listen_history">Listen history</string>

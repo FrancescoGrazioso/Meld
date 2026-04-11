@@ -53,6 +53,8 @@ import com.metrolist.music.R
 import com.metrolist.music.constants.EnableSongCacheKey
 import com.metrolist.music.constants.MaxImageCacheSizeKey
 import com.metrolist.music.constants.MaxSongCacheSizeKey
+import com.metrolist.music.constants.PreCacheOnlyWifiKey
+import com.metrolist.music.constants.PreCacheTracksKey
 import com.metrolist.music.extensions.tryOrNull
 import com.metrolist.music.ui.component.ActionPromptDialog
 import com.metrolist.music.ui.component.IconButton
@@ -94,6 +96,14 @@ fun StorageSettings(
     )
     val (enableSongCache, onEnableSongCacheChange) = rememberPreference(
         key = EnableSongCacheKey,
+        defaultValue = true
+    )
+    val (preCacheTracks, onPreCacheTracksChange) = rememberPreference(
+        key = PreCacheTracksKey,
+        defaultValue = 0
+    )
+    val (preCacheOnlyWifi, onPreCacheOnlyWifiChange) = rememberPreference(
+        key = PreCacheOnlyWifiKey,
         defaultValue = true
     )
 
@@ -409,6 +419,65 @@ fun StorageSettings(
                         },
                     ),
                 ),
+        )
+
+        Material3SettingsGroup(
+            title = stringResource(R.string.pre_cache),
+            items = listOf(
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.offline),
+                    title = { Text(stringResource(R.string.pre_cache_tracks)) },
+                    enabled = enableSongCache,
+                    description = {
+                        val preCacheValues = remember { listOf(0, 3, 5, 10, 20) }
+                        Column {
+                            Text(
+                                text = stringResource(R.string.pre_cache_tracks_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                            Spacer(modifier = Modifier.padding(4.dp))
+                            Text(
+                                text = when (preCacheTracks) {
+                                    0 -> stringResource(R.string.pre_cache_off)
+                                    else -> stringResource(R.string.pre_cache_count, preCacheTracks)
+                                }
+                            )
+                            Slider(
+                                value = preCacheValues.indexOf(preCacheTracks).toFloat(),
+                                enabled = enableSongCache,
+                                onValueChange = {
+                                    onPreCacheTracksChange(preCacheValues[it.roundToInt()])
+                                },
+                                steps = preCacheValues.size - 2,
+                                valueRange = 0f..(preCacheValues.size - 1).toFloat(),
+                            )
+                        }
+                    },
+                ),
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.wifi_proxy),
+                    title = { Text(stringResource(R.string.pre_cache_only_wifi)) },
+                    enabled = enableSongCache && preCacheTracks > 0,
+                    description = { Text(stringResource(R.string.pre_cache_only_wifi_desc)) },
+                    trailingContent = {
+                        Switch(
+                            checked = preCacheOnlyWifi,
+                            onCheckedChange = onPreCacheOnlyWifiChange,
+                            enabled = enableSongCache && preCacheTracks > 0,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (preCacheOnlyWifi) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onPreCacheOnlyWifiChange(!preCacheOnlyWifi) }
+                ),
+            ),
         )
 
         Material3SettingsGroup(

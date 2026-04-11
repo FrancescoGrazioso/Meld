@@ -752,7 +752,12 @@ fun HomeScreen(
     val navigateToPlaylist: (String) -> Unit = remember(navController) {
         { playlistId: String ->
             if (playlistId.isSpotifyId()) {
-                navController.navigate("spotify_playlist/${playlistId.stripSpotifyPrefix()}")
+                val strippedId = playlistId.stripSpotifyPrefix()
+                if (strippedId == "liked_songs") {
+                    navController.navigate("spotify_liked_songs")
+                } else {
+                    navController.navigate("spotify_playlist/$strippedId")
+                }
             } else {
                 scope.launch(Dispatchers.IO) {
                     val localById = database.playlist(playlistId).first()
