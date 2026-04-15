@@ -422,7 +422,7 @@ class MusicService :
             ) {
                 when (intent.action) {
                     Intent.ACTION_SCREEN_OFF -> {
-                        if (!player.isPlaying) {
+                        if (playerInitialized.value && !player.isPlaying) {
                             scope.launch(Dispatchers.IO) {
                                 discordRpc?.closeRPC()
                             }
@@ -430,7 +430,7 @@ class MusicService :
                     }
 
                     Intent.ACTION_SCREEN_ON -> {
-                        if (player.isPlaying) {
+                        if (playerInitialized.value && player.isPlaying) {
                             scope.launch {
                                 currentSong.value?.let { song ->
                                     updateDiscordRPC(song)
@@ -3306,10 +3306,10 @@ class MusicService :
                             id = mediaId,
                             itag = format.itag,
                             mimeType = format.mimeType.split(";")[0],
-                            codecs = format.mimeType.split("codecs=")[1].removeSurrounding("\""),
+                            codecs = format.mimeType.substringAfter("codecs=", "").removeSurrounding("\""),
                             bitrate = format.bitrate,
                             sampleRate = format.audioSampleRate,
-                            contentLength = format.contentLength!!,
+                            contentLength = format.contentLength ?: 0L,
                             loudnessDb = loudnessDb,
                             perceptualLoudnessDb = perceptualLoudnessDb,
                             playbackUrl = nonNullPlayback.playbackTracking?.videostatsPlaybackUrl?.baseUrl,
@@ -3548,26 +3548,32 @@ class MusicService :
             }
 
             MusicWidgetReceiver.ACTION_PLAY_PAUSE -> {
-                if (player.isPlaying) player.pause() else player.play()
-                updateWidgetUI(player.isPlaying)
+                if (playerInitialized.value) {
+                    if (player.isPlaying) player.pause() else player.play()
+                    updateWidgetUI(player.isPlaying)
+                }
             }
 
             MusicWidgetReceiver.ACTION_LIKE -> {
-                toggleLike()
+                if (playerInitialized.value) toggleLike()
             }
 
             MusicWidgetReceiver.ACTION_NEXT -> {
-                player.seekToNext()
-                updateWidgetUI(player.isPlaying)
+                if (playerInitialized.value) {
+                    player.seekToNext()
+                    updateWidgetUI(player.isPlaying)
+                }
             }
 
             MusicWidgetReceiver.ACTION_PREVIOUS -> {
-                player.seekToPrevious()
-                updateWidgetUI(player.isPlaying)
+                if (playerInitialized.value) {
+                    player.seekToPrevious()
+                    updateWidgetUI(player.isPlaying)
+                }
             }
 
             MusicWidgetReceiver.ACTION_UPDATE_WIDGET -> {
-                updateWidgetUI(player.isPlaying)
+                if (playerInitialized.value) updateWidgetUI(player.isPlaying)
             }
         }
 

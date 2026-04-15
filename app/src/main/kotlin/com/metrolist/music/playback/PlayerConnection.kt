@@ -143,10 +143,10 @@ class PlayerConnection(
         }.stateIn(
             scope,
             SharingStarted.Lazily,
-            player.playbackState != STATE_ENDED && player.playWhenReady,
+            try { player.playbackState != STATE_ENDED && player.playWhenReady } catch (_: Exception) { false },
         )
 
-    val mediaMetadata = MutableStateFlow(player.currentMetadata)
+    val mediaMetadata = MutableStateFlow(try { player.currentMetadata } catch (_: Exception) { null })
     val currentSong =
         mediaMetadata.flatMapLatest {
             database.song(it?.id)

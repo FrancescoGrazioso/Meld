@@ -195,6 +195,10 @@
 -keep class com.metrolist.music.listentogether.proto.** { *; }
 -keepclassmembers class com.metrolist.music.listentogether.proto.** { *; }
 
+## Paxsenix Lyrics Provider
+-keep class com.metrolist.paxsenix.** { *; }
+-keepclassmembers class com.metrolist.paxsenix.** { *; }
+
 ## Shazam Models
 -keep class com.metrolist.shazamkit.models.** { *; }
 -keepclassmembers class com.metrolist.shazamkit.models.** {

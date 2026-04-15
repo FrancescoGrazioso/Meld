@@ -153,7 +153,7 @@ class MusicDatabase(
         AutoMigration(from = 32, to = 33),
         AutoMigration(from = 33, to = 34),
         AutoMigration(from = 34, to = 35),
-        AutoMigration(from = 35, to = 36, spec = Migration35To36::class),
+        AutoMigration(from = 35, to = 36),
         AutoMigration(from = 36, to = 37),
     ],
 )
@@ -443,21 +443,23 @@ val MIGRATION_21_24 =
                 Timber.tag("Migration").w("Column isDownloaded may already exist")
             }
 
-            // From 23→24: Add isUploaded
-            var hasIsUploaded = false
-            db.query("PRAGMA table_info('song')").use { cursor ->
-                val nameIndex = cursor.getColumnIndex("name")
-                while (cursor.moveToNext()) {
-                    val colName = if (nameIndex >= 0) cursor.getString(nameIndex) else null
-                    if (colName == "isUploaded") {
-                        hasIsUploaded = true
-                        break
-                    }
-                }
+            // From 21→22: Add thumbnailUrl to playlist
+            try {
+                db.execSQL("ALTER TABLE playlist ADD COLUMN thumbnailUrl TEXT DEFAULT NULL")
+            } catch (e: Exception) {
+                Timber.tag("Migration").w("Column playlist.thumbnailUrl may already exist")
             }
 
-            if (!hasIsUploaded) {
-                db.execSQL("ALTER TABLE `song` ADD COLUMN `isUploaded` INTEGER NOT NULL DEFAULT 0")
+            // From 23→24: Add isUploaded to song and album
+            try {
+                db.execSQL("ALTER TABLE song ADD COLUMN isUploaded INTEGER NOT NULL DEFAULT 0")
+            } catch (e: Exception) {
+                Timber.tag("Migration").w("Column song.isUploaded may already exist")
+            }
+            try {
+                db.execSQL("ALTER TABLE album ADD COLUMN isUploaded INTEGER NOT NULL DEFAULT 0")
+            } catch (e: Exception) {
+                Timber.tag("Migration").w("Column album.isUploaded may already exist")
             }
         }
     }
@@ -465,21 +467,16 @@ val MIGRATION_21_24 =
 val MIGRATION_22_24 =
     object : Migration(22, 24) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            // From 23→24: Add isUploaded
-            var hasIsUploaded = false
-            db.query("PRAGMA table_info('song')").use { cursor ->
-                val nameIndex = cursor.getColumnIndex("name")
-                while (cursor.moveToNext()) {
-                    val colName = if (nameIndex >= 0) cursor.getString(nameIndex) else null
-                    if (colName == "isUploaded") {
-                        hasIsUploaded = true
-                        break
-                    }
-                }
+            // From 23→24: Add isUploaded to song and album
+            try {
+                db.execSQL("ALTER TABLE song ADD COLUMN isUploaded INTEGER NOT NULL DEFAULT 0")
+            } catch (e: Exception) {
+                Timber.tag("Migration").w("Column song.isUploaded may already exist")
             }
-
-            if (!hasIsUploaded) {
-                db.execSQL("ALTER TABLE `song` ADD COLUMN `isUploaded` INTEGER NOT NULL DEFAULT 0")
+            try {
+                db.execSQL("ALTER TABLE album ADD COLUMN isUploaded INTEGER NOT NULL DEFAULT 0")
+            } catch (e: Exception) {
+                Timber.tag("Migration").w("Column album.isUploaded may already exist")
             }
         }
     }
@@ -732,21 +729,3 @@ class Migration29To30 : AutoMigrationSpec {
     }
 }
 
-class Migration35To36 : AutoMigrationSpec {
-    override fun onPostMigrate(db: SupportSQLiteDatabase) {
-        var hasIsCached = false
-        db.query("PRAGMA table_info('song')").use { cursor ->
-            val nameIndex = cursor.getColumnIndex("name")
-            while (cursor.moveToNext()) {
-                val colName = if (nameIndex >= 0) cursor.getString(nameIndex) else null
-                if (colName == "isCached") {
-                    hasIsCached = true
-                    break
-                }
-            }
-        }
-        if (!hasIsCached) {
-            db.execSQL("ALTER TABLE song ADD COLUMN isCached INTEGER NOT NULL DEFAULT 0")
-        }
-    }
-}
