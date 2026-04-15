@@ -212,7 +212,7 @@ jobs:
           gh release create "v${{ needs.check-version.outputs.new_version }}" \
             --title "${{ needs.check-version.outputs.new_version }}" \
             --notes-file release_notes.md \
-            --latest \
+            --draft \
             release_files/*.apk
 
           echo "Release created successfully!"
