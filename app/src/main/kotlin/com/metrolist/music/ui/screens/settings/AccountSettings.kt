@@ -6,7 +6,6 @@
 package com.metrolist.music.ui.screens.settings
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -26,6 +25,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -65,8 +66,9 @@ import com.metrolist.music.constants.VisitorDataKey
 import com.metrolist.music.constants.YtmSyncKey
 import com.metrolist.music.ui.component.DefaultDialog
 import com.metrolist.music.ui.component.InfoLabel
+import com.metrolist.music.ui.component.Material3SettingsGroup
+import com.metrolist.music.ui.component.Material3SettingsItem
 import com.metrolist.music.ui.component.PreferenceEntry
-import com.metrolist.music.ui.component.SwitchPreference
 import com.metrolist.music.ui.component.TextFieldDialog
 import com.metrolist.music.utils.Updater
 import com.metrolist.music.utils.rememberPreference
@@ -130,65 +132,6 @@ fun AccountSettings(
 
         Spacer(Modifier.height(12.dp))
 
-        val accountSectionModifier = Modifier.clickable {
-            onClose()
-            if (isLoggedIn) {
-                navController.navigate("account")
-            } else {
-                navController.navigate("login")
-            }
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = accountSectionModifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(horizontal = 18.dp, vertical = 12.dp)
-        ) {
-            if (isLoggedIn && accountImageUrl != null) {
-                AsyncImage(
-                    model = accountImageUrl,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.size(40.dp).clip(CircleShape)
-                )
-            } else {
-                Icon(
-                    painter = painterResource(R.drawable.login),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-
-            Spacer(Modifier.width(12.dp))
-
-            Column(Modifier.weight(1f)) {
-                Text(
-                    text = if (isLoggedIn) accountName else stringResource(R.string.login),
-                    color = MaterialTheme.colorScheme.primary,
-                    style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(start = 5.dp)
-                )
-            }
-
-            if (isLoggedIn) {
-                OutlinedButton(
-                    onClick = {
-                        Timber.d("[LOGOUT] User clicked logout button, showing dialog")
-                        showLogoutDialog = true
-                    },
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainer,
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    )
-                ) {
-                    Text(stringResource(R.string.action_logout))
-                }
-            }
-        }
-
         // Logout confirmation dialog
         if (showLogoutDialog) {
             DefaultDialog(
@@ -235,8 +178,6 @@ fun AccountSettings(
                 }
             )
         }
-
-        Spacer(Modifier.height(4.dp))
 
         if (showTokenEditor) {
             val text = """
@@ -295,64 +236,134 @@ fun AccountSettings(
                     cookieValue.isNotEmpty() && "SAPISID" in parseCookieString(cookieValue)
                 },
                 extraContent = {
+                    Spacer(Modifier.height(8.dp))
                     InfoLabel(text = stringResource(R.string.token_adv_login_description))
                 }
             )
         }
 
-        PreferenceEntry(
-            title = {
-                Text(
-                    when {
-                        !isLoggedIn -> stringResource(R.string.advanced_login)
-                        showToken -> stringResource(R.string.token_shown)
-                        else -> stringResource(R.string.token_hidden)
+        Material3SettingsGroup(
+            items = listOf(
+                Material3SettingsItem(
+                    title = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (isLoggedIn && accountImageUrl != null) {
+                                AsyncImage(
+                                    model = accountImageUrl,
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.size(40.dp).clip(CircleShape)
+                                )
+
+                                Spacer(Modifier.width(12.dp))
+                            }
+
+                            Text(
+                                text = if (isLoggedIn) accountName else stringResource(R.string.login),
+                            )
+                        }
+                    },
+                    icon = if (!isLoggedIn) painterResource(R.drawable.login) else null,
+                    trailingContent = {
+                        if (isLoggedIn) {
+                            OutlinedButton(
+                                onClick = {
+                                    Timber.d("[LOGOUT] User clicked logout button, showing dialog")
+                                    showLogoutDialog = true
+                                },
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                                    contentColor = MaterialTheme.colorScheme.onSurface
+                                )
+                            ) {
+                                Text(stringResource(R.string.action_logout))
+                            }
+                        }
+                    },
+                    onClick = {
+                        onClose()
+                        if (isLoggedIn) {
+                            navController.navigate("account")
+                        } else {
+                            navController.navigate("login")
+                        }
                     }
                 )
-            },
-            icon = { Icon(painterResource(R.drawable.token), null) },
-            onClick = {
-                if (!isLoggedIn) showTokenEditor = true
-                else if (!showToken) showToken = true
-                else showTokenEditor = true
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface)
+            ),
+            useLowContrast = true
         )
 
-        Spacer(Modifier.height(4.dp))
+        Spacer(Modifier.height(8.dp))
 
-        if (isLoggedIn) {
-            SwitchPreference(
-                title = { Text(stringResource(R.string.more_content)) },
-                description = null,
-                icon = { Icon(painterResource(R.drawable.add_circle), null) },
-                checked = useLoginForBrowse,
-                onCheckedChange = {
-                    YouTube.useLoginForBrowse = it
-                    onUseLoginForBrowseChange(it)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-            )
-  
-            Spacer(Modifier.height(4.dp))
-
-            SwitchPreference(
-                title = { Text(stringResource(R.string.yt_sync)) },
-                icon = { Icon(painterResource(R.drawable.cached), null) },
-                checked = ytmSync,
-                onCheckedChange = onYtmSyncChange,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(MaterialTheme.colorScheme.surface)
-            )
-        }
+        Material3SettingsGroup(
+            items = listOf(
+                Material3SettingsItem(
+                    title = {
+                        Text(
+                            when {
+                                !isLoggedIn -> stringResource(R.string.advanced_login)
+                                showToken -> stringResource(R.string.token_shown)
+                                else -> stringResource(R.string.token_hidden)
+                            }
+                        )
+                    },
+                    icon = painterResource(R.drawable.token),
+                    onClick = {
+                        if (!isLoggedIn) showTokenEditor = true
+                        else if (!showToken) showToken = true
+                        else showTokenEditor = true
+                    }
+                ),
+                Material3SettingsItem(
+                    title = { Text(stringResource(R.string.more_content)) },
+                    icon = painterResource(R.drawable.cached),
+                    trailingContent = {
+                        Switch(
+                            enabled = isLoggedIn,
+                            checked = useLoginForBrowse,
+                            onCheckedChange = {
+                                YouTube.useLoginForBrowse = it
+                                onUseLoginForBrowseChange(it)
+                            },
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (useLoginForBrowse) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    enabled = isLoggedIn
+                ),
+                Material3SettingsItem(
+                    title = { Text(stringResource(R.string.yt_sync)) },
+                    icon = painterResource(R.drawable.cached),
+                    trailingContent = {
+                        Switch(
+                            enabled = isLoggedIn,
+                            checked = ytmSync,
+                            onCheckedChange = onYtmSyncChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (ytmSync) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    enabled = isLoggedIn
+                )
+            ),
+            useLowContrast = true
+        )
 
         Spacer(Modifier.height(12.dp))
 
@@ -380,7 +391,7 @@ fun AccountSettings(
                 icon = {
                     BadgedBox(
                         badge = {
-                            if (latestVersionName != BuildConfig.VERSION_NAME) {
+                            if (BuildConfig.UPDATER_AVAILABLE && latestVersionName != BuildConfig.VERSION_NAME) {
                                 Badge()
                             }
                         }
@@ -399,7 +410,7 @@ fun AccountSettings(
 
             Spacer(Modifier.height(4.dp))
 
-            if (latestVersionName != BuildConfig.VERSION_NAME) {
+            if (BuildConfig.UPDATER_AVAILABLE && latestVersionName != BuildConfig.VERSION_NAME) {
                 val releaseInfo = Updater.getCachedLatestRelease()
                 val downloadUrl = releaseInfo?.let { Updater.getDownloadUrlForCurrentVariant(it) }
                 

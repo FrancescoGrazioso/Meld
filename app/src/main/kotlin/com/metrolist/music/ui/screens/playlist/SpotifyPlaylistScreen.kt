@@ -103,7 +103,12 @@ import com.metrolist.music.viewmodels.SpotifyPlaylistViewModel
 import com.metrolist.spotify.SpotifyMapper
 import com.metrolist.spotify.models.SpotifyPlaylistTrack
 
+import androidx.core.net.toUri
+import androidx.media3.exoplayer.offline.DownloadRequest
+import androidx.media3.exoplayer.offline.DownloadService
+import com.metrolist.music.playback.ExoDownloadService
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -627,6 +632,45 @@ fun SpotifyPlaylistScreen(
                                 onClick = {
                                     showOverflowMenu = false
                                     showRenameDialog = true
+                                },
+                            )
+                            DropdownMenuItem(
+                                text = { Text(stringResource(R.string.action_download)) },
+                                leadingIcon = {
+                                    Icon(
+                                        painterResource(R.drawable.download),
+                                        contentDescription = null,
+                                    )
+                                },
+                                onClick = {
+                                    showOverflowMenu = false
+                                    Timber.d("SpotifyPlaylistDownload: started, ${tracks.size} tracks")
+                                    coroutineScope.launch {
+                                        var resolved = 0
+                                        var skipped = 0
+                                        tracks.forEach { track ->
+                                            val metadata = mapper.mapToYouTube(track)
+                                            if (metadata == null) {
+                                                skipped++
+                                                Timber.w("SpotifyPlaylistDownload: SKIP '${track.name}' — no YouTube match")
+                                                return@forEach
+                                            }
+                                            resolved++
+                                            Timber.d("SpotifyPlaylistDownload: queuing '${track.name}' -> yt:${metadata.id}")
+                                            val downloadRequest = DownloadRequest
+                                                .Builder(metadata.id, metadata.id.toUri())
+                                                .setCustomCacheKey(metadata.id)
+                                                .setData(metadata.title.toByteArray())
+                                                .build()
+                                            DownloadService.sendAddDownload(
+                                                context,
+                                                ExoDownloadService::class.java,
+                                                downloadRequest,
+                                                false,
+                                            )
+                                        }
+                                        Timber.d("SpotifyPlaylistDownload: done — $resolved queued, $skipped skipped")
+                                    }
                                 },
                             )
                         }

@@ -115,7 +115,7 @@ fun WrappedTop5SongsScreen(topSongs: List<SongWithStats>, isVisible: Boolean) {
                                     fontSize = 16.sp
                                 )
                                 Text(
-                                    text = song.artistName ?: "",
+                                    text = song.artists.joinToString(", ") { it.name }.ifBlank { song.artistName.orEmpty() },
                                     color = Color.White.copy(alpha = 0.7f),
                                     fontSize = 14.sp
                                 )

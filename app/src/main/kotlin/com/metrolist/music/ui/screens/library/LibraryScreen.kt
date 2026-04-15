@@ -28,8 +28,7 @@ fun LibraryScreen(navController: NavController) {
     val filterContent = @Composable {
         Row {
             ChipsRow(
-                chips =
-                listOf(
+                chips = listOf(
                     LibraryFilter.PLAYLISTS to stringResource(R.string.filter_playlists),
                     LibraryFilter.SONGS to stringResource(R.string.filter_songs),
                     LibraryFilter.ALBUMS to stringResource(R.string.filter_albums),
@@ -39,43 +38,38 @@ fun LibraryScreen(navController: NavController) {
                 ),
                 currentValue = filterType,
                 onValueUpdate = {
-                    filterType =
-                        if (filterType == it) {
-                            LibraryFilter.LIBRARY
-                        } else {
-                            it
-                        }
+                    filterType = if (filterType == it) LibraryFilter.LIBRARY else it
                 },
                 modifier = Modifier.weight(1f),
             )
         }
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
         when (filterType) {
             LibraryFilter.LIBRARY -> LibraryMixScreen(navController, filterContent)
             LibraryFilter.PLAYLISTS -> LibraryPlaylistsScreen(navController, filterContent)
             LibraryFilter.SONGS -> LibrarySongsScreen(
                 navController,
-                { filterType = LibraryFilter.LIBRARY })
-
+                { filterType = LibraryFilter.LIBRARY },
+            )
             LibraryFilter.ALBUMS -> LibraryAlbumsScreen(
                 navController,
-                { filterType = LibraryFilter.LIBRARY })
-
+                { filterType = LibraryFilter.LIBRARY },
+            )
             LibraryFilter.ARTISTS -> LibraryArtistsScreen(
                 navController,
-                { filterType = LibraryFilter.LIBRARY })
-
+                { filterType = LibraryFilter.LIBRARY },
+            )
             LibraryFilter.PODCASTS -> LibraryPodcastsScreen(
                 navController,
-                filterContent)
+                { filterType = LibraryFilter.LIBRARY },
+            )
 
             LibraryFilter.LOCAL_FILES -> LocalFilesScreen(
                 navController,
-                filterContent)
+                { filterType = LibraryFilter.LIBRARY },
+            )
         }
     }
 }

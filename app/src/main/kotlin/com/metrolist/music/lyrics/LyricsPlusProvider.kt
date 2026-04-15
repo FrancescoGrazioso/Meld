@@ -21,6 +21,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import timber.log.Timber
+import java.util.Locale
 
 @Serializable
 private data class LyricLineResponse(
@@ -125,7 +126,7 @@ object LyricsPlusProvider : LyricsProvider {
             val millis = line.time % 1000 / 10
             
             if (line.text.isNotBlank()) {
-                String.format("[%02d:%02d.%02d]%s", minutes, seconds, millis, line.text)
+                String.format(Locale.US, "[%02d:%02d.%02d]%s", minutes, seconds, millis, line.text)
             } else {
                 null
             }
@@ -133,6 +134,7 @@ object LyricsPlusProvider : LyricsProvider {
     }
 
     override suspend fun getLyrics(
+        context: Context,
         id: String,
         title: String,
         artist: String,
@@ -150,6 +152,7 @@ object LyricsPlusProvider : LyricsProvider {
     }
 
     override suspend fun getAllLyrics(
+        context: Context,
         id: String,
         title: String,
         artist: String,
@@ -157,7 +160,7 @@ object LyricsPlusProvider : LyricsProvider {
         album: String?,
         callback: (String) -> Unit,
     ) {
-        getLyrics(id, title, artist, duration, album)
+        getLyrics(context, id, title, artist, duration, album)
             .onSuccess { lrcString ->
                 callback(lrcString)
             }

@@ -118,7 +118,7 @@ fun QueueMenu(
     AddToPlaylistDialog(
         isVisible = showChoosePlaylistDialog,
         onGetSong = { playlist ->
-            database.transaction {
+            database.withTransaction {
                 insert(mediaMetadata)
             }
             coroutineScope.launch(Dispatchers.IO) {
@@ -126,6 +126,7 @@ fun QueueMenu(
             }
             listOf(mediaMetadata.id)
         },
+        onGetSongIds = { listOf(mediaMetadata.id) },
         onDismiss = {
             showChoosePlaylistDialog = false
         }
@@ -283,9 +284,16 @@ fun QueueMenu(
                         text = stringResource(R.string.start_radio),
                         onClick = {
                             onDismiss()
-                            playerConnection.playQueue(
-                                YouTubeQueue.radio(mediaMetadata)
-                            )
+                            val currentMediaId = playerConnection.player.currentMediaItemIndex.let {
+                                playerConnection.player.getMediaItemAt(it).mediaId
+                            }
+                            if (mediaMetadata.id == currentMediaId) {
+                                playerConnection.startRadioSeamlessly()
+                            } else {
+                                playerConnection.playQueue(
+                                    YouTubeQueue.radio(mediaMetadata)
+                                )
+                            }
                         }
                     ),
                     NewAction(

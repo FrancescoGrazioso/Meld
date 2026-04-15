@@ -122,6 +122,10 @@ class HomeViewModel @Inject constructor(
     val allLocalItems = MutableStateFlow<List<LocalItem>>(emptyList())
     val allYtItems = MutableStateFlow<List<YTItem>>(emptyList())
 
+    val pinnedSpeedDialItems: StateFlow<List<SpeedDialItem>> =
+        database.speedDialDao.getAll()
+            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+
     val speedDialItems: StateFlow<List<YTItem>> =
         combine(
             database.speedDialDao.getAll(),

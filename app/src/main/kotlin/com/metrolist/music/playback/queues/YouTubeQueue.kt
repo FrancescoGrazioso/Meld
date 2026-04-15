@@ -24,8 +24,14 @@ class YouTubeQueue(
     override suspend fun getInitialStatus(): Queue.Status {
         return withContext(IO) {
             var lastException: Throwable? = null
-            
-            // Try with original endpoint first (allows YouTube to personalize recommendations)
+
+            if (endpoint.videoId != null && endpoint.playlistId == null) {
+                endpoint = WatchEndpoint(
+                    videoId = endpoint.videoId,
+                    playlistId = "RDAMVM${endpoint.videoId}"
+                )
+            }
+
             for (attempt in 0..maxRetries) {
                 try {
                     val nextResult = YouTube.next(endpoint, continuation).getOrThrow()
@@ -39,13 +45,6 @@ class YouTubeQueue(
                     )
                 } catch (e: Exception) {
                     lastException = e
-                    // If first attempt fails and we have a videoId, try with fallback radio params
-                    if (attempt == 0 && endpoint.videoId != null && endpoint.playlistId == null) {
-                        endpoint = WatchEndpoint(
-                            videoId = endpoint.videoId,
-                            playlistId = "RDAMVM${endpoint.videoId}"
-                        )
-                    }
                 }
             }
             throw lastException ?: Exception("Failed to get initial status")
@@ -57,7 +56,7 @@ class YouTubeQueue(
     override suspend fun nextPage(): List<MediaItem> {
         return withContext(IO) {
             var lastException: Throwable? = null
-            
+
             for (attempt in 0..maxRetries) {
                 try {
                     val nextResult = YouTube.next(endpoint, continuation).getOrThrow()
@@ -80,11 +79,14 @@ class YouTubeQueue(
     companion object {
         /**
          * Creates a radio queue based on a song.
-         * Uses only videoId to let YouTube personalize recommendations based on user's listening history.
+         * Explicitly requests the RDAMVM playlist to trigger automotive/radio mixing.
          */
         fun radio(song: MediaMetadata): YouTubeQueue {
             return YouTubeQueue(
-                WatchEndpoint(videoId = song.id),
+                WatchEndpoint(
+                    videoId = song.id,
+                    playlistId = "RDAMVM${song.id}"
+                ),
                 song
             )
         }

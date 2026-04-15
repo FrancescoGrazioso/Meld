@@ -16,4 +16,14 @@
     <style name="Theme.Widget.Metrolist" parent="@android:style/Theme.DeviceDefault.DayNight">
         <item name="android:colorBackground">#E6E1E5</item>
     </style>
+
+    <!-- Transparent theme for Music Recognizer Tile Service -->
+    <style name="Theme.Metrolist.Transparent" parent="@android:style/Theme.Translucent.NoTitleBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
 </resources>
