@@ -34,8 +34,9 @@ class SpotifyLikedSongsQueue(
     companion object {
         private const val SPOTIFY_PAGE_SIZE = 50
         private const val RESOLVE_BATCH_SIZE = 20
-        private const val INITIAL_WINDOW_BEFORE = 5
-        private const val INITIAL_WINDOW_AFTER = 19
+        /** Resolve only the target + a few neighbors for instant playback start. */
+        private const val FAST_START_BEFORE = 0
+        private const val FAST_START_AFTER = 2
     }
 
     // All Spotify tracks fetched so far (may span multiple API pages)
@@ -64,9 +65,10 @@ class SpotifyLikedSongsQueue(
 
             val targetIndex = startIndex.coerceIn(0, (allTracks.size - 1).coerceAtLeast(0))
 
-            // Resolve a window of tracks around the selected one
-            val windowStart = (targetIndex - INITIAL_WINDOW_BEFORE).coerceAtLeast(0)
-            val windowEnd = (targetIndex + INITIAL_WINDOW_AFTER + 1).coerceAtMost(allTracks.size)
+            // Fast-start: resolve only a tiny window (target + 2 next) for instant playback.
+            // The rest of the queue is populated via nextPage() in the background.
+            val windowStart = (targetIndex - FAST_START_BEFORE).coerceAtLeast(0)
+            val windowEnd = (targetIndex + FAST_START_AFTER + 1).coerceAtMost(allTracks.size)
             val windowTracks = allTracks.subList(windowStart, windowEnd)
 
             val resolvedItems = coroutineScope {
@@ -85,7 +87,7 @@ class SpotifyLikedSongsQueue(
             val mediaItemIndex = (targetIndex - windowStart)
                 .coerceIn(0, (resolvedItems.size - 1).coerceAtLeast(0))
 
-            Timber.d("SpotifyLikedSongsQueue: Resolved ${resolvedItems.size} tracks " +
+            Timber.d("SpotifyLikedSongsQueue: Fast-start resolved ${resolvedItems.size} tracks " +
                 "(window $windowStart..$windowEnd, target=$targetIndex, total=$apiTotal)")
 
             Queue.Status(
