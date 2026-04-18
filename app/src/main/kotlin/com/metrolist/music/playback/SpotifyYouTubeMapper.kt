@@ -22,22 +22,56 @@ import timber.log.Timber
 /**
  * Handles the matching of Spotify tracks to YouTube Music equivalents.
  * Uses fuzzy matching on title, artist, and duration to find the best result.
- * Caches successful matches in the local Room database.
+ * Caches successful matches in the local Room database and an in-memory LRU
+ * cache to avoid repeated DB queries for recently resolved tracks.
  */
 class SpotifyYouTubeMapper(
     private val database: MusicDatabase,
 ) {
+
+    /**
+     * In-memory LRU cache of recently resolved Spotify→YouTube matches.
+     * Avoids DB I/O for tracks resolved in the same session (e.g. queue
+     * re-resolving after seek or shuffle).  Bounded to 512 entries (~30 KB).
+     */
+    private val memoryCache = object : LinkedHashMap<String, CachedMatch>(
+        MEM_CACHE_MAX_SIZE, 0.75f, true
+    ) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, CachedMatch>?): Boolean =
+            size > MEM_CACHE_MAX_SIZE
+    }
+
+    private data class CachedMatch(
+        val youtubeId: String,
+        val title: String,
+        val artist: String,
+        val isManualOverride: Boolean = false,
+    )
+
     /**
      * Maps a Spotify track to a YouTube MediaMetadata by searching YouTube Music.
      * Returns null if no suitable match is found.
+     *
+     * Resolution order: in-memory cache → Room DB → YouTube search.
      */
     suspend fun mapToYouTube(track: SpotifyTrack): MediaMetadata? = withContext(Dispatchers.IO) {
+        // 1. In-memory LRU cache (zero I/O)
+        memoryCache[track.id]?.let { mem ->
+            Timber.d("Spotify match memory hit: ${track.name} -> ${mem.youtubeId}")
+            return@withContext buildMediaMetadata(mem.youtubeId, track, mem.title, mem.artist)
+        }
+
+        // 2. Room DB cache
         val cached = database.getSpotifyMatch(track.id)
         if (cached != null) {
             Timber.d("Spotify match cache hit: ${track.name} -> ${cached.youtubeId} (manual=${cached.isManualOverride})")
+            memoryCache[track.id] = CachedMatch(
+                cached.youtubeId, cached.title, cached.artist, cached.isManualOverride,
+            )
             return@withContext buildMediaMetadata(cached.youtubeId, track, cached.title, cached.artist)
         }
 
+        // 3. YouTube search + fuzzy match
         val query = SpotifyMapper.buildSearchQuery(track)
         Timber.d("Searching YouTube for Spotify track: $query")
 
@@ -53,6 +87,9 @@ class SpotifyYouTubeMapper(
                     artist = bestMatch.artists.firstOrNull()?.name ?: "",
                     matchScore = bestMatch.score,
                 )
+            )
+            memoryCache[track.id] = CachedMatch(
+                bestMatch.id, bestMatch.title, bestMatch.artistName,
             )
             Timber.d("Spotify match found: ${track.name} -> ${bestMatch.id} (score: ${bestMatch.score})")
             return@withContext buildMediaMetadata(
@@ -88,6 +125,9 @@ class SpotifyYouTubeMapper(
                 isManualOverride = true,
             )
         )
+        memoryCache[spotifyId] = CachedMatch(
+            youtubeId, title, artist, isManualOverride = true,
+        )
         Timber.d("Manual override saved: $spotifyId -> $youtubeId ($title by $artist)")
     }
 
@@ -113,24 +153,31 @@ class SpotifyYouTubeMapper(
         searchResult: SearchSummaryPage,
     ): MatchCandidate? {
         val spotifyArtist = spotifyTrack.artists.firstOrNull()?.name ?: ""
-        val candidates = mutableListOf<MatchCandidate>()
 
-        // Extract SongItems from all search summaries
+        // Pre-compute normalization and bigrams for the Spotify side once
+        val precomputed = SpotifyMapper.precompute(
+            title = spotifyTrack.name,
+            artist = spotifyArtist,
+            durationMs = spotifyTrack.durationMs,
+        )
+
         val songs = searchResult.summaries
             .flatMap { it.items }
             .filterIsInstance<SongItem>()
 
+        var bestCandidate: MatchCandidate? = null
+        val earlyExitThreshold = SpotifyMapper.earlyExitThreshold()
+
         for (song in songs) {
-            val score = SpotifyMapper.matchScore(
-                spotifyTitle = spotifyTrack.name,
-                spotifyArtist = spotifyArtist,
-                spotifyDurationMs = spotifyTrack.durationMs,
+            val score = SpotifyMapper.matchScorePrecomputed(
+                precomputed = precomputed,
                 candidateTitle = song.title,
                 candidateArtist = song.artists.firstOrNull()?.name ?: "",
                 candidateDurationSec = song.duration,
             )
-            candidates.add(
-                MatchCandidate(
+
+            if (bestCandidate == null || score > bestCandidate.score) {
+                bestCandidate = MatchCandidate(
                     id = song.id,
                     title = song.title,
                     artistName = song.artists.firstOrNull()?.name ?: "",
@@ -142,10 +189,12 @@ class SpotifyYouTubeMapper(
                     explicit = song.explicit,
                     score = score,
                 )
-            )
+                // Early exit: if this match is excellent, skip remaining candidates
+                if (score >= earlyExitThreshold) break
+            }
         }
 
-        return candidates.maxByOrNull { it.score }?.takeIf { it.score >= MIN_MATCH_THRESHOLD }
+        return bestCandidate?.takeIf { it.score >= MIN_MATCH_THRESHOLD }
     }
 
     private fun buildMediaMetadata(
@@ -218,27 +267,30 @@ class SpotifyYouTubeMapper(
             return@withContext null
         }
 
-        val durationMs = if (durationSec > 0) durationSec * 1000 else 0
-        val best = results.maxByOrNull { candidate ->
-            SpotifyMapper.matchScore(
-                spotifyTitle = candidate.name,
-                spotifyArtist = candidate.artists.firstOrNull()?.name ?: "",
-                spotifyDurationMs = candidate.durationMs,
-                candidateTitle = title,
-                candidateArtist = artist,
-                candidateDurationSec = if (durationSec > 0) durationSec else null,
+        // Pre-compute for the YouTube side (the "reference" in reverse lookup)
+        val ytPrecomputed = SpotifyMapper.precompute(
+            title = title,
+            artist = artist,
+            durationMs = if (durationSec > 0) durationSec * 1000 else 0,
+        )
+
+        var best: SpotifyTrack? = null
+        var bestScore = 0.0
+        for (candidate in results) {
+            val score = SpotifyMapper.matchScorePrecomputed(
+                precomputed = ytPrecomputed,
+                candidateTitle = candidate.name,
+                candidateArtist = candidate.artists.firstOrNull()?.name ?: "",
+                candidateDurationSec = candidate.durationMs / 1000,
             )
+            if (score > bestScore) {
+                best = candidate
+                bestScore = score
+            }
         }
 
         if (best != null) {
-            val score = SpotifyMapper.matchScore(
-                spotifyTitle = best.name,
-                spotifyArtist = best.artists.firstOrNull()?.name ?: "",
-                spotifyDurationMs = best.durationMs,
-                candidateTitle = title,
-                candidateArtist = artist,
-                candidateDurationSec = if (durationSec > 0) durationSec else null,
-            )
+            val score = bestScore
             if (score >= MIN_MATCH_THRESHOLD) {
                 val uri = best.uri ?: "spotify:track:${best.id}"
                 Timber.d("Reverse lookup found: $youtubeId -> $uri (score=$score)")
@@ -261,5 +313,6 @@ class SpotifyYouTubeMapper(
 
     companion object {
         private const val MIN_MATCH_THRESHOLD = 0.35
+        private const val MEM_CACHE_MAX_SIZE = 512
     }
 }
