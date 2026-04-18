@@ -18,6 +18,9 @@ import com.metrolist.spotify.models.SpotifyTrack
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -91,29 +94,45 @@ constructor(
             _error.value = e.message ?: "Failed to load playlist info"
         }
 
-        Spotify.playlistTracks(playlistId, limit = 100, offset = 0).onSuccess { paging ->
-            val allItems = paging.items
+        Spotify.playlistTracks(playlistId, limit = PAGE_SIZE, offset = 0).onSuccess { paging ->
+            val firstItems = paging.items
                 .filter { it.track != null && !it.isLocal }
-                .toMutableList()
 
-            var offset = allItems.size
-            val total = paging.total
-            while (offset < total) {
-                Spotify.playlistTracks(playlistId, limit = 100, offset = offset)
-                    .onSuccess { nextPage ->
-                        val nextItems = nextPage.items
-                            .filter { it.track != null && !it.isLocal }
-                        allItems.addAll(nextItems)
-                        offset += nextItems.size
-                    }
-                    .onFailure {
-                        offset = total
-                    }
-            }
-
-            _playlistItems.value = allItems
-            _tracks.value = allItems.mapNotNull { it.track }
+            // Emit first page immediately so the UI shows content fast
+            _playlistItems.value = firstItems
+            _tracks.value = firstItems.mapNotNull { it.track }
             _isLoading.value = false
+
+            val remaining = paging.total - paging.items.size
+            if (remaining <= 0) return@onSuccess
+
+            // Fetch remaining pages in parallel batches, emitting progressively
+            val allItems = firstItems.toMutableList()
+            val pageCount = (remaining + PAGE_SIZE - 1) / PAGE_SIZE
+            val offsets = (0 until pageCount).map { paging.items.size + it * PAGE_SIZE }
+
+            for (batch in offsets.chunked(PARALLEL_GROUP_SIZE)) {
+                val results = coroutineScope {
+                    batch.map { offset ->
+                        async { Spotify.playlistTracks(playlistId, limit = PAGE_SIZE, offset = offset) }
+                    }.awaitAll()
+                }
+
+                var failed = false
+                for (result in results) {
+                    result.onSuccess { page ->
+                        allItems.addAll(page.items.filter { it.track != null && !it.isLocal })
+                    }.onFailure { e ->
+                        Timber.e(e, "Failed to load playlist tracks page")
+                        failed = true
+                    }
+                }
+
+                _playlistItems.value = allItems.toList()
+                _tracks.value = allItems.mapNotNull { it.track }
+
+                if (failed) break
+            }
         }.onFailure { e ->
             _error.value = e.message ?: "Failed to load playlist tracks"
             _isLoading.value = false
@@ -253,4 +272,9 @@ constructor(
      */
     fun getTrackUid(trackId: String): String? =
         _playlistItems.value.firstOrNull { it.track?.id == trackId }?.uid
+
+    companion object {
+        private const val PAGE_SIZE = 100
+        private const val PARALLEL_GROUP_SIZE = 5
+    }
 }

@@ -15,6 +15,9 @@ import com.metrolist.spotify.models.SpotifyTrack
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -67,32 +70,52 @@ constructor(
     private suspend fun loadLikedSongsInternal() {
         _error.value = null
 
-        Spotify.likedSongs(limit = 50, offset = 0).onSuccess { paging ->
-            val allTracks = paging.items
+        Spotify.likedSongs(limit = PAGE_SIZE, offset = 0).onSuccess { paging ->
+            val firstPage = paging.items
                 .map { it.track }
                 .filter { !it.isLocal }
-                .toMutableList()
 
             _total.value = paging.total
 
-            var offset = paging.items.size
-            while (offset < paging.total) {
-                Spotify.likedSongs(limit = 50, offset = offset)
-                    .onSuccess { nextPage ->
-                        val nextTracks = nextPage.items
-                            .map { it.track }
-                            .filter { !it.isLocal }
-                        allTracks.addAll(nextTracks)
-                        offset += nextPage.items.size
-                    }
-                    .onFailure {
-                        offset = paging.total
-                        Timber.e(it, "Failed to load next page of liked songs at offset $offset")
-                    }
+            // Emit first page immediately so the UI shows content within ~500ms
+            _tracks.value = firstPage
+            _isLoading.value = false
+
+            val remaining = paging.total - paging.items.size
+            if (remaining <= 0) {
+                Timber.d("SpotifyLikedSongs: Loaded ${firstPage.size} tracks (all in first page)")
+                return@onSuccess
             }
 
-            _tracks.value = allTracks
-            _isLoading.value = false
+            // Fetch remaining pages in parallel batches to avoid rate-limiting.
+            // GROUP_SIZE concurrent requests at a time, emitting results progressively.
+            val allTracks = firstPage.toMutableList()
+            val pageCount = (remaining + PAGE_SIZE - 1) / PAGE_SIZE
+            val offsets = (0 until pageCount).map { paging.items.size + it * PAGE_SIZE }
+
+            for (batch in offsets.chunked(PARALLEL_GROUP_SIZE)) {
+                val results = coroutineScope {
+                    batch.map { offset ->
+                        async { Spotify.likedSongs(limit = PAGE_SIZE, offset = offset) }
+                    }.awaitAll()
+                }
+
+                var failed = false
+                for (result in results) {
+                    result.onSuccess { page ->
+                        allTracks.addAll(page.items.map { it.track }.filter { !it.isLocal })
+                    }.onFailure { e ->
+                        Timber.e(e, "Failed to load liked songs page")
+                        failed = true
+                    }
+                }
+
+                // Emit progressively so the UI updates as pages arrive
+                _tracks.value = allTracks.toList()
+
+                if (failed) break
+            }
+
             Timber.d("SpotifyLikedSongs: Loaded ${allTracks.size} tracks (total=${paging.total})")
         }.onFailure { e ->
             _error.value = e.message ?: "Failed to load liked songs"
@@ -102,4 +125,10 @@ constructor(
     }
 
     fun retry() = loadLikedSongs()
+
+    companion object {
+        private const val PAGE_SIZE = 50
+        /** How many pages to fetch in parallel per batch. Keeps rate-limit risk low. */
+        private const val PARALLEL_GROUP_SIZE = 5
+    }
 }
