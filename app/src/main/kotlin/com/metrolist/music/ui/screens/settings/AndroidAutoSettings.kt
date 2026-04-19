@@ -65,6 +65,8 @@ enum class AndroidAutoSection(val id: String) {
     ARTISTS("artists"),
     ALBUMS("albums"),
     PLAYLISTS("playlists"),
+    SPOTIFY_LIKED("spotify_liked"),
+    SPOTIFY_PLAYLISTS("spotify_playlists"),
 }
 
 @Composable
@@ -74,6 +76,8 @@ fun AndroidAutoSection.label(): String = when (this) {
     AndroidAutoSection.ARTISTS -> stringResource(R.string.artists)
     AndroidAutoSection.ALBUMS -> stringResource(R.string.albums)
     AndroidAutoSection.PLAYLISTS -> stringResource(R.string.playlists)
+    AndroidAutoSection.SPOTIFY_LIKED -> stringResource(R.string.spotify_liked_songs)
+    AndroidAutoSection.SPOTIFY_PLAYLISTS -> stringResource(R.string.spotify_playlists)
 }
 
 fun serializeSections(sections: List<Pair<AndroidAutoSection, Boolean>>): String =
@@ -81,13 +85,19 @@ fun serializeSections(sections: List<Pair<AndroidAutoSection, Boolean>>): String
 
 fun deserializeSections(raw: String): List<Pair<AndroidAutoSection, Boolean>> {
     if (raw.isBlank()) return AndroidAutoSection.values().map { it to true }
-    return raw.split(",").mapNotNull { token ->
+    val parsed = raw.split(",").mapNotNull { token ->
         val parts = token.split(":")
         if (parts.size != 2) return@mapNotNull null
         val section = AndroidAutoSection.values().find { it.id == parts[0] } ?: return@mapNotNull null
         val enabled = parts[1].toBooleanStrictOrNull() ?: true
         section to enabled
     }
+    // Append any new enum values not yet in the user's saved preferences
+    val known = parsed.map { it.first }.toSet()
+    val newSections = AndroidAutoSection.values()
+        .filter { it !in known }
+        .map { it to true }
+    return parsed + newSections
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -184,6 +194,8 @@ fun AndroidAutoSettings(
                                         AndroidAutoSection.ARTISTS -> R.drawable.artist
                                         AndroidAutoSection.ALBUMS -> R.drawable.album
                                         AndroidAutoSection.PLAYLISTS -> R.drawable.queue_music
+                                        AndroidAutoSection.SPOTIFY_LIKED -> R.drawable.favorite
+                                        AndroidAutoSection.SPOTIFY_PLAYLISTS -> R.drawable.spotify
                                     }
                                 ),
                                 contentDescription = null,

@@ -225,6 +225,20 @@ constructor(
                                         drawableUri(R.drawable.queue_music),
                                         MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS,
                                     )
+                                    AndroidAutoSection.SPOTIFY_LIKED -> browsableMediaItem(
+                                        "${MusicService.SPOTIFY_PLAYLIST}/liked_songs",
+                                        context.getString(R.string.spotify_liked_songs),
+                                        null,
+                                        drawableUri(R.drawable.favorite),
+                                        MediaMetadata.MEDIA_TYPE_PLAYLIST,
+                                    )
+                                    AndroidAutoSection.SPOTIFY_PLAYLISTS -> browsableMediaItem(
+                                        MusicService.SPOTIFY_PLAYLIST,
+                                        context.getString(R.string.spotify_playlists),
+                                        null,
+                                        drawableUri(R.drawable.spotify),
+                                        MediaMetadata.MEDIA_TYPE_FOLDER_PLAYLISTS,
+                                    )
                                 }
                             }
                     }
@@ -316,6 +330,8 @@ constructor(
                         }
                         localItems + fetchSpotifyPlaylistItems()
                     }
+
+                    MusicService.SPOTIFY_PLAYLIST -> fetchSpotifyPlaylistItems()
 
                     else ->
                         when {
