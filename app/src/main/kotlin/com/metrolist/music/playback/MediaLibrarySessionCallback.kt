@@ -185,8 +185,15 @@ constructor(
                             serializeSections(AndroidAutoSection.values().map { it to true })
                         )
                         val sections = deserializeSections(sectionsRaw)
+                        val spotifyLoggedIn = Spotify.isAuthenticated()
                         sections
-                            .filter { (_, enabled) -> enabled }
+                            .filter { (section, enabled) ->
+                                enabled && when (section) {
+                                    AndroidAutoSection.SPOTIFY_LIKED,
+                                    AndroidAutoSection.SPOTIFY_PLAYLISTS -> spotifyLoggedIn
+                                    else -> true
+                                }
+                            }
                             .ifEmpty { listOf(AndroidAutoSection.LIKED to true) }
                             .map { (section, _) ->
                                 when (section) {
