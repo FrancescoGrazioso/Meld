@@ -49,6 +49,7 @@ import com.metrolist.music.constants.AndroidAutoSectionsOrderKey
 import com.metrolist.music.constants.AndroidAutoTargetPlaylistKey
 import com.metrolist.music.constants.AndroidAutoYouTubePlaylistsKey
 import com.metrolist.music.constants.MediaSessionConstants
+import com.metrolist.music.constants.SpotifyAccessTokenKey
 import com.metrolist.music.ui.component.IconButton
 import com.metrolist.music.ui.component.Material3SettingsGroup
 import com.metrolist.music.ui.component.Material3SettingsItem
@@ -60,13 +61,13 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
 enum class AndroidAutoSection(val id: String) {
+    SPOTIFY_LIKED("spotify_liked"),
+    SPOTIFY_PLAYLISTS("spotify_playlists"),
     LIKED("liked"),
     SONGS("songs"),
     ARTISTS("artists"),
     ALBUMS("albums"),
     PLAYLISTS("playlists"),
-    SPOTIFY_LIKED("spotify_liked"),
-    SPOTIFY_PLAYLISTS("spotify_playlists"),
 }
 
 @Composable
@@ -128,18 +129,36 @@ fun AndroidAutoSettings(
         defaultValue = MediaSessionConstants.TARGET_PLAYLIST_AUTO
     )
 
+    val (spotifyToken) = rememberPreference(
+        key = SpotifyAccessTokenKey,
+        defaultValue = ""
+    )
+    val spotifyLoggedIn = spotifyToken.isNotEmpty()
+
     var sections by remember(sectionsRaw) {
         mutableStateOf(deserializeSections(sectionsRaw))
+    }
+
+    val visibleSections = remember(sections, spotifyLoggedIn) {
+        if (spotifyLoggedIn) sections
+        else sections.filterNot { (s, _) ->
+            s == AndroidAutoSection.SPOTIFY_LIKED || s == AndroidAutoSection.SPOTIFY_PLAYLISTS
+        }
     }
 
     val lazyListState = rememberLazyListState()
     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
         val fromReal = from.index
         val toReal = to.index
-        if (fromReal >= 0 && toReal >= 0 && fromReal < sections.size && toReal < sections.size) {
-            sections = sections.toMutableList().apply {
-                add(toReal, removeAt(fromReal))
+        val visible = if (spotifyLoggedIn) sections
+            else sections.filterNot { (s, _) ->
+                s == AndroidAutoSection.SPOTIFY_LIKED || s == AndroidAutoSection.SPOTIFY_PLAYLISTS
             }
+        if (fromReal in visible.indices && toReal in visible.indices) {
+            val movedVisible = visible.toMutableList().apply { add(toReal, removeAt(fromReal)) }
+            // Merge reordered visible list back with any hidden Spotify entries (preserves enabled flags)
+            val hidden = sections.filter { it !in visible }
+            sections = movedVisible + hidden
             onSectionsChange(serializeSections(sections))
             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
         }
@@ -178,10 +197,10 @@ fun AndroidAutoSettings(
             state = lazyListState,
             modifier = Modifier
                 .fillMaxWidth()
-                .height((sections.size * 80).dp),
+                .height((visibleSections.size * 80).dp),
             userScrollEnabled = false,
         ) {
-            items(sections, key = { (section, _) -> section.id }) { (section, enabled) ->
+            items(visibleSections, key = { (section, _) -> section.id }) { (section, enabled) ->
                 ReorderableItem(reorderableState, key = section.id) {
                     PreferenceEntry(
                         modifier = Modifier.fillMaxWidth(),
