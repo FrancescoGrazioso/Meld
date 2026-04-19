@@ -43,7 +43,14 @@ import com.metrolist.music.db.entities.Album
 import com.metrolist.music.db.entities.LocalItem
 import com.metrolist.music.db.entities.Song
 import com.metrolist.music.db.entities.SpeedDialItem
+import com.metrolist.spotify.models.SpotifyAlbum
+import com.metrolist.spotify.models.SpotifyArtist
+import com.metrolist.spotify.models.SpotifyHomeFeedItem
+import com.metrolist.spotify.models.SpotifyHomeFeedSection
+import com.metrolist.spotify.models.SpotifyImage
 import com.metrolist.spotify.models.SpotifyPlaylist
+import com.metrolist.spotify.models.SpotifyPlaylistOwner
+import com.metrolist.spotify.models.SpotifyPlaylistTracksRef
 import com.metrolist.music.extensions.filterVideoSongs
 import com.metrolist.music.extensions.toEnum
 import com.metrolist.music.models.SectionType
@@ -601,9 +608,12 @@ class HomeViewModel @Inject constructor(
         }
 
         // Load remote content: Spotify or YouTube depending on preference
+        Timber.d("spotifyHome: gate isSpotifyHome=$isSpotifyHome isSpotifyOnly=$isSpotifyOnly")
         if (isSpotifyHome && SpotifyTokenManager.ensureAuthenticated()) {
+            Timber.d("spotifyHome: auth OK, loading Spotify sections")
             loadSpotifyHomeSections(hideExplicit)
         } else if (!isSpotifyOnly) {
+            Timber.d("spotifyHome: falling back to YouTube home (auth failed or not enabled)")
             spotifyHomeSections.value = null
 
             YouTube.home().onSuccess { page ->
@@ -720,120 +730,124 @@ class HomeViewModel @Inject constructor(
     }
 
     private suspend fun loadSpotifyHomeSections(hideExplicit: Boolean) {
+        Timber.d("spotifyHome: loadSpotifyHomeSections() START (hideExplicit=$hideExplicit)")
         val sections = mutableListOf<SpotifyHomeSection>()
 
         try {
-            // Fetch profile via hybrid cache (GQL + REST + local DB fallback)
-            val profileTracks = SpotifyProfileCache.getTopTracks(context, database, limit = 40)
-            val profileArtists = SpotifyProfileCache.getTopArtists(context, database, limit = 20)
-
-            // Section 1: Your Top Tracks
+            val profileTracks = SpotifyProfileCache.getTopTracks(context, database, limit = 20)
+            Timber.d("spotifyHome: top tracks from profile cache = ${profileTracks.size}")
             val topTracks = if (hideExplicit) profileTracks.filter { !it.explicit } else profileTracks
             if (topTracks.isNotEmpty()) {
                 sections.add(SpotifyHomeSection(
                     title = "spotify_top_tracks",
                     type = SectionType.TRACKS,
-                    tracks = topTracks.take(20),
+                    tracks = topTracks,
                 ))
+                Timber.d("spotifyHome: added pinned section 'Your Top Tracks' (${topTracks.size} tracks)")
+            } else {
+                Timber.w("spotifyHome: no top tracks — skipping pinned section")
             }
 
-            // Section 2: Your Top Artists
-            val topArtists = profileArtists.take(10)
-            if (topArtists.isNotEmpty()) {
-                sections.add(SpotifyHomeSection(
-                    title = "spotify_top_artists",
-                    type = SectionType.ARTISTS,
-                    artists = topArtists,
-                ))
-            }
-
-            // Section 3: "Because you like [Artist]" — uses GQL artistTopTracks (no rate limit)
-            val artistsForDiscovery = topArtists.take(2)
-            for (artist in artistsForDiscovery) {
-                Spotify.artistTopTracks(artist.id).onSuccess { response ->
-                    val tracks = if (hideExplicit) response.tracks.filter { !it.explicit } else response.tracks
-                    if (tracks.isNotEmpty()) {
-                        sections.add(SpotifyHomeSection(
-                            title = "spotify_because_you_like:${artist.name}",
-                            type = SectionType.TRACKS,
-                            tracks = tracks.take(10),
-                        ))
+            Timber.d("spotifyHome: calling Spotify.home()...")
+            Spotify.home(sectionItemsLimit = 10).onSuccess { feed ->
+                Timber.d("spotifyHome: home() OK — greeting='${feed.greeting}' rawSections=${feed.sections.size}")
+                feed.sections.forEachIndexed { i, s ->
+                    Timber.d("spotifyHome:   raw[$i] title='${s.title}' type=${s.typename} items=${s.items.size} totalCount=${s.totalCount}")
+                }
+                feed.sections.forEach { raw ->
+                    val converted = convertHomeSection(raw)
+                    if (converted == null) {
+                        Timber.d("spotifyHome: SKIPPED '${raw.title ?: "<no title>"}' (typename=${raw.typename})")
+                    } else {
+                        sections.add(converted)
+                        Timber.d("spotifyHome: ADDED '${converted.title}' type=${converted.type} items=${converted.playlists.size + converted.albums.size + converted.artists.size}")
                     }
                 }
-            }
-
-            // Section 4: Made For You — second half of profile tracks for variety
-            val madeForYou = if (hideExplicit) {
-                profileTracks.drop(20).filter { !it.explicit }
-            } else {
-                profileTracks.drop(20)
-            }
-            if (madeForYou.isNotEmpty()) {
-                sections.add(SpotifyHomeSection(
-                    title = "spotify_made_for_you",
-                    type = SectionType.TRACKS,
-                    tracks = madeForYou,
-                ))
-            }
-
-            // Section 5: Your Playlists (GQL — no rate limit, with cache fallback)
-            Spotify.myPlaylists(limit = 10).onSuccess { paging ->
-                if (paging.items.isNotEmpty()) {
-                    sections.add(SpotifyHomeSection(
-                        title = "spotify_your_playlists",
-                        type = SectionType.PLAYLISTS,
-                        playlists = paging.items,
-                    ))
-                }
             }.onFailure { e ->
-                Timber.e(e, "HomeVM: Failed to load Spotify playlists for Home — ${e.message}")
-                val cached = loadCachedPlaylists()
-                if (cached.isNotEmpty()) {
-                    Timber.d("HomeVM: Using ${cached.size} cached playlists as fallback")
-                    sections.add(SpotifyHomeSection(
-                        title = "spotify_your_playlists",
-                        type = SectionType.PLAYLISTS,
-                        playlists = cached.take(10),
-                    ))
-                }
-            }
-
-            // Section 6: New Releases (GQL — no rate limit)
-            Spotify.newReleases(limit = 20).onSuccess { response ->
-                val albums = response.albums?.items ?: emptyList()
-                if (albums.isNotEmpty()) {
-                    sections.add(SpotifyHomeSection(
-                        title = "spotify_new_releases",
-                        type = SectionType.ALBUMS,
-                        albums = albums,
-                    ))
-                }
-            }.onFailure { e ->
-                Timber.e(e, "HomeVM: Failed to load Spotify new releases — ${e.message}")
-            }
-
-            // Section 7: Discover — artists not in the top section
-            val shownArtistIds = topArtists.map { it.id }.toSet()
-            val discoverArtists = profileArtists.drop(10).filter { it.id !in shownArtistIds }
-            if (discoverArtists.isNotEmpty()) {
-                sections.add(SpotifyHomeSection(
-                    title = "spotify_discover",
-                    type = SectionType.ARTISTS,
-                    artists = discoverArtists.take(10),
-                ))
+                Timber.e(e, "spotifyHome: home() FAILED — ${e.javaClass.simpleName}: ${e.message}")
             }
         } catch (e: Exception) {
-            Timber.e(e, "HomeVM: Failed to load Spotify home sections")
+            Timber.e(e, "spotifyHome: loadSpotifyHomeSections() threw ${e.javaClass.simpleName}: ${e.message}")
             reportException(e)
         }
 
+        Timber.d("spotifyHome: loadSpotifyHomeSections() END — final sections=${sections.size}")
         spotifyHomeSections.value = sections.ifEmpty { null }
+        if (sections.isEmpty()) Timber.w("spotifyHome: flow set to NULL — UI will show nothing")
 
-        // Clear YouTube-specific content when using Spotify home
         homePage.value = null
         explorePage.value = null
     }
 
+    /**
+     * Converts a Spotify home-feed section (mixed types, Spotify-localized title)
+     * into our [SpotifyHomeSection] model. Picks the dominant content type when
+     * a section is heterogeneous and filters items to that type — Shorts sections
+     * and episode-only sections are skipped (no title / not playable as tracks).
+     */
+    private fun convertHomeSection(feedSection: SpotifyHomeFeedSection): SpotifyHomeSection? {
+        val title = feedSection.title ?: return null
+
+        val playlists = feedSection.items.filterIsInstance<SpotifyHomeFeedItem.Playlist>()
+        val albums = feedSection.items.filterIsInstance<SpotifyHomeFeedItem.Album>()
+        val artists = feedSection.items.filterIsInstance<SpotifyHomeFeedItem.Artist>()
+
+        val counts = listOf(
+            SectionType.PLAYLISTS to playlists.size,
+            SectionType.ALBUMS to albums.size,
+            SectionType.ARTISTS to artists.size,
+        )
+        val (dominant, size) = counts.maxByOrNull { it.second } ?: return null
+        if (size == 0) return null
+
+        return when (dominant) {
+            SectionType.PLAYLISTS -> SpotifyHomeSection(
+                title = title,
+                type = SectionType.PLAYLISTS,
+                playlists = playlists.map(::toSpotifyPlaylist),
+            )
+            SectionType.ALBUMS -> SpotifyHomeSection(
+                title = title,
+                type = SectionType.ALBUMS,
+                albums = albums.map(::toSpotifyAlbum),
+            )
+            SectionType.ARTISTS -> SpotifyHomeSection(
+                title = title,
+                type = SectionType.ARTISTS,
+                artists = artists.map(::toSpotifyArtist),
+            )
+            SectionType.TRACKS -> null
+        }
+    }
+
+    private fun toSpotifyPlaylist(p: SpotifyHomeFeedItem.Playlist): SpotifyPlaylist =
+        SpotifyPlaylist(
+            id = p.id,
+            name = p.name,
+            description = p.description,
+            images = p.imageUrl?.let { listOf(SpotifyImage(url = it)) } ?: emptyList(),
+            owner = p.ownerName?.let { SpotifyPlaylistOwner(displayName = it) },
+            tracks = SpotifyPlaylistTracksRef(total = p.totalCount),
+            uri = p.uri,
+        )
+
+    private fun toSpotifyAlbum(a: SpotifyHomeFeedItem.Album): SpotifyAlbum =
+        SpotifyAlbum(
+            id = a.id,
+            name = a.name,
+            albumType = a.albumType,
+            artists = a.artists,
+            images = a.imageUrl?.let { listOf(SpotifyImage(url = it)) } ?: emptyList(),
+            uri = a.uri,
+        )
+
+    private fun toSpotifyArtist(ar: SpotifyHomeFeedItem.Artist): SpotifyArtist =
+        SpotifyArtist(
+            id = ar.id,
+            name = ar.name,
+            images = ar.imageUrl?.let { listOf(SpotifyImage(url = it)) } ?: emptyList(),
+            uri = ar.uri,
+        )
 
     private val _isLoadingMore = MutableStateFlow(false)
     fun loadMoreYouTubeItems(continuation: String?) {

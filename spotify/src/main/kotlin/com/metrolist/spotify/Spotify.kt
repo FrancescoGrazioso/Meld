@@ -1157,6 +1157,167 @@ object Spotify {
             )
         }
 
+    // ── Home feed (GQL: home) ──────────────────────────────────────────
+    //
+    // Returns the fully personalized Spotify home: Daily Mix, Discover Weekly,
+    // Release Radar, "Jump back in", "More like <artist>", daylist, etc.
+    // Shape matches open.spotify.com landing page, one request for ~21 sections.
+
+    suspend fun home(
+        sectionItemsLimit: Int = 10,
+        timeZone: String = java.util.TimeZone.getDefault().id,
+    ): Result<com.metrolist.spotify.models.SpotifyHomeFeed> =
+        runCatching {
+            log("D", "spotifyHome: GQL home() request — timeZone=$timeZone limit=$sectionItemsLimit")
+            val vars =
+                buildJsonObject {
+                    put("homeEndUserIntegration", "INTEGRATION_WEB_PLAYER")
+                    put("timeZone", timeZone)
+                    put("sp_t", "")
+                    put("facet", "")
+                    put("sectionItemsLimit", sectionItemsLimit)
+                    put("includeEpisodeContentRatingsV2", false)
+                }
+
+            val response =
+                graphqlPost(
+                    operationName = "home",
+                    variables = vars,
+                )
+
+            val homeData =
+                response.obj("data")?.obj("home")
+                    ?: run {
+                        log("E", "spotifyHome: GQL response has no data.home — keys=${response.obj("data")?.keys}")
+                        throw SpotifyException(500, "Invalid home response")
+                    }
+
+            val greeting = homeData.obj("greeting")?.str("transformedLabel")
+            log("D", "spotifyHome: GQL home() OK greeting='$greeting'")
+
+            val sectionElements =
+                homeData.obj("sectionContainer")
+                    ?.obj("sections")
+                    ?.arr("items")
+                    ?: run {
+                        log("W", "spotifyHome: no sectionContainer.sections.items in response")
+                        return@runCatching com.metrolist.spotify.models.SpotifyHomeFeed(
+                            greeting = greeting,
+                            sections = emptyList(),
+                        )
+                    }
+
+            log("D", "spotifyHome: parsing ${sectionElements.size} raw sections")
+            val sections =
+                sectionElements.mapNotNull { elem ->
+                    parseHomeSection(elem.jsonObject)
+                }
+            log("D", "spotifyHome: parsed ${sections.size}/${sectionElements.size} sections successfully")
+
+            com.metrolist.spotify.models.SpotifyHomeFeed(
+                greeting = greeting,
+                sections = sections,
+            )
+        }
+
+    private fun parseHomeSection(sectionObj: JsonObject): com.metrolist.spotify.models.SpotifyHomeFeedSection? {
+        val sectionData = sectionObj.obj("data") ?: return null
+        val typename = sectionData.str("__typename") ?: return null
+        val titleObj = sectionData.obj("title")
+        val title = titleObj?.str("transformedLabel")
+            ?: titleObj?.str("translatedBaseText")
+            ?: titleObj?.str("text")
+
+        val sectionItems = sectionObj.obj("sectionItems")
+        val totalCount = sectionItems?.int("totalCount") ?: 0
+        val itemElements = sectionItems?.arr("items") ?: return null
+
+        val items =
+            itemElements.mapNotNull { itemElem ->
+                parseHomeItem(itemElem.jsonObject)
+            }
+
+        if (items.isEmpty()) return null
+
+        return com.metrolist.spotify.models.SpotifyHomeFeedSection(
+            sectionUri = sectionObj.str("uri") ?: "",
+            title = title,
+            typename = typename,
+            totalCount = totalCount,
+            items = items,
+        )
+    }
+
+    private fun parseHomeItem(itemObj: JsonObject): com.metrolist.spotify.models.SpotifyHomeFeedItem? {
+        val content = itemObj.obj("content") ?: return null
+        val wrapper = content.str("__typename") ?: return null
+        val data = content.obj("data") ?: return null
+
+        return when (wrapper) {
+            "PlaylistResponseWrapper" -> parseHomePlaylist(data)
+            "AlbumResponseWrapper" -> parseHomeAlbum(data)
+            "ArtistResponseWrapper" -> parseHomeArtist(data)
+            else -> null
+        }
+    }
+
+    private fun parseHomePlaylist(data: JsonObject): com.metrolist.spotify.models.SpotifyHomeFeedItem.Playlist? {
+        val uri = data.str("uri") ?: return null
+        val imageItem = data.obj("images")?.arr("items")?.firstOrNull()?.jsonObject
+        val imageUrl = imageItem?.arr("sources")?.firstOrNull()?.jsonObject?.str("url")
+        val colorHex = imageItem?.obj("extractedColors")?.obj("colorDark")?.str("hex")
+        val madeFor =
+            data.arr("attributes")
+                ?.firstOrNull { it.jsonObject.str("key") == "madeFor.username" }
+                ?.jsonObject?.str("value")
+
+        return com.metrolist.spotify.models.SpotifyHomeFeedItem.Playlist(
+            uri = uri,
+            id = uri.substringAfterLast(":"),
+            name = data.str("name") ?: "",
+            description = data.str("description"),
+            format = data.str("format"),
+            totalCount = data.obj("content")?.int("totalCount") ?: 0,
+            imageUrl = imageUrl,
+            extractedColorHex = colorHex,
+            ownerName = data.obj("ownerV2")?.obj("data")?.str("name"),
+            madeForUsername = madeFor,
+        )
+    }
+
+    private fun parseHomeAlbum(data: JsonObject): com.metrolist.spotify.models.SpotifyHomeFeedItem.Album? {
+        val uri = data.str("uri") ?: return null
+        val artists =
+            data.obj("artists")?.arr("items")?.mapNotNull {
+                parseGqlSimpleArtist(it.jsonObject)
+            } ?: emptyList()
+        val imageUrl =
+            data.obj("coverArt")?.arr("sources")?.firstOrNull()?.jsonObject?.str("url")
+
+        return com.metrolist.spotify.models.SpotifyHomeFeedItem.Album(
+            uri = uri,
+            id = uri.substringAfterLast(":"),
+            name = data.str("name") ?: "",
+            albumType = data.str("type")?.lowercase(),
+            artists = artists,
+            imageUrl = imageUrl,
+        )
+    }
+
+    private fun parseHomeArtist(data: JsonObject): com.metrolist.spotify.models.SpotifyHomeFeedItem.Artist? {
+        val uri = data.str("uri") ?: return null
+        val profile = data.obj("profile")
+        val imageUrl =
+            data.obj("visuals")?.obj("avatarImage")
+                ?.arr("sources")?.firstOrNull()?.jsonObject?.str("url")
+        return com.metrolist.spotify.models.SpotifyHomeFeedItem.Artist(
+            uri = uri,
+            id = uri.substringAfterLast(":"),
+            name = profile?.str("name") ?: "",
+            imageUrl = imageUrl,
+        )
+    }
+
     // ── Albums (GQL: getAlbum) ──────────────────────────────────────────
 
     suspend fun album(albumId: String): Result<SpotifyAlbum> =
