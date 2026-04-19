@@ -429,6 +429,7 @@
     <string name="spotify_enable">Use Spotify as source</string>
     <string name="spotify_enable_description">Load playlists, liked songs and recommendations from your Spotify account</string>
     <string name="spotify_liked_songs">Spotify Liked Songs</string>
+    <string name="spotify_playlists">Spotify Playlists</string>
     <string name="spotify_session_expired">Spotify session expired. Please log in again.</string>
     <string name="spotify_relogin">Log in again</string>
     <string name="spotify_playlists_load_error">Failed to load Spotify playlists. This may be a temporary issue.</string>
