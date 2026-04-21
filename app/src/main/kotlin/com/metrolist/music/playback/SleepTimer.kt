@@ -18,6 +18,20 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.minutes
 
+/**
+ * Linear volume fade-out for the sleep timer: full volume while [remainingMs] is longer
+ * than [fadeOutWindowMs], then ramps linearly to zero as the timer approaches expiry.
+ * Exposed as a top-level function so the pure fade math is unit-testable without having
+ * to instantiate [SleepTimer] (which needs a Player and a CoroutineScope).
+ */
+internal fun computeSleepTimerVolumeMultiplier(
+    remainingMs: Long,
+    fadeOutWindowMs: Long = 60_000L,
+): Float {
+    if (remainingMs >= fadeOutWindowMs) return 1f
+    return (remainingMs.toFloat() / fadeOutWindowMs).coerceIn(0f, 1f)
+}
+
 class SleepTimer(
     private val scope: CoroutineScope,
     var player: Player,
@@ -169,10 +183,8 @@ class SleepTimer(
         updateVolumeMultiplierForRemainingTime(remainingMs)
     }
 
-    private fun volumeMultiplierForRemainingTime(remainingMs: Long): Float {
-        if (remainingMs >= FADE_OUT_WINDOW_MS) return 1f
-        return (remainingMs.toFloat() / FADE_OUT_WINDOW_MS).coerceIn(0f, 1f)
-    }
+    private fun volumeMultiplierForRemainingTime(remainingMs: Long): Float =
+        computeSleepTimerVolumeMultiplier(remainingMs, FADE_OUT_WINDOW_MS)
 
     private fun updateVolumeMultiplier(multiplier: Float) {
         onVolumeMultiplierChanged(multiplier)
