@@ -10,6 +10,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
+import android.os.StrictMode
 import android.widget.Toast
 import androidx.datastore.preferences.core.edit
 import coil3.ImageLoader
@@ -37,6 +38,7 @@ import com.metrolist.music.utils.SpotifyHashSync
 import com.metrolist.music.utils.SpotifyTokenManager
 import com.metrolist.music.utils.cipher.CipherDeobfuscator
 import com.metrolist.music.utils.dataStore
+import com.metrolist.music.utils.installPreferencesSnapshotCollector
 import com.metrolist.music.utils.reportException
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -66,6 +68,28 @@ class App :
     override fun onCreate() {
         super.onCreate()
 
+        if (BuildConfig.DEBUG) {
+            // Logs main-thread disk/network I/O and leaked resources to logcat so ANR
+            // regressions are visible while developing. penaltyLog() only — never death,
+            // to avoid crashing developers on pre-existing violations while we migrate
+            // away from blocking DataStore reads.
+            StrictMode.setThreadPolicy(
+                StrictMode.ThreadPolicy.Builder()
+                    .detectDiskReads()
+                    .detectDiskWrites()
+                    .detectNetwork()
+                    .penaltyLog()
+                    .build()
+            )
+            StrictMode.setVmPolicy(
+                StrictMode.VmPolicy.Builder()
+                    .detectLeakedClosableObjects()
+                    .detectLeakedRegistrationObjects()
+                    .penaltyLog()
+                    .build()
+            )
+        }
+
         // Install crash handler first
         CrashHandler.install(this)
 
@@ -73,6 +97,12 @@ class App :
         CipherDeobfuscator.initialize(this)
 
         Timber.plant(Timber.DebugTree())
+
+        // Start mirroring DataStore into an in-memory snapshot so subsequent synchronous
+        // `dataStore.get(...)` calls (used in Composables and Service lifecycle) don't
+        // hit disk. Kicked off before any other initialization so the snapshot is
+        // populated as early as possible.
+        installPreferencesSnapshotCollector(applicationScope, dataStore)
 
         // تهيئة إعدادات التطبيق عند الإقلاع
         applicationScope.launch {

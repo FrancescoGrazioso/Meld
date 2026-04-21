@@ -37,16 +37,15 @@ class NetworkConnectivityObserver(context: Context) {
     init {
         val request = NetworkRequest.Builder()
             .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
             .build()
-        
+
         try {
             connectivityManager.registerNetworkCallback(request, networkCallback)
         } catch (e: Exception) {
             // Fallback: assume connected if registration fails
             _networkStatus.trySend(true)
         }
-        
+
         // Send initial state
         val isInitiallyConnected = isCurrentlyConnected()
         _networkStatus.trySend(isInitiallyConnected)
@@ -55,23 +54,21 @@ class NetworkConnectivityObserver(context: Context) {
     fun unregister() {
         connectivityManager.unregisterNetworkCallback(networkCallback)
     }
-    
+
     /**
-     * Check current connectivity state synchronously
+     * Check current connectivity state synchronously.
+     *
+     * Why we don't require NET_CAPABILITY_VALIDATED: Android sets VALIDATED only after a
+     * successful probe to connectivitycheck.gstatic.com (or equivalent). In regions or on
+     * carriers where that probe is blocked/hijacked (transparent proxies, DPI, Google
+     * blocks), VALIDATED is never reported even when the network works. Users then saw
+     * "offline" without VPN. Trusting NET_CAPABILITY_INTERNET matches what OuterTune does.
      */
     fun isCurrentlyConnected(): Boolean {
         return try {
             val activeNetwork = connectivityManager.activeNetwork
             val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork)
-            
-            // Check if we have internet capability
-            val hasInternet = networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
-            
-            // For API 23+, also check if connection is validated
-            val isValidated =
-                networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) == true
-
-            hasInternet && isValidated
+            networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
         } catch (e: Exception) {
             false
         }

@@ -35,6 +35,7 @@ import com.metrolist.music.utils.potoken.PoTokenResult
 import com.metrolist.music.utils.sabr.EjsNTransformSolver
 import okhttp3.OkHttpClient
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 
 object YTPlayerUtils {
     private const val logTag = "YTPlayerUtils"
@@ -42,6 +43,10 @@ object YTPlayerUtils {
 
     private val httpClient = OkHttpClient.Builder()
         .proxy(YouTube.proxy)
+        .connectTimeout(20, TimeUnit.SECONDS)
+        .readTimeout(20, TimeUnit.SECONDS)
+        .writeTimeout(20, TimeUnit.SECONDS)
+        .retryOnConnectionFailure(true)
         .build()
 
     private val poTokenGenerator = PoTokenGenerator()
@@ -100,7 +105,8 @@ object YTPlayerUtils {
         // Generate PoToken
         var poToken: PoTokenResult? = null
         val sessionId = if (isLoggedIn) YouTube.dataSyncId else YouTube.visitorData
-        if (MAIN_CLIENT.useWebPoTokens && sessionId != null) {
+        val mainClientNeedsPoToken = MAIN_CLIENT.useWebPoTokens
+        if (mainClientNeedsPoToken && sessionId != null) {
             Timber.tag(logTag).d("Generating PoToken for WEB_REMIX with sessionId")
             try {
                 poToken = poTokenGenerator.getWebClientPoToken(videoId, sessionId)
@@ -110,6 +116,13 @@ object YTPlayerUtils {
             } catch (e: Exception) {
                 Timber.tag(logTag).e(e, "PoToken generation failed: ${e.message}")
             }
+        }
+        // If MAIN_CLIENT needs a PoToken but we couldn't get one (WebView missing, JS
+        // blocked, network hostile), WEB_REMIX will return streams that 403 on play.
+        // Skip it and go straight to the fallback chain.
+        val skipMainClient = mainClientNeedsPoToken && poToken == null
+        if (skipMainClient) {
+            Timber.tag(TAG).w("PoToken unavailable — skipping MAIN_CLIENT and using fallback chain directly")
         }
 
         // Try WEB_REMIX with signature timestamp and poToken (same as before)
@@ -175,6 +188,7 @@ object YTPlayerUtils {
         val startIndex = when {
             isPrivateTrack -> 1  // TVHTML5
             isAgeRestricted -> 0
+            skipMainClient -> 0  // MAIN_CLIENT streams unplayable without PoToken
             else -> -1
         }
 
@@ -442,8 +456,15 @@ object YTPlayerUtils {
     }
     /**
      * Checks if the stream url returns a successful status.
-     * If this returns true the url is likely to work.
-     * If this returns false the url might cause an error during playback.
+     *
+     * Why the leniency: on slow mobile networks HEAD can time out or be rejected by edge
+     * CDNs (405/403/410 on HEAD while GET works). If we treat those as "failed" we skip a
+     * stream that actually plays. Rules here:
+     *  - 2xx → valid
+     *  - 405/403/410 → treat as valid (HEAD may be restricted; ExoPlayer will GET)
+     *  - IOException (timeout/reset) → treat as valid; ExoPlayer has its own retry and
+     *    killing the client here just cascades us down the fallback chain for no reason
+     *  - other HTTP codes (4xx/5xx) → invalid
      */
     private fun validateStatus(url: String): Boolean {
         Timber.tag(logTag).d("Validating stream URL status")
@@ -452,16 +473,21 @@ object YTPlayerUtils {
                 .head()
                 .url(url)
 
-            // Add authentication cookie for privately owned tracks
             YouTube.cookie?.let { cookie ->
                 requestBuilder.addHeader("Cookie", cookie)
-                println("[PLAYBACK_DEBUG] Added cookie to validation request")
             }
 
             val response = httpClient.newCall(requestBuilder.build()).execute()
-            val isSuccessful = response.isSuccessful
-            Timber.tag(logTag).d("Stream URL validation result: ${if (isSuccessful) "Success" else "Failed"} (${response.code})")
-            return isSuccessful
+            response.close()
+            val code = response.code
+            val accepted = response.isSuccessful || code == 405 || code == 403 || code == 410
+            Timber.tag(logTag).d("Stream URL validation: code=$code accepted=$accepted")
+            return accepted
+        } catch (e: java.io.IOException) {
+            // Network timeout / reset while HEAD-probing. The stream URL itself may still
+            // be fine — let ExoPlayer attempt GET rather than burning a fallback client.
+            Timber.tag(logTag).w(e, "Stream URL HEAD probe failed (IO); accepting optimistically")
+            return true
         } catch (e: Exception) {
             Timber.tag(logTag).e(e, "Stream URL validation failed with exception")
             reportException(e)

@@ -212,6 +212,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.TimeoutCancellationException
 import okhttp3.OkHttpClient
 import timber.log.Timber
 import java.io.ObjectInputStream
@@ -667,8 +669,11 @@ class MusicService :
                     // Clear cached URL to force fresh fetch
                     songUrlCache.remove(mediaId)
 
-                    // CRITICAL: Clear caches synchronously to prevent format parsing errors
-                    runBlocking(Dispatchers.IO) {
+                    // Clear caches before reload so the new quality isn't served a stale
+                    // byte-range. Using withContext(IO) instead of runBlocking keeps this
+                    // sequential with the reload below, without blocking the main thread
+                    // (this collector is suspending, we can safely suspend here).
+                    withContext(Dispatchers.IO) {
                         try {
                             playerCache.removeResource(mediaId)
                             downloadCache.removeResource(mediaId)
@@ -3247,11 +3252,20 @@ class MusicService :
             Timber.tag("MusicService").i("FETCHING STREAM: $mediaId | quality=$audioQuality")
             val playbackData =
                 runBlocking(Dispatchers.IO) {
-                    YTPlayerUtils.playerResponseForPlayback(
-                        mediaId,
-                        audioQuality = audioQuality,
-                        connectivityManager = connectivityManager,
-                    )
+                    // Hard cap on stream resolution so a stuck YouTube/PoToken/NewPipe
+                    // call can't keep a song "loading" forever. ExoPlayer surfaces the
+                    // PlaybackException to the user as a skip-able error.
+                    try {
+                        withTimeout(30_000L) {
+                            YTPlayerUtils.playerResponseForPlayback(
+                                mediaId,
+                                audioQuality = audioQuality,
+                                connectivityManager = connectivityManager,
+                            )
+                        }
+                    } catch (e: TimeoutCancellationException) {
+                        Result.failure(java.net.SocketTimeoutException("Stream resolution timed out"))
+                    }
                 }.getOrElse { throwable ->
                     when (throwable) {
                         is PlaybackException -> {

@@ -17,6 +17,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.preferencesDataStore
 import com.metrolist.music.extensions.toEnum
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -27,18 +28,47 @@ import kotlin.properties.ReadOnlyProperty
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
-operator fun <T> DataStore<Preferences>.get(key: Preferences.Key<T>): T? =
-    runBlocking(Dispatchers.IO) {
+/**
+ * In-memory mirror of the Preferences DataStore.
+ *
+ * Why: the legacy `get(key)` operator was implemented as `runBlocking(IO) { data.first() }`
+ * and is called ~500 times across the app, many of them from Composable init paths and
+ * Service lifecycle methods on the main thread. Each call subscribes to the flow, awaits
+ * first emission, unsubscribes — a few ms per call, but cumulative (and the very first
+ * call blocks on disk I/O for 200ms-2s).
+ *
+ * After [installSnapshotCollector] runs, every subsequent read is a Map lookup. Reads
+ * that happen before the collector has emitted still fall back to the original blocking
+ * path, so behavior is unchanged for early-boot reads.
+ */
+@Volatile
+private var prefsSnapshot: Preferences? = null
+
+fun installPreferencesSnapshotCollector(
+    scope: CoroutineScope,
+    dataStore: DataStore<Preferences>,
+) {
+    scope.launch(Dispatchers.IO) {
+        dataStore.data.collect { prefsSnapshot = it }
+    }
+}
+
+operator fun <T> DataStore<Preferences>.get(key: Preferences.Key<T>): T? {
+    prefsSnapshot?.let { return it[key] }
+    return runBlocking(Dispatchers.IO) {
         data.first()[key]
     }
+}
 
 fun <T> DataStore<Preferences>.get(
     key: Preferences.Key<T>,
     defaultValue: T,
-): T =
-    runBlocking(Dispatchers.IO) {
+): T {
+    prefsSnapshot?.let { return it[key] ?: defaultValue }
+    return runBlocking(Dispatchers.IO) {
         data.first()[key] ?: defaultValue
     }
+}
 
 fun <T> preference(
     context: Context,
