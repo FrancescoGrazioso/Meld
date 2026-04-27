@@ -184,6 +184,7 @@ fun SpotifyArtistSectionRow(
 fun SpotifyAlbumSectionRow(
     albums: List<SpotifyAlbum>,
     onAlbumClick: (SpotifyAlbum) -> Unit,
+    onAlbumPlay: ((SpotifyAlbum) -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     LazyRow(
@@ -199,6 +200,7 @@ fun SpotifyAlbumSectionRow(
                 item = albumItem,
                 isActive = false,
                 isPlaying = false,
+                onPlayClick = onAlbumPlay?.let { cb -> { cb(album) } },
                 modifier = Modifier
                     .width(GridThumbnailHeight + 24.dp)
                     .padding(horizontal = 6.dp)

@@ -133,7 +133,10 @@ import com.metrolist.music.playback.queues.YouTubeAlbumRadio
 import com.metrolist.music.playback.queues.YouTubeQueue
 import com.metrolist.music.models.SectionType
 import com.metrolist.music.playback.SpotifyYouTubeMapper
+import com.metrolist.music.playback.queues.SpotifyPlaylistQueue
 import com.metrolist.music.playback.queues.SpotifyQueue
+import com.metrolist.spotify.Spotify
+import timber.log.Timber
 import com.metrolist.music.ui.component.YouTubeListItem
 import com.metrolist.music.ui.component.AlbumGridItem
 import com.metrolist.music.ui.component.ArtistGridItem
@@ -2676,6 +2679,34 @@ fun HomeScreen(
                                         albums = section.albums,
                                         onAlbumClick = { album ->
                                             navController.navigate("spotify_album/${album.id}")
+                                        },
+                                        onAlbumPlay = { album ->
+                                            // Spotify-native album playback: resolve the
+                                            // album's tracks then hand them to the
+                                            // existing playlist queue with initialTracks
+                                            // so we don't need a dedicated album queue.
+                                            scope.launch(Dispatchers.IO) {
+                                                val tracks = Spotify.album(album.id)
+                                                    .getOrNull()
+                                                    ?.tracks
+                                                    ?.items
+                                                    ?.filter { !it.isLocal && it.id.isNotEmpty() }
+                                                    .orEmpty()
+                                                if (tracks.isEmpty()) {
+                                                    Timber.w("HomeScreen: no playable tracks for Spotify album ${album.id}")
+                                                    return@launch
+                                                }
+                                                withContext(Dispatchers.Main) {
+                                                    playerConnection.playQueue(
+                                                        SpotifyPlaylistQueue(
+                                                            playlistId = "album_${album.id}",
+                                                            initialTracks = tracks,
+                                                            startIndex = 0,
+                                                            mapper = spotifyMapper,
+                                                        ),
+                                                    )
+                                                }
+                                            }
                                         },
                                         modifier = Modifier.animateItem(),
                                     )
