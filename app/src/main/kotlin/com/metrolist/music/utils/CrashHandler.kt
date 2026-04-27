@@ -26,7 +26,11 @@ class CrashHandler private constructor(
         try {
             val crashLog = buildCrashLog(throwable)
             Timber.e(throwable, "App crashed")
-            
+
+            // Best-effort upload to the project's Issues tracker. Bounded by an internal
+            // timeout so a slow network never delays the crash dialog.
+            CrashReporter.reportFatal(throwable)
+
             // Launch crash activity
             val intent = Intent(applicationContext, CrashActivity::class.java).apply {
                 putExtra(EXTRA_CRASH_LOG, crashLog)

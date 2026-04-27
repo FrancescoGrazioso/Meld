@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.R
+import com.metrolist.music.constants.CrashReportingEnabledKey
 import com.metrolist.music.constants.DisableScreenshotKey
 import com.metrolist.music.constants.PauseListenHistoryKey
 import com.metrolist.music.constants.PauseSearchHistoryKey
@@ -62,6 +63,10 @@ fun PrivacySettings(
     val (disableScreenshot, onDisableScreenshotChange) = rememberPreference(
         key = DisableScreenshotKey,
         defaultValue = false
+    )
+    val (crashReportingEnabled, onCrashReportingEnabledChange) = rememberPreference(
+        key = CrashReportingEnabledKey,
+        defaultValue = true
     )
 
     var showClearListenHistoryDialog by remember {
@@ -241,6 +246,27 @@ fun PrivacySettings(
                         )
                     },
                     onClick = { onDisableScreenshotChange(!disableScreenshot) }
+                ),
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.bug_report),
+                    title = { Text(stringResource(R.string.crash_reporting)) },
+                    description = { Text(stringResource(R.string.crash_reporting_desc)) },
+                    trailingContent = {
+                        Switch(
+                            checked = crashReportingEnabled,
+                            onCheckedChange = onCrashReportingEnabledChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (crashReportingEnabled) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(androidx.compose.material3.SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onCrashReportingEnabledChange(!crashReportingEnabled) }
                 )
             )
         )

@@ -233,6 +233,10 @@ fun OnlineSearchResult(
         }
     }
 
+    // Unified "no active filter" check: YouTube uses `searchFilter`, Spotify uses `spotifyFilterValue`.
+    // When null, the summary page is rendered; otherwise the filtered `itemsPage`.
+    val isShowingSummary = if (isSpotifySearch) spotifyFilterValue == null else searchFilter == null
+
     LaunchedEffect(lazyListState) {
         snapshotFlow {
             lazyListState.layoutInfo.visibleItemsInfo.any { it.key == "loading" }
@@ -492,71 +496,81 @@ fun OnlineSearchResult(
                     },
         )
 
-        // Main content area below search bar
+        // Filter chips always on top of any overlay so they remain clickable while
+        // the suggestion overlay is visible (see #69).
+        if (isSpotifySearch) {
+            ChipsRow(
+                chips = listOf(
+                    null to stringResource(R.string.filter_all),
+                    "track" to stringResource(R.string.filter_songs),
+                    "album" to stringResource(R.string.filter_albums),
+                    "artist" to stringResource(R.string.filter_artists),
+                    "playlist" to stringResource(R.string.filter_playlists),
+                ),
+                currentValue = spotifyFilterValue,
+                onValueUpdate = { newFilter ->
+                    viewModel.spotifyFilter.value = newFilter
+                    if (isSearchFocused) {
+                        isSearchFocused = false
+                        focusManager.clearFocus()
+                    }
+                    coroutineScope.launch {
+                        lazyListState.animateScrollToItem(0)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        } else {
+            val visibleChips =
+                listOf(
+                    null to stringResource(R.string.filter_all),
+                    FILTER_SONG to stringResource(R.string.filter_songs),
+                ).let { baseChips ->
+                    if (!hideVideoSongs) {
+                        baseChips + (FILTER_VIDEO to stringResource(R.string.filter_videos))
+                    } else {
+                        baseChips
+                    }
+                } +
+                listOf(
+                    FILTER_ALBUM to stringResource(R.string.filter_albums),
+                    FILTER_ARTIST to stringResource(R.string.filter_artists),
+                    FILTER_COMMUNITY_PLAYLIST to stringResource(R.string.filter_community_playlists),
+                    FILTER_FEATURED_PLAYLIST to stringResource(R.string.filter_featured_playlists),
+                    FILTER_PODCAST to stringResource(R.string.filter_podcasts),
+                    FILTER_EPISODE to stringResource(R.string.filter_episodes),
+                    FILTER_PROFILE to stringResource(R.string.filter_profiles),
+                )
+
+            ChipsRow(
+                chips = visibleChips,
+                currentValue = searchFilter,
+                onValueUpdate = {
+                    if (viewModel.filter.value != it) {
+                        viewModel.filter.value = it
+                    }
+                    if (isSearchFocused) {
+                        isSearchFocused = false
+                        focusManager.clearFocus()
+                    }
+                    coroutineScope.launch {
+                        lazyListState.animateScrollToItem(0)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+            )
+        }
+
+        // Main content area below search bar and filters
         Box(modifier = Modifier.weight(1f)) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                if (isSpotifySearch) {
-                    ChipsRow(
-                        chips = listOf(
-                            null to stringResource(R.string.filter_all),
-                            "track" to stringResource(R.string.filter_songs),
-                            "album" to stringResource(R.string.filter_albums),
-                            "artist" to stringResource(R.string.filter_artists),
-                            "playlist" to stringResource(R.string.filter_playlists),
-                        ),
-                        currentValue = spotifyFilterValue,
-                        onValueUpdate = { newFilter ->
-                            viewModel.spotifyFilter.value = newFilter
-                            coroutineScope.launch {
-                                lazyListState.animateScrollToItem(0)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                } else {
-                    val visibleChips =
-                        listOf(
-                            null to stringResource(R.string.filter_all),
-                            FILTER_SONG to stringResource(R.string.filter_songs),
-                        ).let { baseChips ->
-                            if (!hideVideoSongs) {
-                                baseChips + (FILTER_VIDEO to stringResource(R.string.filter_videos))
-                            } else {
-                                baseChips
-                            }
-                        } +
-                        listOf(
-                            FILTER_ALBUM to stringResource(R.string.filter_albums),
-                            FILTER_ARTIST to stringResource(R.string.filter_artists),
-                            FILTER_COMMUNITY_PLAYLIST to stringResource(R.string.filter_community_playlists),
-                            FILTER_FEATURED_PLAYLIST to stringResource(R.string.filter_featured_playlists),
-                            FILTER_PODCAST to stringResource(R.string.filter_podcasts),
-                            FILTER_EPISODE to stringResource(R.string.filter_episodes),
-                            FILTER_PROFILE to stringResource(R.string.filter_profiles),
-                        )
-
-                    ChipsRow(
-                        chips = visibleChips,
-                        currentValue = searchFilter,
-                        onValueUpdate = {
-                            if (viewModel.filter.value != it) {
-                                viewModel.filter.value = it
-                            }
-                            coroutineScope.launch {
-                                lazyListState.animateScrollToItem(0)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-
                 LazyColumn(
                     state = lazyListState,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
-                    if (searchFilter == null) {
+                    if (isShowingSummary) {
                         searchSummary?.summaries?.forEach { summary ->
                             item {
                                 NavigationTitle(summary.title)
@@ -604,7 +618,7 @@ fun OnlineSearchResult(
                         }
                     }
 
-                    if (searchFilter == null && searchSummary == null || searchFilter != null && itemsPage == null) {
+                    if (isShowingSummary && searchSummary == null || !isShowingSummary && itemsPage == null) {
                         item {
                             ShimmerHost {
                                 repeat(8) {

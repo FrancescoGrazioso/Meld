@@ -11,6 +11,7 @@ import java.util.Locale
 
 fun reportException(throwable: Throwable) {
     throwable.printStackTrace()
+    CrashReporter.reportNonFatal(throwable)
 }
 
 @Suppress("DEPRECATION")

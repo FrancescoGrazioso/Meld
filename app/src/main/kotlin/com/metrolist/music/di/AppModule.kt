@@ -17,6 +17,7 @@ import com.metrolist.music.db.InternalDatabase
 import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.listentogether.ListenTogetherClient
 import com.metrolist.music.listentogether.ListenTogetherManager
+import com.metrolist.music.utils.CrashReporter
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.get
 import dagger.Module
@@ -24,9 +25,11 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import timber.log.Timber
 import javax.inject.Singleton
 
 @Module
@@ -37,7 +40,14 @@ object AppModule {
     @Singleton
     @ApplicationScope
     fun provideApplicationScope(): CoroutineScope {
-        return CoroutineScope(SupervisorJob() + Dispatchers.Default)
+        // SupervisorJob isolates child failures, but the side-effect is that uncaught
+        // coroutine exceptions are silently swallowed. Route them through CrashReporter
+        // so they surface as non-fatal reports instead of disappearing.
+        val handler = CoroutineExceptionHandler { _, throwable ->
+            Timber.e(throwable, "Uncaught exception in applicationScope")
+            CrashReporter.reportNonFatal(throwable)
+        }
+        return CoroutineScope(SupervisorJob() + Dispatchers.Default + handler)
     }
 
     @Singleton
