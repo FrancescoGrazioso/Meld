@@ -146,6 +146,7 @@ val PreCacheOnlyWifiKey = booleanPreferencesKey("preCacheOnlyWifi")
 val PauseListenHistoryKey = booleanPreferencesKey("pauseListenHistory")
 val PauseSearchHistoryKey = booleanPreferencesKey("pauseSearchHistory")
 val DisableScreenshotKey = booleanPreferencesKey("disableScreenshot")
+val CrashReportingEnabledKey = booleanPreferencesKey("crashReportingEnabled")
 
 val DiscordTokenKey = stringPreferencesKey("discordToken")
 val DiscordInfoDismissedKey = booleanPreferencesKey("discordInfoDismissed")

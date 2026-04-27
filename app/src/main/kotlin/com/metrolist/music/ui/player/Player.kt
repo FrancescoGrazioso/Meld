@@ -959,8 +959,8 @@ fun BottomSheetPlayer(
                                         interactionSource = remember { MutableInteractionSource() },
                                         onClick = {
                                             if (mediaMetadata.album != null) {
-                                                navController.navigate("album/${mediaMetadata.album.id}")
                                                 state.collapseSoft()
+                                                navController.navigate("album/${mediaMetadata.album.id}")
                                             }
                                         },
                                         onLongClick = {
@@ -1036,8 +1036,8 @@ fun BottomSheetPlayer(
                                                             ?.let { ann ->
                                                                 val artistId = ann.item
                                                                 if (artistId.isNotBlank()) {
-                                                                    navController.navigate("artist/$artistId")
                                                                     state.collapseSoft()
+                                                                    navController.navigate("artist/$artistId")
                                                                 }
                                                             }
                                                     }

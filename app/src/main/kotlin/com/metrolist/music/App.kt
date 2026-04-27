@@ -33,7 +33,9 @@ import com.metrolist.music.constants.*
 import com.metrolist.music.di.ApplicationScope
 import com.metrolist.music.extensions.toEnum
 import com.metrolist.music.extensions.toInetSocketAddress
+import com.metrolist.music.utils.AnrWatchdog
 import com.metrolist.music.utils.CrashHandler
+import com.metrolist.music.utils.CrashReporter
 import com.metrolist.music.utils.SpotifyHashSync
 import com.metrolist.music.utils.SpotifyTokenManager
 import com.metrolist.music.utils.cipher.CipherDeobfuscator
@@ -90,8 +92,11 @@ class App :
             )
         }
 
-        // Install crash handler first
+        // Install crash handler first. CrashReporter must be initialized before
+        // CrashHandler so the uncaught-exception path can post to GitHub Issues.
+        CrashReporter.init(this)
         CrashHandler.install(this)
+        AnrWatchdog.start()
 
         // Initialize cipher deobfuscator for WEB_REMIX streaming
         CipherDeobfuscator.initialize(this)
