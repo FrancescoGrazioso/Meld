@@ -487,10 +487,16 @@ object Spotify {
                     }
                     put("limit", limit)
                     put("offset", offset)
-                    put("flatten", false)
+                    // Ask Spotify to return every leaf playlist regardless of folder
+                    // nesting. Without flatten=true the response only contains root-
+                    // level items: top-level playlists plus FolderResponseWrapper
+                    // entries whose contents are never expanded — the parser below
+                    // ignores non-PlaylistResponseWrapper items, so anything inside
+                    // a folder would otherwise be invisible (issues #46, #78).
+                    put("flatten", true)
                     putJsonArray("expandedFolders") {}
                     put("folderUri", null as String?)
-                    put("includeFoldersWhenFlattening", true)
+                    put("includeFoldersWhenFlattening", false)
                 }
 
             val response =
