@@ -22,6 +22,8 @@ import com.metrolist.music.playback.SpotifyYouTubeMapper
 import com.metrolist.music.utils.dataStore
 import com.metrolist.spotify.Spotify
 import com.metrolist.music.utils.SpotifyTokenManager
+import com.metrolist.spotify.models.SpotifyLibraryFolder
+import com.metrolist.spotify.models.SpotifyLibraryItem
 import com.metrolist.spotify.models.SpotifyPlaylist
 import com.metrolist.spotify.models.SpotifyTrack
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -102,6 +104,17 @@ constructor(
 
     private val _spotifyPlaylists = MutableStateFlow<List<SpotifyPlaylist>>(emptyList())
     val spotifyPlaylists = _spotifyPlaylists.asStateFlow()
+
+    // Hierarchical projection of the same library, for screens that want to mirror
+    // the user's folder organization. _spotifyRootFolders contains the top-level
+    // folders; _spotifyRootPlaylists contains playlists that live at the library
+    // root (i.e. NOT inside any folder). Playlists nested in folders are reachable
+    // by entering the folder via SpotifyFolderScreen.
+    private val _spotifyRootFolders = MutableStateFlow<List<SpotifyLibraryFolder>>(emptyList())
+    val spotifyRootFolders = _spotifyRootFolders.asStateFlow()
+
+    private val _spotifyRootPlaylists = MutableStateFlow<List<SpotifyPlaylist>>(emptyList())
+    val spotifyRootPlaylists = _spotifyRootPlaylists.asStateFlow()
 
     private val _playlistsLoading = MutableStateFlow(false)
     val playlistsLoading = _playlistsLoading.asStateFlow()
@@ -219,8 +232,38 @@ constructor(
             }
         }
 
+        // Second call: hierarchical view of the root level (folders + root-only
+        // playlists). Failures here are non-fatal — the flat list above already
+        // succeeded so the screen still has content; the user just won't see
+        // folder grouping until the next sync attempt.
+        Spotify.myLibraryNode(folderUri = null, limit = 50).onSuccess { paging ->
+            val folders = paging.items.filterIsInstance<SpotifyLibraryItem.Folder>().map { it.folder }
+            val rootPlaylists = paging.items.filterIsInstance<SpotifyLibraryItem.Playlist>().map { it.playlist }
+            Timber.d(
+                "SpotifyVM: loadPlaylists() - hierarchy: %d folders, %d root playlists",
+                folders.size, rootPlaylists.size,
+            )
+            _spotifyRootFolders.value = folders
+            _spotifyRootPlaylists.value = rootPlaylists
+        }.onFailure { e ->
+            Timber.w(e, "SpotifyVM: loadPlaylists() - hierarchy fetch failed (non-fatal)")
+        }
+
         _playlistsLoading.value = false
         return retryAfter
+    }
+
+    /**
+     * Loads one level of the user's library tree. Used by [SpotifyFolderScreen] to
+     * display the contents of a folder the user tapped into. Returns playlists and
+     * sub-folders interleaved in the order Spotify returned them.
+     */
+    suspend fun loadFolderContents(folderUri: String): Result<List<SpotifyLibraryItem>> {
+        if (!SpotifyTokenManager.ensureAuthenticated()) {
+            return Result.failure(IllegalStateException("Not authenticated"))
+        }
+        return Spotify.myLibraryNode(folderUri = folderUri, limit = 100).map { it.items }
+            .onFailure { handleAuthError(it) }
     }
 
     private suspend fun savePlaylistsToCache(playlists: List<SpotifyPlaylist>) {
