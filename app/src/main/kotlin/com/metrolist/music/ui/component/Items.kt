@@ -1082,6 +1082,10 @@ fun YouTubeGridItem(
     isActive: Boolean = false,
     isPlaying: Boolean = false,
     fillMaxWidth: Boolean = false,
+    // When non-null, overrides the default AlbumPlayButton onClick handler. Used by
+    // Spotify-sourced album cards (item.id is a Spotify album id, so the default
+    // YouTube-based lookup silently fails) — caller plays via SpotifyPlaylistQueue.
+    onPlayClick: (() -> Unit)? = null,
 ) = GridItem(
     title = {
         Text(
@@ -1134,7 +1138,7 @@ fun YouTubeGridItem(
 
         AlbumPlayButton(
             visible = item is AlbumItem && !isActive,
-            onClick = {
+            onClick = onPlayClick ?: {
                 scope.launch(Dispatchers.IO) {
                     var albumWithSongs = database.albumWithSongs(item.id).first()
                     if (albumWithSongs?.songs.isNullOrEmpty()) {
@@ -1149,6 +1153,7 @@ fun YouTubeGridItem(
                         }
                     }
                 }
+                Unit
             }
         )
     },
