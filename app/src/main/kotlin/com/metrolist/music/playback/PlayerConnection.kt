@@ -33,7 +33,6 @@ import com.metrolist.music.playback.MusicService.MusicBinder
 import com.metrolist.music.playback.queues.Queue
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.get
-import com.metrolist.music.utils.reportException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -621,9 +620,6 @@ class PlayerConnection(
     }
 
     override fun onPlayerErrorChanged(playbackError: PlaybackException?) {
-        if (playbackError != null) {
-            reportException(playbackError)
-        }
         error.value = playbackError
     }
 

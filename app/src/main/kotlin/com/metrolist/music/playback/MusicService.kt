@@ -2568,7 +2568,14 @@ class MusicService :
         Timber
             .tag(TAG)
             .w(error, "Player error occurred for $mediaId: errorCode=${error.errorCode}, message=${error.message}")
-        reportException(error)
+
+        // Transient YouTube CDN errors (416, 403, page-reload) are auto-recovered; skip crash reporting.
+        val isRecoverableYouTubeError = isRangeNotSatisfiableError(error) ||
+            isExpiredUrlError(error) ||
+            isPageReloadError(error)
+        if (!isRecoverableYouTubeError) {
+            reportException(error)
+        }
 
         // Check if this song has failed too many times
         if (mediaId != null && hasExceededRetryLimit(mediaId)) {
@@ -2778,18 +2785,20 @@ class MusicService :
         retryJob?.cancel()
         retryJob =
             scope.launch {
-                // Clear all caches aggressively
                 performAggressiveCacheClear(mediaId)
-
-                // Wait before retry
                 delay(RETRY_DELAY_MS)
 
-                // Force re-prepare from position 0 to avoid range issues
                 val currentIndex = player.currentMediaItemIndex
-                player.seekTo(currentIndex, 0)
+                val currentPosition = player.currentPosition
+                if (currentIndex == C.INDEX_UNSET) {
+                    handleFinalFailure()
+                    return@launch
+                }
+                // Resume from the same position — the resolver will fetch a fresh URL.
+                player.seekTo(currentIndex, currentPosition)
                 player.prepare()
 
-                Timber.tag(TAG).d("Retrying playback for $mediaId after 416 error (from position 0)")
+                Timber.tag(TAG).d("Retrying playback for $mediaId after 416 error at position $currentPosition")
             }
     }
 
@@ -3341,7 +3350,7 @@ class MusicService :
 
                 songUrlCache[mediaId] =
                     streamUrl to System.currentTimeMillis() + (nonNullPlayback.streamExpiresInSeconds * 1000L)
-                return@Factory dataSpec.withUri(streamUrl.toUri()).subrange(dataSpec.uriPositionOffset, CHUNK_LENGTH)
+                return@Factory dataSpec.withUri(streamUrl.toUri()).subrange(0, CHUNK_LENGTH)
             }
         }
     }
