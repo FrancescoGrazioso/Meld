@@ -82,6 +82,8 @@ import com.metrolist.music.ui.component.LocalMenuState
 import com.metrolist.music.ui.component.PlaylistGridItem
 import com.metrolist.music.ui.component.PlaylistListItem
 import com.metrolist.music.ui.component.SortHeader
+import com.metrolist.music.ui.component.SpotifyFolderGridItem
+import com.metrolist.music.ui.component.SpotifyFolderListItem
 import com.metrolist.music.extensions.matchesNormalizedQuery
 import com.metrolist.music.extensions.normalizeForSearch
 import com.metrolist.music.utils.rememberEnumPreference
@@ -148,7 +150,10 @@ fun LibraryPlaylistsScreen(
 
     // Spotify integration - when active, Spotify is the PRIMARY source
     val isSpotifyActive by spotifyViewModel.isSpotifyActive.collectAsState()
-    val spotifyPlaylists by spotifyViewModel.spotifyPlaylists.collectAsState()
+    // Faithful hierarchical view: folders + only the playlists at the library
+    // root. Playlists nested in folders are reachable via SpotifyFolderScreen.
+    val spotifyFolders by spotifyViewModel.spotifyRootFolders.collectAsState()
+    val spotifyPlaylists by spotifyViewModel.spotifyRootPlaylists.collectAsState()
     val spotifyLikedSongsTotal by spotifyViewModel.likedSongsTotal.collectAsState()
     val isUsingFallback by spotifyViewModel.isUsingFallback.collectAsState()
     val fallbackReason by spotifyViewModel.fallbackReason.collectAsState()
@@ -609,6 +614,30 @@ fun LibraryPlaylistsScreen(
                         }
                     }
 
+                    // Spotify folders rendered above playlists, mirroring the user's
+                    // organization. Tapping a folder opens its contents in a dedicated
+                    // screen instead of inlining them here, so the root view stays
+                    // close to what the user sees on Spotify itself (issue #78).
+                    if (isSpotifyActive && spotifyFolders.isNotEmpty()) {
+                        items(
+                            items = spotifyFolders,
+                            key = { "spotify_folder_${it.uri}" },
+                            contentType = { CONTENT_TYPE_PLAYLIST },
+                        ) { folder ->
+                            val encodedUri = java.net.URLEncoder.encode(folder.uri, Charsets.UTF_8.name())
+                            val encodedName = java.net.URLEncoder.encode(folder.name, Charsets.UTF_8.name())
+                            SpotifyFolderListItem(
+                                folder = folder,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        navController.navigate("spotify_folder/$encodedUri?name=$encodedName")
+                                    }
+                                    .animateItem(),
+                            )
+                        }
+                    }
+
                     // Spotify playlists rendered as regular playlist items
                     if (isSpotifyActive && spotifyPlaylists.isNotEmpty()) {
                         items(
@@ -809,6 +838,28 @@ fun LibraryPlaylistsScreen(
                                             }
                                         }
                                     )
+                                    .animateItem(),
+                            )
+                        }
+                    }
+
+                    // Spotify folders rendered above playlists in grid view
+                    if (isSpotifyActive && spotifyFolders.isNotEmpty()) {
+                        items(
+                            items = spotifyFolders,
+                            key = { "spotify_folder_${it.uri}" },
+                            contentType = { CONTENT_TYPE_PLAYLIST },
+                        ) { folder ->
+                            val encodedUri = java.net.URLEncoder.encode(folder.uri, Charsets.UTF_8.name())
+                            val encodedName = java.net.URLEncoder.encode(folder.name, Charsets.UTF_8.name())
+                            SpotifyFolderGridItem(
+                                folder = folder,
+                                fillMaxWidth = true,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        navController.navigate("spotify_folder/$encodedUri?name=$encodedName")
+                                    }
                                     .animateItem(),
                             )
                         }

@@ -292,6 +292,7 @@
     <string name="clear_search_history_confirm">Are you sure you want to clear all search history?</string>
     <string name="disable_screenshot">Disable screenshot</string>
     <string name="disable_screenshot_desc">When this option is on, screenshots and the app\'s view in Recents are disabled.</string>
+    <string name="spotify_folder_empty">This folder is empty.</string>
     <string name="crash_reporting">Send crash reports</string>
     <string name="crash_reporting_desc">Automatically send anonymous crash and exception details (device model, Android version, app version, stack trace) to help diagnose issues. No account, playlist, or personal data is included.</string>
     <string name="enable_lrclib">Enable LrcLib lyrics provider</string>

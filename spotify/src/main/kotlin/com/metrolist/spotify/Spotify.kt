@@ -516,30 +516,7 @@ object Spotify {
                 libraryData.arr("items")?.mapNotNull { itemElem ->
                     val wrapper = itemElem.jsonObject.obj("item") ?: return@mapNotNull null
                     if (wrapper.str("__typename") != "PlaylistResponseWrapper") return@mapNotNull null
-                    val data = wrapper.obj("data") ?: return@mapNotNull null
-                    if (data.str("__typename") != "Playlist") return@mapNotNull null
-
-                    val playlistUri = wrapper.str("_uri") ?: return@mapNotNull null
-                    val playlistId = playlistUri.substringAfterLast(":")
-
-                    val ownerData = data.obj("ownerV2")?.obj("data")
-                    val ownerId =
-                        ownerData?.str("uri")?.substringAfterLast(":")
-                            ?: ownerData?.str("id") ?: ""
-
-                    SpotifyPlaylist(
-                        id = playlistId,
-                        name = data.str("name") ?: "",
-                        description = data.str("description"),
-                        images = parseGqlPlaylistImages(data.obj("images")),
-                        owner =
-                            SpotifyPlaylistOwner(
-                                id = ownerId,
-                                displayName = ownerData?.str("name"),
-                                uri = ownerData?.str("uri"),
-                            ),
-                        uri = playlistUri,
-                    )
+                    parsePlaylistWrapper(wrapper)
                 } ?: emptyList()
 
             SpotifyPaging(
@@ -549,6 +526,143 @@ object Spotify {
                 offset = pagingInfo?.int("offset") ?: offset,
             )
         }
+
+    // ── Library hierarchy (GQL: libraryV3, folders preserved) ───────────
+
+    /**
+     * Returns one level of the user's library tree. When [folderUri] is null the
+     * response is the library root: top-level playlists plus folder containers.
+     * When [folderUri] is set, Spotify treats that folder as the root and returns
+     * its direct children (which may include sub-folders).
+     *
+     * Use this for UIs that want to mirror the user's folder organization. For a
+     * flat list of every playlist regardless of nesting, use [myPlaylists].
+     */
+    suspend fun myLibraryNode(
+        folderUri: String? = null,
+        limit: Int = 50,
+        offset: Int = 0,
+    ): Result<SpotifyPaging<com.metrolist.spotify.models.SpotifyLibraryItem>> =
+        runCatching {
+            val vars =
+                buildJsonObject {
+                    putJsonArray("filters") { add("Playlists") }
+                    put("order", null as String?)
+                    put("textFilter", "")
+                    putJsonArray("features") {
+                        add("LIKED_SONGS")
+                        add("YOUR_EPISODES_V2")
+                        add("PRERELEASES")
+                        add("EVENTS")
+                    }
+                    put("limit", limit)
+                    put("offset", offset)
+                    // flatten=false preserves folder boundaries; folderUri scopes
+                    // the response to a single level (null = root).
+                    put("flatten", false)
+                    putJsonArray("expandedFolders") {}
+                    if (folderUri != null) put("folderUri", folderUri) else put("folderUri", null as String?)
+                    put("includeFoldersWhenFlattening", true)
+                }
+
+            val response =
+                graphqlPost(
+                    operationName = "libraryV3",
+                    variables = vars,
+                )
+
+            val libraryData =
+                response.obj("data")?.obj("me")?.obj("libraryV3")
+                    ?: throw SpotifyException(500, "Invalid libraryV3 response")
+
+            val totalCount = libraryData.int("totalCount") ?: 0
+            val pagingInfo = libraryData.obj("pagingInfo")
+
+            val rawItems = libraryData.arr("items").orEmpty()
+            // Diagnostic: dump every wrapper's __typename so we can spot any
+            // schema variation Spotify ships (the names have shifted historically).
+            // Trim once we're confident the recognized set is stable.
+            log("D", "myLibraryNode(folder=$folderUri): ${rawItems.size} raw items")
+            val typeCounts = mutableMapOf<String, Int>()
+            rawItems.forEach { itemElem ->
+                val wrapper = itemElem.jsonObject.obj("item")
+                val tn = wrapper?.str("__typename") ?: "<missing>"
+                typeCounts[tn] = (typeCounts[tn] ?: 0) + 1
+            }
+            log("D", "myLibraryNode: typename counts = $typeCounts")
+
+            val items =
+                rawItems.mapNotNull { itemElem ->
+                    val wrapper = itemElem.jsonObject.obj("item") ?: return@mapNotNull null
+                    val typeName = wrapper.str("__typename") ?: ""
+                    when {
+                        typeName == "PlaylistResponseWrapper" || typeName.contains("Playlist", ignoreCase = true) ->
+                            parsePlaylistWrapper(wrapper)
+                                ?.let { com.metrolist.spotify.models.SpotifyLibraryItem.Playlist(it) }
+                        typeName == "FolderResponseWrapper" || typeName.contains("Folder", ignoreCase = true) ->
+                            parseFolderWrapper(wrapper)
+                                ?.let { com.metrolist.spotify.models.SpotifyLibraryItem.Folder(it) }
+                                ?: run {
+                                    // Folder typename matched but parsing returned null —
+                                    // likely a shape we don't know. Dump the keys so we
+                                    // can update parseFolderWrapper.
+                                    log("W", "myLibraryNode: failed to parse folder wrapper, keys=${wrapper.keys}, dataKeys=${wrapper.obj("data")?.keys}")
+                                    null
+                                }
+                        else -> {
+                            log("D", "myLibraryNode: skipping unknown __typename='$typeName'")
+                            null
+                        }
+                    }
+                }
+
+            SpotifyPaging(
+                items = items,
+                total = totalCount,
+                limit = pagingInfo?.int("limit") ?: limit,
+                offset = pagingInfo?.int("offset") ?: offset,
+            )
+        }
+
+    private fun parsePlaylistWrapper(wrapper: JsonObject): SpotifyPlaylist? {
+        val data = wrapper.obj("data") ?: return null
+        if (data.str("__typename") != "Playlist") return null
+        val playlistUri = wrapper.str("_uri") ?: return null
+        val playlistId = playlistUri.substringAfterLast(":")
+        val ownerData = data.obj("ownerV2")?.obj("data")
+        val ownerId = ownerData?.str("uri")?.substringAfterLast(":") ?: ownerData?.str("id") ?: ""
+        return SpotifyPlaylist(
+            id = playlistId,
+            name = data.str("name") ?: "",
+            description = data.str("description"),
+            images = parseGqlPlaylistImages(data.obj("images")),
+            owner = SpotifyPlaylistOwner(
+                id = ownerId,
+                displayName = ownerData?.str("name"),
+                uri = ownerData?.str("uri"),
+            ),
+            uri = playlistUri,
+        )
+    }
+
+    private fun parseFolderWrapper(wrapper: JsonObject): com.metrolist.spotify.models.SpotifyLibraryFolder? {
+        val uri = wrapper.str("_uri") ?: return null
+        // Spotify has shipped this object under several shapes over time; the name
+        // and child count have lived in `data` and at the root of the wrapper.
+        // Try both so we don't break on a future field reshuffle.
+        val name = wrapper.obj("data")?.str("name")
+            ?: wrapper.str("name")
+            ?: return null
+        val total = wrapper.obj("data")?.int("totalLength")
+            ?: wrapper.obj("data")?.int("numberOfItems")
+            ?: wrapper.int("totalLength")
+            ?: 0
+        return com.metrolist.spotify.models.SpotifyLibraryFolder(
+            uri = uri,
+            name = name,
+            totalChildren = total,
+        )
+    }
 
     // ── Library Artists (GQL: libraryV3 with Artists filter) ───────────
 
