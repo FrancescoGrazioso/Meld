@@ -18,10 +18,14 @@ import coil3.PlatformContext
 import coil3.SingletonImageLoader
 import coil3.disk.DiskCache
 import coil3.disk.directory
+import coil3.intercept.Interceptor
 import coil3.memory.MemoryCache
 import coil3.request.CachePolicy
+import coil3.request.ErrorResult
+import coil3.request.ImageResult
 import coil3.request.allowHardware
 import coil3.request.crossfade
+import kotlin.coroutines.cancellation.CancellationException
 import com.metrolist.innertube.YouTube
 import com.metrolist.innertube.models.YouTubeLocale
 import com.metrolist.kugou.KuGou
@@ -305,6 +309,9 @@ class App :
         return ImageLoader
             .Builder(this)
             .apply {
+                components {
+                    add(CrashSafeInterceptor)
+                }
                 crossfade(true)
                 allowHardware(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                 // Memory cache for fast image loading (prevents network requests on recomposition)
@@ -328,6 +335,18 @@ class App :
                     networkCachePolicy(CachePolicy.ENABLED)
                 }
             }.build()
+    }
+
+    private object CrashSafeInterceptor : Interceptor {
+        override suspend fun intercept(chain: Interceptor.Chain): ImageResult =
+            try {
+                chain.proceed()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                Timber.w(e, "Coil image load failed; swallowing to prevent app crash")
+                ErrorResult(image = null, request = chain.request, throwable = e)
+            }
     }
 
     companion object {
