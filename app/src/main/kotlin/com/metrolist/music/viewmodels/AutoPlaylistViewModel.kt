@@ -78,7 +78,10 @@ constructor(
             .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.Lazily, emptyList())
 
     fun syncLikedSongs() {
-        viewModelScope.launch(Dispatchers.IO) { syncUtils.syncLikedSongs() }
+        viewModelScope.launch(Dispatchers.IO) {
+            syncUtils.syncLikedSongs()
+            syncUtils.syncSpotifyLikedSongs()
+        }
     }
 
     fun syncUploadedSongs() {
@@ -89,7 +92,10 @@ constructor(
         viewModelScope.launch(Dispatchers.IO) {
             _isRefreshing.value = true
             when (playlist) {
-                "liked" -> syncUtils.syncLikedSongsSuspend()
+                "liked" -> {
+                    syncUtils.syncLikedSongsSuspend()
+                    syncUtils.syncSpotifyLikedSongsSuspend()
+                }
                 "uploaded" -> syncUtils.syncUploadedSongsSuspend()
             }
             _isRefreshing.value = false
