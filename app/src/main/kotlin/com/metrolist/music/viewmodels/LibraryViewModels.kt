@@ -117,7 +117,10 @@ constructor(
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
     fun syncLikedSongs() {
-        viewModelScope.launch(Dispatchers.IO) { syncUtils.syncLikedSongs() }
+        viewModelScope.launch(Dispatchers.IO) {
+            syncUtils.syncLikedSongs()
+            syncUtils.syncSpotifyLikedSongs()
+        }
     }
 
     fun syncLibrarySongs() {

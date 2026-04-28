@@ -39,7 +39,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,6 +52,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.time.LocalDateTime
@@ -77,6 +82,7 @@ sealed class SyncOperation {
     data class SavePodcast(val podcastId: String, val save: Boolean) : SyncOperation()
     data class SaveEpisode(val episodeId: String, val save: Boolean, val setVideoId: String?) : SyncOperation()
     data object SpotifyFollowedArtists : SyncOperation()
+    data object SpotifyLikedSongs : SyncOperation()
     data object CleanupDuplicates : SyncOperation()
     data object ClearAllSynced : SyncOperation()
     data object ClearPodcastData : SyncOperation()
@@ -198,6 +204,7 @@ class SyncUtils @Inject constructor(
             is SyncOperation.SavePodcast -> executeSavePodcast(operation.podcastId, operation.save)
             is SyncOperation.SaveEpisode -> executeSaveEpisode(operation.episodeId, operation.save, operation.setVideoId)
             is SyncOperation.SpotifyFollowedArtists -> executeSyncSpotifyFollowedArtists()
+            is SyncOperation.SpotifyLikedSongs -> executeSyncSpotifyLikedSongs()
             is SyncOperation.CleanupDuplicates -> executeCleanupDuplicatePlaylists()
             is SyncOperation.ClearAllSynced -> executeClearAllSyncedContent()
             is SyncOperation.ClearPodcastData -> executeClearPodcastData()
@@ -382,6 +389,12 @@ class SyncUtils @Inject constructor(
         }
     }
 
+    fun syncSpotifyLikedSongs() {
+        syncScope.launch {
+            syncChannel.send(SyncOperation.SpotifyLikedSongs)
+        }
+    }
+
     fun syncPodcastSubscriptions() {
         syncScope.launch {
             syncChannel.send(SyncOperation.PodcastSubscriptions)
@@ -421,6 +434,7 @@ class SyncUtils @Inject constructor(
     suspend fun syncUploadedAlbumsSuspend() = executeSyncUploadedAlbums()
     suspend fun syncArtistsSubscriptionsSuspend() = executeSyncArtistsSubscriptions()
     suspend fun syncSpotifyFollowedArtistsSuspend() = executeSyncSpotifyFollowedArtists()
+    suspend fun syncSpotifyLikedSongsSuspend() = executeSyncSpotifyLikedSongs()
     suspend fun syncPodcastSubscriptionsSuspend() = executeSyncPodcastSubscriptions()
     suspend fun syncEpisodesForLaterSuspend() = executeSyncEpisodesForLater()
     suspend fun syncSavedPlaylistsSuspend() = executeSyncSavedPlaylists()
@@ -549,6 +563,12 @@ class SyncUtils @Inject constructor(
         try {
             // Sync in sequence to avoid overwhelming the API and database
             executeSyncLikedSongs()
+            delay(DB_OPERATION_DELAY_MS)
+
+            // Pull Spotify liked songs into the local DB so the heart icon
+            // reflects Spotify-side likes too. Skipped internally if the
+            // sync setting is off or Spotify isn't authenticated.
+            executeSyncSpotifyLikedSongs()
             delay(DB_OPERATION_DELAY_MS)
 
             executeSyncLibrarySongs()
@@ -1182,6 +1202,142 @@ class SyncUtils @Inject constructor(
             Timber.d("Synced $synced/${followedArtists.size} Spotify followed artists")
         } catch (e: Exception) {
             Timber.e(e, "Error syncing Spotify followed artists")
+        }
+    }
+
+    /**
+     * Pulls the user's Spotify-side liked tracks into the local DB so the heart
+     * icon stays consistent across both services. Only runs when bidirectional
+     * sync is enabled and Spotify is authenticated.
+     *
+     * Strategy:
+     *  1. Page through all Spotify likes (capped to keep first-sync bounded).
+     *  2. Resolve each Spotify track to a YouTube ID via [spotifyMapper] using
+     *     bounded parallelism (4 concurrent searches) — cache hits are free,
+     *     misses cost one YouTube search each.
+     *  3. In a single Room transaction:
+     *     a. Insert/update each resolved track with `liked = true`.
+     *     b. Unlike local songs whose mapped `spotifyId` is no longer present
+     *        in the remote set. To avoid wiping unmapped likes (Meld-only or
+     *        not-yet-resolved tracks), the unlike branch only fires for songs
+     *        with an existing [SpotifyMatchEntity] for their YouTube id.
+     */
+    private suspend fun executeSyncSpotifyLikedSongs() = withContext(Dispatchers.IO) {
+        if (!spotifySyncLikes) {
+            Timber.d("Skipping Spotify liked songs sync - bidirectional sync disabled")
+            return@withContext
+        }
+        if (!SpotifyTokenManager.ensureAuthenticated()) {
+            Timber.d("Skipping Spotify liked songs sync - Spotify not authenticated")
+            return@withContext
+        }
+
+        updateState { copy(likedSongs = SyncStatus.Syncing, currentOperation = "Syncing Spotify liked songs") }
+
+        try {
+            // 1. Paginate through Spotify likes
+            val pageSize = 50
+            val maxPages = 60 // hard cap at 3000 tracks to bound first-sync cost
+            val remoteTracks = mutableListOf<com.metrolist.spotify.models.SpotifyTrack>()
+            var offset = 0
+            var pages = 0
+            var total = -1
+            while (true) {
+                val pageResult = com.metrolist.spotify.Spotify.likedSongs(limit = pageSize, offset = offset)
+                val page = pageResult.getOrElse { e ->
+                    Timber.e(e, "Failed fetching Spotify liked songs at offset $offset")
+                    updateState { copy(likedSongs = SyncStatus.Error(e.message ?: "Unknown error")) }
+                    return@withContext
+                }
+                remoteTracks += page.items.map { it.track }
+                total = page.total
+                offset += page.items.size
+                pages++
+                if (page.items.size < pageSize || offset >= total) break
+                if (pages >= maxPages) {
+                    Timber.w("Spotify likes sync truncated at $offset of $total")
+                    break
+                }
+            }
+            Timber.d("Spotify likes: fetched ${remoteTracks.size} of $total tracks")
+
+            // 2. Resolve to YouTube via the mapper, in parallel but bounded so
+            //    we don't flood YouTube search with hundreds of concurrent calls.
+            data class Resolved(
+                val track: com.metrolist.spotify.models.SpotifyTrack,
+                val metadata: com.metrolist.music.models.MediaMetadata,
+            )
+
+            val sem = Semaphore(4)
+            val resolved: List<Resolved> = coroutineScope {
+                remoteTracks.map { track ->
+                    async {
+                        sem.withPermit {
+                            try {
+                                spotifyMapper.mapToYouTube(track)?.let { Resolved(track, it) }
+                            } catch (e: CancellationException) {
+                                throw e
+                            } catch (e: Exception) {
+                                Timber.w(e, "Failed mapping Spotify track ${track.id}")
+                                null
+                            }
+                        }
+                    }
+                }.awaitAll().filterNotNull()
+            }
+
+            val resolvedSpotifyIds = resolved.map { it.track.id }.toSet()
+            Timber.d("Spotify likes: resolved ${resolved.size}/${remoteTracks.size} to YouTube ids")
+
+            // 3. Read local liked songs once, outside the transaction (Flow.first
+            //    is suspending; the list is then immutable and safe to iterate
+            //    inside the transaction).
+            val localLiked = database.likedSongsByNameAsc().first()
+            val resolvedYtIds = resolved.map { it.metadata.id }.toSet()
+            val existingByYtId = database.getSongsByIds(resolvedYtIds.toList()).associateBy { it.id }
+
+            val now = LocalDateTime.now()
+
+            database.withTransaction {
+                // 3a. Mark resolved tracks as liked (insert if missing, update otherwise)
+                resolved.forEachIndexed { index, r ->
+                    try {
+                        val timestamp = now.minusSeconds(index.toLong())
+                        val existing = existingByYtId[r.metadata.id]
+                        if (existing == null) {
+                            insert(r.metadata) { it.copy(liked = true, likedDate = timestamp) }
+                        } else if (!existing.song.liked) {
+                            update(existing.song.copy(liked = true, likedDate = timestamp))
+                        }
+                    } catch (e: Exception) {
+                        Timber.e(e, "Failed to apply Spotify like for ${r.track.id}")
+                    }
+                }
+
+                // 3b. Unlike locally only when we have a confirmed Spotify mapping
+                //     for the song *and* that mapping points to a track that is
+                //     no longer liked on Spotify. Songs with no Spotify match are
+                //     left alone — they may simply have never been resolved.
+                localLiked.forEach { song ->
+                    if (song.id in resolvedYtIds) return@forEach
+                    val match = getSpotifyMatchByYouTubeId(song.id) ?: return@forEach
+                    if (match.spotifyId !in resolvedSpotifyIds) {
+                        try {
+                            update(song.song.copy(liked = false, likedDate = null))
+                        } catch (e: Exception) {
+                            Timber.e(e, "Failed to unlike song ${song.id} after Spotify removal")
+                        }
+                    }
+                }
+            }
+
+            updateState { copy(likedSongs = SyncStatus.Completed) }
+            Timber.d("Spotify likes sync completed: ${resolved.size} applied")
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            Timber.e(e, "Error syncing Spotify liked songs")
+            updateState { copy(likedSongs = SyncStatus.Error(e.message ?: "Unknown error")) }
         }
     }
 
