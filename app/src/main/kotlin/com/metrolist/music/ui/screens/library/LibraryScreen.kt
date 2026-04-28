@@ -68,7 +68,7 @@ fun LibraryScreen(navController: NavController) {
 
             LibraryFilter.LOCAL_FILES -> LocalFilesScreen(
                 navController,
-                { filterType = LibraryFilter.LIBRARY },
+                filterContent,
             )
         }
     }
