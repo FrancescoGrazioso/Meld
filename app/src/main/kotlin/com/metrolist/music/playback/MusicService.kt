@@ -2532,6 +2532,50 @@ class MusicService :
         }
     }
 
+    /**
+     * Transient YouTube responses where the player response is missing critical
+     * data (expire time, format, stream URL, or empty player response). Treated
+     * like an expired URL: refresh caches and retry rather than crashing.
+     */
+    private fun isMissingStreamDataError(error: PlaybackException): Boolean {
+        val keywords =
+            listOf(
+                "missing stream expire time",
+                "could not find format",
+                "could not find stream url",
+                "bad stream player response",
+            )
+        var cause: Throwable? = error
+        while (cause != null) {
+            val message = cause.message?.lowercase()
+            if (message != null && keywords.any { message.contains(it) }) {
+                return true
+            }
+            cause = cause.cause
+        }
+        return false
+    }
+
+    /**
+     * Transient MediaCodec decoder failures (e.g. opus decoder dropping a frame).
+     * These are not actionable for the user and recover by re-initializing the
+     * audio renderer.
+     */
+    private fun isMediaCodecError(error: PlaybackException): Boolean {
+        if (error.errorCode == PlaybackException.ERROR_CODE_DECODING_FAILED ||
+            error.errorCode == PlaybackException.ERROR_CODE_DECODER_INIT_FAILED ||
+            error.errorCode == PlaybackException.ERROR_CODE_DECODER_QUERY_FAILED
+        ) {
+            return true
+        }
+        var cause: Throwable? = error.cause
+        while (cause != null) {
+            if (cause is android.media.MediaCodec.CodecException) return true
+            cause = cause.cause
+        }
+        return false
+    }
+
     private fun isNetworkRelatedError(error: PlaybackException): Boolean {
         // Don't treat specific errors as network errors - they need special handling
         if (isExpiredUrlError(error) || isRangeNotSatisfiableError(error) || isPageReloadError(error)) {
@@ -2569,10 +2613,12 @@ class MusicService :
             .tag(TAG)
             .w(error, "Player error occurred for $mediaId: errorCode=${error.errorCode}, message=${error.message}")
 
-        // Transient YouTube CDN errors (416, 403, page-reload) are auto-recovered; skip crash reporting.
+        // Transient YouTube CDN / decoder errors are auto-recovered; skip crash reporting.
         val isRecoverableYouTubeError = isRangeNotSatisfiableError(error) ||
             isExpiredUrlError(error) ||
-            isPageReloadError(error)
+            isPageReloadError(error) ||
+            isMissingStreamDataError(error) ||
+            isMediaCodecError(error)
         if (!isRecoverableYouTubeError) {
             reportException(error)
         }
@@ -2613,6 +2659,18 @@ class MusicService :
             isExpiredUrlError(error) -> {
                 Timber.tag(TAG).d("Expired URL (403) detected, refreshing stream URL")
                 handleExpiredUrlError(mediaId)
+                return
+            }
+
+            isMissingStreamDataError(error) -> {
+                Timber.tag(TAG).d("Missing stream data from YouTube, refreshing stream URL")
+                handleExpiredUrlError(mediaId)
+                return
+            }
+
+            isMediaCodecError(error) -> {
+                Timber.tag(TAG).d("MediaCodec decoder error detected, performing renderer recovery")
+                handleAudioRendererError(mediaId)
                 return
             }
 

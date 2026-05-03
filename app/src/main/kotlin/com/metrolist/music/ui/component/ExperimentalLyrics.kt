@@ -445,6 +445,11 @@ fun ExperimentalLyrics(
         } else if (lastPreviewTime != 0L) {
             delay(LYRICS_PREVIEW_TIME)
             lastPreviewTime = 0L
+            // Resume auto-scroll after the user stops scrolling so lyrics
+            // jump back in sync with playback (issue #80).
+            if (!isSelectionModeActive) {
+                isAutoScrollEnabled = true
+            }
         }
     }
 

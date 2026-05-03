@@ -574,7 +574,22 @@ fun OriginalLyrics(
         } else if (lastPreviewTime != 0L) {
             delay(LyricsPreviewTime)
             lastPreviewTime = 0L
+            // Resume auto-scroll after the user stops scrolling so lyrics
+            // jump back in sync with playback (issue #80).
+            if (!isSelectionModeActive) {
+                isAutoScrollEnabled = true
+            }
         }
+    }
+
+    // Reset per-song UI state so lyrics that load late still sync to the
+    // current playback position and auto-scroll re-engages (issues #79, #90).
+    LaunchedEffect(mediaMetadata?.id) {
+        initialScrollDone = false
+        shouldScrollToFirstLine = true
+        previousLineIndex = 0
+        lastPreviewTime = 0L
+        isAutoScrollEnabled = true
     }
 
     /**
@@ -914,7 +929,11 @@ fun OriginalLyrics(
                                                     }
                                                 }
                                             }
+                                            // Tapping a lyric is an explicit "follow playback" intent:
+                                            // re-enable auto-scroll so the lyrics keep tracking the song
+                                            // after the seek (issue #80).
                                             lastPreviewTime = 0L
+                                            isAutoScrollEnabled = true
                                         }
                                     },
                                     onLongClick = {
