@@ -550,6 +550,23 @@ val AccountEmailKey = stringPreferencesKey("accountEmail")
 val AccountChannelHandleKey = stringPreferencesKey("accountChannelHandle")
 val UseLoginForBrowse = booleanPreferencesKey("useLoginForBrowse")
 
+// SponsorBlock
+val SponsorBlockEnabledKey = booleanPreferencesKey("sponsorBlockEnabled")
+val SponsorBlockCategoriesKey = stringPreferencesKey("sponsorBlockCategories")
+val SponsorBlockShowToastKey = booleanPreferencesKey("sponsorBlockShowToast")
+
+const val SPONSORBLOCK_DEFAULT_CATEGORIES = "music_offtopic"
+val SPONSORBLOCK_ALL_CATEGORIES = listOf(
+    "sponsor",
+    "selfpromo",
+    "interaction",
+    "intro",
+    "outro",
+    "preview",
+    "music_offtopic",
+    "filler",
+)
+
 val LanguageCodeToName =
     mapOf(
         "af" to "Afrikaans",

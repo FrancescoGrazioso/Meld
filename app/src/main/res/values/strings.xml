@@ -260,6 +260,23 @@
     <string name="audio_normalization">Audio normalization</string>
     <string name="auto_skip_next_on_error">Auto skip to next song when error occurs</string>
     <string name="auto_skip_next_on_error_desc">Ensure your continuous playback experience</string>
+    <string name="sponsorblock">SponsorBlock</string>
+    <string name="sponsorblock_desc">Skip non-music segments using community-submitted timestamps</string>
+    <string name="sponsorblock_enable">Enable SponsorBlock</string>
+    <string name="sponsorblock_enable_desc">Auto-skip flagged segments while playing</string>
+    <string name="sponsorblock_categories">Categories to skip</string>
+    <string name="sponsorblock_show_toast">Notify when skipping</string>
+    <string name="sponsorblock_show_toast_desc">Show a brief toast each time a segment is skipped</string>
+    <string name="sponsorblock_segment_skipped">Skipped %1$s</string>
+    <string name="sponsorblock_category_sponsor">Sponsor</string>
+    <string name="sponsorblock_category_selfpromo">Unpaid / self promotion</string>
+    <string name="sponsorblock_category_interaction">Interaction reminder</string>
+    <string name="sponsorblock_category_intro">Intro / animation</string>
+    <string name="sponsorblock_category_outro">Outro / credits</string>
+    <string name="sponsorblock_category_preview">Preview / recap</string>
+    <string name="sponsorblock_category_music_offtopic">Non-music section</string>
+    <string name="sponsorblock_category_filler">Filler tangent</string>
+    <string name="sponsorblock_attribution">Segments provided by sponsor.ajay.app</string>
     <string name="stop_music_on_task_clear">Stop music on task clear</string>
     <string name="equalizer">Equalizer</string>
 

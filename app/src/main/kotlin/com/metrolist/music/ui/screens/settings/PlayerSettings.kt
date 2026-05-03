@@ -1003,6 +1003,12 @@ fun PlayerSettings(
                         )
                     },
                     onClick = { onKeepScreenOnChange(!keepScreenOn) }
+                ),
+                Material3SettingsItem(
+                    icon = painterResource(R.drawable.fast_forward),
+                    title = { Text(stringResource(R.string.sponsorblock)) },
+                    description = { Text(stringResource(R.string.sponsorblock_desc)) },
+                    onClick = { navController.navigate("settings/player/sponsorblock") }
                 )
             )
         )

@@ -122,6 +122,10 @@ import com.metrolist.music.constants.MediaSessionConstants.CommandToggleShuffle
 import com.metrolist.music.constants.MediaSessionConstants.CommandToggleStartRadio
 import com.metrolist.music.constants.PauseListenHistoryKey
 import com.metrolist.music.constants.PauseOnMute
+import com.metrolist.music.constants.SPONSORBLOCK_DEFAULT_CATEGORIES
+import com.metrolist.music.constants.SponsorBlockCategoriesKey
+import com.metrolist.music.constants.SponsorBlockEnabledKey
+import com.metrolist.music.constants.SponsorBlockShowToastKey
 import com.metrolist.music.constants.PersistentQueueKey
 import com.metrolist.music.constants.PersistentShuffleAcrossQueuesKey
 import com.metrolist.music.constants.PlayerVolumeKey
@@ -274,6 +278,10 @@ class MusicService :
     private var crossfadeDuration = 5000f
     private var crossfadeGapless = true
     private var crossfadeTriggerJob: Job? = null
+
+    // SponsorBlock: per-track job that fetches skip segments and polls playback
+    // position to seek past them. Cancelled and restarted on every track change.
+    private var sponsorBlockJob: Job? = null
 
     private val secondaryPlayerListener =
         object : Player.Listener {
@@ -2128,6 +2136,9 @@ class MusicService :
 
         discordUpdateJob?.cancel()
 
+        // Restart SponsorBlock for the new track (no-op when disabled).
+        startSponsorBlockForCurrentTrack()
+
         scrobbleManager?.onSongStop()
         if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
             scrobbleManager?.onSongStart(player.currentMetadata, duration = player.duration)
@@ -3606,6 +3617,7 @@ class MusicService :
         // But since we are destroying the service, it's fine.
         player.release()
         discordUpdateJob?.cancel()
+        sponsorBlockJob?.cancel()
         scope.cancel()
         super.onDestroy()
     }
@@ -3858,6 +3870,62 @@ class MusicService :
     ) {
         if (reason == Player.DISCONTINUITY_REASON_SEEK) {
             scheduleCrossfade()
+        }
+    }
+
+    /**
+     * Restarts the SponsorBlock segment-skipper for the currently-playing track.
+     * Cancels any previous job, then (if enabled) launches a coroutine that
+     * fetches segments and polls playback position to seek past them. Failures
+     * are silent — SponsorBlock should never disrupt playback.
+     */
+    private fun startSponsorBlockForCurrentTrack() {
+        sponsorBlockJob?.cancel()
+        sponsorBlockJob = null
+
+        val enabled = dataStore.get(SponsorBlockEnabledKey, false)
+        if (!enabled) return
+
+        val rawCategories = dataStore.get(SponsorBlockCategoriesKey, SPONSORBLOCK_DEFAULT_CATEGORIES)
+        val categories = rawCategories.split(',').map { it.trim() }.filter { it.isNotEmpty() }.toSet()
+        if (categories.isEmpty()) return
+
+        val mediaId = player.currentMediaItem?.mediaId ?: return
+        // Episodes (podcasts) are not on YouTube proper and aren't on SponsorBlock.
+        if (player.currentMediaItem?.metadata?.isEpisode == true) return
+
+        val showToast = dataStore.get(SponsorBlockShowToastKey, false)
+
+        sponsorBlockJob = scope.launch {
+            val segments = withContext(Dispatchers.IO) {
+                runCatching { SponsorBlockManager.fetchSegments(mediaId, categories) }
+                    .getOrDefault(emptyList())
+            }
+            if (segments.isEmpty()) return@launch
+            // Verify track hasn't changed during the fetch.
+            if (player.currentMediaItem?.mediaId != mediaId) return@launch
+
+            while (isActive && player.currentMediaItem?.mediaId == mediaId) {
+                val pos = player.currentPosition
+                segments.forEach { segment ->
+                    if (pos in segment.startMs..(segment.endMs - 200)) {
+                        Timber.tag(TAG).d(
+                            "SponsorBlock: skipping ${segment.category} ${segment.startMs}..${segment.endMs}ms"
+                        )
+                        // Hop straight past the segment. seekTo is idempotent
+                        // so re-entering the segment (manual rewind) re-triggers.
+                        player.seekTo(segment.endMs)
+                        if (showToast) {
+                            Toast.makeText(
+                                this@MusicService,
+                                getString(R.string.sponsorblock_segment_skipped, segment.category),
+                                Toast.LENGTH_SHORT,
+                            ).show()
+                        }
+                    }
+                }
+                delay(250)
+            }
         }
     }
 

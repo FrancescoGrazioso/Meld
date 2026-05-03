@@ -54,6 +54,7 @@ import com.metrolist.music.ui.screens.settings.ContentSettings
 import com.metrolist.music.ui.screens.settings.DarkMode
 import com.metrolist.music.ui.screens.settings.DiscordLoginScreen
 import com.metrolist.music.ui.screens.settings.PlayerSettings
+import com.metrolist.music.ui.screens.settings.SponsorBlockSettings
 import com.metrolist.music.ui.screens.settings.PrivacySettings
 import com.metrolist.music.ui.screens.settings.RomanizationSettings
 import com.metrolist.music.ui.screens.settings.SettingsScreen
@@ -389,6 +390,10 @@ fun NavGraphBuilder.navigationBuilder(
 
     composable("settings/player") {
         PlayerSettings(navController)
+    }
+
+    composable("settings/player/sponsorblock") {
+        SponsorBlockSettings(navController)
     }
 
     composable("settings/storage") {
