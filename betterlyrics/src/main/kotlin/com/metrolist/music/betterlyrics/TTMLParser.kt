@@ -253,16 +253,18 @@ object TTMLParser {
 
     fun toLRC(lines: List<ParsedLine>): String {
         val agentMap = mutableMapOf<String, String>()
-        
-        // Phase 1: Preserve explicit v1, v2, v1000
+
+        // Phase 1: Preserve only the canonical LRC agents v1 and v2.
+        // Other IDs (e.g. v1000 used by Apple Music for "group vocal") fall through
+        // to phase 2 so they get remapped onto the v1/v2 namespace LRC consumers expect.
         lines.forEach { line ->
             line.agent?.lowercase()?.let { raw ->
-                if (raw == "v1" || raw == "v2" || raw == "v1000") {
+                if (raw == "v1" || raw == "v2") {
                     agentMap[raw] = raw
                 }
             }
         }
-        
+
         // Phase 2: Map other agents to v1/v2 if available
         var nextNum = 1
         lines.forEach { line ->
@@ -276,7 +278,12 @@ object TTMLParser {
             }
         }
 
-        val multi = agentMap.size > 1 || (agentMap.size == 1 && !agentMap.containsKey("v1"))
+        // Force agent tags whenever background vocals exist so consumers can tell
+        // the main vocalist apart from the background lines, even with a single agent.
+        val hasBackground = lines.any { it.isBackground || it.backgroundLines.isNotEmpty() }
+        val multi = hasBackground ||
+            agentMap.size > 1 ||
+            (agentMap.size == 1 && !agentMap.containsKey("v1"))
         
         val sb = StringBuilder(lines.size * 128)
         var lastBg = false
