@@ -2587,6 +2587,36 @@ class MusicService :
         return false
     }
 
+    /**
+     * Detects a corrupt-container source error that no amount of retrying will fix
+     * (e.g. MatroskaExtractor's recurring `ArrayIndexOutOfBoundsException` on a
+     * partial WebM stream). The only sensible response is to skip the track —
+     * see github.com/FrancescoGrazioso/Meld/issues/94. Suppresses the crash
+     * report since this is an upstream Media3 bug, not our own.
+     */
+    private fun isMalformedContainerError(error: PlaybackException): Boolean {
+        var cause: Throwable? = error
+        while (cause != null) {
+            val stack = cause.stackTrace
+            for (frame in stack) {
+                val cls = frame.className
+                if (cls.contains("androidx.media3.extractor.mkv") ||
+                    cls.contains("androidx.media3.extractor.mp4") ||
+                    cls.contains("androidx.media3.extractor.ogg")
+                ) {
+                    if (cause is ArrayIndexOutOfBoundsException ||
+                        cause is IndexOutOfBoundsException ||
+                        cause is NumberFormatException
+                    ) {
+                        return true
+                    }
+                }
+            }
+            cause = cause.cause
+        }
+        return false
+    }
+
     private fun isNetworkRelatedError(error: PlaybackException): Boolean {
         // Don't treat specific errors as network errors - they need special handling
         if (isExpiredUrlError(error) || isRangeNotSatisfiableError(error) || isPageReloadError(error)) {
@@ -2629,7 +2659,8 @@ class MusicService :
             isExpiredUrlError(error) ||
             isPageReloadError(error) ||
             isMissingStreamDataError(error) ||
-            isMediaCodecError(error)
+            isMediaCodecError(error) ||
+            isMalformedContainerError(error)
         if (!isRecoverableYouTubeError) {
             reportException(error)
         }
@@ -2682,6 +2713,13 @@ class MusicService :
             isMediaCodecError(error) -> {
                 Timber.tag(TAG).d("MediaCodec decoder error detected, performing renderer recovery")
                 handleAudioRendererError(mediaId)
+                return
+            }
+
+            isMalformedContainerError(error) -> {
+                Timber.tag(TAG).w("Malformed container detected (upstream Media3 bug), auto-skipping $mediaId")
+                if (mediaId != null) markSongAsFailed(mediaId)
+                skipOnError()
                 return
             }
 

@@ -42,6 +42,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -87,7 +88,9 @@ import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.playback.ExoDownloadService
 import com.metrolist.music.playback.SpotifyYouTubeMapper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import com.metrolist.music.viewmodels.SpotifyLikedSongsViewModel
 import com.metrolist.spotify.SpotifyMapper
@@ -111,6 +114,17 @@ fun SpotifyLikedSongsScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val isRefreshing by viewModel.isRefreshing.collectAsState()
     val error by viewModel.error.collectAsState()
+
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isPlaying.collectAsState()
+    val currentSpotifyId by produceState<String?>(initialValue = null, mediaMetadata?.id) {
+        val ytId = mediaMetadata?.id
+        value = if (ytId != null) {
+            withContext(Dispatchers.IO) { database.getSpotifyMatchByYouTubeId(ytId)?.spotifyId }
+        } else {
+            null
+        }
+    }
 
     val (sortType, onSortTypeChange) = rememberEnumPreference(
         SpotifyLikedSortTypeKey,
@@ -314,17 +328,19 @@ fun SpotifyLikedSongsScreen(
                 val thumbnailUrl = SpotifyMapper.getTrackThumbnail(track)
                 val originalIndex = if (isSearching) sortedTracks.indexOf(track).coerceAtLeast(0) else index
 
+                val isActive = currentSpotifyId != null && currentSpotifyId == track.id
                 ListItem(
                     title = track.name,
                     subtitle = joinByBullet(
                         track.artists.joinToString { it.name },
                         makeTimeString((track.durationMs).toLong()),
                     ),
+                    isActive = isActive,
                     thumbnailContent = {
                         ItemThumbnail(
                             thumbnailUrl = thumbnailUrl,
-                            isActive = false,
-                            isPlaying = false,
+                            isActive = isActive,
+                            isPlaying = isPlaying,
                             shape = RoundedCornerShape(ThumbnailCornerRadius),
                             modifier = Modifier.size(ListThumbnailSize),
                         )
@@ -346,6 +362,7 @@ fun SpotifyLikedSongsScreen(
                                         track = track,
                                         mapper = mapper,
                                         onDismiss = menuState::dismiss,
+                                        navController = navController,
                                     )
                                 }
                             },

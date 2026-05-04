@@ -33,6 +33,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,8 +58,11 @@ import com.metrolist.music.ui.component.ListItem
 import com.metrolist.music.ui.utils.backToMain
 import com.metrolist.music.utils.joinByBullet
 import com.metrolist.music.utils.makeTimeString
+import com.metrolist.music.LocalDatabase
 import com.metrolist.music.viewmodels.SpotifyAlbumViewModel
 import com.metrolist.spotify.SpotifyMapper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -68,11 +72,23 @@ fun SpotifyAlbumScreen(
     viewModel: SpotifyAlbumViewModel = hiltViewModel(),
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
+    val database = LocalDatabase.current
 
     val album by viewModel.album.collectAsState()
     val tracks by viewModel.tracks.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
+
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isPlaying.collectAsState()
+    val currentSpotifyId by produceState<String?>(initialValue = null, mediaMetadata?.id) {
+        val ytId = mediaMetadata?.id
+        value = if (ytId != null) {
+            withContext(Dispatchers.IO) { database.getSpotifyMatchByYouTubeId(ytId)?.spotifyId }
+        } else {
+            null
+        }
+    }
 
     val lazyListState = rememberLazyListState()
 
@@ -245,17 +261,19 @@ fun SpotifyAlbumScreen(
             ) { index, track ->
                 val thumbnailUrl = SpotifyMapper.getTrackThumbnail(track)
 
+                val isActive = currentSpotifyId != null && currentSpotifyId == track.id
                 ListItem(
                     title = track.name,
                     subtitle = joinByBullet(
                         track.artists.joinToString { it.name },
                         makeTimeString(track.durationMs.toLong()),
                     ),
+                    isActive = isActive,
                     thumbnailContent = {
                         ItemThumbnail(
                             thumbnailUrl = thumbnailUrl,
-                            isActive = false,
-                            isPlaying = false,
+                            isActive = isActive,
+                            isPlaying = isPlaying,
                             shape = RoundedCornerShape(ThumbnailCornerRadius),
                             modifier = Modifier.size(ListThumbnailSize),
                         )

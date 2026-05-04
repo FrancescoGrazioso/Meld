@@ -7,10 +7,14 @@ package com.metrolist.music.ui.menu
 
 import android.widget.Toast
 import androidx.compose.foundation.basicMarquee
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -30,15 +34,22 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.metrolist.innertube.YouTube
+import com.metrolist.innertube.models.ArtistItem
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
+import com.metrolist.music.constants.ListItemHeight
 import com.metrolist.music.constants.ListThumbnailSize
 import com.metrolist.music.constants.ThumbnailCornerRadius
 import com.metrolist.music.playback.SpotifyYouTubeMapper
+import com.metrolist.music.ui.component.ListDialog
 import com.metrolist.music.ui.component.Material3MenuGroup
 import com.metrolist.music.ui.component.Material3MenuItemData
 import com.metrolist.music.ui.component.YouTubeMatchDialog
@@ -63,6 +74,7 @@ fun SpotifyTrackMenu(
     track: SpotifyTrack,
     mapper: SpotifyYouTubeMapper,
     onDismiss: () -> Unit,
+    navController: NavController? = null,
     onRemoveFromPlaylist: (() -> Unit)? = null,
 ) {
     val context = LocalContext.current
@@ -72,6 +84,66 @@ fun SpotifyTrackMenu(
 
     var showYouTubeMatchDialog by rememberSaveable { mutableStateOf(false) }
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
+    var showSelectArtistDialog by rememberSaveable { mutableStateOf(false) }
+
+    fun resolveAndNavigateToArtist(artistName: String) {
+        coroutineScope.launch {
+            val ytArtistId = withContext(Dispatchers.IO) {
+                runCatching {
+                    YouTube.search(artistName, YouTube.SearchFilter.FILTER_ARTIST)
+                        .getOrNull()
+                        ?.items
+                        ?.firstOrNull { it is ArtistItem }
+                        ?.id
+                }.getOrNull()
+            }
+            if (ytArtistId != null) {
+                navController?.navigate("artist/$ytArtistId")
+                onDismiss()
+            } else {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.spotify_no_tracks),
+                    Toast.LENGTH_SHORT,
+                ).show()
+            }
+        }
+    }
+
+    if (showSelectArtistDialog) {
+        ListDialog(
+            onDismiss = { showSelectArtistDialog = false },
+        ) {
+            items(track.artists) { artist ->
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .height(ListItemHeight)
+                        .clickable {
+                            showSelectArtistDialog = false
+                            resolveAndNavigateToArtist(artist.name)
+                        }
+                        .padding(horizontal = 12.dp),
+                ) {
+                    Box(
+                        contentAlignment = Alignment.CenterStart,
+                        modifier = Modifier
+                            .fillParentMaxWidth()
+                            .height(ListItemHeight)
+                            .padding(horizontal = 24.dp),
+                    ) {
+                        Text(
+                            text = artist.name,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                }
+            }
+        }
+    }
 
     val currentMatch by produceState<com.metrolist.music.db.entities.SpotifyMatchEntity?>(
         initialValue = null,
@@ -237,6 +309,30 @@ fun SpotifyTrackMenu(
             ),
         ),
     )
+
+    if (navController != null && track.artists.isNotEmpty()) {
+        Material3MenuGroup(
+            items = listOf(
+                Material3MenuItemData(
+                    title = { Text(text = stringResource(R.string.view_artist)) },
+                    description = { Text(text = track.artists.joinToString { it.name }) },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.artist),
+                            contentDescription = null,
+                        )
+                    },
+                    onClick = {
+                        if (track.artists.size == 1) {
+                            resolveAndNavigateToArtist(track.artists[0].name)
+                        } else {
+                            showSelectArtistDialog = true
+                        }
+                    },
+                ),
+            ),
+        )
+    }
 
     AddToSpotifyPlaylistFlow(
         showDialog = showAddToPlaylistDialog,

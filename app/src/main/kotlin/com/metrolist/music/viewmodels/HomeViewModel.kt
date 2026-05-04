@@ -748,6 +748,23 @@ class HomeViewModel @Inject constructor(
                 Timber.w("spotifyHome: no top tracks — skipping pinned section")
             }
 
+            Timber.d("spotifyHome: calling Spotify.newReleases()...")
+            Spotify.newReleases(limit = 20).onSuccess { newReleases ->
+                val albums = newReleases.albums?.items.orEmpty()
+                if (albums.isNotEmpty()) {
+                    sections.add(SpotifyHomeSection(
+                        title = "spotify_new_releases",
+                        type = SectionType.ALBUMS,
+                        albums = albums,
+                    ))
+                    Timber.d("spotifyHome: added pinned section 'New Releases' (${albums.size} albums)")
+                } else {
+                    Timber.w("spotifyHome: newReleases returned 0 albums — skipping section")
+                }
+            }.onFailure { e ->
+                Timber.e(e, "spotifyHome: newReleases() FAILED — ${e.javaClass.simpleName}: ${e.message}")
+            }
+
             Timber.d("spotifyHome: calling Spotify.home()...")
             Spotify.home(sectionItemsLimit = 10).onSuccess { feed ->
                 Timber.d("spotifyHome: home() OK — greeting='${feed.greeting}' rawSections=${feed.sections.size}")

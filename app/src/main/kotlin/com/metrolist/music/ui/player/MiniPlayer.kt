@@ -63,6 +63,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
@@ -182,6 +183,9 @@ private fun NewMiniPlayer(
     )
     val context = LocalContext.current
     var gradientColors by remember { mutableStateOf<List<Color>>(emptyList()) }
+    // Whether the current cover art is bright enough that white icons would be hard to read.
+    // Computed from the dominant Palette swatch when the track changes.
+    var coverIsLight by remember { mutableStateOf(false) }
     val isSystemInDarkTheme = isSystemInDarkTheme()
     val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
     val useDarkTheme =
@@ -243,40 +247,42 @@ private fun NewMiniPlayer(
 
     LaunchedEffect(mediaMetadata?.id, miniPlayerBackground) {
         gradientColors = emptyList()
-        if (miniPlayerBackground == MiniPlayerBackgroundStyle.GRADIENT) {
-            val url = mediaMetadata?.thumbnailUrl
-            if (url != null) {
-                withContext(Dispatchers.IO) {
-                    val request = ImageRequest.Builder(context)
-                        .data(url)
-                        .size(100, 100)
-                        .allowHardware(false)
-                        .build()
-                    val result = runCatching { context.imageLoader.execute(request) }.getOrNull()
-                    val bitmap = result?.image?.toBitmap()
-                    if (bitmap != null) {
-                        val palette = withContext(Dispatchers.Default) {
-                            Palette.from(bitmap)
-                                .maximumColorCount(8)
-                                .resizeBitmapArea(100 * 100)
-                                .generate()
-                        }
-                        val extracted = PlayerColorExtractor.extractGradientColors(
+        coverIsLight = false
+        val url = mediaMetadata?.thumbnailUrl
+        if (url != null) {
+            withContext(Dispatchers.IO) {
+                val request = ImageRequest.Builder(context)
+                    .data(url)
+                    .size(100, 100)
+                    .allowHardware(false)
+                    .build()
+                val result = runCatching { context.imageLoader.execute(request) }.getOrNull()
+                val bitmap = result?.image?.toBitmap()
+                if (bitmap != null) {
+                    val palette = withContext(Dispatchers.Default) {
+                        Palette.from(bitmap)
+                            .maximumColorCount(8)
+                            .resizeBitmapArea(100 * 100)
+                            .generate()
+                    }
+                    val dominantRgb = palette.getDominantColor(0xFF000000.toInt())
+                    val luminance = Color(dominantRgb).luminance()
+                    val extracted = if (miniPlayerBackground == MiniPlayerBackgroundStyle.GRADIENT) {
+                        PlayerColorExtractor.extractGradientColors(
                             palette = palette,
                             fallbackColor = 0xFF000000.toInt(),
                         )
-                        withContext(Dispatchers.Main) {
-                            gradientColors = extracted
-                        }
                     } else {
-                        withContext(Dispatchers.Main) {
-                            gradientColors = emptyList()
-                        }
+                        emptyList()
+                    }
+                    withContext(Dispatchers.Main) {
+                        gradientColors = extracted
+                        // Threshold tuned so genuinely bright covers (white/yellow/pastel) flip
+                        // the icon to black, while mid-tones keep the default white.
+                        coverIsLight = luminance > 0.55f
                     }
                 }
             }
-        } else {
-            gradientColors = emptyList()
         }
     }
 
@@ -429,6 +435,7 @@ private fun NewMiniPlayer(
                     primaryColor = primaryColor,
                     outlineColor = outlineColor,
                     listenTogetherManager = listenTogetherManager,
+                    coverIsLight = coverIsLight,
                 )
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -514,6 +521,7 @@ private fun NewMiniPlayerPlayButton(
     primaryColor: Color,
     outlineColor: Color,
     listenTogetherManager: ListenTogetherManager?,
+    coverIsLight: Boolean,
 ) {
     val isPlaying by playerConnection.isPlaying.collectAsState()
     val castIsPlaying by castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
@@ -597,32 +605,33 @@ private fun NewMiniPlayerPlayButton(
                 )
             }
 
-            // Overlay for paused state or muted (guest)
-            if (isListenTogetherGuest && isMuted ||
-                (!isListenTogetherGuest && (!effectiveIsPlaying || playbackState == Player.STATE_ENDED))
-            ) {
-                Box(
-                    modifier =
-                        Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.4f), CircleShape),
-                )
-                Icon(
-                    painter =
-                        painterResource(
-                            if (isListenTogetherGuest) {
-                                if (isMuted) R.drawable.volume_off else R.drawable.volume_up
-                            } else if (playbackState == Player.STATE_ENDED) {
-                                R.drawable.replay
-                            } else {
-                                R.drawable.play
-                            },
-                        ),
-                    contentDescription = null,
-                    tint = Color.White,
-                    modifier = Modifier.size(20.dp),
-                )
+            // Always show a play/pause/replay/volume icon over a dark scrim so the
+            // current playback state is unambiguous and visible against any cover.
+            val iconRes = when {
+                isListenTogetherGuest -> if (isMuted) R.drawable.volume_off else R.drawable.volume_up
+                playbackState == Player.STATE_ENDED -> R.drawable.replay
+                effectiveIsPlaying -> R.drawable.pause
+                else -> R.drawable.play
             }
+            // Bright covers + white icon would wash out; flip to black there.
+            val iconTint = if (coverIsLight) Color.Black else Color.White
+            val scrimColor = if (coverIsLight) {
+                Color.White.copy(alpha = 0.35f)
+            } else {
+                Color.Black.copy(alpha = 0.4f)
+            }
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .background(scrimColor, CircleShape),
+            )
+            Icon(
+                painter = painterResource(iconRes),
+                contentDescription = null,
+                tint = iconTint,
+                modifier = Modifier.size(20.dp),
+            )
         }
     }
 }
