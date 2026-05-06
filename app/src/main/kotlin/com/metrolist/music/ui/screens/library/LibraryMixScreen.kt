@@ -71,6 +71,7 @@ import com.metrolist.music.constants.MixSortTypeKey
 import com.metrolist.music.constants.ShowCachedPlaylistKey
 import com.metrolist.music.constants.ShowDownloadedPlaylistKey
 import com.metrolist.music.constants.ShowLikedPlaylistKey
+import com.metrolist.music.constants.HideYtmLikedSongsKey
 import com.metrolist.music.constants.SpotifySyncLikesKey
 import com.metrolist.music.constants.ShowTopPlaylistKey
 import com.metrolist.music.constants.ShowUploadedPlaylistKey
@@ -219,6 +220,8 @@ fun LibraryMixScreen(
 
     val (showLiked) = rememberPreference(ShowLikedPlaylistKey, true)
     val (spotifySyncLikes) = rememberPreference(SpotifySyncLikesKey, false)
+    val (hideYtmLikedSongs) = rememberPreference(HideYtmLikedSongsKey, true)
+    val hideYtmLiked = spotifySyncLikes && hideYtmLikedSongs
     val (showDownloaded) = rememberPreference(ShowDownloadedPlaylistKey, true)
     val (showTop) = rememberPreference(ShowTopPlaylistKey, true)
     val (showCached) = rememberPreference(ShowCachedPlaylistKey, true)
@@ -475,7 +478,7 @@ fun LibraryMixScreen(
                         headerContent()
                     }
 
-                    if (showLikedPlaylist && !spotifySyncLikes) {
+                    if (showLikedPlaylist && !hideYtmLiked) {
                         item(
                             key = "likedPlaylist",
                             contentType = { CONTENT_TYPE_PLAYLIST },
@@ -901,7 +904,7 @@ fun LibraryMixScreen(
                         headerContent()
                     }
 
-                    if (showLikedPlaylist && !spotifySyncLikes) {
+                    if (showLikedPlaylist && !hideYtmLiked) {
                         item(
                             key = "likedPlaylist",
                             contentType = { CONTENT_TYPE_PLAYLIST },

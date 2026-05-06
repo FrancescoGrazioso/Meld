@@ -499,6 +499,8 @@
     <string name="spotify_sync_likes_syncing">Syncing liked songs from Spotify… (%1$d/%2$d)</string>
     <string name="spotify_sync_likes_complete">Synced %1$d songs from Spotify</string>
     <string name="spotify_sync_likes_failed">Failed to sync liked songs from Spotify</string>
+    <string name="hide_ytm_liked_songs">Hide YouTube Music liked songs</string>
+    <string name="hide_ytm_liked_songs_description">When syncing with Spotify, hide the local liked songs playlist to avoid duplicates. Disable to show both.</string>
 
     <string name="details_desc">View the song\'s details</string>
     <string name="edit_desc">Edit the title or artist</string>

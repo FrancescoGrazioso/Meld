@@ -46,6 +46,7 @@ import com.metrolist.music.constants.EnableSpotifyKey
 import com.metrolist.music.constants.SpotifyAccessTokenKey
 import com.metrolist.music.constants.SpotifySpDcKey
 import com.metrolist.music.constants.SpotifySpKeyKey
+import com.metrolist.music.constants.HideYtmLikedSongsKey
 import com.metrolist.music.constants.SpotifySyncLikesKey
 import com.metrolist.music.constants.SpotifyTokenExpiryKey
 import com.metrolist.music.constants.SpotifyUserIdKey
@@ -255,6 +256,19 @@ fun SpotifySettings(
                     },
                     description = null,
                     icon = {},
+                )
+            }
+
+            if (syncLikes) {
+                val (hideYtmLikedSongs, onHideYtmLikedSongsChange) = rememberPreference(
+                    key = HideYtmLikedSongsKey,
+                    defaultValue = true,
+                )
+                SwitchPreference(
+                    title = { Text(stringResource(R.string.hide_ytm_liked_songs)) },
+                    description = stringResource(R.string.hide_ytm_liked_songs_description),
+                    checked = hideYtmLikedSongs,
+                    onCheckedChange = onHideYtmLikedSongsChange,
                 )
             }
 
