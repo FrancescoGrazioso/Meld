@@ -193,7 +193,7 @@ fun SpotifyPlaylistScreen(
             }
             SpotifySortType.DURATION -> playlistItems.sortedBy { it.track?.durationMs ?: 0 }
         }
-        if (sortDescending && sortType != SpotifySortType.ORIGINAL) sorted.reversed() else sorted
+        if (sortDescending) sorted.reversed() else sorted
     }
 
     val mutableItems = remember { mutableStateListOf<SpotifyPlaylistTrack>() }
@@ -419,7 +419,7 @@ fun SpotifyPlaylistScreen(
             }
 
             val displayItems = if (isSearching) filteredItems else mutableItems.toList()
-            val reorderEnabled = sortType == SpotifySortType.ORIGINAL && !locked && !isSearching
+            val reorderEnabled = sortType == SpotifySortType.ORIGINAL && !sortDescending && !locked && !isSearching
             itemsIndexed(
                 items = displayItems,
                 key = { index, item -> item.uid ?: "item_${item.track?.id}_$index" },

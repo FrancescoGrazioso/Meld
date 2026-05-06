@@ -155,7 +155,7 @@ fun SpotifyLikedSongsScreen(
             }
             SpotifySortType.DURATION -> tracks.sortedBy { it.durationMs }
         }
-        if (sortDescending && sortType != SpotifySortType.ORIGINAL) sorted.reversed() else sorted
+        if (sortDescending) sorted.reversed() else sorted
     }
 
     val filteredTracks = remember(sortedTracks, query) {
