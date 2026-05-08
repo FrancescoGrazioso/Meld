@@ -53,6 +53,7 @@ import com.metrolist.music.db.entities.Song
 import com.metrolist.music.extensions.toMediaItem
 import com.metrolist.music.extensions.toggleRepeatMode
 import com.metrolist.music.models.toMediaMetadata
+import com.metrolist.music.utils.SpotifyTokenManager
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.get
 import com.metrolist.music.utils.reportException
@@ -185,7 +186,10 @@ constructor(
                             serializeSections(AndroidAutoSection.values().map { it to true })
                         )
                         val sections = deserializeSections(sectionsRaw)
-                        val spotifyLoggedIn = Spotify.isAuthenticated()
+                        // Ensure the Spotify token is loaded from DataStore before checking auth.
+                        // Android Auto can request ROOT children before App's async init finishes,
+                        // which would otherwise hide Spotify sections until reconnect.
+                        val spotifyLoggedIn = SpotifyTokenManager.ensureAuthenticated()
                         sections
                             .filter { (section, enabled) ->
                                 enabled && when (section) {
@@ -841,7 +845,7 @@ constructor(
     // ── Spotify playlist helpers ─────────────────────────────────────────
 
     private suspend fun fetchSpotifyPlaylistItems(): List<MediaItem> {
-        if (!Spotify.isAuthenticated()) return emptyList()
+        if (!SpotifyTokenManager.ensureAuthenticated()) return emptyList()
         return try {
             val playlists = Spotify.myPlaylists(limit = 50).getOrNull()?.items ?: emptyList()
             playlists.map { playlist ->
