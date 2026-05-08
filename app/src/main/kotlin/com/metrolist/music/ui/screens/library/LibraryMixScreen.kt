@@ -101,6 +101,7 @@ import com.metrolist.music.ui.component.SortHeader
 import com.metrolist.music.ui.menu.AlbumMenu
 import com.metrolist.music.ui.menu.ArtistMenu
 import com.metrolist.music.ui.menu.PlaylistMenu
+import com.metrolist.music.ui.menu.SpotifyPlaylistMenu
 import com.metrolist.music.ui.menu.SongMenu
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
@@ -613,11 +614,12 @@ fun LibraryMixScreen(
 
                     if (isSpotifyActive && spotifyLikedSongsTotal > 0) {
                         item(key = "spotify_liked_songs") {
+                            val likedSongsName = stringResource(R.string.spotify_liked_songs)
                             PlaylistListItem(
                                 playlist = Playlist(
                                     playlist = PlaylistEntity(
                                         id = "spotify_liked_songs",
-                                        name = stringResource(R.string.spotify_liked_songs),
+                                        name = likedSongsName,
                                         remoteSongCount = spotifyLikedSongsTotal,
                                     ),
                                     songCount = spotifyLikedSongsTotal,
@@ -626,9 +628,22 @@ fun LibraryMixScreen(
                                 autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("spotify_liked_songs")
-                                    }
+                                    .combinedClickable(
+                                        onClick = {
+                                            navController.navigate("spotify_liked_songs")
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            menuState.show {
+                                                SpotifyPlaylistMenu(
+                                                    spotifyId = "spotify:liked_songs",
+                                                    title = likedSongsName,
+                                                    onNavigate = { navController.navigate("spotify_liked_songs") },
+                                                    onDismiss = menuState::dismiss,
+                                                )
+                                            }
+                                        }
+                                    )
                                     .animateItem(),
                             )
                         }
@@ -654,9 +669,21 @@ fun LibraryMixScreen(
                                 autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("spotify_playlist/${spotifyPlaylist.id}")
-                                    }
+                                    .combinedClickable(
+                                        onClick = {
+                                            navController.navigate("spotify_playlist/${spotifyPlaylist.id}")
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            menuState.show {
+                                                SpotifyPlaylistMenu(
+                                                    playlist = spotifyPlaylist,
+                                                    onNavigate = { navController.navigate("spotify_playlist/${spotifyPlaylist.id}") },
+                                                    onDismiss = menuState::dismiss,
+                                                )
+                                            }
+                                        }
+                                    )
                                     .animateItem(),
                             )
                         }
@@ -1055,11 +1082,12 @@ fun LibraryMixScreen(
 
                     if (isSpotifyActive && spotifyLikedSongsTotal > 0) {
                         item(key = "spotify_liked_songs") {
+                            val likedSongsName = stringResource(R.string.spotify_liked_songs)
                             PlaylistGridItem(
                                 playlist = Playlist(
                                     playlist = PlaylistEntity(
                                         id = "spotify_liked_songs",
-                                        name = stringResource(R.string.spotify_liked_songs),
+                                        name = likedSongsName,
                                         remoteSongCount = spotifyLikedSongsTotal,
                                     ),
                                     songCount = spotifyLikedSongsTotal,
@@ -1069,9 +1097,22 @@ fun LibraryMixScreen(
                                 autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("spotify_liked_songs")
-                                    }
+                                    .combinedClickable(
+                                        onClick = {
+                                            navController.navigate("spotify_liked_songs")
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            menuState.show {
+                                                SpotifyPlaylistMenu(
+                                                    spotifyId = "spotify:liked_songs",
+                                                    title = likedSongsName,
+                                                    onNavigate = { navController.navigate("spotify_liked_songs") },
+                                                    onDismiss = menuState::dismiss,
+                                                )
+                                            }
+                                        }
+                                    )
                                     .animateItem(),
                             )
                         }
@@ -1098,9 +1139,21 @@ fun LibraryMixScreen(
                                 autoPlaylist = true,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate("spotify_playlist/${spotifyPlaylist.id}")
-                                    }
+                                    .combinedClickable(
+                                        onClick = {
+                                            navController.navigate("spotify_playlist/${spotifyPlaylist.id}")
+                                        },
+                                        onLongClick = {
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            menuState.show {
+                                                SpotifyPlaylistMenu(
+                                                    playlist = spotifyPlaylist,
+                                                    onNavigate = { navController.navigate("spotify_playlist/${spotifyPlaylist.id}") },
+                                                    onDismiss = menuState::dismiss,
+                                                )
+                                            }
+                                        }
+                                    )
                                     .animateItem(),
                             )
                         }
