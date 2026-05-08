@@ -33,6 +33,7 @@ import com.metrolist.innertube.models.PlaylistItem
 import com.metrolist.innertube.models.SongItem
 import com.metrolist.innertube.models.filterExplicit
 import com.metrolist.innertube.models.filterVideoSongs
+import com.metrolist.innertube.utils.completed
 import com.metrolist.music.R
 import com.metrolist.spotify.Spotify
 import com.metrolist.spotify.SpotifyMapper
@@ -99,6 +100,7 @@ constructor(
         private const val TAG = "MediaLibraryCallback"
         private const val SPOTIFY_RESOLVE_TIMEOUT_MS = 30_000L
         private const val SPOTIFY_MAX_PLAYLIST_TRACKS = 100
+        private const val YT_PLAYLISTS_TIMEOUT_MS = 8_000L
     }
 
     override fun onConnect(
@@ -317,29 +319,8 @@ constructor(
                             )
                         }
 
-                        // Fetch YouTube playlists asynchronously if enabled
-                        if (showYoutubePlaylists) {
-                            scope.launch(Dispatchers.IO) {
-                               try {
-                                    val youtubePlaylists = YouTube.home().getOrNull()?.sections
-                                        ?.flatMap { it.items }
-                                        ?.filterIsInstance<PlaylistItem>()
-                                        ?.take(10)
-                                        ?: emptyList()
-
-                                    if (youtubePlaylists.isNotEmpty()) {
-                                        session.notifyChildrenChanged(
-                                            MusicService.PLAYLIST,
-                                            localItems.size + youtubePlaylists.size,
-                                            null
-                                        )
-                                    }
-                                } catch (e: Exception) {
-                                    reportException(e)
-                                }
-                            }
-                        }
-                        localItems + fetchSpotifyPlaylistItems()
+                        val youtubeItems = if (showYoutubePlaylists) fetchYouTubePlaylistItems() else emptyList()
+                        localItems + youtubeItems + fetchSpotifyPlaylistItems()
                     }
 
                     MusicService.SPOTIFY_PLAYLIST -> fetchSpotifyPlaylistItems()
@@ -840,6 +821,32 @@ constructor(
                     .setMediaType(MediaMetadata.MEDIA_TYPE_MUSIC)
                     .build(),
             ).build()
+    }
+
+    // ── YouTube playlist helpers ─────────────────────────────────────────
+
+    private suspend fun fetchYouTubePlaylistItems(): List<MediaItem> {
+        return try {
+            withTimeoutOrNull(YT_PLAYLISTS_TIMEOUT_MS) {
+                val playlists = YouTube.library("FEmusic_liked_playlists").completed().getOrNull()
+                    ?.items
+                    ?.filterIsInstance<PlaylistItem>()
+                    ?.filterNot { it.id == "SE" }
+                    ?: emptyList()
+                playlists.map { playlist ->
+                    browsableMediaItem(
+                        "${MusicService.YOUTUBE_PLAYLIST}/${playlist.id}",
+                        playlist.title,
+                        playlist.author?.name ?: playlist.songCountText,
+                        playlist.thumbnail?.toUri(),
+                        MediaMetadata.MEDIA_TYPE_PLAYLIST,
+                    )
+                }
+            } ?: emptyList()
+        } catch (e: Exception) {
+            Timber.tag(TAG).w(e, "Failed to fetch YouTube playlists for Auto")
+            emptyList()
+        }
     }
 
     // ── Spotify playlist helpers ─────────────────────────────────────────
