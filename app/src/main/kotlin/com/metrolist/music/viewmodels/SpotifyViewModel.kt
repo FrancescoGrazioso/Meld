@@ -209,14 +209,35 @@ constructor(
         }
 
         var retryAfter = 0L
-        Spotify.myPlaylists(limit = 50).onSuccess { paging ->
-            Timber.d("SpotifyVM: loadPlaylists() - SUCCESS, got ${paging.items.size} playlists")
-            for (pl in paging.items.take(5)) {
+        // Hard cap at 1000 playlists (20 pages × 50) so a pathological account
+        // with thousands of saved playlists can't pin the UI thread.
+        val pageSize = 50
+        val maxPages = 20
+        val collected = mutableListOf<com.metrolist.spotify.models.SpotifyPlaylist>()
+        var fetchError: Throwable? = null
+        var offset = 0
+        var page = 0
+        while (page < maxPages) {
+            val result = Spotify.myPlaylists(limit = pageSize, offset = offset)
+            val paging = result.getOrElse {
+                fetchError = it
+                break
+            }
+            collected += paging.items
+            offset += paging.items.size
+            page++
+            if (paging.items.size < pageSize || offset >= paging.total) break
+        }
+
+        if (fetchError == null) {
+            Timber.d("SpotifyVM: loadPlaylists() - SUCCESS, got ${collected.size} playlists across $page page(s)")
+            for (pl in collected.take(5)) {
                 Timber.d("SpotifyVM:   playlist: '${pl.name}' (${pl.tracks?.total ?: "?"} tracks)")
             }
-            _spotifyPlaylists.value = paging.items
-            savePlaylistsToCache(paging.items)
-        }.onFailure { e ->
+            _spotifyPlaylists.value = collected
+            savePlaylistsToCache(collected)
+        } else {
+            val e = fetchError
             Timber.e(e, "SpotifyVM: loadPlaylists() - FAILED: ${e.message}")
             retryAfter = (e as? Spotify.SpotifyException)?.retryAfterSec ?: 0
             handleAuthError(e)

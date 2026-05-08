@@ -512,12 +512,31 @@ object Spotify {
             val totalCount = libraryData.int("totalCount") ?: 0
             val pagingInfo = libraryData.obj("pagingInfo")
 
+            val rawItems = libraryData.arr("items").orEmpty()
+            // Diagnostic mirror of myLibraryNode: collaborative playlists historically
+            // surfaced under typenames the strict equality check below silently dropped
+            // (issue #37). Logging the typename distribution lets us spot any future
+            // schema drift without another round of bug reports.
+            val typeCounts = mutableMapOf<String, Int>()
+            rawItems.forEach { itemElem ->
+                val wrapper = itemElem.jsonObject.obj("item")
+                val tn = wrapper?.str("__typename") ?: "<missing>"
+                typeCounts[tn] = (typeCounts[tn] ?: 0) + 1
+            }
+            log("D", "myPlaylists: ${rawItems.size} raw items, typename counts = $typeCounts")
+
             val playlists =
-                libraryData.arr("items")?.mapNotNull { itemElem ->
+                rawItems.mapNotNull { itemElem ->
                     val wrapper = itemElem.jsonObject.obj("item") ?: return@mapNotNull null
-                    if (wrapper.str("__typename") != "PlaylistResponseWrapper") return@mapNotNull null
+                    val typeName = wrapper.str("__typename") ?: ""
+                    // Match every Playlist*Wrapper variant (Collaborative, etc.) like
+                    // myLibraryNode/myArtists already do. The strict equality check
+                    // dropped collaborative playlists silently.
+                    if (typeName != "PlaylistResponseWrapper" &&
+                        !typeName.contains("Playlist", ignoreCase = true)
+                    ) return@mapNotNull null
                     parsePlaylistWrapper(wrapper)
-                } ?: emptyList()
+                }
 
             SpotifyPaging(
                 items = playlists,
