@@ -51,7 +51,7 @@ import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
 import com.metrolist.music.constants.ListThumbnailSize
 import com.metrolist.music.constants.ThumbnailCornerRadius
-import com.metrolist.music.playback.queues.SpotifyQueue
+import com.metrolist.music.playback.queues.SpotifyPlaylistQueue
 import com.metrolist.music.ui.component.IconButton
 import com.metrolist.music.ui.component.ItemThumbnail
 import com.metrolist.music.ui.component.ListItem
@@ -157,13 +157,14 @@ fun SpotifyAlbumScreen(
                         Row {
                             Button(
                                 onClick = {
-                                    val first = tracks.firstOrNull() ?: return@Button
+                                    val albumId = album?.id ?: return@Button
+                                    if (tracks.isEmpty()) return@Button
                                     playerConnection.playQueue(
-                                        SpotifyQueue(
-                                            initialTrack = first,
+                                        SpotifyPlaylistQueue(
+                                            playlistId = "album_$albumId",
+                                            initialTracks = tracks,
+                                            startIndex = 0,
                                             mapper = viewModel.mapper,
-                                            context = viewModel.context,
-                                            database = viewModel.database,
                                         )
                                     )
                                 },
@@ -179,14 +180,15 @@ fun SpotifyAlbumScreen(
                             Spacer(modifier = Modifier.width(8.dp))
                             OutlinedButton(
                                 onClick = {
+                                    val albumId = album?.id ?: return@OutlinedButton
                                     val shuffled = tracks.shuffled()
-                                    val first = shuffled.firstOrNull() ?: return@OutlinedButton
+                                    if (shuffled.isEmpty()) return@OutlinedButton
                                     playerConnection.playQueue(
-                                        SpotifyQueue(
-                                            initialTrack = first,
+                                        SpotifyPlaylistQueue(
+                                            playlistId = "album_$albumId",
+                                            initialTracks = shuffled,
+                                            startIndex = 0,
                                             mapper = viewModel.mapper,
-                                            context = viewModel.context,
-                                            database = viewModel.database,
                                         )
                                     )
                                 },
@@ -281,12 +283,13 @@ fun SpotifyAlbumScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
+                            val albumId = album?.id ?: return@clickable
                             playerConnection.playQueue(
-                                SpotifyQueue(
-                                    initialTrack = track,
+                                SpotifyPlaylistQueue(
+                                    playlistId = "album_$albumId",
+                                    initialTracks = tracks,
+                                    startIndex = index,
                                     mapper = viewModel.mapper,
-                                    context = viewModel.context,
-                                    database = viewModel.database,
                                 )
                             )
                         }
