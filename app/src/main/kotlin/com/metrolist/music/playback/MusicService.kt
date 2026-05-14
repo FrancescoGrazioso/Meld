@@ -87,6 +87,14 @@ import com.metrolist.music.constants.AndroidAutoTargetPlaylistKey
 import com.metrolist.music.constants.AudioNormalizationKey
 import com.metrolist.music.constants.AudioOffload
 import com.metrolist.music.constants.AudioQualityKey
+import com.metrolist.music.constants.EnableQobuzKey
+import com.metrolist.music.constants.QobuzAudioQuality
+import com.metrolist.music.constants.QobuzAudioQualityKey
+import com.metrolist.music.constants.QobuzBackend
+import com.metrolist.music.constants.QobuzBackendKey
+import com.metrolist.music.constants.QobuzCountryKey
+import com.metrolist.music.qobuz.QobuzAudioProvider
+import com.metrolist.spotify.models.SpotifyTrack
 import com.metrolist.music.constants.AutoDownloadOnLikeKey
 import com.metrolist.music.constants.AutoLoadMoreKey
 import com.metrolist.music.constants.AutoSkipNextOnErrorKey
@@ -147,6 +155,7 @@ import com.metrolist.music.db.entities.Event
 import com.metrolist.music.db.entities.FormatEntity
 import com.metrolist.music.db.entities.LyricsEntity
 import com.metrolist.music.db.entities.PlaylistEntity
+import com.metrolist.music.db.entities.QobuzMatchEntity
 import com.metrolist.music.db.entities.RelatedSongMap
 import com.metrolist.music.db.entities.Song
 import com.metrolist.music.di.DownloadCache
@@ -3324,9 +3333,66 @@ class MusicService :
             }
     }
 
+    private fun qobuzCacheKey(mediaId: String, qualityCode: Int) =
+        "qobuz:$qualityCode:$mediaId"
+
+    private fun stripQobuzCacheKeyPrefix(key: String): String {
+        if (!key.startsWith("qobuz:")) return key
+        val parts = key.split(":", limit = 3)
+        return if (parts.size == 3) parts[2] else key
+    }
+
+    private fun buildQobuzQuery(
+        mediaId: String,
+        spotifyTrack: SpotifyTrack?,
+        dbSong: Song?,
+        quality: QobuzAudioQuality,
+    ): QobuzAudioProvider.Query? {
+        // Prefer Spotify metadata (cleaner titles + ISRC). Fall back to DB Song
+        // (title/artist/album/duration from the YT match). If both missing, skip.
+        val title = spotifyTrack?.name
+            ?: dbSong?.song?.title
+            ?: return null
+        val artists = spotifyTrack?.artists?.map { it.name }
+            ?.takeIf { it.isNotEmpty() }
+            ?: dbSong?.artists?.map { it.name }?.takeIf { it.isNotEmpty() }
+            ?: emptyList()
+        if (artists.isEmpty()) return null
+        val album = spotifyTrack?.album?.name
+            ?: dbSong?.song?.albumName
+            ?: dbSong?.album?.title
+        val durationMs = spotifyTrack?.durationMs?.takeIf { it > 0 }?.toLong()
+            ?: dbSong?.song?.duration?.takeIf { it > 0 }?.toLong()?.times(1000L)
+        val isrc = spotifyTrack?.isrc?.takeIf { it.isNotBlank() }
+            ?: dbSong?.song?.isrc?.takeIf { it.isNotBlank() }
+
+        val backendPref = dataStore.get(QobuzBackendKey).toEnum(QobuzBackend.JUMO)
+        val country = dataStore.get(QobuzCountryKey, "US")
+            .trim()
+            .uppercase()
+            .takeIf { it.matches(Regex("[A-Z]{2}")) }
+            ?: "US"
+        val resolverBackend = when (backendPref) {
+            QobuzBackend.JUMO -> QobuzAudioProvider.ResolverBackend.JUMO
+            QobuzBackend.SQUID -> QobuzAudioProvider.ResolverBackend.SQUID
+        }
+        return QobuzAudioProvider.Query(
+            mediaId = mediaId,
+            title = title,
+            artists = artists,
+            album = album,
+            isrc = isrc,
+            durationMs = durationMs,
+            countryCode = country,
+            backend = resolverBackend,
+            qualityCode = QobuzAudioProvider.qualityCodeFor(quality),
+        )
+    }
+
     private fun createDataSourceFactory(): DataSource.Factory {
         return ResolvingDataSource.Factory(createCacheDataSource()) { dataSpec ->
-            val mediaId = dataSpec.key ?: error("No media id")
+            val rawKey = dataSpec.key ?: error("No media id")
+            val mediaId = stripQobuzCacheKeyPrefix(rawKey)
 
             // Handle local audio files — resolve to content URI and bypass YouTube fetch
             if (mediaId.startsWith("local:")) {
@@ -3343,6 +3409,98 @@ class MusicService :
 
             // Check if we need to bypass cache for quality change
             val shouldBypassCache = bypassCacheForQualityChange.contains(mediaId)
+
+            // Qobuz lossless attempt: when toggle is on, try Qobuz for every track.
+            // Uses Spotify metadata (with ISRC) when available — registered by
+            // SpotifyYouTubeMapper for Spotify-sourced tracks — otherwise falls back
+            // to DB title/artist/album for YT-native tracks. Silently falls through
+            // to the YouTube path on any failure.
+            val qobuzEnabled = dataStore.get(EnableQobuzKey, false)
+            if (qobuzEnabled) {
+                val qobuzQualityEnum = dataStore.get(QobuzAudioQualityKey)
+                    .toEnum(QobuzAudioQuality.CD_QUALITY)
+                val qualityCode = QobuzAudioProvider.qualityCodeFor(qobuzQualityEnum)
+                val qobuzKey = qobuzCacheKey(mediaId, qualityCode)
+                val usePlayerCache = dataStore.get(EnableSongCacheKey, true)
+
+                if (!shouldBypassCache &&
+                    (downloadCache.isCached(qobuzKey, dataSpec.position,
+                        if (dataSpec.length >= 0) dataSpec.length else 1) ||
+                        (usePlayerCache && playerCache.isCached(qobuzKey, dataSpec.position, CHUNK_LENGTH)))
+                ) {
+                    return@Factory dataSpec.buildUpon().setKey(qobuzKey).build()
+                }
+
+                val spotifyTrack = SpotifyMetadataRegistry.get(mediaId)
+                // Always load the DB Song so we can pick up a persisted ISRC and
+                // a persisted Qobuz match for this mediaId.
+                val dbSong = runBlocking(Dispatchers.IO) { database.getSongById(mediaId) }
+                val qobuzQuery = buildQobuzQuery(mediaId, spotifyTrack, dbSong, qobuzQualityEnum)
+
+                if (qobuzQuery != null) {
+                    // Prime the in-memory match cache from the persisted match — this
+                    // skips the Qobuz search step entirely on repeat plays.
+                    val savedMatch = runBlocking(Dispatchers.IO) {
+                        database.getQobuzMatch(mediaId)
+                    }
+                    if (savedMatch != null) {
+                        QobuzAudioProvider.primeKnownTrack(
+                            query = qobuzQuery,
+                            trackId = savedMatch.qobuzTrackId,
+                            hires = savedMatch.hires,
+                            bitDepth = savedMatch.bitDepth,
+                            samplingRateKhz = savedMatch.samplingRateKhz,
+                            isrc = qobuzQuery.isrc,
+                        )
+                    }
+
+                    val qobuzResolved = runCatching {
+                        runBlocking(Dispatchers.IO) {
+                            withTimeout(15_000L) {
+                                QobuzAudioProvider.resolve(qobuzQuery)
+                            }
+                        }
+                    }.getOrElse { throwable ->
+                        Timber.tag("MusicService").w(
+                            throwable,
+                            "Qobuz resolve failed for $mediaId — falling back to YouTube",
+                        )
+                        null
+                    }
+
+                    if (qobuzResolved != null) {
+                        Timber.tag("MusicService").i(
+                            "Using Qobuz stream for $mediaId: ${qobuzResolved.label}",
+                        )
+                        // Persist the match + any newly-discovered ISRC so the next
+                        // play of this track is a deterministic, search-free hit.
+                        val resolvedIsrc = qobuzResolved.isrc?.takeIf { it.isNotBlank() }
+                            ?: spotifyTrack?.isrc?.takeIf { it.isNotBlank() }
+                        val previousIsrc = dbSong?.song?.isrc?.takeIf { it.isNotBlank() }
+                        scope.launch(Dispatchers.IO) {
+                            database.query {
+                                upsertQobuzMatch(
+                                    QobuzMatchEntity(
+                                        youtubeId = mediaId,
+                                        qobuzTrackId = qobuzResolved.trackId,
+                                        hires = qobuzResolved.hires,
+                                        bitDepth = qobuzResolved.bitDepth,
+                                        samplingRateKhz = qobuzResolved.samplingRateKhz,
+                                    ),
+                                )
+                                if (resolvedIsrc != null && resolvedIsrc != previousIsrc) {
+                                    setSongIsrc(mediaId, resolvedIsrc)
+                                }
+                            }
+                        }
+                        return@Factory dataSpec
+                            .buildUpon()
+                            .setUri(qobuzResolved.mediaUri.toUri())
+                            .setKey(qobuzKey)
+                            .build()
+                    }
+                }
+            }
 
             if (!shouldBypassCache) {
                 val usePlayerCache = dataStore.get(EnableSongCacheKey, true)

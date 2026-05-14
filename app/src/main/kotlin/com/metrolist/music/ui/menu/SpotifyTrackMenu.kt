@@ -45,6 +45,7 @@ import com.metrolist.innertube.models.ArtistItem
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
+import com.metrolist.music.constants.EnableQobuzKey
 import com.metrolist.music.constants.ListItemHeight
 import com.metrolist.music.constants.ListThumbnailSize
 import com.metrolist.music.constants.ThumbnailCornerRadius
@@ -55,6 +56,7 @@ import com.metrolist.music.ui.component.Material3MenuItemData
 import com.metrolist.music.ui.component.YouTubeMatchDialog
 import com.metrolist.music.utils.joinByBullet
 import com.metrolist.music.utils.makeTimeString
+import com.metrolist.music.utils.rememberPreference
 import com.metrolist.spotify.SpotifyMapper
 import com.metrolist.spotify.models.SpotifyTrack
 import kotlinx.coroutines.Dispatchers
@@ -85,6 +87,8 @@ fun SpotifyTrackMenu(
     var showYouTubeMatchDialog by rememberSaveable { mutableStateOf(false) }
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showSelectArtistDialog by rememberSaveable { mutableStateOf(false) }
+
+    val qobuzEnabled by rememberPreference(EnableQobuzKey, defaultValue = false)
 
     fun resolveAndNavigateToArtist(artistName: String) {
         coroutineScope.launch {
@@ -280,34 +284,40 @@ fun SpotifyTrackMenu(
     )
 
     Material3MenuGroup(
-        items = listOf(
-            Material3MenuItemData(
-                title = { Text(text = stringResource(R.string.spotify_add_to_playlist)) },
-                description = { Text(text = stringResource(R.string.spotify_add_to_playlist_desc)) },
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.playlist_add),
-                        contentDescription = null,
-                    )
-                },
-                onClick = {
-                    showAddToPlaylistDialog = true
-                },
-            ),
-            Material3MenuItemData(
-                title = { Text(text = stringResource(R.string.change_youtube_version)) },
-                description = { Text(text = stringResource(R.string.change_youtube_version_desc)) },
-                icon = {
-                    Icon(
-                        painter = painterResource(R.drawable.link),
-                        contentDescription = null,
-                    )
-                },
-                onClick = {
-                    showYouTubeMatchDialog = true
-                },
-            ),
-        ),
+        items = buildList {
+            add(
+                Material3MenuItemData(
+                    title = { Text(text = stringResource(R.string.spotify_add_to_playlist)) },
+                    description = { Text(text = stringResource(R.string.spotify_add_to_playlist_desc)) },
+                    icon = {
+                        Icon(
+                            painter = painterResource(R.drawable.playlist_add),
+                            contentDescription = null,
+                        )
+                    },
+                    onClick = {
+                        showAddToPlaylistDialog = true
+                    },
+                ),
+            )
+            if (!qobuzEnabled) {
+                add(
+                    Material3MenuItemData(
+                        title = { Text(text = stringResource(R.string.change_youtube_version)) },
+                        description = { Text(text = stringResource(R.string.change_youtube_version_desc)) },
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.link),
+                                contentDescription = null,
+                            )
+                        },
+                        onClick = {
+                            showYouTubeMatchDialog = true
+                        },
+                    ),
+                )
+            }
+        },
     )
 
     if (navController != null && track.artists.isNotEmpty()) {

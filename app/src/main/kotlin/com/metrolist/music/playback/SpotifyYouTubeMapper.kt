@@ -145,6 +145,7 @@ class SpotifyYouTubeMapper(
             return null
         }
         Timber.d("SpotifyMapper: resolved '${track.name}' -> YouTube ID: ${metadata.id}")
+        SpotifyMetadataRegistry.register(metadata.id, track)
         return metadata.toMediaItem()
     }
 
@@ -222,6 +223,7 @@ class SpotifyYouTubeMapper(
                 MediaMetadata.Album(id = it.id, title = it.name)
             },
             explicit = spotifyTrack.explicit,
+            isrc = spotifyTrack.isrc,
         )
     }
 

@@ -16,6 +16,16 @@ data class SpotifyTrack(
     @SerialName("track_number") val trackNumber: Int? = null,
     val uri: String? = null,
     val popularity: Int? = null,
+    @SerialName("external_ids") val externalIds: SpotifyExternalIds? = null,
+) {
+    val isrc: String? get() = externalIds?.isrc
+}
+
+@Serializable
+data class SpotifyExternalIds(
+    val isrc: String? = null,
+    val ean: String? = null,
+    val upc: String? = null,
 )
 
 @Serializable

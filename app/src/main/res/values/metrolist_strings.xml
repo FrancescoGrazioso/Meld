@@ -502,6 +502,22 @@
     <string name="hide_ytm_liked_songs">Hide YouTube Music liked songs</string>
     <string name="hide_ytm_liked_songs_description">When syncing with Spotify, hide the local liked songs playlist to avoid duplicates. Disable to show both.</string>
 
+    <string name="qobuz_audio_quality_section">Audio quality (experimental)</string>
+    <string name="qobuz_enable">Use Qobuz for lossless playback</string>
+    <string name="qobuz_enable_description">Experimental. Uses third-party services (not run by us) to fetch FLAC or Hi-Res streams when the song exists on Qobuz. May stop working at any time without warning — when it does, playback falls back automatically to the standard YouTube source. Lossless streams use 3–10× more data and storage than the standard AAC.</string>
+    <string name="qobuz_quality">Stream quality</string>
+    <string name="qobuz_quality_aac_320">AAC 320 kbps</string>
+    <string name="qobuz_quality_aac_320_desc">Lossy, smallest size. Good for mobile data.</string>
+    <string name="qobuz_quality_cd">CD quality (FLAC 16-bit / 44.1 kHz)</string>
+    <string name="qobuz_quality_cd_desc">Lossless. Recommended default.</string>
+    <string name="qobuz_quality_hires">Hi-Res (FLAC up to 24-bit / 192 kHz)</string>
+    <string name="qobuz_quality_hires_desc">Lossless at the highest bit depth and sample rate available.</string>
+    <string name="qobuz_backend">Resolver backend</string>
+    <string name="qobuz_backend_jumo">Jumo</string>
+    <string name="qobuz_backend_squid">Squid</string>
+    <string name="qobuz_country">Country code</string>
+    <string name="qobuz_country_description">Two-letter ISO code (e.g. US, IT, FR). Affects catalog and availability.</string>
+
     <string name="details_desc">View the song\'s details</string>
     <string name="edit_desc">Edit the title or artist</string>
     <string name="start_radio_desc">Start a radio based on this item</string>

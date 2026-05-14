@@ -215,6 +215,22 @@ enum class MusicSource {
     SPOTIFY,
 }
 
+val EnableQobuzKey = booleanPreferencesKey("enableQobuz")
+val QobuzAudioQualityKey = stringPreferencesKey("qobuzAudioQuality")
+val QobuzBackendKey = stringPreferencesKey("qobuzBackend")
+val QobuzCountryKey = stringPreferencesKey("qobuzCountry")
+
+enum class QobuzAudioQuality {
+    AAC_320,
+    CD_QUALITY,
+    HI_RES_LOSSLESS,
+}
+
+enum class QobuzBackend {
+    JUMO,
+    SQUID,
+}
+
 val ChipSortTypeKey = stringPreferencesKey("chipSortType")
 val SongSortTypeKey = stringPreferencesKey("songSortType")
 val SongSortDescendingKey = booleanPreferencesKey("songSortDescending")
