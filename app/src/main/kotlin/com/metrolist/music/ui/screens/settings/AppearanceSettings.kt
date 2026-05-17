@@ -91,6 +91,8 @@ import com.metrolist.music.constants.SelectedThemeColorKey
 import com.metrolist.music.constants.ShowCachedPlaylistKey
 import com.metrolist.music.constants.ShowDownloadedPlaylistKey
 import com.metrolist.music.constants.ShowLikedPlaylistKey
+import com.metrolist.music.constants.ShowPlayRandomButtonKey
+import com.metrolist.music.constants.ShowRecognizeButtonKey
 import com.metrolist.music.constants.ShowTopPlaylistKey
 import com.metrolist.music.constants.ShowUploadedPlaylistKey
 import com.metrolist.music.constants.SliderStyle
@@ -177,6 +179,17 @@ fun AppearanceSettings(
             UseNewPlayerDesignKey,
             defaultValue = true,
         )
+    val (showRecognizeButton, onShowRecognizeButtonChange) =
+        rememberPreference(
+            ShowRecognizeButtonKey,
+            defaultValue = true,
+        )
+    val (showPlayRandomButton, onShowPlayRandomButtonChange) =
+        rememberPreference(
+            ShowPlayRandomButtonKey,
+            defaultValue = true,
+        )
+
     val (miniPlayerBackground, onMiniPlayerBackgroundChange) =
         rememberEnumPreference(
             MiniPlayerBackgroundStyleKey,
@@ -1718,6 +1731,50 @@ fun AppearanceSettings(
                             )
                         },
                         onClick = { onListenTogetherInTopBarChange(!listenTogetherInTopBar) },
+                    ),
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.mic),
+                        title = { Text(stringResource(R.string.show_recognize_music_button)) },
+                        description = { Text(stringResource(R.string.show_recognize_music_button_desc)) },
+                        trailingContent = {
+                            Switch(
+                                checked = showRecognizeButton,
+                                onCheckedChange = onShowRecognizeButtonChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter =
+                                            painterResource(
+                                                id = if (showRecognizeButton) R.drawable.check else R.drawable.close,
+                                            ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
+                                },
+                            )
+                        },
+                        onClick = { onShowRecognizeButtonChange(!showRecognizeButton) },
+                    ),
+                    Material3SettingsItem(
+                        icon = painterResource(R.drawable.shuffle),
+                        title = { Text(stringResource(R.string.show_play_random_button)) },
+                        description = { Text(stringResource(R.string.show_play_random_button_desc)) },
+                        trailingContent = {
+                            Switch(
+                                checked = showPlayRandomButton,
+                                onCheckedChange = onShowPlayRandomButtonChange,
+                                thumbContent = {
+                                    Icon(
+                                        painter =
+                                            painterResource(
+                                                id = if (showPlayRandomButton) R.drawable.check else R.drawable.close,
+                                            ),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(SwitchDefaults.IconSize),
+                                    )
+                                },
+                            )
+                        },
+                        onClick = { onShowPlayRandomButtonChange(!showPlayRandomButton) },
                     ),
                     Material3SettingsItem(
                         icon = painterResource(R.drawable.grid_view),
