@@ -42,6 +42,8 @@ class PoTokenGenerator {
                 else -> throw e // includes PoTokenException
             }
         }
+    }
+
     /**
      * Forces the PoToken generator to be recreated on the next request.
      * Call this when we hit persistent 403 errors so YouTube gives us fresh tokens.
@@ -57,7 +59,6 @@ class PoTokenGenerator {
         webPoTokenStreamingPot = null
 
         Timber.tag(TAG).i("PoTokenGenerator invalidated for videoId=$videoId (will recreate on next use)")
-        }
     }
 
     /**
