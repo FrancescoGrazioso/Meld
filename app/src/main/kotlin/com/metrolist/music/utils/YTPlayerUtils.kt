@@ -66,6 +66,19 @@ object YTPlayerUtils {
         WEB,
         WEB_CREATOR
     )
+
+    /**
+     * For normal content we skip the MAIN_CLIENT (WEB_REMIX) stream attempt and go
+     * straight to this client. WEB_REMIX returns formats behind YouTube's signature
+     * cipher / n-challenge, which can no longer be solved client-side (even yt-dlp
+     * needs an external JS challenge solver for the current player). ANDROID_VR
+     * returns pre-signed URLs that need no deobfuscation, so starting here avoids a
+     * guaranteed-failing cipher attempt plus two unusable fallback clients (~3.5s).
+     * Metadata/history still come from the WEB_REMIX response fetched above.
+     */
+    private val NORMAL_CONTENT_STREAM_START_INDEX: Int =
+        STREAM_FALLBACK_CLIENTS.indexOf(ANDROID_VR_1_43_32).takeIf { it >= 0 } ?: -1
+
     data class PlaybackData(
         val audioConfig: PlayerResponse.PlayerConfig.AudioConfig?,
         val videoDetails: PlayerResponse.VideoDetails?,
@@ -189,7 +202,10 @@ object YTPlayerUtils {
             isPrivateTrack -> 1  // TVHTML5
             isAgeRestricted -> 0
             skipMainClient -> 0  // MAIN_CLIENT streams unplayable without PoToken
-            else -> -1
+            // Normal content: skip the WEB_REMIX stream attempt (cipher unsolvable) and
+            // jump straight to ANDROID_VR, which serves pre-signed URLs. See
+            // NORMAL_CONTENT_STREAM_START_INDEX. Falls back to -1 if the client is absent.
+            else -> NORMAL_CONTENT_STREAM_START_INDEX
         }
 
         for (clientIndex in (startIndex until STREAM_FALLBACK_CLIENTS.size)) {
