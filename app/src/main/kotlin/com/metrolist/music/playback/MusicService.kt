@@ -150,6 +150,7 @@ import com.metrolist.music.constants.ScrobbleMinSongDurationKey
 import com.metrolist.music.constants.ShowLyricsKey
 import com.metrolist.music.constants.ShuffleModeKey
 import com.metrolist.music.constants.ShufflePlaylistFirstKey
+import com.metrolist.music.constants.StopMusicOnTaskClearKey
 import com.metrolist.music.constants.SimilarContent
 import com.metrolist.music.constants.SkipSilenceInstantKey
 import com.metrolist.music.constants.SkipSilenceKey
@@ -1360,7 +1361,9 @@ class MusicService :
                         ),
                     ).setIconResId(if (currentSong.value?.song?.liked == true) R.drawable.ic_heart else R.drawable.ic_heart_outline)
                     .setSessionCommand(CommandToggleLike)
-                    .setEnabled(currentSong.value != null)
+                    // Enable as long as a track is playing, even if it isn't cached in the
+                    // local DB yet (e.g. Spotify/YouTube tracks). toggleLike() inserts it on demand.
+                    .setEnabled(currentMediaMetadata.value != null)
                     .build(),
                 CommandButton
                     .Builder()
@@ -1910,7 +1913,15 @@ class MusicService :
 
     fun toggleLike() {
         scope.launch {
-            val songToToggle = currentSong.first()
+            var songToToggle = currentSong.first()
+            // The current track may not be cached in the local DB yet (common for
+            // Spotify/YouTube tracks played from quick picks, radio or imports). Insert
+            // it first so the like can be applied and synced instead of silently no-oping.
+            if (songToToggle == null) {
+                val metadata = currentMediaMetadata.value ?: player.currentMetadata ?: return@launch
+                database.query { insert(metadata) }
+                songToToggle = database.song(metadata.id).first()
+            }
             songToToggle?.let { librarySong ->
                 val songEntity = librarySong.song
 
