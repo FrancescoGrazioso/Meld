@@ -10,11 +10,14 @@
 </div>
 
 > [!IMPORTANT]
+> ## NOTICE
+> **I will personally see to it that this project lives on no matter what, unless spotify change their restrictions that are affecting both Artists and Listeners.**
+> ~ [**TrueSaiyan**](https://github.com/ufoptg/meld)
 > ## ⚠️ Temporary Maintenance Pause
 >
-> **For personal medical reasons, I will not be able to actively work on Meld for the next few months.**
+> **For personal medical reasons, FrancescoGrazioso will not be able to actively work on Meld for the next few months.**
 >
-> Development is **paused for now**, but the project is not abandoned. I will still **review pull requests** — so if you fix a bug or implement a feature, please open a PR and I'll do my best to look at it and merge it.
+> Development is **paused for now**, but the project is not abandoned. he will still **review pull requests** — so if you fix a bug or implement a feature, please open a PR and I'll do my best to look at it and merge it.
 >
 > Thank you for your understanding and support. 🙏
 
