@@ -51,6 +51,7 @@ import com.metrolist.music.db.entities.SongAlbumMap
 import com.metrolist.music.db.entities.SongArtistMap
 import com.metrolist.music.db.entities.SongEntity
 import com.metrolist.music.db.entities.SongWithStats
+import com.metrolist.music.db.entities.QobuzMatchEntity
 import com.metrolist.music.db.entities.SpotifyMatchEntity
 import com.metrolist.music.extensions.reversed
 import com.metrolist.music.extensions.toSQLiteQuery
@@ -1982,4 +1983,21 @@ interface DatabaseDao {
 
     @Query("DELETE FROM spotify_match WHERE spotifyId = :spotifyId")
     fun deleteSpotifyMatch(spotifyId: String)
+
+    // Qobuz match cache
+
+    @Query("SELECT isrc FROM song WHERE id = :songId LIMIT 1")
+    fun getSongIsrc(songId: String): String?
+
+    @Query("UPDATE song SET isrc = :isrc WHERE id = :songId")
+    fun setSongIsrc(songId: String, isrc: String?)
+
+    @Query("SELECT * FROM qobuz_match WHERE youtubeId = :youtubeId LIMIT 1")
+    fun getQobuzMatch(youtubeId: String): QobuzMatchEntity?
+
+    @Upsert
+    fun upsertQobuzMatch(match: QobuzMatchEntity)
+
+    @Query("DELETE FROM qobuz_match WHERE youtubeId = :youtubeId")
+    fun deleteQobuzMatch(youtubeId: String)
 }

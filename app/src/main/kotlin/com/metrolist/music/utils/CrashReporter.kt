@@ -81,6 +81,10 @@ object CrashReporter {
     fun reportNonFatal(throwable: Throwable) {
         val ctx = appContext ?: return
         if (!isEnabledSafe(ctx)) return
+        // Coroutine cancellation is control flow, not a crash (issue #144: Ktor's
+        // attachToUserJob cleanup handler propagates CancellationException whenever
+        // the parent scope is cancelled — normal app behavior, not an error).
+        if (isBenignCancellation(throwable)) return
         ioScope.launch {
             try {
                 val fingerprint = fingerprint(throwable)
@@ -118,6 +122,20 @@ object CrashReporter {
 
     private class AnrException(blockedMs: Long) :
         RuntimeException("Application Not Responding: main thread blocked for ${blockedMs}ms")
+
+    /**
+     * Coroutine cancellation is a normal coroutine-cleanup signal, not an error.
+     * Walks the cause chain so a CancellationException wrapped in another throwable
+     * (e.g. Ktor's job-cleanup path) is also skipped.
+     */
+    private fun isBenignCancellation(throwable: Throwable): Boolean {
+        var current: Throwable? = throwable
+        while (current != null) {
+            if (current is java.util.concurrent.CancellationException) return true
+            current = current.cause
+        }
+        return false
+    }
 
     private enum class Kind(val label: String, val severity: String) {
         FATAL("Crash", "fatal"),

@@ -133,6 +133,7 @@ fun PlayerMenu(
     val castDeviceName by castHandler?.castDeviceName?.collectAsState() ?: remember { mutableStateOf<String?>(null) }
 
     val varispeedMode by rememberPreference(VarispeedKey, defaultValue = false)
+    val qobuzEnabled by rememberPreference(com.metrolist.music.constants.EnableQobuzKey, defaultValue = false)
 
     val librarySong by database.song(mediaMetadata.id).collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
@@ -158,6 +159,10 @@ fun PlayerMenu(
         mutableStateOf(false)
     }
 
+    var showQobuzMatchDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     var showAddToSpotifyPlaylist by rememberSaveable { mutableStateOf(false) }
     val spotifyMapper = remember { SpotifyYouTubeMapper(database) }
 
@@ -180,6 +185,18 @@ fun PlayerMenu(
         mapper = spotifyMapper,
         onDismiss = { showAddToSpotifyPlaylist = false },
     )
+
+    if (showQobuzMatchDialog) {
+        com.metrolist.music.ui.dialog.QobuzMatchOverrideDialog(
+            mediaId = mediaMetadata.id,
+            title = mediaMetadata.title,
+            artists = mediaMetadata.artists.map { it.name },
+            album = mediaMetadata.album?.title,
+            isrc = librarySong?.song?.isrc,
+            durationMs = mediaMetadata.duration.takeIf { it > 0 }?.toLong()?.times(1000L),
+            onDismiss = { showQobuzMatchDialog = false },
+        )
+    }
 
     if (showYouTubeMatchDialog) {
         val mapper = remember { SpotifyYouTubeMapper(database) }
@@ -710,7 +727,7 @@ fun PlayerMenu(
             Material3MenuGroup(
                 items =
                     buildList {
-                        if (resolvedSpotifyMatch != null) {
+                        if (resolvedSpotifyMatch != null && !qobuzEnabled) {
                             add(
                                 Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.change_youtube_version)) },
@@ -724,6 +741,27 @@ fun PlayerMenu(
                                     },
                                     onClick = {
                                         showYouTubeMatchDialog = true
+                                    },
+                                ),
+                            )
+                        }
+
+                        if (qobuzEnabled) {
+                            add(
+                                Material3MenuItemData(
+                                    title = { Text(text = stringResource(R.string.qobuz_match_override)) },
+                                    description = {
+                                        Text(text = stringResource(R.string.qobuz_match_override_description))
+                                    },
+                                    icon = {
+                                        Icon(
+                                            painter = painterResource(R.drawable.link),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(24.dp),
+                                        )
+                                    },
+                                    onClick = {
+                                        showQobuzMatchDialog = true
                                     },
                                 ),
                             )

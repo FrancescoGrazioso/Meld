@@ -9,6 +9,15 @@
 
 </div>
 
+> [!IMPORTANT]
+> ## ⚠️ Temporary Maintenance Pause
+>
+> **For personal medical reasons, I will not be able to actively work on Meld for the next few months.**
+>
+> Development is **paused for now**, but the project is not abandoned. I will still **review pull requests** — so if you fix a bug or implement a feature, please open a PR and I'll do my best to look at it and merge it.
+>
+> Thank you for your understanding and support. 🙏
+
 ## What is Meld?
 
 **Meld** is an Android music client that brings together the best of Spotify and YouTube Music. It uses your Spotify account to power personalized recommendations, search, and home content — while streaming audio through YouTube Music.
@@ -36,6 +45,15 @@ The name "Meld" reflects the core idea: **melding** two music platforms into a s
 - **Spotify album browsing** — Dedicated album screen for Spotify albums with full tracklist, metadata, and one-tap playback
 - **Hybrid profile cache** — 3-tier data strategy (GraphQL → REST API → local DB) with persistent caching for instant home screen loading on app restart, automatic rate-limit handling, and parallel artist image enrichment
 - **Artist navigation** — Tap any Spotify artist on the home screen to navigate directly to their YouTube Music artist page
+
+### Lossless Audio (Experimental)
+- **Qobuz backend** — Optional FLAC and Hi-Res (up to 24-bit / 192 kHz) streaming via the Qobuz catalog, replacing YouTube Music's lossy audio
+- **Deterministic matching** — Uses ISRC (the universal track identifier shared by Spotify and Qobuz) so Spotify-sourced tracks resolve to their exact Qobuz counterpart without ambiguity
+- **Persistent match cache** — Once a track has been resolved on Qobuz, the match is saved locally so subsequent plays skip the search step entirely
+- **Multi-backend fallback** — Three independent Qobuz resolvers (Monokenny, Jumo, Squid) are tried in sequence if the primary one is rate-limited or unavailable
+- **Quality tiers** — Choose between AAC 320 kbps, CD quality (16-bit / 44.1 kHz), or Hi-Res (up to 24-bit / 192 kHz) per your preference and connection
+- **Automatic YouTube fallback** — If a track isn't on Qobuz, or all resolvers fail, playback falls back silently to the standard YouTube Music stream — no error, no skip
+- **Hidden behind a toggle** — Disabled by default; opt-in from the Spotify integration settings
 
 ### Core Music Features
 - Play any song or video from YouTube Music
@@ -93,6 +111,20 @@ Meld connects to your Spotify account through a built-in WebView login — no de
    - Diversifying the queue to avoid repetition (max 3 tracks per artist)
 7. **Playback** — Each Spotify track is matched to its YouTube Music equivalent using fuzzy title/artist/duration matching, then streamed via YouTube Music's infrastructure. Matched results are cached locally for instant resolution on subsequent plays. If a match is wrong, you can manually override it from the player's three-dot menu → "Change YouTube version" by pasting the correct YouTube link.
 
+## How the Qobuz Lossless Integration Works
+
+When the Qobuz toggle is enabled (Settings → Integrations → Spotify → "Use Qobuz for lossless playback"), Meld routes audio through Qobuz's FLAC catalog instead of YouTube Music's lossy AAC streams. The integration is fully opt-in and falls back to YouTube Music whenever Qobuz can't deliver — there's no playback interruption either way.
+
+1. **Match resolution** — For every track about to play, Meld looks up the song on Qobuz. Spotify-sourced tracks include the **ISRC** (the universal track identifier — the same ISRC points to the same recording across Spotify, Qobuz, Tidal, etc.) which produces an exact, deterministic match. YT-native tracks fall back to fuzzy title/artist/album matching using the cached song metadata.
+2. **Backend cycling** — Qobuz is accessed through three independent open community resolvers (Monokenny, Jumo, Squid). The primary backend is configurable; if it returns a preview, captcha challenge, or any other failure, Meld automatically retries on the alternates before giving up. Backends that hit a captcha are skipped for five minutes to avoid wasted retries.
+3. **Persistent caching** — A successful match (the Qobuz track ID, hi-res tier, bit depth, sample rate) is saved in the local database keyed by the YouTube ID, so the next play of the same song skips the search step entirely and resolves in a few hundred milliseconds. ISRCs discovered during a Qobuz resolve are also written back to the song's row, which improves the accuracy of future matches across the whole library.
+4. **Quality tier downgrade** — When the saved match knows the track only exists at CD quality on Qobuz (not Hi-Res), Meld caps the requested quality automatically to avoid the wasted "preview returned" round-trip.
+5. **YouTube fallback** — If every Qobuz backend fails (track not in catalog, all resolvers down, network issue, etc.), playback proceeds through the standard YouTube Music pipeline with the lossy AAC stream. The fallback is silent and instant; subsequent plays will try Qobuz again.
+
+> **Important — third-party services:** The Qobuz resolvers are run by independent community projects, not by us. They may go down, get rate-limited, or stop working at any time without notice. When they do, playback automatically falls back to YouTube Music — but you may notice slower start times during the failed Qobuz attempt.
+
+> **Bandwidth and storage:** FLAC streams use 3–10× more data than the standard AAC. Hi-Res (24-bit / 96+ kHz) can exceed 1.5 Mbit/s and use ~30 MB per song downloaded. Consider this if you're on a limited mobile plan or have tight storage.
+
 ## Setup
 
 ### Spotify Integration
@@ -107,6 +139,19 @@ Meld connects to your Spotify account through a built-in WebView login — no de
 > **Note:** No developer account, Client ID, or any external setup is required. Just log in with your regular Spotify account — free or Premium.
 
 > **Important:** For reliable playback, disable battery optimization for Meld in your phone settings (**Settings → Apps → Meld → Battery → Unrestricted**). Without this, Android may throttle the app and cause long delays before songs start playing.
+
+### Qobuz Lossless (Optional)
+
+1. Make sure Spotify integration is set up first (see above) — Qobuz lives under the same settings screen
+2. Scroll to the **"Audio quality (experimental)"** section at the bottom of **Settings → Integrations → Spotify**
+3. Enable **"Use Qobuz for lossless playback"**
+4. Pick a **quality tier** — AAC 320, CD (recommended default), or Hi-Res
+5. Pick a **resolver backend** — Monokenny is the recommended default; Jumo and Squid are alternates that the app also rotates through automatically on failure
+6. Set the **country code** (ISO two-letter, e.g. `US`, `IT`, `FR`) — this affects which regional Qobuz catalog is queried
+
+That's it — the next time you play a song, Meld will try Qobuz first and fall back to YouTube Music if the track isn't available there. The toggle can be turned off at any time to revert to YouTube-only playback.
+
+> **Hot-reload:** Toggling Qobuz on/off, switching backend, quality, or country code automatically reloads the currently playing track so the new source takes effect immediately. **No app restart is required.**
 
 ### Building from source
 
@@ -175,6 +220,18 @@ The Spotify-to-YouTube matching uses fuzzy matching on title, artist name, and d
 The override is saved permanently in your local database and will always be used for that Spotify track, even if the automatic matching would suggest a different result.
 
 You can also access "Change YouTube version" from the three-dot context menu of any song in your library, queue, or album view — as long as that song was originally resolved from a Spotify track. Additionally, long-pressing a track in a Spotify playlist or Liked Songs screen in the Library section opens the override dialog directly.
+
+### Q: How does Qobuz lossless playback work?
+
+When enabled, Meld looks up each track on Qobuz and streams the FLAC file directly. Spotify-sourced tracks are matched via ISRC (the universal track identifier) for an exact match; YouTube-native tracks fall back to fuzzy title/artist matching. If the track isn't on Qobuz, or all backend resolvers are temporarily down, playback falls back silently to the standard YouTube Music stream.
+
+The Qobuz resolvers are run by independent community projects — they're not affiliated with us. They can go down or get rate-limited at any time. When that happens, the fallback to YouTube Music is automatic and instant, but you may notice a delay on the first attempt while the failed resolvers are skipped.
+
+Also note that FLAC streams use 3–10× more data than the standard AAC. Hi-Res files can exceed 30 MB per song. If you're on a metered mobile plan or tight on storage, stick to CD quality or keep the feature off on cellular.
+
+### Q: Why did some songs play in lossless and others didn't?
+
+Not every track exists on Qobuz, and not every track exists at every quality tier. If Qobuz returns only a preview (no full stream available) or all resolvers fail, Meld falls back to YouTube Music silently and remembers the result. Less popular tracks, indie releases, and rare regional versions are the most common cases. The fallback is the intended behavior and the audio will keep playing — just not in FLAC for that specific track.
 
 ### Q: Can my Spotify or YouTube account get banned?
 

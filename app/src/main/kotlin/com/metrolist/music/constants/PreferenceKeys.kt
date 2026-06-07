@@ -201,6 +201,7 @@ val UseSpotifySearchKey = booleanPreferencesKey("useSpotifySearch")
 val UseSpotifyHomeKey = booleanPreferencesKey("useSpotifyHome")
 val SpotifyHomeOnlyKey = booleanPreferencesKey("spotifyHomeOnly")
 val SpotifySyncLikesKey = booleanPreferencesKey("spotifySyncLikes")
+val HideYtmLikedSongsKey = booleanPreferencesKey("hideYtmLikedSongs")
 val SpotifySpDcKey = stringPreferencesKey("spotifySpDc")
 val SpotifySpKeyKey = stringPreferencesKey("spotifySpKey")
 val SpotifyAccessTokenKey = stringPreferencesKey("spotifyAccessToken")
@@ -212,6 +213,25 @@ val MusicSourceKey = stringPreferencesKey("musicSource")
 enum class MusicSource {
     YOUTUBE_MUSIC,
     SPOTIFY,
+}
+
+val EnableQobuzKey = booleanPreferencesKey("enableQobuz")
+val QobuzAudioQualityKey = stringPreferencesKey("qobuzAudioQuality")
+val QobuzBackendKey = stringPreferencesKey("qobuzBackend")
+val QobuzCountryKey = stringPreferencesKey("qobuzCountry")
+val QobuzMatchOverridesKey = stringPreferencesKey("qobuzMatchOverrides")
+
+enum class QobuzAudioQuality {
+    AAC_320,
+    CD_QUALITY,
+    HI_RES_LOSSLESS,
+}
+
+enum class QobuzBackend {
+    MONOKENNY,
+    JUMO,
+    SQUID,
+    TRYPT,
 }
 
 val ChipSortTypeKey = stringPreferencesKey("chipSortType")
@@ -269,6 +289,8 @@ val QueueEditLockKey = booleanPreferencesKey("queueEditLock")
 val ShowWrappedCardKey = booleanPreferencesKey("show_wrapped_card")
 val WrappedSeenKey = booleanPreferencesKey("wrapped_seen")
 val LastSeenVersionKey = stringPreferencesKey("lastSeenVersion")
+val ShowRecognizeButtonKey = booleanPreferencesKey("showRecognizeButton")
+val ShowPlayRandomButtonKey = booleanPreferencesKey("showPlayRandomButton")
 val RandomizeHomeOrderKey = booleanPreferencesKey("randomizeHomeOrder")
 
 val ShowLikedPlaylistKey = booleanPreferencesKey("show_liked_playlist")

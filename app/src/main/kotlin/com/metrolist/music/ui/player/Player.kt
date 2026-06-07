@@ -142,6 +142,7 @@ import com.metrolist.music.constants.PlayerButtonsStyle
 import com.metrolist.music.constants.PlayerButtonsStyleKey
 import com.metrolist.music.constants.PlayerHorizontalPadding
 import com.metrolist.music.constants.QueuePeekHeight
+import com.metrolist.music.constants.SimilarContent
 import com.metrolist.music.constants.SleepTimerDefaultKey
 import com.metrolist.music.constants.SleepTimerFadeOutKey
 import com.metrolist.music.constants.SleepTimerStopAfterCurrentSongKey
@@ -372,8 +373,14 @@ fun BottomSheetPlayer(
     }
     val gradientColorsCache = remember { mutableMapOf<String, List<Color>>() }
 
-    if (!canSkipNext && automix.isNotEmpty()) {
+    // Issue #113: automix items can survive across restarts via the persisted queue
+    // file even after the user disables "similar content". Gate the auto-append on
+    // the live setting so toggling it off actually stops the queue from growing.
+    val similarContentEnabled by rememberPreference(SimilarContent, defaultValue = true)
+    if (similarContentEnabled && !canSkipNext && automix.isNotEmpty()) {
         playerConnection.service.addToQueueAutomix(automix[0], 0)
+    } else if (!similarContentEnabled && automix.isNotEmpty()) {
+        playerConnection.service.clearAutomix()
     }
 
     val defaultGradientColors = listOf(MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.surfaceVariant)

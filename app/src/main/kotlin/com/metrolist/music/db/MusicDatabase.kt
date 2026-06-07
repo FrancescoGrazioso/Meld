@@ -40,6 +40,7 @@ import com.metrolist.music.db.entities.SetVideoIdEntity
 import com.metrolist.music.db.entities.SongAlbumMap
 import com.metrolist.music.db.entities.SongArtistMap
 import com.metrolist.music.db.entities.SongEntity
+import com.metrolist.music.db.entities.QobuzMatchEntity
 import com.metrolist.music.db.entities.SpotifyMatchEntity
 import com.metrolist.music.db.entities.SortedSongAlbumMap
 import com.metrolist.music.db.entities.SortedSongArtistMap
@@ -110,14 +111,15 @@ class MusicDatabase(
         RecognitionHistory::class,
         SpeedDialItem::class,
         PodcastEntity::class,
-        SpotifyMatchEntity::class
+        SpotifyMatchEntity::class,
+        QobuzMatchEntity::class,
     ],
     views = [
         SortedSongArtistMap::class,
         SortedSongAlbumMap::class,
         PlaylistSongMapPreview::class,
     ],
-    version = 37,
+    version = 38,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
@@ -155,6 +157,7 @@ class MusicDatabase(
         AutoMigration(from = 34, to = 35),
         AutoMigration(from = 35, to = 36),
         AutoMigration(from = 36, to = 37),
+        AutoMigration(from = 37, to = 38),
     ],
 )
 @TypeConverters(Converters::class)

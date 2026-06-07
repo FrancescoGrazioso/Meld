@@ -116,6 +116,8 @@ import com.metrolist.music.constants.InnerTubeCookieKey
 import com.metrolist.music.constants.ListItemHeight
 import com.metrolist.music.constants.ListThumbnailSize
 import com.metrolist.music.constants.RandomizeHomeOrderKey
+import com.metrolist.music.constants.ShowPlayRandomButtonKey
+import com.metrolist.music.constants.ShowRecognizeButtonKey
 import com.metrolist.music.constants.SmallGridThumbnailHeight
 import com.metrolist.music.constants.ThumbnailCornerRadius
 import com.metrolist.music.db.entities.Album
@@ -780,6 +782,9 @@ fun HomeScreen(
 
     // Track randomization job
     var randomizeJob by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+
+    val (showRecognizeButton) = rememberPreference(ShowRecognizeButtonKey, defaultValue = true)
+    val (showPlayRandomButton) = rememberPreference(ShowPlayRandomButtonKey, defaultValue = true)
 
     val lazylistState = rememberLazyListState()
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
@@ -2864,6 +2869,8 @@ fun HomeScreen(
                 onRecognitionClick = {
                     navController.navigate("recognition")
                 },
+                showRecognition = showRecognizeButton,
+                showMainAction = showPlayRandomButton,
             )
         }
     }

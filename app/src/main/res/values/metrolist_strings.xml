@@ -499,6 +499,46 @@
     <string name="spotify_sync_likes_syncing">Syncing liked songs from Spotify… (%1$d/%2$d)</string>
     <string name="spotify_sync_likes_complete">Synced %1$d songs from Spotify</string>
     <string name="spotify_sync_likes_failed">Failed to sync liked songs from Spotify</string>
+    <string name="hide_ytm_liked_songs">Hide YouTube Music liked songs</string>
+    <string name="hide_ytm_liked_songs_description">When syncing with Spotify, hide the local liked songs playlist to avoid duplicates. Disable to show both.</string>
+
+    <string name="qobuz_audio_quality_section">Audio quality (experimental)</string>
+    <string name="qobuz_enable">Use Qobuz for lossless playback</string>
+    <string name="qobuz_enable_description">Experimental. Uses third-party services (not run by us) to fetch FLAC or Hi-Res streams when the song exists on Qobuz. May stop working at any time without warning — when it does, playback falls back automatically to the standard YouTube source. Lossless streams use 3–10× more data and storage than the standard AAC.\n\nChanging this setting (or quality / backend / country) reloads the currently playing track to apply the new source immediately. No app restart required.</string>
+    <string name="qobuz_quality">Stream quality</string>
+    <string name="qobuz_quality_aac_320">AAC 320 kbps</string>
+    <string name="qobuz_quality_aac_320_desc">Lossy, smallest size. Good for mobile data.</string>
+    <string name="qobuz_quality_cd">CD quality (FLAC 16-bit / 44.1 kHz)</string>
+    <string name="qobuz_quality_cd_desc">Lossless. Recommended default.</string>
+    <string name="qobuz_quality_hires">Hi-Res (FLAC up to 24-bit / 192 kHz)</string>
+    <string name="qobuz_quality_hires_desc">Lossless at the highest bit depth and sample rate available.</string>
+    <string name="qobuz_backend">Resolver backend</string>
+    <string name="qobuz_backend_monokenny">Monokenny</string>
+    <string name="qobuz_backend_jumo">Jumo</string>
+    <string name="qobuz_backend_squid">Squid</string>
+    <string name="qobuz_backend_trypt">TrypT HiFi</string>
+    <string name="qobuz_country">Country code</string>
+
+    <!-- Manual Qobuz match override -->
+    <string name="qobuz_match_override">Override Qobuz match</string>
+    <string name="qobuz_match_override_description">Manually pick the right Qobuz track when the automatic matcher gets it wrong.</string>
+    <string name="qobuz_match_override_clear">Clear override</string>
+    <string name="qobuz_match_override_searching">Searching Qobuz…</string>
+    <string name="qobuz_match_override_empty">No Qobuz candidates found</string>
+    <string name="qobuz_match_override_current">Current: %1$s</string>
+    <string name="qobuz_match_override_auto">Auto-match</string>
+
+    <!-- Provider health -->
+    <string name="qobuz_provider_health">Backend status</string>
+    <string name="qobuz_provider_health_description">Live reachability of every Qobuz resolver.</string>
+    <string name="qobuz_provider_health_refresh">Refresh</string>
+    <string name="qobuz_provider_health_online">Online</string>
+    <string name="qobuz_provider_health_reachable">Reachable</string>
+    <string name="qobuz_provider_health_offline">Offline</string>
+    <string name="qobuz_provider_health_checking">Checking…</string>
+    <string name="qobuz_provider_health_latency">%1$d ms</string>
+
+    <string name="qobuz_country_description">Two-letter ISO code (e.g. US, IT, FR). Affects catalog and availability.</string>
 
     <string name="details_desc">View the song\'s details</string>
     <string name="edit_desc">Edit the title or artist</string>

@@ -91,6 +91,46 @@ private fun String.containsRtl(): Boolean {
     return false
 }
 
+/**
+ * Detects scripts whose visual glyphs are formed by combining multiple codepoints
+ * (Bengali, Devanagari, Tamil, Thai, Arabic shaping, etc.). Per-character rendering
+ * breaks these — combining marks must stay attached to their base consonant
+ * (issue #141). When this returns true the line falls back to whole-string drawing.
+ */
+private fun String.requiresShapedRendering(): Boolean {
+    for (c in this) {
+        val block = Character.UnicodeBlock.of(c) ?: continue
+        if (block == Character.UnicodeBlock.BENGALI ||
+            block == Character.UnicodeBlock.DEVANAGARI ||
+            block == Character.UnicodeBlock.TAMIL ||
+            block == Character.UnicodeBlock.GUJARATI ||
+            block == Character.UnicodeBlock.GURMUKHI ||
+            block == Character.UnicodeBlock.KANNADA ||
+            block == Character.UnicodeBlock.MALAYALAM ||
+            block == Character.UnicodeBlock.ORIYA ||
+            block == Character.UnicodeBlock.TELUGU ||
+            block == Character.UnicodeBlock.SINHALA ||
+            block == Character.UnicodeBlock.THAI ||
+            block == Character.UnicodeBlock.LAO ||
+            block == Character.UnicodeBlock.MYANMAR ||
+            block == Character.UnicodeBlock.KHMER ||
+            block == Character.UnicodeBlock.TIBETAN ||
+            block == Character.UnicodeBlock.ARABIC ||
+            block == Character.UnicodeBlock.ARABIC_PRESENTATION_FORMS_A ||
+            block == Character.UnicodeBlock.ARABIC_PRESENTATION_FORMS_B
+        ) {
+            return true
+        }
+        // Combining diacritical marks of any script signal grapheme clustering.
+        if (Character.getType(c).toByte() == Character.NON_SPACING_MARK ||
+            Character.getType(c).toByte() == Character.COMBINING_SPACING_MARK
+        ) {
+            return true
+        }
+    }
+    return false
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun LyricsLine(
@@ -447,6 +487,9 @@ private fun WordLevelLyrics(
         }
         
         val isRtlText = remember(mainText) { mainText.containsRtl() }
+        // Bengali / Devanagari / etc. require the layoutResult-based rendering
+        // path used for RTL text — per-character drawing breaks combining marks.
+        val isShapedText = remember(mainText) { mainText.requiresShapedRendering() }
         
         Canvas(modifier = Modifier
             .fillMaxWidth()
@@ -457,7 +500,7 @@ private fun WordLevelLyrics(
             if (!isActiveLine) {
                 drawText(layoutResult, color = lineColor)
             } else {
-                if (isRtlText) {
+                if (isRtlText || isShapedText) {
                     val (wordIdxMap, _, _) = charToWordData
                     val wordFactors = effectiveWords.map { word ->
                         val wStartMs = (word.startTime * 1000).toLong()

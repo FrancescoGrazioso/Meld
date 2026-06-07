@@ -36,6 +36,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -123,6 +124,7 @@ fun AlbumScreen(
     val playlistId by viewModel.playlistId.collectAsState()
     val albumWithSongs by viewModel.albumWithSongs.collectAsState()
     val otherVersions by viewModel.otherVersions.collectAsState()
+    val fetchError by viewModel.fetchError.collectAsState()
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
     val hideVideoSongs by rememberPreference(key = HideVideoSongsKey, defaultValue = false)
 
@@ -524,6 +526,25 @@ fun AlbumScreen(
                                         ).animateItem(),
                             )
                         }
+                    }
+                }
+            }
+        } else if (fetchError != null) {
+            item(key = "error") {
+                Column(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(32.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Text(
+                        text = stringResource(R.string.error_unknown),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    OutlinedButton(onClick = { viewModel.fetchAlbum() }) {
+                        Text(stringResource(R.string.retry_button))
                     }
                 }
             }

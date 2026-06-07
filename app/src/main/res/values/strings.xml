@@ -230,6 +230,10 @@
     <string name="misc">Misc</string>
     <string name="default_open_tab">Default open tab</string>
     <string name="grid_cell_size">Grid cell size</string>
+    <string name="show_recognize_music_button">Show music recognition button</string>
+    <string name="show_recognize_music_button_desc">Show the music recognition button on the home screen</string>
+    <string name="show_play_random_button">Show play random button</string>
+    <string name="show_play_random_button_desc">Show the play random button on the home screen</string>
     <string name="small">Small</string>
     <string name="big">Big</string>
 

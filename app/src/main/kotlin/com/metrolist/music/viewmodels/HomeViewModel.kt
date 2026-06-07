@@ -748,6 +748,23 @@ class HomeViewModel @Inject constructor(
                 Timber.w("spotifyHome: no top tracks — skipping pinned section")
             }
 
+            Timber.d("spotifyHome: calling Spotify.newReleases()...")
+            Spotify.newReleases(limit = 20).onSuccess { newReleases ->
+                val albums = newReleases.albums?.items.orEmpty()
+                if (albums.isNotEmpty()) {
+                    sections.add(SpotifyHomeSection(
+                        title = "spotify_new_releases",
+                        type = SectionType.ALBUMS,
+                        albums = albums,
+                    ))
+                    Timber.d("spotifyHome: added pinned section 'New Releases' (${albums.size} albums)")
+                } else {
+                    Timber.w("spotifyHome: newReleases returned 0 albums — skipping section")
+                }
+            }.onFailure { e ->
+                Timber.e(e, "spotifyHome: newReleases() FAILED — ${e.javaClass.simpleName}: ${e.message}")
+            }
+
             Timber.d("spotifyHome: calling Spotify.home()...")
             Spotify.home(sectionItemsLimit = 10).onSuccess { feed ->
                 Timber.d("spotifyHome: home() OK — greeting='${feed.greeting}' rawSections=${feed.sections.size}")
@@ -1059,6 +1076,38 @@ class HomeViewModel @Inject constructor(
                         loadAccountPlaylists()
                     }
                 }
+        }
+
+        // Issue #145: Spotify pinned artwork (e.g. Discover Weekly) was captured at
+        // pin time and never refreshed, so the speed dial kept showing the old image
+        // even after Spotify rotated the playlist cover. Fetch the live playlist on
+        // startup and update the cached SpeedDialItem when the thumbnail URL changed.
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val enabled = context.dataStore.get(EnableSpotifyKey, false)
+                val token = context.dataStore.get(SpotifyAccessTokenKey, "")
+                if (!enabled || token.isEmpty()) return@launch
+                val pinned = database.speedDialDao.getAll().first()
+                pinned.asSequence()
+                    .filter { it.id.startsWith("spotify:") }
+                    .forEach { item ->
+                        val playlistId = item.id.removePrefix("spotify:")
+                        Spotify.playlist(playlistId).onSuccess { playlist ->
+                            val freshThumb = com.metrolist.spotify.SpotifyMapper
+                                .getPlaylistThumbnail(playlist)
+                            if (!freshThumb.isNullOrEmpty() && freshThumb != item.thumbnailUrl) {
+                                database.speedDialDao.insert(
+                                    item.copy(
+                                        title = playlist.name.ifEmpty { item.title },
+                                        thumbnailUrl = freshThumb,
+                                    )
+                                )
+                            }
+                        }
+                    }
+            } catch (e: Exception) {
+                Timber.w(e, "Failed to refresh Spotify pinned thumbnails")
+            }
         }
     }
 }

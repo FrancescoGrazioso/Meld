@@ -14,18 +14,20 @@ import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.utils.isSpotifyId
 import com.metrolist.music.utils.reportException
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import javax.inject.Inject
 
 @HiltViewModel
 class AlbumViewModel
 @Inject
 constructor(
-    database: MusicDatabase,
+    private val database: MusicDatabase,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     val albumId = savedStateHandle.get<String>("albumId")!!
@@ -36,12 +38,26 @@ constructor(
             .stateIn(viewModelScope, SharingStarted.Eagerly, null)
     var otherVersions = MutableStateFlow<List<AlbumItem>>(emptyList())
 
+    // null = still loading or success. Non-null = fetch failed and UI must
+    // surface an error state instead of an endless spinner (issue #131).
+    val fetchError = MutableStateFlow<String?>(null)
+
     init {
+        fetchAlbum()
+    }
+
+    fun fetchAlbum() {
         viewModelScope.launch {
             if (albumId.isSpotifyId()) return@launch
+            fetchError.value = null
             val album = database.album(albumId).first()
-            YouTube
-                .album(albumId)
+            val result = runCatching {
+                withTimeout(FETCH_TIMEOUT_MS) {
+                    YouTube.album(albumId)
+                }
+            }.getOrElse { Result.failure(it) }
+
+            result
                 .onSuccess {
                     playlistId.value = it.album.playlistId
                     otherVersions.value = it.otherVersions
@@ -59,7 +75,20 @@ constructor(
                             album?.album?.let(::delete)
                         }
                     }
+                    // Only show an error state when we don't already have the
+                    // album cached locally — otherwise the screen can render
+                    // from DB and the failure is invisible to the user.
+                    if (album == null) {
+                        fetchError.value = when (it) {
+                            is TimeoutCancellationException -> "timeout"
+                            else -> it.message ?: it.javaClass.simpleName
+                        }
+                    }
                 }
         }
+    }
+
+    companion object {
+        private const val FETCH_TIMEOUT_MS = 15_000L
     }
 }

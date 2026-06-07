@@ -67,6 +67,9 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import coil3.compose.AsyncImage
+import coil3.compose.AsyncImagePainter
+import coil3.compose.SubcomposeAsyncImage
+import coil3.compose.SubcomposeAsyncImageContent
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import com.metrolist.music.LocalListenTogetherManager
@@ -83,6 +86,8 @@ import com.metrolist.music.constants.SwipeThumbnailKey
 import com.metrolist.music.constants.ThumbnailCornerRadius
 import com.metrolist.music.listentogether.RoomRole
 import com.metrolist.music.ui.component.CastButton
+import com.metrolist.music.ui.utils.resize
+import com.metrolist.music.ui.utils.ytVideoThumbFallback
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.innertube.utils.parseCookieString
@@ -627,26 +632,50 @@ private fun ThumbnailImage(
     cropArtwork: Boolean,
     modifier: Modifier = Modifier
 ) {
+    // Player artwork covers the full width of the screen. Default thumbnail URLs
+    // stored on MediaMetadata are sized to 544×544, which looks soft on modern
+    // displays (#127). Re-resize to 1080 — `resize` is a no-op for non-YT URLs
+    // and just rewrites the `w/h` query params for YT googleusercontent CDN /
+    // the variant filename for i.ytimg.com video thumbnails.
+    val hiResUri = remember(artworkUri) { artworkUri?.resize(1080, 1080) }
+    // maxresdefault.jpg isn't generated for every YouTube video — fall back
+    // down the variant ladder (sd → hq → mq) on 404. Coil-3 doesn't have a
+    // built-in URL fallback chain, so we drive it from compose state and
+    // pass the current candidate back through `setData()` on each error.
+    var currentUri by remember(hiResUri) { mutableStateOf(hiResUri) }
     Box(
         modifier = modifier
             .fillMaxSize()
             .graphicsLayer {
-                // Use offscreen compositing for hardware acceleration during animations
                 compositingStrategy = CompositingStrategy.Offscreen
             }
             .background(MaterialTheme.colorScheme.surfaceVariant)
     ) {
-        AsyncImage(
+        SubcomposeAsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(artworkUri)
+                .data(currentUri)
                 .memoryCachePolicy(CachePolicy.ENABLED)
                 .diskCachePolicy(CachePolicy.ENABLED)
                 .networkCachePolicy(CachePolicy.ENABLED)
                 .build(),
             contentDescription = null,
             contentScale = if (cropArtwork) ContentScale.Crop else ContentScale.Fit,
-            modifier = Modifier.fillMaxSize()
-        )
+            modifier = Modifier.fillMaxSize(),
+        ) {
+            val state = painter.state.collectAsState().value
+            when (state) {
+                is AsyncImagePainter.State.Error -> {
+                    val next = currentUri?.ytVideoThumbFallback()
+                    LaunchedEffect(currentUri) {
+                        if (next != null && next != currentUri) {
+                            currentUri = next
+                        }
+                    }
+                }
+                else -> {}
+            }
+            SubcomposeAsyncImageContent()
+        }
     }
 }
 

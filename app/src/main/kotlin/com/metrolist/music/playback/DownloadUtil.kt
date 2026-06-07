@@ -93,7 +93,7 @@ constructor(
                 return@Factory dataSpec
             }
 
-            songUrlCache[mediaId]?.takeIf { it.second < System.currentTimeMillis() }?.let {
+            songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {
                 return@Factory dataSpec.withUri(it.first.toUri())
             }
 
@@ -149,7 +149,11 @@ constructor(
                 "${it}&range=0-${format.contentLength ?: 10000000}"
             }
 
-            songUrlCache[mediaId] = streamUrl to playbackData.streamExpiresInSeconds * 1000L
+            // Safety margin: treat the URL as expired 60s before its real TTL so we
+            // refresh in-flight rather than handing ExoPlayer a URL that 403s mid-open.
+            val expiresAt = System.currentTimeMillis() +
+                ((playbackData.streamExpiresInSeconds - 60).coerceAtLeast(0)) * 1000L
+            songUrlCache[mediaId] = streamUrl to expiresAt
             dataSpec.withUri(streamUrl.toUri())
         }
 

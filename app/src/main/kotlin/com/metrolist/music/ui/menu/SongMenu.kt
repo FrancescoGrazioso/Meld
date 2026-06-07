@@ -74,6 +74,7 @@ import com.metrolist.music.LocalListenTogetherManager
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.LocalSyncUtils
 import com.metrolist.music.R
+import com.metrolist.music.constants.EnableQobuzKey
 import com.metrolist.music.constants.ListItemHeight
 import com.metrolist.music.constants.ListThumbnailSize
 import com.metrolist.music.db.entities.ArtistEntity
@@ -97,6 +98,7 @@ import com.metrolist.music.ui.component.SongListItem
 import com.metrolist.music.ui.component.TextFieldDialog
 import com.metrolist.music.ui.component.YouTubeMatchDialog
 import com.metrolist.music.ui.utils.ShowMediaInfo
+import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.viewmodels.CachePlaylistViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -165,6 +167,8 @@ fun SongMenu(
     }
 
     var showYouTubeMatchDialog by rememberSaveable { mutableStateOf(false) }
+
+    val qobuzEnabled by rememberPreference(EnableQobuzKey, defaultValue = false)
 
     // Resolve the Spotify match — either explicitly supplied or looked up via the YouTube ID
     val resolvedSpotifyMatch by produceState<com.metrolist.music.db.entities.SpotifyMatchEntity?>(
@@ -1213,7 +1217,7 @@ fun SongMenu(
                                 },
                             ),
                         )
-                        if (resolvedSpotifyMatch != null) {
+                        if (resolvedSpotifyMatch != null && !qobuzEnabled) {
                             add(
                                 Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.change_youtube_version)) },

@@ -42,7 +42,11 @@ fun BoxScope.HideOnScrollFAB(
     @DrawableRes icon: Int,
     onClick: () -> Unit,
     onRecognitionClick: (() -> Unit)? = null,
+    showRecognition: Boolean = true,
+    showMainAction: Boolean = true,
 ) {
+    if (!showRecognition && !showMainAction) return
+
     AnimatedVisibility(
         visible = visible && lazyListState.isScrollingUp(),
         enter = slideInVertically { it },
@@ -59,28 +63,43 @@ fun BoxScope.HideOnScrollFAB(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(16.dp)
         ) {
-            if (onRecognitionClick != null) {
-                SmallFloatingActionButton(
-                    onClick = onRecognitionClick,
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.size(40.dp)
+            if (showRecognition && onRecognitionClick != null) {
+                if (showMainAction) {
+                    SmallFloatingActionButton(
+                        onClick = onRecognitionClick,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.mic),
+                            contentDescription = stringResource(R.string.recognize_music),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                } else {
+                    FloatingActionButton(
+                        onClick = onRecognitionClick,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.mic),
+                            contentDescription = stringResource(R.string.recognize_music),
+                        )
+                    }
+                }
+            }
+            if (showMainAction) {
+                FloatingActionButton(
+                    onClick = onClick,
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.mic),
-                        contentDescription = stringResource(R.string.recognize_music),
-                        modifier = Modifier.size(20.dp)
+                        painter = painterResource(icon),
+                        contentDescription = null,
                     )
                 }
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-            FloatingActionButton(
-                onClick = onClick,
-            ) {
-                Icon(
-                    painter = painterResource(icon),
-                    contentDescription = null,
-                )
             }
         }
     }
@@ -93,7 +112,11 @@ fun BoxScope.HideOnScrollFAB(
     @DrawableRes icon: Int,
     onClick: () -> Unit,
     onRecognitionClick: (() -> Unit)? = null,
+    showRecognition: Boolean = true,
+    showMainAction: Boolean = true,
 ) {
+    if (!showRecognition && !showMainAction) return
+
     AnimatedVisibility(
         visible = visible && lazyListState.isScrollingUp(),
         enter = slideInVertically { it },
@@ -110,28 +133,43 @@ fun BoxScope.HideOnScrollFAB(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(16.dp)
         ) {
-            if (onRecognitionClick != null) {
-                SmallFloatingActionButton(
-                    onClick = onRecognitionClick,
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.size(40.dp)
+            if (showRecognition && onRecognitionClick != null) {
+                if (showMainAction) {
+                    SmallFloatingActionButton(
+                        onClick = onRecognitionClick,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.mic),
+                            contentDescription = stringResource(R.string.recognize_music),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                } else {
+                    FloatingActionButton(
+                        onClick = onRecognitionClick,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.mic),
+                            contentDescription = stringResource(R.string.recognize_music),
+                        )
+                    }
+                }
+            }
+            if (showMainAction) {
+                FloatingActionButton(
+                    onClick = onClick,
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.mic),
-                        contentDescription = stringResource(R.string.recognize_music),
-                        modifier = Modifier.size(20.dp)
+                        painter = painterResource(icon),
+                        contentDescription = null,
                     )
                 }
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-            FloatingActionButton(
-                onClick = onClick,
-            ) {
-                Icon(
-                    painter = painterResource(icon),
-                    contentDescription = null,
-                )
             }
         }
     }
@@ -144,7 +182,11 @@ fun BoxScope.HideOnScrollFAB(
     @DrawableRes icon: Int,
     onClick: () -> Unit,
     onRecognitionClick: (() -> Unit)? = null,
+    showRecognition: Boolean = true,
+    showMainAction: Boolean = true,
 ) {
+    if (!showRecognition && !showMainAction) return
+
     AnimatedVisibility(
         visible = visible && scrollState.isScrollingUp(),
         enter = slideInVertically { it },
@@ -161,28 +203,43 @@ fun BoxScope.HideOnScrollFAB(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(16.dp)
         ) {
-            if (onRecognitionClick != null) {
-                SmallFloatingActionButton(
-                    onClick = onRecognitionClick,
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    modifier = Modifier.size(40.dp)
+            if (showRecognition && onRecognitionClick != null) {
+                if (showMainAction) {
+                    SmallFloatingActionButton(
+                        onClick = onRecognitionClick,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                        modifier = Modifier.size(40.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.mic),
+                            contentDescription = stringResource(R.string.recognize_music),
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                } else {
+                    FloatingActionButton(
+                        onClick = onRecognitionClick,
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.mic),
+                            contentDescription = stringResource(R.string.recognize_music),
+                        )
+                    }
+                }
+            }
+            if (showMainAction) {
+                FloatingActionButton(
+                    onClick = onClick,
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.mic),
-                        contentDescription = stringResource(R.string.recognize_music),
-                        modifier = Modifier.size(20.dp)
+                        painter = painterResource(icon),
+                        contentDescription = null,
                     )
                 }
-                Spacer(modifier = Modifier.height(12.dp))
-            }
-            FloatingActionButton(
-                onClick = onClick,
-            ) {
-                Icon(
-                    painter = painterResource(icon),
-                    contentDescription = null,
-                )
             }
         }
     }

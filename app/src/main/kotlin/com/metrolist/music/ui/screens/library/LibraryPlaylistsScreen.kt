@@ -66,6 +66,7 @@ import com.metrolist.music.constants.PlaylistViewTypeKey
 import com.metrolist.music.constants.ShowCachedPlaylistKey
 import com.metrolist.music.constants.ShowDownloadedPlaylistKey
 import com.metrolist.music.constants.ShowLikedPlaylistKey
+import com.metrolist.music.constants.HideYtmLikedSongsKey
 import com.metrolist.music.constants.SpotifySyncLikesKey
 import com.metrolist.music.constants.ShowTopPlaylistKey
 import com.metrolist.music.constants.ShowUploadedPlaylistKey
@@ -218,11 +219,13 @@ fun LibraryPlaylistsScreen(
 
     val (showLiked) = rememberPreference(ShowLikedPlaylistKey, true)
     val (spotifySyncLikes) = rememberPreference(SpotifySyncLikesKey, false)
+    val (hideYtmLikedSongs) = rememberPreference(HideYtmLikedSongsKey, true)
+    val hideYtmLiked = spotifySyncLikes && hideYtmLikedSongs
     val (showDownloaded) = rememberPreference(ShowDownloadedPlaylistKey, true)
     val (showTop) = rememberPreference(ShowTopPlaylistKey, true)
     val (showUploaded) = rememberPreference(ShowUploadedPlaylistKey, true)
     val (showCached) = rememberPreference(ShowCachedPlaylistKey, true)
-    val showLikedPlaylist = showLiked && !spotifySyncLikes && matchesNormalizedQuery(normalizedQuery, likedPlaylist.playlist.name)
+    val showLikedPlaylist = showLiked && !hideYtmLiked && matchesNormalizedQuery(normalizedQuery, likedPlaylist.playlist.name)
     val showDownloadedPlaylist =
         showDownloaded && matchesNormalizedQuery(normalizedQuery, downloadPlaylist.playlist.name)
     val showCachedPlaylists = showCached && matchesNormalizedQuery(normalizedQuery, cachedPlaylist.playlist.name)

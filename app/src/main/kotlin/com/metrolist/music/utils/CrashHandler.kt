@@ -24,6 +24,21 @@ class CrashHandler private constructor(
 
     override fun uncaughtException(thread: Thread, throwable: Throwable) {
         try {
+            // Swallow ForegroundServiceStartNotAllowedException from Media3's
+            // background notification refresh path (issue #123). Android 12+
+            // refuses startForegroundService() when the app is in the background
+            // and no exemption applies. Crashing the process here is the wrong
+            // response: it just means we couldn't promote the service to the
+            // foreground this time. Report once as non-fatal and continue.
+            if (isForegroundServiceStartNotAllowed(throwable)) {
+                Timber.tag("CrashHandler").w(
+                    throwable,
+                    "Swallowed ForegroundServiceStartNotAllowedException",
+                )
+                CrashReporter.reportNonFatal(throwable)
+                return
+            }
+
             val crashLog = buildCrashLog(throwable)
             Timber.e(throwable, "App crashed")
 
@@ -37,7 +52,7 @@ class CrashHandler private constructor(
                 addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
             applicationContext.startActivity(intent)
-            
+
             // Kill the current process
             android.os.Process.killProcess(android.os.Process.myPid())
             exitProcess(1)
@@ -46,6 +61,17 @@ class CrashHandler private constructor(
             Timber.e(e, "Error handling crash")
             defaultHandler?.uncaughtException(thread, throwable)
         }
+    }
+
+    private fun isForegroundServiceStartNotAllowed(throwable: Throwable): Boolean {
+        var current: Throwable? = throwable
+        while (current != null) {
+            if (current.javaClass.name == "android.app.ForegroundServiceStartNotAllowedException") {
+                return true
+            }
+            current = current.cause
+        }
+        return false
     }
 
     private fun buildCrashLog(throwable: Throwable): String {
