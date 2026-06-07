@@ -590,18 +590,17 @@ object YTPlayerUtils {
 
     fun forceRefreshForVideo(videoId: String) {
         Timber.tag(logTag).d("Force refreshing for videoId: $videoId")
-    
-        // Mark this video so the next stream resolution attempt is forced fresh.
-        // The main URL cache is in MusicService, but we also clear any local PoToken cache
-        // related to this video if possible.
+
         try {
-            // Force the PoTokenGenerator to treat this video as needing a fresh token next time
-            // (this helps when YouTube invalidated the previous one)
+            // Invalidate the current PoToken generator so a fresh one (with new
+            // streaming + player PoTokens) is created on the next playback attempt.
+            // This is critical when YouTube has invalidated the previous PoToken,
+            // which commonly causes persistent 403 errors.
             poTokenGenerator.invalidateForVideo(videoId)
         } catch (e: Exception) {
-            Timber.tag(logTag).w(e, "Could not invalidate PoToken for $videoId")
+            Timber.tag(logTag).w(e, "Failed to invalidate PoToken for videoId=$videoId")
         }
-    
+
         Timber.tag(logTag).i("Marked $videoId for forced fresh stream resolution + PoToken refresh")
     }
 }
