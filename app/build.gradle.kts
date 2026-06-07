@@ -33,8 +33,8 @@ android {
         applicationId = applicationIdOverride ?: "com.meld.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 17
-        versionName = "0.7.2"
+        versionCode = 18
+        versionName = "0.7.3"
         resValue("string", "app_name", appNameOverride ?: "Meld")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
