@@ -45,6 +45,32 @@ class PoTokenGenerator {
     }
 
     /**
+     * Forces recreation of the PoToken generator (and associated WebView).
+     * This should be called when we hit persistent 403 errors, as YouTube
+     * may have invalidated the previous PoToken.
+     *
+     * Note: The generator is session-global (not per-video), so the videoId
+     * parameter is only used for logging.
+     */
+    fun invalidateForVideo(videoId: String) {
+        Timber.tag(TAG).d("Invalidate requested for videoId: $videoId")
+
+        runBlocking {
+            webPoTokenGenLock.withLock {
+                // Properly close the old WebView on the main thread to avoid leaks
+                withContext(Dispatchers.Main) {
+                    webPoTokenGenerator?.close()
+                }
+                webPoTokenGenerator = null
+                webPoTokenSessionId = null
+                webPoTokenStreamingPot = null
+            }
+        }
+
+        Timber.tag(TAG).i("PoTokenGenerator invalidated (will recreate on next use)")
+    }
+
+    /**
      * @param forceRecreate whether to force the recreation of [webPoTokenGenerator], to be used in
      * case the current [webPoTokenGenerator] threw an error last time
      * [PoTokenWebView.generatePoToken] was called
