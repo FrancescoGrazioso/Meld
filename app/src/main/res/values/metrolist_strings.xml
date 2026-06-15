@@ -538,6 +538,41 @@
     <string name="qobuz_provider_health_checking">Checking…</string>
     <string name="qobuz_provider_health_latency">%1$d ms</string>
 
+    <!-- Monochrome Strings -->
+    <string name="monochrome_audio_quality_section">Audio quality</string>
+    <string name="monochrome_enable">Use Monochrome proxy for higher qualities</string>
+    <string name="monochrome_enable_description">Uses third-party Monochrome services to fetch FLAC or Hi-Res streams when the song exists. May stop working at any time — fallback to YouTube is automatic.</string>
+    <string name="monochrome_quality">Unified Audio Quality</string>
+    <string name="monochrome_quality_yt_high">High (YouTube Music)</string>
+    <string name="monochrome_quality_yt_high_desc">Standard AAC stream. Responsive and reliable.</string>
+    <string name="monochrome_quality_kbps_320">320 kbps (Monochrome)</string>
+    <string name="monochrome_quality_kbps_320_desc">High-quality lossy AAC/MP3 stream from Monochrome.</string>
+    <string name="monochrome_quality_cd">FLAC (Monochrome 16-bit / 44.1 kHz)</string>
+    <string name="monochrome_quality_cd_desc">CD quality lossless. Clear and rich sound.</string>
+    <string name="monochrome_quality_hires">Hi-Res FLAC (Monochrome up to 24-bit / 192 kHz)</string>
+    <string name="monochrome_quality_hires_desc">Audiophile quality lossless at the highest bit depth and sample rate.</string>
+    <string name="monochrome_backend">Monochrome Instance</string>
+    <string name="monochrome_backend_official">Official (api.monochrome.tf)</string>
+    <string name="monochrome_backend_samidy">Samidy (samidy.monochrome.tf)</string>
+    <string name="monochrome_backend_custom">Custom Instance</string>
+    <string name="monochrome_custom_url">Custom Instance URL</string>
+    <string name="monochrome_custom_url_description">URL of your self-hosted Monochrome Tidal proxy (e.g. https://my-monochrome.com)</string>
+    <string name="monochrome_match_override">Override Monochrome match</string>
+    <string name="monochrome_match_override_description">Manually pin a specific Tidal track ID when the automatic matcher chooses the wrong one.</string>
+    <string name="monochrome_match_override_clear">Clear override</string>
+    <string name="monochrome_match_override_searching">Searching Monochrome…</string>
+    <string name="monochrome_match_override_empty">No Monochrome candidates found</string>
+    <string name="monochrome_match_override_current">Current: %1$s</string>
+    <string name="monochrome_match_override_auto">Auto-match</string>
+    <string name="monochrome_provider_health">Instance status</string>
+    <string name="monochrome_provider_health_description">Live latency checks for Monochrome instances.</string>
+    <string name="monochrome_provider_health_refresh">Refresh</string>
+    <string name="monochrome_provider_health_online">Online</string>
+    <string name="monochrome_provider_health_reachable">Reachable</string>
+    <string name="monochrome_provider_health_offline">Offline</string>
+    <string name="monochrome_provider_health_checking">Checking…</string>
+    <string name="monochrome_provider_health_latency">%1$d ms</string>
+
     <string name="qobuz_country_description">Two-letter ISO code (e.g. US, IT, FR). Affects catalog and availability.</string>
 
     <string name="details_desc">View the song\'s details</string>

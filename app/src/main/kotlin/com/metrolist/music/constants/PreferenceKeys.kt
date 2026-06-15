@@ -234,6 +234,24 @@ enum class QobuzBackend {
     TRYPT,
 }
 
+val UnifiedAudioQualityKey = stringPreferencesKey("unifiedAudioQuality")
+val MonochromeBackendKey = stringPreferencesKey("monochromeBackend")
+val MonochromeCustomUrlKey = stringPreferencesKey("monochromeCustomUrl")
+val MonochromeMatchOverridesKey = stringPreferencesKey("monochromeMatchOverrides")
+
+enum class UnifiedAudioQuality {
+    YT_HIGH,
+    HIRES,
+    FLAC,
+    KBPS_320,
+}
+
+enum class MonochromeBackend {
+    OFFICIAL,
+    SAMIDY,
+    CUSTOM,
+}
+
 val ChipSortTypeKey = stringPreferencesKey("chipSortType")
 val SongSortTypeKey = stringPreferencesKey("songSortType")
 val SongSortDescendingKey = booleanPreferencesKey("songSortDescending")

@@ -52,13 +52,7 @@ import androidx.navigation.NavController
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.R
-import com.metrolist.music.constants.EnableQobuzKey
 import com.metrolist.music.constants.EnableSpotifyKey
-import com.metrolist.music.constants.QobuzAudioQuality
-import com.metrolist.music.constants.QobuzAudioQualityKey
-import com.metrolist.music.constants.QobuzBackend
-import com.metrolist.music.constants.QobuzBackendKey
-import com.metrolist.music.constants.QobuzCountryKey
 import com.metrolist.music.constants.SpotifyAccessTokenKey
 import com.metrolist.music.constants.SpotifySpDcKey
 import com.metrolist.music.constants.SpotifySpKeyKey
@@ -72,7 +66,7 @@ import com.metrolist.music.constants.UseSpotifyHomeKey
 import com.metrolist.music.constants.UseSpotifySearchKey
 import com.metrolist.music.models.MediaMetadata
 import com.metrolist.music.playback.SpotifyYouTubeMapper
-import com.metrolist.music.qobuz.QobuzBackendHealthChecker
+
 import com.metrolist.music.ui.component.EnumDialog
 import com.metrolist.music.ui.component.IconButton
 import com.metrolist.music.ui.component.ListDialog
@@ -314,143 +308,7 @@ fun SpotifySettings(
                 },
             )
 
-            PreferenceGroupTitle(
-                title = stringResource(R.string.qobuz_audio_quality_section),
-            )
 
-            val (enableQobuz, onEnableQobuzChange) = rememberPreference(
-                key = EnableQobuzKey,
-                defaultValue = false,
-            )
-
-            SwitchPreference(
-                title = { Text(stringResource(R.string.qobuz_enable)) },
-                description = stringResource(R.string.qobuz_enable_description),
-                checked = enableQobuz,
-                onCheckedChange = onEnableQobuzChange,
-            )
-
-            if (enableQobuz) {
-                var qobuzQuality by rememberEnumPreference(
-                    QobuzAudioQualityKey,
-                    defaultValue = QobuzAudioQuality.CD_QUALITY,
-                )
-                var qobuzBackend by rememberEnumPreference(
-                    QobuzBackendKey,
-                    defaultValue = QobuzBackend.MONOKENNY,
-                )
-                var qobuzCountry by rememberPreference(QobuzCountryKey, "US")
-
-                var showQobuzQualityDialog by remember { mutableStateOf(false) }
-                var showQobuzBackendDialog by remember { mutableStateOf(false) }
-                var showQobuzCountryDialog by remember { mutableStateOf(false) }
-
-                if (showQobuzQualityDialog) {
-                    EnumDialog(
-                        onDismiss = { showQobuzQualityDialog = false },
-                        onSelect = {
-                            qobuzQuality = it
-                            showQobuzQualityDialog = false
-                        },
-                        title = stringResource(R.string.qobuz_quality),
-                        current = qobuzQuality,
-                        values = QobuzAudioQuality.entries.toList(),
-                        valueText = {
-                            when (it) {
-                                QobuzAudioQuality.AAC_320 -> stringResource(R.string.qobuz_quality_aac_320)
-                                QobuzAudioQuality.CD_QUALITY -> stringResource(R.string.qobuz_quality_cd)
-                                QobuzAudioQuality.HI_RES_LOSSLESS -> stringResource(R.string.qobuz_quality_hires)
-                            }
-                        },
-                        valueDescription = {
-                            when (it) {
-                                QobuzAudioQuality.AAC_320 -> stringResource(R.string.qobuz_quality_aac_320_desc)
-                                QobuzAudioQuality.CD_QUALITY -> stringResource(R.string.qobuz_quality_cd_desc)
-                                QobuzAudioQuality.HI_RES_LOSSLESS -> stringResource(R.string.qobuz_quality_hires_desc)
-                            }
-                        },
-                    )
-                }
-
-                PreferenceEntry(
-                    title = { Text(stringResource(R.string.qobuz_quality)) },
-                    description = when (qobuzQuality) {
-                        QobuzAudioQuality.AAC_320 -> stringResource(R.string.qobuz_quality_aac_320)
-                        QobuzAudioQuality.CD_QUALITY -> stringResource(R.string.qobuz_quality_cd)
-                        QobuzAudioQuality.HI_RES_LOSSLESS -> stringResource(R.string.qobuz_quality_hires)
-                    },
-                    onClick = { showQobuzQualityDialog = true },
-                )
-
-                if (showQobuzBackendDialog) {
-                    EnumDialog(
-                        onDismiss = { showQobuzBackendDialog = false },
-                        onSelect = {
-                            qobuzBackend = it
-                            showQobuzBackendDialog = false
-                        },
-                        title = stringResource(R.string.qobuz_backend),
-                        current = qobuzBackend,
-                        values = QobuzBackend.entries.toList(),
-                        valueText = {
-                            when (it) {
-                                QobuzBackend.MONOKENNY -> stringResource(R.string.qobuz_backend_monokenny)
-                                QobuzBackend.JUMO -> stringResource(R.string.qobuz_backend_jumo)
-                                QobuzBackend.SQUID -> stringResource(R.string.qobuz_backend_squid)
-                                QobuzBackend.TRYPT -> stringResource(R.string.qobuz_backend_trypt)
-                            }
-                        },
-                    )
-                }
-
-                PreferenceEntry(
-                    title = { Text(stringResource(R.string.qobuz_backend)) },
-                    description = when (qobuzBackend) {
-                        QobuzBackend.MONOKENNY -> stringResource(R.string.qobuz_backend_monokenny)
-                        QobuzBackend.JUMO -> stringResource(R.string.qobuz_backend_jumo)
-                        QobuzBackend.SQUID -> stringResource(R.string.qobuz_backend_squid)
-                        QobuzBackend.TRYPT -> stringResource(R.string.qobuz_backend_trypt)
-                    },
-                    onClick = { showQobuzBackendDialog = true },
-                )
-
-                if (showQobuzCountryDialog) {
-                    val countries = listOf(
-                        "US", "IT", "FR", "GB", "DE", "ES", "NL", "NZ", "JP", "BR",
-                    )
-                    ListDialog(onDismiss = { showQobuzCountryDialog = false }) {
-                        items(countries) { code ->
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        qobuzCountry = code
-                                        showQobuzCountryDialog = false
-                                    }
-                                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                            ) {
-                                RadioButton(
-                                    selected = code == qobuzCountry,
-                                    onClick = null,
-                                )
-                                Text(
-                                    text = code,
-                                    modifier = Modifier.padding(start = 16.dp),
-                                )
-                            }
-                        }
-                    }
-                }
-
-                PreferenceEntry(
-                    title = { Text(stringResource(R.string.qobuz_country)) },
-                    description = "$qobuzCountry — ${stringResource(R.string.qobuz_country_description)}",
-                    onClick = { showQobuzCountryDialog = true },
-                )
-
-                QobuzBackendHealthSection(currentBackend = qobuzBackend)
-            }
 
             PreferenceGroupTitle(
                 title = stringResource(R.string.information),
@@ -492,109 +350,7 @@ fun SpotifySettings(
     )
 }
 
-/**
- * Live reachability panel for the four Qobuz resolver backends. Triggers a
- * fan-out ping on mount and on user refresh. The user's currently selected
- * backend is visually highlighted so they can immediately see if the active
- * proxy is the one that's down.
- */
-@Composable
-private fun QobuzBackendHealthSection(currentBackend: QobuzBackend) {
-    val coroutineScope = rememberCoroutineScope()
-    var results by remember { mutableStateOf<List<QobuzBackendHealthChecker.Result>>(emptyList()) }
-    var loading by remember { mutableStateOf(false) }
 
-    val refresh: () -> Unit = {
-        if (!loading) {
-            loading = true
-            coroutineScope.launch {
-                results = QobuzBackendHealthChecker.checkAll()
-                loading = false
-            }
-        }
-    }
-
-    androidx.compose.runtime.LaunchedEffect(Unit) { refresh() }
-
-    PreferenceGroupTitle(title = stringResource(R.string.qobuz_provider_health))
-
-    PreferenceEntry(
-        title = {
-            Text(
-                text = stringResource(R.string.qobuz_provider_health_description),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        },
-        description = null,
-        trailingContent = {
-            OutlinedButton(
-                onClick = refresh,
-                enabled = !loading,
-            ) {
-                if (loading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(16.dp),
-                        strokeWidth = 2.dp,
-                    )
-                } else {
-                    Text(stringResource(R.string.qobuz_provider_health_refresh))
-                }
-            }
-        },
-    )
-
-    val activeResolverBackend = when (currentBackend) {
-        QobuzBackend.MONOKENNY -> com.metrolist.music.qobuz.QobuzAudioProvider.ResolverBackend.MONOKENNY
-        QobuzBackend.JUMO -> com.metrolist.music.qobuz.QobuzAudioProvider.ResolverBackend.JUMO
-        QobuzBackend.SQUID -> com.metrolist.music.qobuz.QobuzAudioProvider.ResolverBackend.SQUID
-        QobuzBackend.TRYPT -> com.metrolist.music.qobuz.QobuzAudioProvider.ResolverBackend.TRYPT
-    }
-
-    if (results.isEmpty() && loading) {
-        PreferenceEntry(
-            title = { Text(stringResource(R.string.qobuz_provider_health_checking)) },
-            description = null,
-            icon = { CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp) },
-        )
-    } else {
-        results.forEach { result ->
-            val color = when (result.status) {
-                QobuzBackendHealthChecker.Status.ONLINE -> Color(0xFF2ECC71)
-                QobuzBackendHealthChecker.Status.REACHABLE -> Color(0xFFF1C40F)
-                QobuzBackendHealthChecker.Status.OFFLINE -> Color(0xFFE74C3C)
-            }
-            val statusLabel = when (result.status) {
-                QobuzBackendHealthChecker.Status.ONLINE -> stringResource(R.string.qobuz_provider_health_online)
-                QobuzBackendHealthChecker.Status.REACHABLE -> stringResource(R.string.qobuz_provider_health_reachable)
-                QobuzBackendHealthChecker.Status.OFFLINE -> stringResource(R.string.qobuz_provider_health_offline)
-            }
-            val isActive = result.target.backend == activeResolverBackend
-            val nameSuffix = if (isActive) "  •" else ""
-            val latency = result.latencyMs?.let {
-                stringResource(R.string.qobuz_provider_health_latency, it.toInt())
-            }
-            PreferenceEntry(
-                title = {
-                    Text(
-                        text = result.target.name + nameSuffix,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
-                    )
-                },
-                description = listOfNotNull(statusLabel, latency, result.message)
-                    .joinToString(" • "),
-                icon = {
-                    androidx.compose.foundation.layout.Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .background(color = color, shape = CircleShape),
-                    )
-                },
-            )
-        }
-    }
-}
 
 /**
  * Holds observable state for the initial Spotify→local like sync so the

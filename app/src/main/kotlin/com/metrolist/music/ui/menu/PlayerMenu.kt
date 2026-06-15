@@ -133,7 +133,10 @@ fun PlayerMenu(
     val castDeviceName by castHandler?.castDeviceName?.collectAsState() ?: remember { mutableStateOf<String?>(null) }
 
     val varispeedMode by rememberPreference(VarispeedKey, defaultValue = false)
-    val qobuzEnabled by rememberPreference(com.metrolist.music.constants.EnableQobuzKey, defaultValue = false)
+    val unifiedQualitySetting = rememberPreference(com.metrolist.music.constants.UnifiedAudioQualityKey, defaultValue = "YT_HIGH")
+    val monochromeEnabled = remember(unifiedQualitySetting.value) {
+        unifiedQualitySetting.value != com.metrolist.music.constants.UnifiedAudioQuality.YT_HIGH.name
+    }
 
     val librarySong by database.song(mediaMetadata.id).collectAsState(initial = null)
     val coroutineScope = rememberCoroutineScope()
@@ -159,7 +162,7 @@ fun PlayerMenu(
         mutableStateOf(false)
     }
 
-    var showQobuzMatchDialog by rememberSaveable {
+    var showMonochromeMatchDialog by rememberSaveable {
         mutableStateOf(false)
     }
 
@@ -186,15 +189,15 @@ fun PlayerMenu(
         onDismiss = { showAddToSpotifyPlaylist = false },
     )
 
-    if (showQobuzMatchDialog) {
-        com.metrolist.music.ui.dialog.QobuzMatchOverrideDialog(
+    if (showMonochromeMatchDialog) {
+        com.metrolist.music.ui.dialog.MonochromeMatchOverrideDialog(
             mediaId = mediaMetadata.id,
             title = mediaMetadata.title,
             artists = mediaMetadata.artists.map { it.name },
             album = mediaMetadata.album?.title,
             isrc = librarySong?.song?.isrc,
             durationMs = mediaMetadata.duration.takeIf { it > 0 }?.toLong()?.times(1000L),
-            onDismiss = { showQobuzMatchDialog = false },
+            onDismiss = { showMonochromeMatchDialog = false },
         )
     }
 
@@ -727,7 +730,7 @@ fun PlayerMenu(
             Material3MenuGroup(
                 items =
                     buildList {
-                        if (resolvedSpotifyMatch != null && !qobuzEnabled) {
+                        if (resolvedSpotifyMatch != null && !monochromeEnabled) {
                             add(
                                 Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.change_youtube_version)) },
@@ -746,12 +749,12 @@ fun PlayerMenu(
                             )
                         }
 
-                        if (qobuzEnabled) {
+                        if (monochromeEnabled) {
                             add(
                                 Material3MenuItemData(
-                                    title = { Text(text = stringResource(R.string.qobuz_match_override)) },
+                                    title = { Text(text = stringResource(R.string.monochrome_match_override)) },
                                     description = {
-                                        Text(text = stringResource(R.string.qobuz_match_override_description))
+                                        Text(text = stringResource(R.string.monochrome_match_override_description))
                                     },
                                     icon = {
                                         Icon(
@@ -761,7 +764,7 @@ fun PlayerMenu(
                                         )
                                     },
                                     onClick = {
-                                        showQobuzMatchDialog = true
+                                        showMonochromeMatchDialog = true
                                     },
                                 ),
                             )

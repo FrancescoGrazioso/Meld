@@ -45,7 +45,8 @@ import com.metrolist.innertube.models.ArtistItem
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
-import com.metrolist.music.constants.EnableQobuzKey
+import com.metrolist.music.constants.UnifiedAudioQualityKey
+import com.metrolist.music.constants.UnifiedAudioQuality
 import com.metrolist.music.constants.ListItemHeight
 import com.metrolist.music.constants.ListThumbnailSize
 import com.metrolist.music.constants.ThumbnailCornerRadius
@@ -88,7 +89,10 @@ fun SpotifyTrackMenu(
     var showAddToPlaylistDialog by rememberSaveable { mutableStateOf(false) }
     var showSelectArtistDialog by rememberSaveable { mutableStateOf(false) }
 
-    val qobuzEnabled by rememberPreference(EnableQobuzKey, defaultValue = false)
+    val unifiedQualitySetting = rememberPreference(UnifiedAudioQualityKey, defaultValue = "YT_HIGH")
+    val monochromeEnabled = remember(unifiedQualitySetting.value) {
+        unifiedQualitySetting.value != UnifiedAudioQuality.YT_HIGH.name
+    }
 
     fun resolveAndNavigateToArtist(artistName: String) {
         coroutineScope.launch {
@@ -300,7 +304,7 @@ fun SpotifyTrackMenu(
                     },
                 ),
             )
-            if (!qobuzEnabled) {
+            if (!monochromeEnabled) {
                 add(
                     Material3MenuItemData(
                         title = { Text(text = stringResource(R.string.change_youtube_version)) },

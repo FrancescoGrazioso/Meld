@@ -68,6 +68,7 @@ import androidx.media3.exoplayer.analytics.PlaybackStatsListener
 import androidx.media3.exoplayer.audio.DefaultAudioSink
 import androidx.media3.exoplayer.audio.SilenceSkippingAudioProcessor
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import androidx.media3.exoplayer.source.MediaSource
 import androidx.media3.exoplayer.source.ShuffleOrder.DefaultShuffleOrder
 import androidx.media3.extractor.DefaultExtractorsFactory
 import androidx.media3.session.CommandButton
@@ -87,16 +88,15 @@ import com.metrolist.music.constants.AndroidAutoTargetPlaylistKey
 import com.metrolist.music.constants.AudioNormalizationKey
 import com.metrolist.music.constants.AudioOffload
 import com.metrolist.music.constants.AudioQualityKey
-import com.metrolist.music.constants.EnableQobuzKey
-import com.metrolist.music.constants.QobuzAudioQuality
-import com.metrolist.music.constants.QobuzAudioQualityKey
-import com.metrolist.music.constants.QobuzBackend
-import com.metrolist.music.constants.QobuzBackendKey
-import com.metrolist.music.constants.QobuzCountryKey
-import com.metrolist.music.constants.QobuzMatchOverridesKey
-import com.metrolist.music.qobuz.QobuzAudioProvider
-import com.metrolist.music.qobuz.QobuzMatchOverride
-import com.metrolist.music.qobuz.QobuzMatchOverrides
+import com.metrolist.music.constants.UnifiedAudioQuality
+import com.metrolist.music.constants.UnifiedAudioQualityKey
+import com.metrolist.music.constants.MonochromeBackend
+import com.metrolist.music.constants.MonochromeBackendKey
+import com.metrolist.music.constants.MonochromeCustomUrlKey
+import com.metrolist.music.constants.MonochromeMatchOverridesKey
+import com.metrolist.music.monochrome.MonochromeAudioProvider
+import com.metrolist.music.monochrome.MonochromeMatchOverride
+import com.metrolist.music.monochrome.MonochromeMatchOverrides
 import com.metrolist.spotify.models.SpotifyTrack
 import com.metrolist.music.constants.AutoDownloadOnLikeKey
 import com.metrolist.music.constants.AutoLoadMoreKey
@@ -433,8 +433,8 @@ class MusicService :
     // ExoPlayer loader thread before falling back to YouTube). Map value = epoch
     // ms when the entry becomes invalid; we re-try Qobuz after the TTL or when
     // the user clears the override / changes match data.
-    private val qobuzMissUntilMs = java.util.concurrent.ConcurrentHashMap<String, Long>()
-    private val QOBUZ_MISS_TTL_MS = 24 * 60 * 60 * 1000L
+    private val monochromeMissUntilMs = java.util.concurrent.ConcurrentHashMap<String, Long>()
+    private val MONOCHROME_MISS_TTL_MS = 24 * 60 * 60 * 1000L
 
     // Enhanced error tracking for strict retry management
     private var currentMediaIdRetryCount = mutableMapOf<String, Int>()
@@ -730,24 +730,22 @@ class MusicService :
                 }
         }
 
-        // Watch for Qobuz source-selection changes. Toggling on/off, switching
-        // backend, country, or quality should take effect on the next track
-        // boundary without requiring a full app restart — reload the current
-        // item so it picks up the new source immediately.
-        var isFirstQobuzEmit = true
+        // Watch for Monochrome source-selection changes. Switching quality, backend,
+        // or custom URL should take effect immediately — reload the current item
+        // so it picks up the new source/quality immediately.
+        var isFirstMonochromeEmit = true
         scope.launch {
             dataStore.data
                 .map {
                     listOf(
-                        it[EnableQobuzKey]?.toString().orEmpty(),
-                        it[QobuzAudioQualityKey].orEmpty(),
-                        it[QobuzBackendKey].orEmpty(),
-                        it[QobuzCountryKey].orEmpty(),
+                        it[UnifiedAudioQualityKey].orEmpty(),
+                        it[MonochromeBackendKey].orEmpty(),
+                        it[MonochromeCustomUrlKey].orEmpty(),
                     ).joinToString("|")
                 }.distinctUntilChanged()
                 .collect {
-                    if (isFirstQobuzEmit) {
-                        isFirstQobuzEmit = false
+                    if (isFirstMonochromeEmit) {
+                        isFirstMonochromeEmit = false
                         return@collect
                     }
                     val mediaId = player.currentMediaItem?.mediaId ?: return@collect
@@ -756,21 +754,17 @@ class MusicService :
                     val currentIndex = player.currentMediaItemIndex
 
                     Timber.tag("MusicService").i(
-                        "QOBUZ SETTING CHANGED, reloading current stream for $mediaId",
+                        "MONOCHROME SETTING CHANGED, reloading current stream for $mediaId",
                     )
 
                     songUrlCache.remove(mediaId)
-                    // Toggling Qobuz settings is an explicit user retry signal —
-                    // wipe the negative cache so previously-missed tracks get a
-                    // fresh resolve attempt instead of silently falling through
-                    // to YouTube again.
-                    qobuzMissUntilMs.clear()
+                    monochromeMissUntilMs.clear()
                     withContext(Dispatchers.IO) {
                         try {
                             playerCache.removeResource(mediaId)
                             downloadCache.removeResource(mediaId)
                         } catch (e: Exception) {
-                            Timber.tag("MusicService").e(e, "Failed to clear cache on Qobuz toggle for $mediaId")
+                            Timber.tag("MusicService").e(e, "Failed to clear cache on Monochrome toggle for $mediaId")
                         }
                     }
                     bypassCacheForQualityChange.add(mediaId)
@@ -3422,23 +3416,27 @@ class MusicService :
             }
     }
 
-    private fun qobuzCacheKey(mediaId: String, qualityCode: Int) =
-        "qobuz:$qualityCode:$mediaId"
+    private fun monochromeCacheKey(mediaId: String, quality: UnifiedAudioQuality) =
+        "monochrome:${quality.name}:$mediaId"
 
-    private fun stripQobuzCacheKeyPrefix(key: String): String {
-        if (!key.startsWith("qobuz:")) return key
-        val parts = key.split(":", limit = 3)
-        return if (parts.size == 3) parts[2] else key
+    private fun stripCacheKeyPrefix(key: String): String {
+        if (key.startsWith("qobuz:")) {
+            val parts = key.split(":", limit = 3)
+            return if (parts.size == 3) parts[2] else key
+        }
+        if (key.startsWith("monochrome:")) {
+            val parts = key.split(":", limit = 3)
+            return if (parts.size == 3) parts[2] else key
+        }
+        return key
     }
 
-    private fun buildQobuzQuery(
+    private fun buildMonochromeQuery(
         mediaId: String,
         spotifyTrack: SpotifyTrack?,
         dbSong: Song?,
-        quality: QobuzAudioQuality,
-    ): QobuzAudioProvider.Query? {
-        // Prefer Spotify metadata (cleaner titles + ISRC). Fall back to DB Song
-        // (title/artist/album/duration from the YT match). If both missing, skip.
+        quality: UnifiedAudioQuality,
+    ): MonochromeAudioProvider.Query? {
         val title = spotifyTrack?.name
             ?: dbSong?.song?.title
             ?: return null
@@ -3455,34 +3453,20 @@ class MusicService :
         val isrc = spotifyTrack?.isrc?.takeIf { it.isNotBlank() }
             ?: dbSong?.song?.isrc?.takeIf { it.isNotBlank() }
 
-        val backendPref = dataStore.get(QobuzBackendKey).toEnum(QobuzBackend.MONOKENNY)
-        val country = dataStore.get(QobuzCountryKey, "US")
-            .trim()
-            .uppercase()
-            .takeIf { it.matches(Regex("[A-Z]{2}")) }
-            ?: "US"
-        val resolverBackend = when (backendPref) {
-            QobuzBackend.MONOKENNY -> QobuzAudioProvider.ResolverBackend.MONOKENNY
-            QobuzBackend.JUMO -> QobuzAudioProvider.ResolverBackend.JUMO
-            QobuzBackend.SQUID -> QobuzAudioProvider.ResolverBackend.SQUID
-            QobuzBackend.TRYPT -> QobuzAudioProvider.ResolverBackend.TRYPT
-        }
-        return QobuzAudioProvider.Query(
+        return MonochromeAudioProvider.Query(
             mediaId = mediaId,
             title = title,
             artists = artists,
             album = album,
             isrc = isrc,
             durationMs = durationMs,
-            countryCode = country,
-            backend = resolverBackend,
-            qualityCode = QobuzAudioProvider.qualityCodeFor(quality),
+            quality = MonochromeAudioProvider.qualityStringFor(quality),
         )
     }
 
     private fun createDataSourceFactory(): DataSource.Factory {
         return ResolvingDataSource.Factory(createCacheDataSource()) { dataSpec ->
-            val mediaId = stripQobuzCacheKeyPrefix(dataSpec.key ?: error("No media id"))
+            val mediaId = stripCacheKeyPrefix(dataSpec.key ?: error("No media id"))
 
             // Handle local audio files — resolve to content URI and bypass YouTube fetch
             if (mediaId.startsWith("local:")) {
@@ -3500,78 +3484,55 @@ class MusicService :
             // Check if we need to bypass cache for quality change
             val shouldBypassCache = bypassCacheForQualityChange.contains(mediaId)
 
-            // Qobuz lossless attempt: when toggle is on, try Qobuz for every track.
-            // Uses Spotify metadata (with ISRC) when available — registered by
-            // SpotifyYouTubeMapper for Spotify-sourced tracks — otherwise falls back
+            // Monochrome attempt: when UnifiedAudioQuality is not YT_HIGH, try Monochrome for every track.
+            // Uses Spotify metadata (with ISRC) when available — otherwise falls back
             // to DB title/artist/album for YT-native tracks. Silently falls through
-            // to the YouTube path on any failure.
-            val qobuzEnabled = dataStore.get(EnableQobuzKey, false)
-            if (qobuzEnabled) {
-                val qobuzQualityEnum = dataStore.get(QobuzAudioQualityKey)
-                    .toEnum(QobuzAudioQuality.CD_QUALITY)
-                val qualityCode = QobuzAudioProvider.qualityCodeFor(qobuzQualityEnum)
-                val qobuzKey = qobuzCacheKey(mediaId, qualityCode)
+            // to the YouTube path on any failure or if quality is YT_HIGH.
+            val unifiedQuality = dataStore.get(UnifiedAudioQualityKey).toEnum(UnifiedAudioQuality.YT_HIGH)
+            val monochromeEnabled = unifiedQuality != UnifiedAudioQuality.YT_HIGH
+            if (monochromeEnabled) {
+                val monochromeBackend = dataStore.get(MonochromeBackendKey).toEnum(MonochromeBackend.OFFICIAL)
+                val customUrl = dataStore.get(MonochromeCustomUrlKey, "")
+                val monochromeKey = monochromeCacheKey(mediaId, unifiedQuality)
                 val usePlayerCache = dataStore.get(EnableSongCacheKey, true)
 
                 if (!shouldBypassCache &&
-                    (downloadCache.isCached(qobuzKey, dataSpec.position,
+                    (downloadCache.isCached(monochromeKey, dataSpec.position,
                         if (dataSpec.length >= 0) dataSpec.length else 1) ||
-                        (usePlayerCache && playerCache.isCached(qobuzKey, dataSpec.position, CHUNK_LENGTH)))
+                        (usePlayerCache && playerCache.isCached(monochromeKey, dataSpec.position, CHUNK_LENGTH)))
                 ) {
-                    return@Factory dataSpec.buildUpon().setKey(qobuzKey).build()
+                    return@Factory dataSpec.buildUpon().setKey(monochromeKey).build()
                 }
 
                 val spotifyTrack = SpotifyMetadataRegistry.get(mediaId)
-                // Always load the DB Song so we can pick up a persisted ISRC and
-                // a persisted Qobuz match for this mediaId.
                 val dbSong = runBlocking(Dispatchers.IO) { database.getSongById(mediaId) }
-                val qobuzQuery = buildQobuzQuery(mediaId, spotifyTrack, dbSong, qobuzQualityEnum)
+                val monochromeQuery = buildMonochromeQuery(mediaId, spotifyTrack, dbSong, unifiedQuality)
 
-                if (qobuzQuery != null) {
-                    // Manual override wins over auto-match: when the user has
-                    // pinned a Qobuz track ID for this mediaId, swap the query's
-                    // mediaId for "qobuz:track:<id>" so resolve() takes the
-                    // direct-ID short-circuit and skips search entirely.
+                if (monochromeQuery != null) {
                     val manualOverride = runBlocking(Dispatchers.IO) {
-                        QobuzMatchOverrides
-                            .decode(dataStore.get(QobuzMatchOverridesKey, ""))[mediaId]
+                        MonochromeMatchOverrides
+                            .decode(dataStore.get(MonochromeMatchOverridesKey, ""))[mediaId]
                     }
-                    // Prime the in-memory match cache from the persisted match — this
-                    // skips the Qobuz search step entirely on repeat plays.
                     val savedMatch = runBlocking(Dispatchers.IO) {
-                        database.getQobuzMatch(mediaId)
+                        database.getQobuzMatch(mediaId) // Reuse qobuz_match table!
                     }
-                    // Negative cache short-circuit: skip the Qobuz cascade entirely
-                    // for tracks we've recently failed to match. Without this every
-                    // play of a non-Qobuz track burns the full search budget on the
-                    // loader thread before YouTube is attempted. Skipped when the
-                    // user has manually pinned a match or we have a saved match
-                    // (those failures are likely transient backend errors, not
-                    // catalog misses).
-                    val negativeMissDeadline = qobuzMissUntilMs[mediaId]
-                    val skipQobuzForMiss = manualOverride == null && savedMatch == null &&
+                    val negativeMissDeadline = monochromeMissUntilMs[mediaId]
+                    val skipMonochromeForMiss = manualOverride == null && savedMatch == null &&
                         negativeMissDeadline != null && negativeMissDeadline > System.currentTimeMillis()
-                    if (skipQobuzForMiss) {
+                    if (skipMonochromeForMiss) {
                         val remainingMin = ((negativeMissDeadline ?: 0L) -
                             System.currentTimeMillis()) / 60_000
                         Timber.tag("MusicService").d(
-                            "Skipping Qobuz cascade for $mediaId (negative cache valid for ${remainingMin}m)"
+                            "Skipping Monochrome cascade for $mediaId (negative cache valid for ${remainingMin}m)"
                         )
                     }
-                    // If saved tier says track is CD-only (hires=false), downgrade
-                    // requested quality to CD code 6. Otherwise asking for code 27
-                    // (Hi-Res) returns preview and wastes the ladder cascade.
-                    var effectiveQuery = qobuzQuery
-                    val overrideHiresCdGuard = manualOverride?.let { !it.hires } ?: false
-                    if ((savedMatch != null && !savedMatch.hires || overrideHiresCdGuard) &&
-                        qobuzQuery.qualityCode > 6) {
-                        effectiveQuery = effectiveQuery.copy(qualityCode = 6)
-                    }
+
+                    var effectiveQuery = monochromeQuery
                     if (manualOverride != null) {
                         effectiveQuery = effectiveQuery.copy(mediaId = manualOverride.providerMediaId())
                     }
                     if (savedMatch != null && manualOverride == null) {
-                        QobuzAudioProvider.primeKnownTrack(
+                        MonochromeAudioProvider.primeKnownTrack(
                             query = effectiveQuery,
                             trackId = savedMatch.qobuzTrackId,
                             hires = savedMatch.hires,
@@ -3581,66 +3542,56 @@ class MusicService :
                         )
                     }
 
-                    // Tighter primary timeout (was 15s). 10s is well above the
-                    // observed P95 for a real Qobuz match and halves the perceived
-                    // "loading" hang for the common "track is not on Qobuz" case.
-                    var qobuzResolved = if (skipQobuzForMiss) null else runCatching {
+                    var monochromeResolved = if (skipMonochromeForMiss) null else runCatching {
                         runBlocking(Dispatchers.IO) {
                             withTimeout(10_000L) {
-                                QobuzAudioProvider.resolve(effectiveQuery)
+                                MonochromeAudioProvider.resolve(effectiveQuery, monochromeBackend, customUrl)
                             }
                         }
                     }.getOrNull()
 
-                    // Cross-backend fallback: cycle through every other backend
-                    // before giving up to YouTube. Order: primary → others in enum order.
-                    // Only attempt alt backends when we know the track exists on
-                    // Qobuz (saved match or manual override) — otherwise the alt
-                    // backends are just additional mirrors of the same catalog and
-                    // burning ~30s on misses delays the YouTube fallback for no win.
-                    val knownOnQobuz = manualOverride != null || savedMatch != null
-                    if (qobuzResolved == null && knownOnQobuz && !skipQobuzForMiss) {
-                        val altBackends = QobuzAudioProvider.ResolverBackend.entries
-                            .filter { it != effectiveQuery.backend }
-                            .take(2) // cap the cascade
-                        for (altBackend in altBackends) {
-                            val altQuery = effectiveQuery.copy(backend = altBackend)
-                            qobuzResolved = runCatching {
-                                runBlocking(Dispatchers.IO) {
-                                    withTimeout(5_000L) {
-                                        QobuzAudioProvider.resolve(altQuery)
-                                    }
-                                }
-                            }.getOrNull()
-                            if (qobuzResolved != null) break
-                        }
+                    val knownOnMonochrome = manualOverride != null || savedMatch != null
+
+                    if (monochromeResolved == null && !knownOnMonochrome) {
+                        monochromeMissUntilMs[mediaId] = System.currentTimeMillis() + MONOCHROME_MISS_TTL_MS
                     }
 
-                    // Persist the miss so the next play of this track skips the
-                    // cascade entirely. Don't pollute the negative cache when we
-                    // already have a known match (those failures are transient).
-                    if (qobuzResolved == null && !knownOnQobuz) {
-                        qobuzMissUntilMs[mediaId] = System.currentTimeMillis() + QOBUZ_MISS_TTL_MS
-                    }
-
-                    if (qobuzResolved != null) {
+                    if (monochromeResolved != null) {
                         Timber.tag("MusicService").i(
-                            "Using Qobuz stream for $mediaId: ${qobuzResolved.label}",
+                            "Using Monochrome stream for $mediaId: ${monochromeResolved.label}",
                         )
-                        // Persist the match + any newly-discovered ISRC so the next
-                        // play of this track is a deterministic, search-free hit.
-                        val resolvedIsrc = qobuzResolved.isrc?.takeIf { it.isNotBlank() }
+                        val resolvedIsrc = monochromeResolved.isrc?.takeIf { it.isNotBlank() }
                             ?: spotifyTrack?.isrc?.takeIf { it.isNotBlank() }
                         val previousIsrc = dbSong?.song?.isrc?.takeIf { it.isNotBlank() }
+
+                        // Save FormatEntity to Room DB so UI updates active format pill
+                        val resolved = monochromeResolved
+                        database.query {
+                            upsert(
+                                FormatEntity(
+                                    id = mediaId,
+                                    itag = 999, // special itag for Monochrome
+                                    mimeType = resolved.mimeType,
+                                    codecs = resolved.codecs,
+                                    bitrate = resolved.bitrate,
+                                    sampleRate = resolved.sampleRate,
+                                    contentLength = 0L,
+                                    loudnessDb = null,
+                                    perceptualLoudnessDb = null,
+                                    playbackUrl = null,
+                                ),
+                            )
+                        }
+
                         scope.launch(Dispatchers.IO) {
                             database.query {
                                 upsertQobuzMatch(
                                     QobuzMatchEntity(
                                         youtubeId = mediaId,
-                                        qobuzTrackId = qobuzResolved.trackId,
-                                        hires = qobuzResolved.hires,
-                                        bitDepth = qobuzResolved.bitDepth,
-                                        samplingRateKhz = qobuzResolved.samplingRateKhz,
+                                        qobuzTrackId = resolved.trackId,
+                                        hires = resolved.hires,
+                                        bitDepth = resolved.bitDepth,
+                                        samplingRateKhz = resolved.samplingRateKhz,
                                     ),
                                 )
                                 if (resolvedIsrc != null && resolvedIsrc != previousIsrc) {
@@ -3648,10 +3599,11 @@ class MusicService :
                                 }
                             }
                         }
+                        scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
                         return@Factory dataSpec
                             .buildUpon()
-                            .setUri(qobuzResolved.mediaUri.toUri())
-                            .setKey(qobuzKey)
+                            .setUri(monochromeResolved.mediaUri.toUri())
+                            .setKey(monochromeKey)
                             .build()
                     }
                 }
@@ -3776,10 +3728,21 @@ class MusicService :
     }
 
     private fun createMediaSourceFactory() =
-        DefaultMediaSourceFactory(
+        object : DefaultMediaSourceFactory(
             createDataSourceFactory(),
             DefaultExtractorsFactory(),
-        )
+        ) {
+            override fun createMediaSource(mediaItem: MediaItem): MediaSource {
+                val uri = mediaItem.localConfiguration?.uri
+                if (uri != null && uri.toString().startsWith("data:application/dash+xml")) {
+                    val updatedMediaItem = mediaItem.buildUpon()
+                        .setMimeType("application/dash+xml")
+                        .build()
+                    return super.createMediaSource(updatedMediaItem)
+                }
+                return super.createMediaSource(mediaItem)
+            }
+        }
 
     private fun createRenderersFactory(
         eqProcessor: CustomEqualizerAudioProcessor,
@@ -4186,44 +4149,44 @@ class MusicService :
     }
 
     /**
-     * Returns the persisted manual Qobuz override for [mediaId], or null when
+     * Returns the persisted manual Monochrome override for [mediaId], or null when
      * the auto-matcher is in charge.
      */
-    suspend fun getQobuzMatchOverride(mediaId: String): QobuzMatchOverride? =
+    suspend fun getMonochromeMatchOverride(mediaId: String): MonochromeMatchOverride? =
         withContext(Dispatchers.IO) {
-            QobuzMatchOverrides.decode(dataStore.get(QobuzMatchOverridesKey, ""))[mediaId]
+            MonochromeMatchOverrides.decode(dataStore.get(MonochromeMatchOverridesKey, ""))[mediaId]
         }
 
     /**
-     * Stores or clears a manual Qobuz track override for [mediaId]. Passing
+     * Stores or clears a manual Monochrome track override for [mediaId]. Passing
      * `null` clears it. After the write, every cached form of the stream for
      * this mediaId is invalidated and — if it's the currently playing track —
      * playback restarts at the same position so the new override takes
      * effect immediately.
      */
-    fun setQobuzMatchOverride(
+    fun setMonochromeMatchOverride(
         mediaId: String,
-        override: QobuzMatchOverride?,
+        override: MonochromeMatchOverride?,
     ) {
         if (mediaId.isBlank()) return
         scope.launch(Dispatchers.IO) {
             dataStore.edit { prefs ->
-                val current = QobuzMatchOverrides.decode(prefs[QobuzMatchOverridesKey])
+                val current = MonochromeMatchOverrides.decode(prefs[MonochromeMatchOverridesKey])
                 if (override == null) {
                     current.remove(mediaId)
                 } else {
                     current[mediaId] = override
                 }
-                prefs[QobuzMatchOverridesKey] = QobuzMatchOverrides.encode(current)
+                prefs[MonochromeMatchOverridesKey] = MonochromeMatchOverrides.encode(current)
             }
-            QobuzAudioProvider.invalidate(mediaId)
-            qobuzMissUntilMs.remove(mediaId)
+            MonochromeAudioProvider.invalidate(mediaId)
+            monochromeMissUntilMs.remove(mediaId)
             songUrlCache.remove(mediaId)
             try {
                 playerCache.removeResource(mediaId)
                 downloadCache.removeResource(mediaId)
             } catch (e: Exception) {
-                Timber.tag("MusicService").e(e, "Failed to clear cache on Qobuz override for $mediaId")
+                Timber.tag("MusicService").e(e, "Failed to clear cache on Monochrome override for $mediaId")
             }
             bypassCacheForQualityChange.add(mediaId)
             withContext(Dispatchers.Main) {
@@ -4242,42 +4205,34 @@ class MusicService :
 
     /**
      * Synchronous candidate search for the manual override UI. Runs the same
-     * search pipeline as [QobuzAudioProvider.resolve] but returns lightweight
-     * metadata for every candidate found across all backends.
+     * search pipeline as [MonochromeAudioProvider.resolve] but returns lightweight
+     * metadata for every candidate found.
      */
-    suspend fun searchQobuzCandidates(
+    suspend fun searchMonochromeCandidates(
         mediaId: String,
         title: String,
         artists: List<String>,
         album: String?,
         isrc: String?,
         durationMs: Long?,
-    ): List<QobuzAudioProvider.CandidateMetadata> = withContext(Dispatchers.IO) {
-        val backendPref = dataStore.get(QobuzBackendKey).toEnum(QobuzBackend.MONOKENNY)
-        val country = dataStore.get(QobuzCountryKey, "US")
-            .trim()
-            .uppercase()
-            .takeIf { it.matches(Regex("[A-Z]{2}")) }
-            ?: "US"
-        val resolverBackend = when (backendPref) {
-            QobuzBackend.MONOKENNY -> QobuzAudioProvider.ResolverBackend.MONOKENNY
-            QobuzBackend.JUMO -> QobuzAudioProvider.ResolverBackend.JUMO
-            QobuzBackend.SQUID -> QobuzAudioProvider.ResolverBackend.SQUID
-            QobuzBackend.TRYPT -> QobuzAudioProvider.ResolverBackend.TRYPT
-        }
-        val qualityEnum = dataStore.get(QobuzAudioQualityKey).toEnum(QobuzAudioQuality.CD_QUALITY)
-        val query = QobuzAudioProvider.Query(
+    ): List<MonochromeAudioProvider.CandidateMetadata> = withContext(Dispatchers.IO) {
+        val unifiedQuality = dataStore.get(UnifiedAudioQualityKey).toEnum(UnifiedAudioQuality.YT_HIGH)
+        val monochromeBackend = dataStore.get(MonochromeBackendKey).toEnum(MonochromeBackend.OFFICIAL)
+        val customUrl = dataStore.get(MonochromeCustomUrlKey, "")
+        val query = MonochromeAudioProvider.Query(
             mediaId = mediaId,
             title = title,
             artists = artists,
             album = album,
             isrc = isrc,
             durationMs = durationMs,
-            countryCode = country,
-            backend = resolverBackend,
-            qualityCode = QobuzAudioProvider.qualityCodeFor(qualityEnum),
+            quality = MonochromeAudioProvider.qualityStringFor(
+                if (unifiedQuality != UnifiedAudioQuality.YT_HIGH) unifiedQuality else UnifiedAudioQuality.FLAC
+            ),
         )
-        runCatching { QobuzAudioProvider.searchCandidates(query) }.getOrDefault(emptyList())
+        runCatching {
+            MonochromeAudioProvider.searchCandidates(query, monochromeBackend, customUrl)
+        }.getOrDefault(emptyList())
     }
 
     /**

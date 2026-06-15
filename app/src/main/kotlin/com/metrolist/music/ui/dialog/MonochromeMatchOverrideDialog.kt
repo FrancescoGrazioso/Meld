@@ -1,8 +1,6 @@
 /**
- * Dialog that lets the user pin a specific Qobuz track to a given mediaId
- * when the auto-matcher picks the wrong one. Fires a Qobuz multi-backend
- * search on open, shows the top candidates, and persists the user's choice
- * via [com.metrolist.music.playback.MusicService.setQobuzMatchOverride].
+ * Dialog that lets the user pin a specific Monochrome track to a given mediaId
+ * when the auto-matcher picks the wrong one.
  */
 package com.metrolist.music.ui.dialog
 
@@ -34,11 +32,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
-import com.metrolist.music.qobuz.QobuzAudioProvider
-import com.metrolist.music.qobuz.QobuzMatchOverride
+import com.metrolist.music.monochrome.MonochromeAudioProvider
+import com.metrolist.music.monochrome.MonochromeMatchOverride
 
 @Composable
-fun QobuzMatchOverrideDialog(
+fun MonochromeMatchOverrideDialog(
     mediaId: String,
     title: String,
     artists: List<String>,
@@ -51,14 +49,14 @@ fun QobuzMatchOverrideDialog(
     val service = playerConnection.service
 
     var loading by remember { mutableStateOf(true) }
-    var candidates by remember { mutableStateOf<List<QobuzAudioProvider.CandidateMetadata>>(emptyList()) }
-    var current by remember { mutableStateOf<QobuzMatchOverride?>(null) }
+    var candidates by remember { mutableStateOf<List<MonochromeAudioProvider.CandidateMetadata>>(emptyList()) }
+    var current by remember { mutableStateOf<MonochromeMatchOverride?>(null) }
     var selectedTrackId by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(mediaId) {
-        current = service.getQobuzMatchOverride(mediaId)
-        selectedTrackId = current?.qobuzTrackId
-        candidates = service.searchQobuzCandidates(
+        current = service.getMonochromeMatchOverride(mediaId)
+        selectedTrackId = current?.monochromeTrackId
+        candidates = service.searchMonochromeCandidates(
             mediaId = mediaId,
             title = title,
             artists = artists,
@@ -71,12 +69,12 @@ fun QobuzMatchOverrideDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.qobuz_match_override)) },
+        title = { Text(stringResource(R.string.monochrome_match_override)) },
         text = {
             Column {
                 current?.let {
                     Text(
-                        text = stringResource(R.string.qobuz_match_override_current, it.label),
+                        text = stringResource(R.string.monochrome_match_override_current, it.label),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(bottom = 8.dp),
@@ -93,13 +91,13 @@ fun QobuzMatchOverrideDialog(
                                 modifier = Modifier.size(20.dp),
                                 strokeWidth = 2.dp,
                             )
-                            Text(stringResource(R.string.qobuz_match_override_searching))
+                            Text(stringResource(R.string.monochrome_match_override_searching))
                         }
                     }
 
                     candidates.isEmpty() -> {
                         Text(
-                            text = stringResource(R.string.qobuz_match_override_empty),
+                            text = stringResource(R.string.monochrome_match_override_empty),
                             modifier = Modifier.padding(vertical = 16.dp),
                         )
                     }
@@ -157,12 +155,12 @@ fun QobuzMatchOverrideDialog(
         },
         confirmButton = {
             TextButton(
-                enabled = selectedTrackId != null && selectedTrackId != current?.qobuzTrackId,
+                enabled = selectedTrackId != null && selectedTrackId != current?.monochromeTrackId,
                 onClick = {
                     val candidate = candidates.firstOrNull { it.trackId == selectedTrackId }
                     val override = candidate?.let {
-                        QobuzMatchOverride(
-                            qobuzTrackId = it.trackId,
+                        MonochromeMatchOverride(
+                            monochromeTrackId = it.trackId,
                             label = buildString {
                                 append(it.title)
                                 if (it.artist.isNotBlank()) append(" — ${it.artist}")
@@ -173,7 +171,7 @@ fun QobuzMatchOverrideDialog(
                         )
                     }
                     if (override != null) {
-                        service.setQobuzMatchOverride(mediaId, override)
+                        service.setMonochromeMatchOverride(mediaId, override)
                     }
                     onDismiss()
                 },
@@ -183,10 +181,10 @@ fun QobuzMatchOverrideDialog(
             Row {
                 if (current != null) {
                     TextButton(onClick = {
-                        service.setQobuzMatchOverride(mediaId, null)
+                        service.setMonochromeMatchOverride(mediaId, null)
                         onDismiss()
                     }) {
-                        Text(stringResource(R.string.qobuz_match_override_auto))
+                        Text(stringResource(R.string.monochrome_match_override_auto))
                     }
                 }
                 TextButton(onClick = onDismiss) {

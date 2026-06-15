@@ -1,32 +1,27 @@
 /**
- * Manual Qobuz match override — lets the user pin a specific Qobuz track ID
- * to a given mediaId when the auto-matcher picks the wrong candidate. The
- * override travels through the playback pipeline as a [QobuzAudioProvider]
- * direct-ID short-circuit (see toQobuzTrackIdOrNull), so playback skips the
- * fuzzy search entirely.
- *
- * Persisted in DataStore as a JSON map { mediaId: { trackId, label, hires, bitDepth, samplingRateKhz } }.
+ * Manual Monochrome match override — lets the user pin a specific Monochrome track ID
+ * to a given mediaId when the auto-matcher picks the wrong candidate.
  */
-package com.metrolist.music.qobuz
+package com.metrolist.music.monochrome
 
 import org.json.JSONObject
 
-data class QobuzMatchOverride(
-    val qobuzTrackId: String,
+data class MonochromeMatchOverride(
+    val monochromeTrackId: String,
     val label: String,
     val hires: Boolean = false,
     val bitDepth: Int? = null,
     val samplingRateKhz: Double? = null,
 ) {
-    fun providerMediaId(): String = "qobuz:track:$qobuzTrackId"
+    fun providerMediaId(): String = "monochrome:track:$monochromeTrackId"
 }
 
-object QobuzMatchOverrides {
-    fun decode(value: String?): MutableMap<String, QobuzMatchOverride> {
+object MonochromeMatchOverrides {
+    fun decode(value: String?): MutableMap<String, MonochromeMatchOverride> {
         if (value.isNullOrBlank()) return mutableMapOf()
         return runCatching {
             val root = JSONObject(value)
-            val out = mutableMapOf<String, QobuzMatchOverride>()
+            val out = mutableMapOf<String, MonochromeMatchOverride>()
             root.keys().forEach { mediaId ->
                 val obj = root.optJSONObject(mediaId) ?: return@forEach
                 val trackId = obj.optString("trackId").takeIf { it.isNotBlank() } ?: return@forEach
@@ -38,8 +33,8 @@ object QobuzMatchOverrides {
                 val sampling = if (obj.has("samplingRateKhz") && !obj.isNull("samplingRateKhz")) {
                     obj.optDouble("samplingRateKhz").takeIf { it > 0.0 }
                 } else null
-                out[mediaId] = QobuzMatchOverride(
-                    qobuzTrackId = trackId,
+                out[mediaId] = MonochromeMatchOverride(
+                    monochromeTrackId = trackId,
                     label = label,
                     hires = hires,
                     bitDepth = bitDepth,
@@ -50,11 +45,11 @@ object QobuzMatchOverrides {
         }.getOrDefault(mutableMapOf())
     }
 
-    fun encode(overrides: Map<String, QobuzMatchOverride>): String {
+    fun encode(overrides: Map<String, MonochromeMatchOverride>): String {
         val root = JSONObject()
         overrides.forEach { (mediaId, override) ->
             val obj = JSONObject()
-                .put("trackId", override.qobuzTrackId)
+                .put("trackId", override.monochromeTrackId)
                 .put("label", override.label)
                 .put("hires", override.hires)
             if (override.bitDepth != null) obj.put("bitDepth", override.bitDepth)

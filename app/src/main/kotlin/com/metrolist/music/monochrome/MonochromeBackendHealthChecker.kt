@@ -1,10 +1,11 @@
 /**
- * Pings the Qobuz resolver backends and reports live reachability so users
+ * Pings the Monochrome resolver backends and reports live reachability so users
  * can see which proxy is up before playback fails on them. Designed to be
- * triggered on-demand from the settings UI — no internal polling.
+ * triggered on-demand from the settings UI.
  */
-package com.metrolist.music.qobuz
+package com.metrolist.music.monochrome
 
+import com.metrolist.music.constants.MonochromeBackend
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -14,26 +15,22 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.util.concurrent.TimeUnit
 
-object QobuzBackendHealthChecker {
+object MonochromeBackendHealthChecker {
 
     enum class Status { ONLINE, REACHABLE, OFFLINE }
 
     data class Target(
-        val backend: QobuzAudioProvider.ResolverBackend,
+        val backend: MonochromeBackend,
         val name: String,
         val endpoint: String,
-        private val tokenCountry: String? = null,
     ) {
         fun toRequest(): Request {
-            val builder = Request.Builder()
+            return Request.Builder()
                 .url(endpoint)
                 .get()
                 .header("Accept", "application/json,text/html,*/*")
-                .header("User-Agent", QobuzAudioProvider.BROWSER_USER_AGENT)
-            if (tokenCountry != null) {
-                builder.header("Token-Country", tokenCountry)
-            }
-            return builder.build()
+                .header("User-Agent", MonochromeAudioProvider.BROWSER_USER_AGENT)
+                .build()
         }
     }
 
@@ -44,38 +41,35 @@ object QobuzBackendHealthChecker {
         val message: String,
     )
 
-    val targets: List<Target> = listOf(
-        Target(
-            backend = QobuzAudioProvider.ResolverBackend.TRYPT,
-            name = "TrypT HiFi",
-            endpoint = "${QobuzAudioProvider.TRYPT_BASE_URL}/api/get-music?q=test&offset=0",
-            tokenCountry = "US",
-        ),
-        Target(
-            backend = QobuzAudioProvider.ResolverBackend.JUMO,
-            name = "Jumo",
-            endpoint = "${QobuzAudioProvider.JUMO_BASE_URL}/",
-        ),
-        Target(
-            backend = QobuzAudioProvider.ResolverBackend.MONOKENNY,
-            name = "Monokenny",
-            endpoint = "${QobuzAudioProvider.KENNY_BASE_URL}/api/get-music?q=test&offset=0",
-        ),
-        Target(
-            backend = QobuzAudioProvider.ResolverBackend.SQUID,
-            name = "Squid",
-            endpoint = "${QobuzAudioProvider.SQUID_BASE_URL}/api/get-music?q=test&offset=0",
-            tokenCountry = "US",
-        ),
-    )
-
     private val client = OkHttpClient.Builder()
         .connectTimeout(5, TimeUnit.SECONDS)
         .readTimeout(8, TimeUnit.SECONDS)
         .callTimeout(10, TimeUnit.SECONDS)
         .build()
 
-    suspend fun checkAll(): List<Result> = coroutineScope {
+    suspend fun checkAll(customUrl: String?): List<Result> = coroutineScope {
+        val targets = mutableListOf(
+            Target(
+                backend = MonochromeBackend.OFFICIAL,
+                name = "Official (api.monochrome.tf)",
+                endpoint = "${MonochromeAudioProvider.baseUrlFor(MonochromeBackend.OFFICIAL, null)}/",
+            ),
+            Target(
+                backend = MonochromeBackend.SAMIDY,
+                name = "Samidy (samidy.monochrome.tf)",
+                endpoint = "${MonochromeAudioProvider.baseUrlFor(MonochromeBackend.SAMIDY, null)}/",
+            )
+        )
+        if (!customUrl.isNullOrBlank()) {
+            targets.add(
+                Target(
+                    backend = MonochromeBackend.CUSTOM,
+                    name = "Custom Endpoint",
+                    endpoint = "${customUrl.trim().removeSuffix("/")}/",
+                )
+            )
+        }
+
         targets.map { target ->
             async(Dispatchers.IO) { check(target) }
         }.awaitAll()

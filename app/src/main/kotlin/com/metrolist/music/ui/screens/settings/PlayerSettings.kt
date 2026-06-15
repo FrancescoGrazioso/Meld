@@ -38,10 +38,21 @@ import androidx.navigation.NavController
 import com.metrolist.music.BuildConfig
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.R
+import kotlinx.coroutines.launch
 import com.metrolist.music.constants.AudioNormalizationKey
 import com.metrolist.music.constants.AudioOffload
-import com.metrolist.music.constants.AudioQuality
-import com.metrolist.music.constants.AudioQualityKey
+import com.metrolist.music.constants.UnifiedAudioQualityKey
+import com.metrolist.music.constants.MonochromeBackendKey
+import com.metrolist.music.constants.MonochromeCustomUrlKey
+import com.metrolist.music.constants.UnifiedAudioQuality
+import com.metrolist.music.constants.MonochromeBackend
+import com.metrolist.music.monochrome.MonochromeBackendHealthChecker
+import com.metrolist.music.ui.component.TextFieldDialog
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.graphics.Color
+import androidx.compose.foundation.shape.CircleShape
 import com.metrolist.music.constants.AutoDownloadOnLikeKey
 import com.metrolist.music.constants.CrossfadeDurationKey
 import com.metrolist.music.constants.CrossfadeEnabledKey
@@ -91,9 +102,17 @@ import com.metrolist.music.constants.SleepTimerStopAfterCurrentSongKey
 fun PlayerSettings(
     navController: NavController
 ) {
-    val (audioQuality, onAudioQualityChange) = rememberEnumPreference(
-        AudioQualityKey,
-        defaultValue = AudioQuality.AUTO
+    val (unifiedQuality, onUnifiedQualityChange) = rememberEnumPreference(
+        UnifiedAudioQualityKey,
+        defaultValue = UnifiedAudioQuality.YT_HIGH
+    )
+    val (monochromeBackend, onMonochromeBackendChange) = rememberEnumPreference(
+        MonochromeBackendKey,
+        defaultValue = MonochromeBackend.OFFICIAL
+    )
+    val (monochromeCustomUrl, onMonochromeCustomUrlChange) = rememberPreference(
+        MonochromeCustomUrlKey,
+        defaultValue = ""
     )
     val (crossfadeEnabled, onCrossfadeEnabledChange) = rememberPreference(
         CrossfadeEnabledKey,
@@ -201,27 +220,70 @@ fun PlayerSettings(
         defaultValue = 30f
     )
 
-    var showAudioQualityDialog by remember {
+    var showUnifiedQualityDialog by remember {
         mutableStateOf(false)
     }
 
-    if (showAudioQualityDialog) {
+    if (showUnifiedQualityDialog) {
         EnumDialog(
-            onDismiss = { showAudioQualityDialog = false },
+            onDismiss = { showUnifiedQualityDialog = false },
             onSelect = {
-                onAudioQualityChange(it)
-                showAudioQualityDialog = false
+                onUnifiedQualityChange(it)
+                showUnifiedQualityDialog = false
             },
-            title = stringResource(R.string.audio_quality),
-            current = audioQuality,
-            values = AudioQuality.values().toList(),
+            title = stringResource(R.string.monochrome_quality),
+            current = unifiedQuality,
+            values = UnifiedAudioQuality.values().toList(),
             valueText = {
                 when (it) {
-                    AudioQuality.AUTO -> stringResource(R.string.audio_quality_auto)
-                    AudioQuality.HIGH -> stringResource(R.string.audio_quality_high)
-                    AudioQuality.LOW -> stringResource(R.string.audio_quality_low)
+                    UnifiedAudioQuality.YT_HIGH -> stringResource(R.string.monochrome_quality_yt_high)
+                    UnifiedAudioQuality.KBPS_320 -> stringResource(R.string.monochrome_quality_kbps_320)
+                    UnifiedAudioQuality.FLAC -> stringResource(R.string.monochrome_quality_cd)
+                    UnifiedAudioQuality.HIRES -> stringResource(R.string.monochrome_quality_hires)
                 }
             }
+        )
+    }
+
+    var showMonochromeBackendDialog by remember {
+        mutableStateOf(false)
+    }
+
+    if (showMonochromeBackendDialog) {
+        EnumDialog(
+            onDismiss = { showMonochromeBackendDialog = false },
+            onSelect = {
+                onMonochromeBackendChange(it)
+                showMonochromeBackendDialog = false
+            },
+            title = stringResource(R.string.monochrome_backend),
+            current = monochromeBackend,
+            values = MonochromeBackend.values().toList(),
+            valueText = {
+                when (it) {
+                    MonochromeBackend.OFFICIAL -> stringResource(R.string.monochrome_backend_official)
+                    MonochromeBackend.SAMIDY -> stringResource(R.string.monochrome_backend_samidy)
+                    MonochromeBackend.CUSTOM -> stringResource(R.string.monochrome_backend_custom)
+                }
+            }
+        )
+    }
+
+    var showMonochromeCustomUrlDialog by remember {
+        mutableStateOf(false)
+    }
+
+    if (showMonochromeCustomUrlDialog) {
+        TextFieldDialog(
+            title = { Text(stringResource(R.string.monochrome_custom_url)) },
+            initialTextFieldValue = TextFieldValue(text = monochromeCustomUrl),
+            placeholder = { Text(stringResource(R.string.monochrome_custom_url_description)) },
+            isInputValid = { true },
+            onDone = {
+                onMonochromeCustomUrlChange(it)
+                showMonochromeCustomUrlDialog = false
+            },
+            onDismiss = { showMonochromeCustomUrlDialog = false }
         )
     }
 
@@ -270,18 +332,48 @@ fun PlayerSettings(
             items = buildList {
                 add(Material3SettingsItem(
                     icon = painterResource(R.drawable.graphic_eq),
-                    title = { Text(stringResource(R.string.audio_quality)) },
+                    title = { Text(stringResource(R.string.monochrome_quality)) },
                     description = {
                         Text(
-                            when (audioQuality) {
-                                AudioQuality.AUTO -> stringResource(R.string.audio_quality_auto)
-                                AudioQuality.HIGH -> stringResource(R.string.audio_quality_high)
-                                AudioQuality.LOW -> stringResource(R.string.audio_quality_low)
+                            when (unifiedQuality) {
+                                UnifiedAudioQuality.YT_HIGH -> stringResource(R.string.monochrome_quality_yt_high)
+                                UnifiedAudioQuality.KBPS_320 -> stringResource(R.string.monochrome_quality_kbps_320)
+                                UnifiedAudioQuality.FLAC -> stringResource(R.string.monochrome_quality_cd)
+                                UnifiedAudioQuality.HIRES -> stringResource(R.string.monochrome_quality_hires)
                             }
                         )
                     },
-                    onClick = { showAudioQualityDialog = true }
+                    onClick = { showUnifiedQualityDialog = true }
                 ))
+                if (unifiedQuality != UnifiedAudioQuality.YT_HIGH) {
+                    add(Material3SettingsItem(
+                        icon = painterResource(R.drawable.cloud),
+                        title = { Text(stringResource(R.string.monochrome_backend)) },
+                        description = {
+                            Text(
+                                when (monochromeBackend) {
+                                    MonochromeBackend.OFFICIAL -> stringResource(R.string.monochrome_backend_official)
+                                    MonochromeBackend.SAMIDY -> stringResource(R.string.monochrome_backend_samidy)
+                                    MonochromeBackend.CUSTOM -> stringResource(R.string.monochrome_backend_custom)
+                                }
+                            )
+                        },
+                        onClick = { showMonochromeBackendDialog = true }
+                    ))
+                    if (monochromeBackend == MonochromeBackend.CUSTOM) {
+                        add(Material3SettingsItem(
+                            icon = painterResource(R.drawable.link),
+                            title = { Text(stringResource(R.string.monochrome_custom_url)) },
+                            description = {
+                                Text(
+                                    if (monochromeCustomUrl.isNotBlank()) monochromeCustomUrl
+                                    else stringResource(R.string.monochrome_custom_url_description)
+                                )
+                            },
+                            onClick = { showMonochromeCustomUrlDialog = true }
+                        ))
+                    }
+                }
                 add(Material3SettingsItem(
                     icon = painterResource(R.drawable.linear_scale),
                     title = { Text(stringResource(R.string.crossfade)) },
@@ -530,6 +622,13 @@ fun PlayerSettings(
                 ))
             }
         )
+
+        if (unifiedQuality != UnifiedAudioQuality.YT_HIGH) {
+            MonochromeBackendHealthSection(
+                currentBackend = monochromeBackend,
+                customUrl = monochromeCustomUrl
+            )
+        }
 
         Spacer(modifier = Modifier.height(27.dp))
 
@@ -1028,5 +1127,112 @@ fun PlayerSettings(
                 )
             }
         }
+    )
+}
+
+@Composable
+private fun MonochromeBackendHealthSection(
+    currentBackend: MonochromeBackend,
+    customUrl: String?
+) {
+    val coroutineScope = rememberCoroutineScope()
+    var results by remember { mutableStateOf<List<MonochromeBackendHealthChecker.Result>>(emptyList()) }
+    var loading by remember { mutableStateOf(false) }
+
+    val refresh: () -> Unit = {
+        if (!loading) {
+            loading = true
+            coroutineScope.launch {
+                results = MonochromeBackendHealthChecker.checkAll(customUrl)
+                loading = false
+            }
+        }
+    }
+
+    LaunchedEffect(customUrl) {
+        refresh()
+    }
+
+    val healthItems = buildList {
+        add(
+            Material3SettingsItem(
+                title = { Text(stringResource(R.string.monochrome_provider_health_description)) },
+                trailingContent = {
+                    androidx.compose.material3.OutlinedButton(
+                        onClick = refresh,
+                        enabled = !loading,
+                    ) {
+                        if (loading) {
+                            androidx.compose.material3.CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                            )
+                        } else {
+                            Text(stringResource(R.string.monochrome_provider_health_refresh))
+                        }
+                    }
+                }
+            )
+        )
+
+        if (results.isEmpty() && loading) {
+            add(
+                Material3SettingsItem(
+                    title = { Text(stringResource(R.string.monochrome_provider_health_checking)) },
+                    leadingContent = {
+                        androidx.compose.material3.CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp
+                        )
+                    }
+                )
+            )
+        } else {
+            results.forEach { result ->
+                val color = when (result.status) {
+                    MonochromeBackendHealthChecker.Status.ONLINE -> Color(0xFF2ECC71)
+                    MonochromeBackendHealthChecker.Status.REACHABLE -> Color(0xFFF1C40F)
+                    MonochromeBackendHealthChecker.Status.OFFLINE -> Color(0xFFE74C3C)
+                }
+                val statusLabel = when (result.status) {
+                    MonochromeBackendHealthChecker.Status.ONLINE -> stringResource(R.string.monochrome_provider_health_online)
+                    MonochromeBackendHealthChecker.Status.REACHABLE -> stringResource(R.string.monochrome_provider_health_reachable)
+                    MonochromeBackendHealthChecker.Status.OFFLINE -> stringResource(R.string.monochrome_provider_health_offline)
+                }
+                val isActive = result.target.backend == currentBackend
+                val nameSuffix = if (isActive) "  •" else ""
+                val latency = result.latencyMs?.let {
+                    stringResource(R.string.monochrome_provider_health_latency, it.toInt())
+                }
+                add(
+                    Material3SettingsItem(
+                        title = {
+                            Text(
+                                text = result.target.name + nameSuffix,
+                                color = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+                            )
+                        },
+                        description = {
+                            Text(
+                                text = listOfNotNull(statusLabel, latency, result.message)
+                                    .joinToString(" • ")
+                            )
+                        },
+                        leadingContent = {
+                            androidx.compose.foundation.layout.Box(
+                                modifier = Modifier
+                                    .size(12.dp)
+                                    .background(color = color, shape = CircleShape),
+                            )
+                        }
+                    )
+                )
+            }
+        }
+    }
+
+    Material3SettingsGroup(
+        title = stringResource(R.string.monochrome_provider_health),
+        items = healthItems
     )
 }

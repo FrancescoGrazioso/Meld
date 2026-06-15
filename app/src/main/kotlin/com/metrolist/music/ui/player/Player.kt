@@ -69,6 +69,7 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.RadioButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -132,6 +133,9 @@ import com.metrolist.music.LocalListenTogetherManager
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
 import com.metrolist.music.constants.CropAlbumArtKey
+import com.metrolist.music.constants.UnifiedAudioQuality
+import com.metrolist.music.constants.UnifiedAudioQualityKey
+import com.metrolist.music.constants.MonochromeMatchOverridesKey
 import com.metrolist.music.constants.DarkModeKey
 import com.metrolist.music.constants.HidePlayerThumbnailKey
 import com.metrolist.music.constants.HideStatusBarOnFullscreenKey
@@ -172,6 +176,8 @@ import com.metrolist.music.ui.theme.PlayerColorExtractor
 import com.metrolist.music.ui.theme.PlayerSliderColors
 import com.metrolist.music.ui.utils.ShowMediaInfo
 import com.metrolist.music.ui.utils.ShowOffsetDialog
+import com.metrolist.music.ui.dialog.MonochromeMatchOverrideDialog
+import com.metrolist.music.db.entities.QobuzMatchEntity
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.makeTimeString
 import com.metrolist.music.utils.rememberEnumPreference
@@ -325,6 +331,57 @@ fun BottomSheetPlayer(
     val listenTogetherManager = LocalListenTogetherManager.current
     val listenTogetherRoleState = listenTogetherManager?.role?.collectAsState(initial = RoomRole.NONE)
     val isListenTogetherGuest = listenTogetherRoleState?.value == RoomRole.GUEST
+
+    val currentFormat by playerConnection.currentFormat.collectAsState(initial = null)
+    var activeMatch by remember { mutableStateOf<QobuzMatchEntity?>(null) }
+    val mediaId = mediaMetadata?.id
+    LaunchedEffect(mediaId, currentFormat) {
+        if (mediaId != null) {
+            withContext(Dispatchers.IO) {
+                activeMatch = database.getQobuzMatch(mediaId)
+            }
+        } else {
+            activeMatch = null
+        }
+    }
+
+    val unifiedQualitySetting = rememberPreference(key = UnifiedAudioQualityKey, defaultValue = "YT_HIGH")
+    val unifiedQuality = remember(unifiedQualitySetting.value) {
+        runCatching { UnifiedAudioQuality.valueOf(unifiedQualitySetting.value) }.getOrDefault(UnifiedAudioQuality.YT_HIGH)
+    }
+
+    var showQualitySelectorDialog by remember { mutableStateOf(false) }
+    var showMatchOverrideDialog by remember { mutableStateOf(false) }
+
+    val formatText = remember(currentFormat, activeMatch) {
+        val fmt = currentFormat
+        if (fmt == null) {
+            "High • YT"
+        } else if (fmt.itag == 999) {
+            val match = activeMatch
+            if (match != null) {
+                if (match.hires) {
+                    val depth = match.bitDepth ?: 24
+                    val rate = match.samplingRateKhz?.let { if (it % 1.0 == 0.0) it.toInt().toString() else it.toString() } ?: "96"
+                    "Hi-Res FLAC (${depth}bit/${rate}kHz) • Monochrome"
+                } else {
+                    val depth = match.bitDepth ?: 16
+                    val rate = match.samplingRateKhz?.let { if (it % 1.0 == 0.0) it.toInt().toString() else it.toString() } ?: "44.1"
+                    "FLAC (${depth}bit/${rate}kHz) • Monochrome"
+                }
+            } else {
+                if (fmt.mimeType.contains("flac", ignoreCase = true)) {
+                    "FLAC • Monochrome"
+                } else {
+                    "320kbps • Monochrome"
+                }
+            }
+        } else {
+            val kbps = fmt.bitrate / 1000
+            val codec = if (fmt.codecs.contains("opus", ignoreCase = true)) "Opus" else "AAC"
+            "${codec} ${kbps}kbps • YT"
+        }
+    }
 
     // Cast state - safely access castConnectionHandler to prevent crashes during service lifecycle changes
     val castHandler =
@@ -1064,6 +1121,31 @@ fun BottomSheetPlayer(
                                                         ).show()
                                                 },
                                             ),
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(TextBackgroundColor.copy(alpha = 0.12f))
+                                .clickable { showQualitySelectorDialog = true }
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.music_note),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(10.dp),
+                                    tint = TextBackgroundColor.copy(alpha = 0.7f)
+                                )
+                                Text(
+                                    text = formatText,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = TextBackgroundColor.copy(alpha = 0.7f),
                                 )
                             }
                         }
@@ -1934,6 +2016,34 @@ fun BottomSheetPlayer(
             )
         }
     }
+
+    if (showQualitySelectorDialog) {
+        PlayerQualitySelectorDialog(
+            currentQuality = unifiedQuality,
+            onQualitySelected = { newQuality ->
+                coroutineScope.launch {
+                    context.dataStore.edit { preferences ->
+                        preferences[UnifiedAudioQualityKey] = newQuality.name
+                    }
+                }
+            },
+            onOverrideMatchClicked = { showMatchOverrideDialog = true },
+            onDismiss = { showQualitySelectorDialog = false }
+        )
+    }
+
+    if (showMatchOverrideDialog && mediaMetadata != null) {
+        val artistNames = mediaMetadata!!.artists.map { it.name }
+        MonochromeMatchOverrideDialog(
+            mediaId = mediaMetadata!!.id,
+            title = mediaMetadata!!.title,
+            artists = artistNames,
+            album = mediaMetadata!!.album?.title,
+            isrc = mediaMetadata!!.isrc,
+            durationMs = mediaMetadata!!.duration * 1000L,
+            onDismiss = { showMatchOverrideDialog = false }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
@@ -2100,4 +2210,83 @@ private fun PlayerMoreMenuButton(
             colorFilter = ColorFilter.tint(iconButtonColor),
         )
     }
+}
+
+@Composable
+fun PlayerQualitySelectorDialog(
+    currentQuality: UnifiedAudioQuality,
+    onQualitySelected: (UnifiedAudioQuality) -> Unit,
+    onOverrideMatchClicked: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.monochrome_quality)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                UnifiedAudioQuality.entries.forEach { quality ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable {
+                                onQualitySelected(quality)
+                                onDismiss()
+                            }
+                            .padding(vertical = 8.dp)
+                    ) {
+                        RadioButton(
+                            selected = currentQuality == quality,
+                            onClick = null
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            val titleText = when (quality) {
+                                UnifiedAudioQuality.YT_HIGH -> stringResource(R.string.monochrome_quality_yt_high)
+                                UnifiedAudioQuality.KBPS_320 -> stringResource(R.string.monochrome_quality_kbps_320)
+                                UnifiedAudioQuality.FLAC -> stringResource(R.string.monochrome_quality_cd)
+                                UnifiedAudioQuality.HIRES -> stringResource(R.string.monochrome_quality_hires)
+                            }
+                            val descText = when (quality) {
+                                UnifiedAudioQuality.YT_HIGH -> stringResource(R.string.monochrome_quality_yt_high_desc)
+                                UnifiedAudioQuality.KBPS_320 -> stringResource(R.string.monochrome_quality_kbps_320_desc)
+                                UnifiedAudioQuality.FLAC -> stringResource(R.string.monochrome_quality_cd_desc)
+                                UnifiedAudioQuality.HIRES -> stringResource(R.string.monochrome_quality_hires_desc)
+                            }
+                            Text(
+                                text = titleText,
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                            Text(
+                                text = descText,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+
+                if (currentQuality != UnifiedAudioQuality.YT_HIGH) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextButton(
+                        onClick = {
+                            onOverrideMatchClicked()
+                            onDismiss()
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.monochrome_match_override),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(stringResource(R.string.close))
+            }
+        }
+    )
 }
