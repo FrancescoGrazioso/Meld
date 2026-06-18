@@ -1,13 +1,3 @@
----v0.7.3
-## Bug Fixes
-- Fixed persistent 403 / `IO_BAD_HTTP_STATUS` playback errors on some tracks
-- Improved recovery chain with aggressive cache clearing and bypass flags
-- Added thread-safe `invalidateForVideo()` in PoTokenGenerator (prevents NPE and WebView leaks on repeated recoveries)
-- `forceRefreshForVideo()` now properly triggers PoToken invalidation
-- Strengthened `handleExpiredUrlError()` with better retry logic
-
-## Other
-- Updated app icon color scheme paying respects to Metrolist
 ---v13.4.0
 # MAINTENANCE MODE
 Metrolist is currently in maintenance mode. This means we will only be fixing bugs and making minor improvements. Please do not submit PRs for new features or major changes, as they will not be accepted.
