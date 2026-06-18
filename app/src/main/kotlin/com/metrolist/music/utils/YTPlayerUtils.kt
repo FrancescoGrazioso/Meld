@@ -592,10 +592,6 @@ object YTPlayerUtils {
         Timber.tag(logTag).d("Force refreshing for videoId: $videoId")
 
         try {
-            // Invalidate the current PoToken generator so a fresh one (with new
-            // streaming + player PoTokens) is created on the next playback attempt.
-            // This is critical when YouTube has invalidated the previous PoToken,
-            // which commonly causes persistent 403 errors.
             poTokenGenerator.invalidateForVideo(videoId)
         } catch (e: Exception) {
             Timber.tag(logTag).w(e, "Failed to invalidate PoToken for videoId=$videoId")

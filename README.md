@@ -10,9 +10,6 @@
 </div>
 
 > [!IMPORTANT]
-> ## NOTICE
-> **I will personally see to it that this project lives on no matter what, unless spotify change their restrictions that are affecting both Artists and Listeners.**
-> ~ [**TrueSaiyan**](https://github.com/ufoptg/meld)
 > ## ⚠️ Temporary Maintenance Pause
 >
 > **For personal medical reasons, FrancescoGrazioso will not be able to actively work on Meld for the next few months.**
