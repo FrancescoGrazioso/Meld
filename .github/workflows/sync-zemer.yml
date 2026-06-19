@@ -1,0 +1,50 @@
+name: Sync Zemer Player Configs
+
+on:
+  schedule:
+    - cron: '0 0,12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch latest player_configs.json
+        run: |
+          curl -s https://raw.githubusercontent.com/ZemerTeam/zemer-cipher/master/library/src/main/assets/player_configs.json -o player_configs_new.json
+
+      - name: Compare and Update
+        id: check_sync
+        run: |
+          LOCAL_FILE="app/src/main/assets/player_configs.json"
+          if ! diff -q "$LOCAL_FILE" player_configs_new.json > /dev/null; then
+            mv player_configs_new.json "$LOCAL_FILE"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            rm player_configs_new.json
+          fi
+
+      - name: Commit and Push
+        if: steps.check_sync.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          BRANCH_NAME="sync-zemer-$(date +%Y%m%d%H%M)"
+          git checkout -b "$BRANCH_NAME"
+          git add app/src/main/assets/player_configs.json
+          git commit -m "Update player_configs.json from Zemer repo"
+          
+          # Push using GITHUB_TOKEN automatically provided by Actions
+          git push origin "$BRANCH_NAME"

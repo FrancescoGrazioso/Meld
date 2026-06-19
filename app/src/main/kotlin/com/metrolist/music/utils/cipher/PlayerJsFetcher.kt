@@ -102,8 +102,14 @@ object PlayerJsFetcher {
         try {
             val cacheDir = getCacheDir()
             if (cacheDir.exists()) {
-                val files = cacheDir.listFiles()
-                Timber.tag(TAG).d("Deleting ${files?.size ?: 0} cache files")
+                // Only the player.js cache (player_*.js + current_hash.txt) belongs to this fetcher.
+                // The dir is shared with PlayerConfigStore (configs_remote.json/.meta) — do NOT wipe
+                // those, or every decipher retry destroys the config ETag and forces a full
+                // non-conditional re-download of the config file.
+                val files = cacheDir.listFiles()?.filter {
+                    it.name.startsWith("player_") || it.name == "current_hash.txt"
+                }
+                Timber.tag(TAG).d("Deleting ${files?.size ?: 0} player-JS cache files")
                 files?.forEach {
                     Timber.tag(TAG).v("Deleting: ${it.name}")
                     it.delete()

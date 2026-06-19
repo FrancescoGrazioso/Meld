@@ -499,25 +499,51 @@ object YTPlayerUtils {
         val isAgeRestricted: Boolean
     )
 
-    private fun getSignatureTimestampOrNull(videoId: String): SignatureTimestampResult {
+    private suspend fun getSignatureTimestampOrNull(videoId: String): SignatureTimestampResult {
         Timber.tag(logTag).d("Getting signature timestamp for videoId: $videoId")
+
+        // Prefer the STS of the player the cipher actually deciphers with. The STS decides which
+        // player generation YouTube mints the signatureCipher for; during A/B rollouts NewPipe's
+        // independently fetched player can be a DIFFERENT generation, and a sig minted for one
+        // player but deciphered by another 403s on the CDN. NewPipe is kept for age-restriction
+        // detection and as the STS source only when the cipher player fetch fails.
+        val cipherSts = try {
+            CipherDeobfuscator.signatureTimestamp()
+                ?.also { Timber.tag(logTag).d("Signature timestamp from cipher player: $it") }
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e // cooperative cancellation: don't swallow, let the playback coroutine unwind
+        } catch (e: Exception) {
+            Timber.tag(logTag).e(e, "Cipher player STS fetch failed")
+            null
+        }
+
         val result = NewPipeExtractor.getSignatureTimestamp(videoId)
         return result.fold(
             onSuccess = { timestamp ->
-                Timber.tag(logTag).d("Signature timestamp obtained: $timestamp")
-                SignatureTimestampResult(timestamp, isAgeRestricted = false)
+                val chosen = cipherSts ?: timestamp
+                Timber.tag(logTag).d("Signature timestamp resolved: cipher=$cipherSts newpipe=$timestamp -> using $chosen")
+                SignatureTimestampResult(chosen, isAgeRestricted = false)
             },
             onFailure = { error ->
                 val isAgeRestricted = error.message?.contains("age-restricted", ignoreCase = true) == true ||
                     error.cause?.message?.contains("age-restricted", ignoreCase = true) == true
-                if (isAgeRestricted) {
-                    Timber.tag(logTag).d("Age-restricted content detected from NewPipe")
-                    Timber.tag(TAG).i("Age-restricted detected early via NewPipe: videoId=$videoId")
-                } else {
-                    Timber.tag(logTag).e(error, "Failed to get signature timestamp")
-                    reportException(error)
+                when {
+                    isAgeRestricted -> {
+                        Timber.tag(logTag).d("Age-restricted content detected from NewPipe")
+                        Timber.tag(TAG).i("Age-restricted detected early via NewPipe: videoId=$videoId")
+                    }
+                    cipherSts != null -> {
+                        // Non-fatal: the cipher player's STS already covers us, so NewPipe is just
+                        // a fallback here — don't report its failure as an exception (avoids noise).
+                        Timber.tag(logTag).w("NewPipe STS unavailable, using cipher player STS: ${error.message}")
+                    }
+                    else -> {
+                        Timber.tag(logTag).e(error, "Failed to get signature timestamp via NewPipe")
+                        reportException(error)
+                    }
                 }
-                SignatureTimestampResult(null, isAgeRestricted)
+                // The cipher player's STS is exactly the one the cipher will decipher with.
+                SignatureTimestampResult(cipherSts, isAgeRestricted)
             }
         )
     }

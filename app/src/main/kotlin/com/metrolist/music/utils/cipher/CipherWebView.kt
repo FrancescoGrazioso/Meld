@@ -103,36 +103,41 @@ class CipherWebView private constructor(
         usingHardcodedMode = isHardcoded
 
         val exports = buildList {
-            if (sigFuncName != null) {
-                val sigConstArgs = sigInfo.constantArgs
-                val preprocessFunc = sigInfo.preprocessFunc
-                val preprocessArgs = sigInfo.preprocessArgs
+            val sigJsExpr = sigInfo?.jsExpression
+            if (sigJsExpr != null) {
+                val expr = sigJsExpr.replace("INPUT", "sig")
+                Timber.tag(TAG).d("Sig: expression-based export: $expr")
+                add("window._cipherSigFunc = function(sig) { try { return $expr; } catch(e) { return null; } };")
+            } else if (sigFuncName != null) {
+                val sigConstArgs = sigInfo?.constantArgs
+                val preprocessFunc = sigInfo?.preprocessFunc
+                val preprocessArgs = sigInfo?.preprocessArgs
 
                 if (!sigConstArgs.isNullOrEmpty() && preprocessFunc != null && !preprocessArgs.isNullOrEmpty()) {
-                    // Full wrapper: JI(48, 1918, f1(1, 6528, sig))
                     val mainArgsStr = sigConstArgs.joinToString(", ")
                     val prepArgsStr = preprocessArgs.joinToString(", ")
                     Timber.tag(TAG).d("Sig function needs full wrapper:")
                     Timber.tag(TAG).d("  $sigFuncName($mainArgsStr, $preprocessFunc($prepArgsStr, sig))")
                     add("window._cipherSigFunc = function(sig) { return $sigFuncName($mainArgsStr, $preprocessFunc($prepArgsStr, sig)); };")
                 } else if (!sigConstArgs.isNullOrEmpty()) {
-                    // Wrapper with constant args only (no preprocessing)
                     val argsStr = sigConstArgs.joinToString(", ")
                     Timber.tag(TAG).d("Sig function needs wrapper with constant args: $argsStr")
                     add("window._cipherSigFunc = function(sig) { return $sigFuncName($argsStr, sig); };")
                 } else if (isHardcoded) {
-                    // For hardcoded mode without full args, we'll inject the function export after player.js loads
                     Timber.tag(TAG).d("Will export sig function $sigFuncName in hardcoded mode (legacy)")
                     add("window._cipherSigFunc = typeof $sigFuncName !== 'undefined' ? $sigFuncName : null;")
                 } else {
                     add("window._cipherSigFunc = typeof $sigFuncName !== 'undefined' ? $sigFuncName : null;")
                 }
             }
-            if (nFuncName != null) {
-                val nConstArgs = nFuncInfo.constantArgs
+            val nJsExpr = nFuncInfo?.jsExpression
+            if (nJsExpr != null) {
+                val expr = nJsExpr.replace("INPUT", "n")
+                Timber.tag(TAG).d("N: expression-based export: ${expr.take(80)}")
+                add("window._nTransformFunc = function(n) { try { return $expr; } catch(e) { return n; } };")
+            } else if (nFuncName != null) {
+                val nConstArgs = nFuncInfo?.constantArgs
                 if (!nConstArgs.isNullOrEmpty()) {
-                    // Generate wrapper function for n-functions that require constant args
-                    // e.g. GU(6, 6010, n) -> window._nTransformFunc = function(n) { return GU(6, 6010, n); };
                     val argsStr = nConstArgs.joinToString(", ")
                     Timber.tag(TAG).d("N-function needs wrapper with constant args: $argsStr")
                     add("window._nTransformFunc = function(n) { return $nFuncName($argsStr, n); };")

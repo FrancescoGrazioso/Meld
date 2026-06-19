@@ -3,6 +3,7 @@
 *.aar
 *.ap_
 *.aab
+apply-403-fix.sh
 
 # Files for the ART/Dalvik VM
 *.dex
