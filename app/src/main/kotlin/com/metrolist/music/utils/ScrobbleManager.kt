@@ -61,14 +61,29 @@ class ScrobbleManager(
 
     private fun startScrobbleTimer(metadata: MediaMetadata, duration: Long? = null) {
         scrobbleJob?.cancel()
-        val duration = when {
-            duration == null || duration == C.TIME_UNSET || duration <= 0 -> metadata.duration
-            else -> (duration / 1000).toInt()
+        // Resolve duration in SECONDS as Long to avoid Int overflow on large values.
+        // player.duration comes in milliseconds (Long); metadata.duration is seconds (Int, -1 if unknown).
+        val durationSecs: Long = when {
+            duration != null && duration != C.TIME_UNSET && duration > 0 -> duration / 1000L
+            metadata.duration > 0 -> metadata.duration.toLong()
+            else -> {
+                // Duration is completely unknown (metadata.duration == -1 and player hasn't
+                // reported a valid value yet). Fall back to the scrobble delay threshold so
+                // the track still gets scrobbled after the configured delay.
+                scrobbleTimerStartedAt = System.currentTimeMillis()
+                scrobbleRemainingMillis = scrobbleDelaySeconds * 1000L
+                scrobbleJob = scope.launch {
+                    delay(scrobbleRemainingMillis)
+                    scrobbleSong(metadata)
+                    scrobbleJob = null
+                }
+                return
+            }
         }
 
-        if (duration <= minSongDuration) return
+        if (durationSecs <= minSongDuration) return
 
-        val threshold = duration * 1000L * scrobbleDelayPercent
+        val threshold = durationSecs * 1000L * scrobbleDelayPercent
         scrobbleRemainingMillis = min(threshold.toLong(), scrobbleDelaySeconds * 1000L)
 
         if (scrobbleRemainingMillis <= 0) {
@@ -117,13 +132,18 @@ class ScrobbleManager(
             LastFM.scrobble(
                 artist = artist,
                 track = metadata.title,
-                duration = metadata.duration,
+                duration = metadata.duration.takeIf { it > 0 },
                 timestamp = songStartedAt,
                 album = metadata.album?.title,
             ).onSuccess {
                 Timber.d("Last.fm: scrobbled \"${metadata.title}\" by $artist")
             }.onFailure { e ->
-                Timber.w(e, "Last.fm: scrobble failed for \"${metadata.title}\" by $artist")
+                when (e) {
+                    is LastFM.ScrobbleIgnoredException ->
+                        Timber.w("Last.fm: scrobble ignored (code=${e.code}) for \"${metadata.title}\" by $artist")
+                    else ->
+                        Timber.w(e, "Last.fm: scrobble failed for \"${metadata.title}\" by $artist")
+                }
             }
         }
     }
