@@ -116,6 +116,17 @@ object LastFM {
         override fun toString(): String = "LastFmException(code=$code, message=$message)"
     }
 
+    /**
+     * Thrown when last.fm accepts a scrobble request (HTTP 200) but marks the
+     * scrobble as ignored via a non-zero ignoredMessage code in the response body.
+     * Common codes: 1=filtered artist, 2=filtered track, 3=filtered timestamp,
+     * 4=exceeded daily scrobble limit.
+     */
+    class ScrobbleIgnoredException(val code: Int, val body: String) :
+        Exception("Scrobble ignored by last.fm (code=$code)") {
+        override fun toString(): String = "ScrobbleIgnoredException(code=$code)"
+    }
+
     suspend fun updateNowPlaying(
         artist: String, track: String,
         album: String? = null, trackNumber: Int? = null, duration: Int? = null
@@ -134,7 +145,6 @@ object LastFM {
                     duration?.let { put("duration", it.toString()) }
                 }
             )
-            parameter("format", "json")
         }
     }
 
@@ -142,7 +152,7 @@ object LastFM {
         artist: String, track: String, timestamp: Long,
         album: String? = null, trackNumber: Int? = null, duration: Int? = null
     ) = runCatching {
-        client.post {
+        val response = client.post {
             lastfmParams(
                 method = "track.scrobble",
                 apiKey = API_KEY,
@@ -157,8 +167,21 @@ object LastFM {
                     duration?.let { put("duration[0]", it.toString()) }
                 }
             )
-            parameter("format", "json")
         }
+        // Parse the response to detect silently-ignored scrobbles.
+        // Last.fm returns HTTP 200 even when a scrobble is ignored, so we must
+        // inspect the body for ignoredMessage codes (non-zero means ignored).
+        val responseText = response.bodyAsText()
+        if (responseText.contains("\"ignoredMessage\"")) {
+            val ignored = runCatching {
+                val codeRegex = Regex(""""ignoredMessage"\s*:\s*\{[^}]*"code"\s*:\s*"([^"]+)"""")
+                codeRegex.find(responseText)?.groupValues?.getOrNull(1)?.toIntOrNull() ?: 0
+            }.getOrDefault(0)
+            if (ignored != 0) {
+                throw ScrobbleIgnoredException(ignored, responseText)
+            }
+        }
+        response
     }
 
     suspend fun setLoveStatus(
