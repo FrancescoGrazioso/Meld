@@ -3052,7 +3052,8 @@ class MusicService :
     }
 
     /**
-     * Handles expired URL (403) errors by clearing caches and retrying.
+     * Handles expired URL (403) errors aggressively.
+     * Clears caches, forces fresh resolution, and adds bypass flags.
      */
     private fun handleExpiredUrlError(mediaId: String?) {
         if (mediaId == null) {
@@ -3062,30 +3063,43 @@ class MusicService :
 
         incrementRetryCount(mediaId)
 
-        // Clear the cached URL
+        // Clear the cached URL immediately
         songUrlCache.remove(mediaId)
         Timber.tag(TAG).d("Cleared cached URL for $mediaId")
 
-        // Clear decryption caches
+        // Force the resolver to bypass any cached URL on the next attempt
+        bypassCacheForQualityChange.add(mediaId)
+
+        // Tell YTPlayerUtils to force a fresh player response + PoToken
         try {
             YTPlayerUtils.forceRefreshForVideo(mediaId)
         } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "Failed to clear decryption caches")
+            Timber.tag(TAG).e(e, "Failed to force refresh in YTPlayerUtils")
+        }
+
+        // Aggressively clear both player cache and download cache for this track
+        try {
+            playerCache.removeResource(mediaId)
+            downloadCache.removeResource(mediaId)
+            Timber.tag(TAG).d("Cleared player + download cache for $mediaId")
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Failed to clear caches for $mediaId")
         }
 
         retryJob?.cancel()
-        retryJob =
-            scope.launch {
-                delay(RETRY_DELAY_MS)
+        retryJob = scope.launch {
+            // Slightly longer delay on 403 errors
+            delay(RETRY_DELAY_MS * 2)
 
-                // Seek to current position to force URL re-resolution
-                val currentPosition = player.currentPosition
-                val currentIndex = player.currentMediaItemIndex
+            val currentPosition = player.currentPosition
+            val currentIndex = player.currentMediaItemIndex
+
+            if (currentIndex != C.INDEX_UNSET) {
                 player.seekTo(currentIndex, currentPosition)
                 player.prepare()
-
-                Timber.tag(TAG).d("Retrying playback for $mediaId after 403 error")
+                Timber.tag(TAG).d("Retrying playback for $mediaId after aggressive 403 recovery")
             }
+        }
     }
 
     /**

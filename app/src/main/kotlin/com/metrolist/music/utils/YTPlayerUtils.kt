@@ -606,5 +606,13 @@ object YTPlayerUtils {
 
     fun forceRefreshForVideo(videoId: String) {
         Timber.tag(logTag).d("Force refreshing for videoId: $videoId")
+
+        try {
+            poTokenGenerator.invalidateForVideo(videoId)
+        } catch (e: Exception) {
+            Timber.tag(logTag).w(e, "Failed to invalidate PoToken for videoId=$videoId")
+        }
+
+        Timber.tag(logTag).i("Marked $videoId for forced fresh stream resolution + PoToken refresh")
     }
 }
