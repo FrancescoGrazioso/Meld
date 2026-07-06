@@ -153,6 +153,7 @@ import com.metrolist.music.constants.ShufflePlaylistFirstKey
 import com.metrolist.music.constants.SimilarContent
 import com.metrolist.music.constants.SkipSilenceInstantKey
 import com.metrolist.music.constants.SkipSilenceKey
+import com.metrolist.music.constants.StopMusicOnTaskClearKey
 import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.db.entities.Event
 import com.metrolist.music.db.entities.FormatEntity
@@ -3983,6 +3984,14 @@ class MusicService :
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        // When the app is swiped away from recents, a foreground media service keeps the
+        // process (and playback) alive, so relying on MainActivity.onDestroy is unreliable.
+        // Android guarantees this callback, so honor "Stop music on task clear" here: halt
+        // playback immediately and tear the service down (onDestroy persists queue/state).
+        if (playerInitialized.value && dataStore.get(StopMusicOnTaskClearKey, false)) {
+            player.stop()
+            stopSelf()
+        }
         super.onTaskRemoved(rootIntent)
     }
 

@@ -29,6 +29,13 @@ class SpotifyLikedSongsQueue(
     private val startIndex: Int = 0,
     private val mapper: SpotifyYouTubeMapper,
     override val preloadItem: MediaMetadata? = null,
+    /**
+     * Pre-ordered list of tracks to play, matching exactly what the UI displays (after
+     * the user's sort/reverse). When provided, [startIndex] indexes into THIS list and no
+     * Spotify pagination happens, so playback order always matches the visible list.
+     * When null, the queue falls back to fetching from the Spotify API in its native order.
+     */
+    private val tracks: List<SpotifyTrack>? = null,
 ) : Queue {
 
     companion object {
@@ -52,15 +59,29 @@ class SpotifyLikedSongsQueue(
 
     override suspend fun getInitialStatus(): Queue.Status = withContext(Dispatchers.IO) {
         try {
-            val result = Spotify.likedSongs(limit = SPOTIFY_PAGE_SIZE, offset = 0).getOrThrow()
-            apiTotal = result.total
-            val fetched = result.items.map { it.track }.filter { !it.isLocal }
-            allTracks.addAll(fetched)
-            apiFetchOffset = result.items.size
-            apiHasMore = apiFetchOffset < apiTotal
+            val provided = tracks
+            if (provided != null) {
+                // Play the exact list (and order) the UI is showing.
+                allTracks.clear()
+                allTracks.addAll(provided.filter { !it.isLocal })
+                apiTotal = allTracks.size
+                apiFetchOffset = allTracks.size
+                apiHasMore = false
+            } else {
+                val result = Spotify.likedSongs(limit = SPOTIFY_PAGE_SIZE, offset = 0).getOrThrow()
+                apiTotal = result.total
+                val fetched = result.items.map { it.track }.filter { !it.isLocal }
+                allTracks.addAll(fetched)
+                apiFetchOffset = result.items.size
+                apiHasMore = apiFetchOffset < apiTotal
 
-            while (startIndex >= allTracks.size && apiHasMore) {
-                fetchNextApiPage()
+                while (startIndex >= allTracks.size && apiHasMore) {
+                    fetchNextApiPage()
+                }
+            }
+
+            if (allTracks.isEmpty()) {
+                return@withContext Queue.Status(title = null, items = emptyList(), mediaItemIndex = 0)
             }
 
             val targetIndex = startIndex.coerceIn(0, (allTracks.size - 1).coerceAtLeast(0))
@@ -103,20 +124,30 @@ class SpotifyLikedSongsQueue(
 
     override suspend fun getFullStatus(): Queue.Status? = withContext(Dispatchers.IO) {
         try {
-            // Build full list from scratch so we always include tracks 0..N (not just from startIndex onwards)
-            allTracks.clear()
-            apiFetchOffset = 0
-            apiHasMore = true
-            while (apiFetchOffset == 0 || apiHasMore) {
-                if (apiFetchOffset == 0) {
-                    val result = Spotify.likedSongs(limit = SPOTIFY_PAGE_SIZE, offset = 0).getOrThrow()
-                    apiTotal = result.total
-                    val fetched = result.items.map { it.track }.filter { !it.isLocal }
-                    allTracks.addAll(fetched)
-                    apiFetchOffset = result.items.size
-                    apiHasMore = apiFetchOffset < apiTotal
-                } else {
-                    fetchNextApiPage()
+            val provided = tracks
+            if (provided != null) {
+                // Use the exact UI-provided order; no pagination needed.
+                allTracks.clear()
+                allTracks.addAll(provided.filter { !it.isLocal })
+                apiTotal = allTracks.size
+                apiFetchOffset = allTracks.size
+                apiHasMore = false
+            } else {
+                // Build full list from scratch so we always include tracks 0..N (not just from startIndex onwards)
+                allTracks.clear()
+                apiFetchOffset = 0
+                apiHasMore = true
+                while (apiFetchOffset == 0 || apiHasMore) {
+                    if (apiFetchOffset == 0) {
+                        val result = Spotify.likedSongs(limit = SPOTIFY_PAGE_SIZE, offset = 0).getOrThrow()
+                        apiTotal = result.total
+                        val fetched = result.items.map { it.track }.filter { !it.isLocal }
+                        allTracks.addAll(fetched)
+                        apiFetchOffset = result.items.size
+                        apiHasMore = apiFetchOffset < apiTotal
+                    } else {
+                        fetchNextApiPage()
+                    }
                 }
             }
             if (allTracks.isEmpty()) return@withContext null
