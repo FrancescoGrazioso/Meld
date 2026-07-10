@@ -80,10 +80,12 @@ object SpotifyMapper {
 
     /**
      * Returns the best thumbnail URL from a Spotify track's album art.
+     * Prefers the highest available resolution so the full-screen player cover isn't blurry
+     * (Spotify CDN URLs cannot be up-scaled via resize(), so the source variant must be large).
      */
     fun getTrackThumbnail(track: SpotifyTrack): String? {
         return track.album?.images?.let { images ->
-            images.firstOrNull { it.width in 200..400 }?.url
+            images.maxByOrNull { it.width ?: 0 }?.url
                 ?: images.firstOrNull()?.url
         }
     }

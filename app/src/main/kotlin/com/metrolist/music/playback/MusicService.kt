@@ -1214,7 +1214,11 @@ class MusicService :
             }
 
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                hasAudioFocus = false
+                // We still HOLD audio focus while ducking — the system only asks us to lower our
+                // volume, not to give up focus. Keeping hasAudioFocus = true prevents the player
+                // event handler from re-requesting AUDIOFOCUS_GAIN, which caused a focus ping-pong
+                // with the foreground app and snapped our volume from 0.2 back to 1.0 (issue #116).
+                hasAudioFocus = true
                 audioFocusVolumeMultiplier.value = 0.2f
                 wasPlayingBeforeAudioFocusLoss = player.isPlaying
                 if (player.isPlaying) {
