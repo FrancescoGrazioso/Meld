@@ -410,6 +410,7 @@
     <string name="lastfm_integration">Last.fm integration</string>
     <string name="enable_scrobbling">Enable scrobbling</string>
     <string name="lastfm_now_playing">Send Now Playing status</string>
+    <string name="lastfm_api_credentials_missing">Last.fm API credentials are missing from this build.</string>
     <string name="last_fm_send_likes">Sync Loved and Unloved</string>
     <string name="last_fm_send_likes_description">Love or unlove songs in Last.fm when you like or unlike them in Meld</string>
     <string name="logging_in">Logging in…</string>

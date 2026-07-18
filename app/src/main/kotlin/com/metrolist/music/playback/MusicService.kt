@@ -2204,7 +2204,7 @@ class MusicService :
         // Restart SponsorBlock for the new track (no-op when disabled).
         startSponsorBlockForCurrentTrack()
 
-        scrobbleManager?.onSongStop()
+        scrobbleManager?.onSongStop(finalize = reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO)
         if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
             scrobbleManager?.onSongStart(player.currentMetadata, duration = player.duration)
         }
@@ -2292,7 +2292,9 @@ class MusicService :
             scheduleCrossfade()
         }
 
-        if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+        if (playbackState == Player.STATE_ENDED) {
+            scrobbleManager?.onSongStop(finalize = true)
+        } else if (playbackState == Player.STATE_IDLE) {
             scrobbleManager?.onSongStop()
         }
     }
