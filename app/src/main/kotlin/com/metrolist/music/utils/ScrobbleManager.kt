@@ -20,6 +20,7 @@ class ScrobbleManager(
     var minSongDuration: Int = LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION,
     var scrobbleDelayPercent: Float = LastFM.DEFAULT_SCROBBLE_DELAY_PERCENT,
     var scrobbleDelaySeconds: Int = LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS,
+    private val client: LastFmScrobbleClient = LastFmScrobbleClient.Default,
 ) {
     private var scrobbleJob: Job? = null
     private var scrobbleRemainingMillis: Long = 0L
@@ -47,7 +48,7 @@ class ScrobbleManager(
         currentSongScrobbled = false
         startScrobbleTimer(metadata, durationSeconds, startedAt)
         if (useNowPlaying) {
-            updateNowPlaying(metadata)
+            updateNowPlaying(metadata, durationSeconds)
         }
     }
 
@@ -79,13 +80,13 @@ class ScrobbleManager(
         scrobbleRemainingMillis = min(threshold.toLong(), scrobbleDelaySeconds * 1000L)
 
         if (scrobbleRemainingMillis <= 0) {
-            scrobbleSongIfNeeded(metadata, startedAt)
+            scrobbleSongIfNeeded(metadata, startedAt, duration)
             return
         }
         scrobbleTimerStartedAt = System.currentTimeMillis()
         scrobbleJob = scope.launch {
             delay(scrobbleRemainingMillis)
-            scrobbleSongIfNeeded(metadata, startedAt)
+            scrobbleSongIfNeeded(metadata, startedAt, duration)
             scrobbleJob = null
             scrobbleRemainingMillis = 0L
             scrobbleTimerStartedAt = 0L
@@ -109,7 +110,7 @@ class ScrobbleManager(
         scrobbleTimerStartedAt = System.currentTimeMillis()
         scrobbleJob = scope.launch {
             delay(scrobbleRemainingMillis)
-            scrobbleSongIfNeeded(metadata, songStartedAt)
+            scrobbleSongIfNeeded(metadata, songStartedAt, currentSongDuration)
             scrobbleJob = null
             scrobbleRemainingMillis = 0L
             scrobbleTimerStartedAt = 0L
@@ -137,22 +138,30 @@ class ScrobbleManager(
     private fun scrobbleCurrentSongIfNeeded() {
         val metadata = currentMetadata ?: return
         if (currentSongDuration <= minSongDuration) return
-        scrobbleSongIfNeeded(metadata, songStartedAt)
+        scrobbleSongIfNeeded(metadata, songStartedAt, currentSongDuration)
     }
 
-    private fun scrobbleSongIfNeeded(metadata: MediaMetadata, startedAt: Long) {
+    private fun scrobbleSongIfNeeded(
+        metadata: MediaMetadata,
+        startedAt: Long,
+        duration: Int,
+    ) {
         if (currentSongScrobbled || startedAt <= 0L) return
         currentSongScrobbled = true
-        scrobbleSong(metadata, startedAt)
+        scrobbleSong(metadata, startedAt, duration)
     }
 
-    private fun scrobbleSong(metadata: MediaMetadata, startedAt: Long) {
+    private fun scrobbleSong(
+        metadata: MediaMetadata,
+        startedAt: Long,
+        duration: Int,
+    ) {
         scope.launch {
             val artist = metadata.artists.joinToString { it.name }
-            LastFM.scrobble(
+            client.scrobble(
                 artist = artist,
                 track = metadata.title,
-                duration = metadata.duration,
+                duration = duration.takeIf { it > 0 },
                 timestamp = startedAt,
                 album = metadata.album?.title,
             ).onSuccess {
@@ -186,13 +195,13 @@ class ScrobbleManager(
         currentSongScrobbled = false
     }
 
-    private fun updateNowPlaying(metadata: MediaMetadata) {
+    private fun updateNowPlaying(metadata: MediaMetadata, duration: Int) {
         scope.launch {
-            LastFM.updateNowPlaying(
+            client.updateNowPlaying(
                 artist = metadata.artists.joinToString { it.name },
                 track = metadata.title,
                 album = metadata.album?.title,
-                duration = metadata.duration,
+                duration = duration.takeIf { it > 0 },
             ).onFailure { e ->
                 if (e is LastFM.LastFmIgnoredException) {
                     Timber.w(
@@ -209,7 +218,10 @@ class ScrobbleManager(
     fun onPlayerStateChanged(isPlaying: Boolean, metadata: MediaMetadata?, duration: Long? = null) {
         if (metadata == null) return
         if (isPlaying) {
-            if (!songStarted) {
+            if (!songStarted || currentMetadata?.id != metadata.id) {
+                if (songStarted) {
+                    onSongStop()
+                }
                 onSongStart(metadata, duration)
             } else {
                 onSongResume(metadata)
@@ -217,5 +229,52 @@ class ScrobbleManager(
         } else {
             onSongPause()
         }
+    }
+}
+
+interface LastFmScrobbleClient {
+    suspend fun updateNowPlaying(
+        artist: String,
+        track: String,
+        album: String? = null,
+        duration: Int? = null,
+    ): Result<Unit>
+
+    suspend fun scrobble(
+        artist: String,
+        track: String,
+        timestamp: Long,
+        album: String? = null,
+        duration: Int? = null,
+    ): Result<Unit>
+
+    object Default : LastFmScrobbleClient {
+        override suspend fun updateNowPlaying(
+            artist: String,
+            track: String,
+            album: String?,
+            duration: Int?,
+        ): Result<Unit> =
+            LastFM.updateNowPlaying(
+                artist = artist,
+                track = track,
+                album = album,
+                duration = duration,
+            )
+
+        override suspend fun scrobble(
+            artist: String,
+            track: String,
+            timestamp: Long,
+            album: String?,
+            duration: Int?,
+        ): Result<Unit> =
+            LastFM.scrobble(
+                artist = artist,
+                track = track,
+                duration = duration,
+                timestamp = timestamp,
+                album = album,
+            )
     }
 }

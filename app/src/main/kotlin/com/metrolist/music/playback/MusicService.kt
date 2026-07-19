@@ -933,14 +933,18 @@ class MusicService :
                     val minSongDuration =
                         dataStore.get(ScrobbleMinSongDurationKey, LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION)
                     val delaySeconds = dataStore.get(ScrobbleDelaySecondsKey, LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS)
-                    scrobbleManager =
+                    val manager =
                         ScrobbleManager(
                             scope,
                             minSongDuration = minSongDuration,
                             scrobbleDelayPercent = delayPercent,
                             scrobbleDelaySeconds = delaySeconds,
                         )
-                    scrobbleManager?.useNowPlaying = dataStore.get(LastFMUseNowPlaying, false)
+                    scrobbleManager = manager
+                    manager.useNowPlaying = dataStore.get(LastFMUseNowPlaying, false)
+                    if (::player.isInitialized && player.isPlaying) {
+                        manager.onSongStart(player.currentMetadata, duration = player.duration)
+                    }
                 } else if (!enabled && scrobbleManager != null) {
                     scrobbleManager?.destroy()
                     scrobbleManager = null
@@ -2396,8 +2400,17 @@ class MusicService :
         }
 
         // Scrobbling
-        if (events.containsAny(Player.EVENT_IS_PLAYING_CHANGED)) {
-            scrobbleManager?.onPlayerStateChanged(player.isPlaying, player.currentMetadata, duration = player.duration)
+        if (events.containsAny(
+                Player.EVENT_IS_PLAYING_CHANGED,
+                Player.EVENT_PLAYBACK_STATE_CHANGED,
+                Player.EVENT_MEDIA_ITEM_TRANSITION,
+            )
+        ) {
+            scrobbleManager?.onPlayerStateChanged(
+                player.isPlaying,
+                player.currentMetadata,
+                duration = player.duration,
+            )
         }
     }
 
