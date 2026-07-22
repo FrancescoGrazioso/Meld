@@ -8,7 +8,6 @@ import com.metrolist.spotify.models.SpotifyPlaylist
 import com.metrolist.spotify.models.SpotifyPlaylistOwner
 import com.metrolist.spotify.models.SpotifyPlaylistTrack
 import com.metrolist.spotify.models.SpotifyPlaylistTracksRef
-import com.metrolist.spotify.models.SpotifyRecommendations
 import com.metrolist.spotify.models.SpotifySavedTrack
 import com.metrolist.spotify.models.SpotifySearchResult
 import com.metrolist.spotify.models.SpotifySimpleAlbum
@@ -49,8 +48,7 @@ import kotlinx.serialization.json.putJsonObject
 /**
  * Spotify API client that uses the internal GraphQL API (api-partner.spotify.com)
  * for most operations, falling back to the public REST API (api.spotify.com/v1/)
- * only for endpoints without a GraphQL equivalent (top tracks/artists,
- * recommendations, related artists).
+ * only for endpoints without a GraphQL equivalent (top tracks/artists).
  *
  * GraphQL persisted-query hashes sourced from:
  * https://github.com/sonic-liberation/hetu_spotify_gql_client
@@ -1071,23 +1069,6 @@ object Spotify {
             }
         }
 
-    // ── Recommendations (REST fallback — no GQL equivalent) ─────────────
-
-    suspend fun recommendations(
-        seedTrackIds: List<String> = emptyList(),
-        seedArtistIds: List<String> = emptyList(),
-        seedGenres: List<String> = emptyList(),
-        limit: Int = 50,
-    ): Result<SpotifyRecommendations> =
-        runCatching {
-            authenticatedGet("recommendations") {
-                if (seedTrackIds.isNotEmpty()) parameter("seed_tracks", seedTrackIds.joinToString(","))
-                if (seedArtistIds.isNotEmpty()) parameter("seed_artists", seedArtistIds.joinToString(","))
-                if (seedGenres.isNotEmpty()) parameter("seed_genres", seedGenres.joinToString(","))
-                parameter("limit", limit)
-            }
-        }
-
     // ── Search (GQL: searchDesktop) ─────────────────────────────────────
 
     suspend fun search(
@@ -1618,24 +1599,12 @@ object Spotify {
             }
         }
 
-    // ── Related Artists (REST fallback) ─────────────────────────────────
-
-    suspend fun relatedArtists(artistId: String): Result<RelatedArtistsResponse> =
-        runCatching {
-            authenticatedGet("artists/$artistId/related-artists")
-        }
-
     fun isAuthenticated(): Boolean = accessToken != null
 }
 
 @kotlinx.serialization.Serializable
 data class ArtistTopTracksResponse(
     val tracks: List<SpotifyTrack> = emptyList(),
-)
-
-@kotlinx.serialization.Serializable
-data class RelatedArtistsResponse(
-    val artists: List<SpotifyArtist> = emptyList(),
 )
 
 @kotlinx.serialization.Serializable

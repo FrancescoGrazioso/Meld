@@ -358,17 +358,6 @@ constructor(
         }
     }
 
-    suspend fun getPlaylistTracks(playlistId: String): List<SpotifyTrack> {
-        Timber.d("SpotifyVM: getPlaylistTracks($playlistId)")
-        if (!SpotifyTokenManager.ensureAuthenticated()) return emptyList()
-
-        return Spotify.playlistTracks(playlistId, limit = 100).getOrNull()
-            ?.items
-            ?.mapNotNull { it.track?.takeIf { t -> !t.isLocal } }
-            .also { Timber.d("SpotifyVM: getPlaylistTracks() - got ${it?.size ?: 0} tracks") }
-            ?: emptyList()
-    }
-
     // =========================================================================
     // Authentication
     // =========================================================================
