@@ -933,14 +933,18 @@ class MusicService :
                     val minSongDuration =
                         dataStore.get(ScrobbleMinSongDurationKey, LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION)
                     val delaySeconds = dataStore.get(ScrobbleDelaySecondsKey, LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS)
-                    scrobbleManager =
+                    val manager =
                         ScrobbleManager(
                             scope,
                             minSongDuration = minSongDuration,
                             scrobbleDelayPercent = delayPercent,
                             scrobbleDelaySeconds = delaySeconds,
                         )
-                    scrobbleManager?.useNowPlaying = dataStore.get(LastFMUseNowPlaying, false)
+                    scrobbleManager = manager
+                    manager.useNowPlaying = dataStore.get(LastFMUseNowPlaying, false)
+                    if (::player.isInitialized && player.isPlaying) {
+                        manager.onSongStart(player.currentMetadata, duration = player.duration)
+                    }
                 } else if (!enabled && scrobbleManager != null) {
                     scrobbleManager?.destroy()
                     scrobbleManager = null
@@ -2204,7 +2208,7 @@ class MusicService :
         // Restart SponsorBlock for the new track (no-op when disabled).
         startSponsorBlockForCurrentTrack()
 
-        scrobbleManager?.onSongStop()
+        scrobbleManager?.onSongStop(finalize = reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO)
         if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
             scrobbleManager?.onSongStart(player.currentMetadata, duration = player.duration)
         }
@@ -2292,7 +2296,9 @@ class MusicService :
             scheduleCrossfade()
         }
 
-        if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+        if (playbackState == Player.STATE_ENDED) {
+            scrobbleManager?.onSongStop(finalize = true)
+        } else if (playbackState == Player.STATE_IDLE) {
             scrobbleManager?.onSongStop()
         }
     }
@@ -2394,8 +2400,16 @@ class MusicService :
         }
 
         // Scrobbling
-        if (events.containsAny(Player.EVENT_IS_PLAYING_CHANGED)) {
-            scrobbleManager?.onPlayerStateChanged(player.isPlaying, player.currentMetadata, duration = player.duration)
+        if (events.containsAny(
+                Player.EVENT_IS_PLAYING_CHANGED,
+                Player.EVENT_PLAYBACK_STATE_CHANGED,
+            )
+        ) {
+            scrobbleManager?.onPlayerStateChanged(
+                player.isPlaying,
+                player.currentMetadata,
+                duration = player.duration,
+            )
         }
     }
 
