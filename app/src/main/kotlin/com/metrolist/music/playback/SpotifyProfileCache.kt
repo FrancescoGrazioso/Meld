@@ -16,10 +16,13 @@ import com.metrolist.spotify.Spotify
 import com.metrolist.spotify.models.SpotifyArtist
 import com.metrolist.spotify.models.SpotifyImage
 import com.metrolist.spotify.models.SpotifyTrack
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.sync.Mutex
@@ -63,6 +66,10 @@ object SpotifyProfileCache {
 
     private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
     private val refreshMutex = Mutex()
+
+    // Long-lived scope for stale-while-revalidate background refreshes.
+    private val bgScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    @Volatile private var backgroundRefreshInFlight = false
 
     @Volatile private var cachedTracks: List<SpotifyTrack> = emptyList()
     @Volatile private var cachedArtists: List<SpotifyArtist> = emptyList()
@@ -339,7 +346,25 @@ object SpotifyProfileCache {
                 cachedTracks.isNotEmpty()
             ) return
 
-            // Refresh from network sources in background
+            if (cachedTracks.isNotEmpty()) {
+                // Stale-while-revalidate: we already have usable (stale) data, so
+                // return it immediately and refresh from the network in the
+                // background instead of blocking the caller on a multi-second
+                // GQL/REST round-trip. Subsequent reads pick up the fresh data.
+                if (!backgroundRefreshInFlight) {
+                    backgroundRefreshInFlight = true
+                    bgScope.launch {
+                        try {
+                            refreshMutex.withLock { refreshFromSources(context, database) }
+                        } finally {
+                            backgroundRefreshInFlight = false
+                        }
+                    }
+                }
+                return
+            }
+
+            // Cold start: nothing to serve, so block on the network refresh.
             refreshFromSources(context, database)
         }
     }

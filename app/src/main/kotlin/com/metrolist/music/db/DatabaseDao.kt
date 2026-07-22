@@ -1978,7 +1978,7 @@ interface DatabaseDao {
     @Upsert
     fun upsertSpotifyMatch(match: SpotifyMatchEntity)
 
-    @Query("DELETE FROM spotify_match WHERE cachedAt < :before")
+    @Query("DELETE FROM spotify_match WHERE cachedAt < :before AND isManualOverride = 0")
     fun clearOldSpotifyMatches(before: Long)
 
     @Query("DELETE FROM spotify_match")

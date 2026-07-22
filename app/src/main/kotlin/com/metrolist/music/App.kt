@@ -40,6 +40,7 @@ import com.metrolist.music.extensions.toInetSocketAddress
 import com.metrolist.music.utils.AnrWatchdog
 import com.metrolist.music.utils.CrashHandler
 import com.metrolist.music.utils.CrashReporter
+import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.utils.SpotifyHashSync
 import com.metrolist.music.utils.SpotifyTokenManager
 import com.metrolist.music.utils.cipher.CipherDeobfuscator
@@ -70,6 +71,9 @@ class App :
     @Inject
     @ApplicationScope
     lateinit var applicationScope: CoroutineScope
+
+    @Inject
+    lateinit var database: MusicDatabase
 
     override fun onCreate() {
         super.onCreate()
@@ -171,6 +175,16 @@ class App :
         SpotifyTokenManager.init(dataStore)
         applicationScope.launch(Dispatchers.IO) {
             SpotifyTokenManager.ensureAuthenticated()
+        }
+
+        // Evict Spotify↔YouTube match-cache rows older than 90 days (manual
+        // overrides are preserved) so the table doesn't grow without bound.
+        applicationScope.launch(Dispatchers.IO) {
+            runCatching {
+                database.clearOldSpotifyMatches(
+                    System.currentTimeMillis() - SPOTIFY_MATCH_TTL_MS,
+                )
+            }.onFailure { Timber.w(it, "Failed to evict old Spotify matches") }
         }
 
         if (settings[ProxyEnabledKey] == true) {
@@ -350,6 +364,9 @@ class App :
     }
 
     companion object {
+        /** Spotify match-cache rows older than this are evicted on startup. */
+        private const val SPOTIFY_MATCH_TTL_MS = 90L * 24 * 60 * 60 * 1000 // 90 days
+
         suspend fun forgetAccount(context: Context) {
             Timber.d("forgetAccount: Starting logout process")
 
