@@ -5,6 +5,8 @@
 
 package com.metrolist.music.ui.utils
 
+import java.net.URI
+
 private val YT_VIDEO_THUMB_PATTERN =
     "https?://i\\.ytimg\\.com/(vi|vi_webp)/([^/]+)/([a-z0-9_]+)\\.(jpg|webp)(\\?.*)?"
         .toRegex(RegexOption.IGNORE_CASE)
@@ -13,7 +15,7 @@ fun String.resize(
     width: Int? = null,
     height: Int? = null,
 ): String {
-    val host = runCatching { java.net.URI(this).host }.getOrNull()
+    val host = runCatching { URI(this).host }.getOrNull()
         ?: this.substringAfter("://").substringBefore("/").substringBefore(":")
     // Google-hosted artwork (lh3..lh6, yt3.googleusercontent.com)
     // Note: 544px is standard high-res resolution for YouTube Music square artwork
