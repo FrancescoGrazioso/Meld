@@ -235,71 +235,48 @@ object SpotifyRecommendationEngine {
                 "(artists: ${seedArtistIds.size}, genres: ${seedGenres.size})"
         )
 
-        // --- Source 1: Seed artist top tracks (highest relevance) ---
-        coroutineScope {
-            seedArtistIds.take(2).map { artistId ->
-                async {
-                    Spotify.artistTopTracks(artistId).getOrNull()?.tracks?.let { tracks ->
-                        synchronized(candidates) {
-                            for (track in tracks) {
-                                if (track.id.isNotEmpty() && seenIds.add(track.id)) {
-                                    candidates.add(
-                                        buildCandidate(
-                                            track, Bucket.SEED_ARTIST,
-                                            seedGenres,
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                        Timber.d("$TAG: Source SEED_ARTIST($artistId): ${tracks.size} tracks")
-                    }
-                }
-            }.awaitAll()
-        }
-
-        // --- Source 2: Same album tracks ---
-        seedTrack.album?.id?.let { albumId ->
-            Spotify.album(albumId).getOrNull()?.tracks?.items?.let { albumTracks ->
-                for (track in albumTracks) {
-                    if (track.id.isNotEmpty() && seenIds.add(track.id)) {
-                        candidates.add(
-                            buildCandidate(
-                                track, Bucket.SAME_ALBUM,
-                                seedGenres,
-                            )
-                        )
-                    }
-                }
-                Timber.d("$TAG: Source SAME_ALBUM($albumId): ${albumTracks.size} tracks")
-            }
-        }
-
-        // --- Source 3: Genre-neighbor artist top tracks ---
+        // Genre neighbors are derived purely from profile data (no network), so they
+        // can be computed before any fetch.
         val neighborArtistIds = findGenreNeighbors(seedArtistIds, seedGenres)
         Timber.d("$TAG: Found ${neighborArtistIds.size} genre-neighbor artists")
 
-        coroutineScope {
-            neighborArtistIds.take(4).map { artistId ->
-                async {
-                    Spotify.artistTopTracks(artistId).getOrNull()?.tracks?.let { tracks ->
-                        synchronized(candidates) {
-                            for (track in tracks) {
-                                if (track.id.isNotEmpty() && seenIds.add(track.id)) {
-                                    candidates.add(
-                                        buildCandidate(
-                                            track, Bucket.GENRE_NEIGHBOR,
-                                            seedGenres,
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                        Timber.d("$TAG: Source GENRE_NEIGHBOR($artistId): ${tracks.size} tracks")
-                    }
-                }
-            }.awaitAll()
+        // --- Sources 1-3: fetch seed-artist top tracks, same-album tracks and
+        //     genre-neighbor top tracks all in a single parallel wave (previously
+        //     three sequential waves). Candidates are then assigned to buckets
+        //     sequentially in priority order, so dedup/bucketing stays deterministic.
+        val (seedArtistTracks, albumTracks, neighborTracks) = coroutineScope {
+            val seedDeferred = seedArtistIds.take(2).map { artistId ->
+                async { Spotify.artistTopTracks(artistId).getOrNull()?.tracks.orEmpty() }
+            }
+            val albumDeferred = async {
+                seedTrack.album?.id?.let { albumId ->
+                    Spotify.album(albumId).getOrNull()?.tracks?.items
+                }.orEmpty()
+            }
+            val neighborDeferred = neighborArtistIds.take(4).map { artistId ->
+                async { Spotify.artistTopTracks(artistId).getOrNull()?.tracks.orEmpty() }
+            }
+            Triple(
+                seedDeferred.awaitAll().flatten(),
+                albumDeferred.await(),
+                neighborDeferred.awaitAll().flatten(),
+            )
         }
+
+        fun addCandidates(tracks: List<SpotifyTrack>, bucket: Bucket) {
+            for (track in tracks) {
+                if (track.id.isNotEmpty() && seenIds.add(track.id)) {
+                    candidates.add(buildCandidate(track, bucket, seedGenres))
+                }
+            }
+        }
+        addCandidates(seedArtistTracks, Bucket.SEED_ARTIST)
+        addCandidates(albumTracks, Bucket.SAME_ALBUM)
+        addCandidates(neighborTracks, Bucket.GENRE_NEIGHBOR)
+        Timber.d(
+            "$TAG: Sources 1-3 — seedArtist=${seedArtistTracks.size}, " +
+                "album=${albumTracks.size}, neighbor=${neighborTracks.size}"
+        )
 
         // --- Source 4: User's top tracks pool (personalized background) ---
         for (weightedTrack in topTrackPool) {

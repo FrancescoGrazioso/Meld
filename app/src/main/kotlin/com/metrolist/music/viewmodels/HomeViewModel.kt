@@ -67,6 +67,7 @@ import com.metrolist.spotify.Spotify
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -657,7 +658,16 @@ class HomeViewModel @Inject constructor(
         val sections = mutableListOf<SpotifyHomeSection>()
 
         try {
-            val profileTracks = SpotifyProfileCache.getTopTracks(context, database, limit = 20)
+            // These three sources are independent — fetch them concurrently and then
+            // assemble the sections in a fixed display order. Previously they ran
+            // strictly sequentially (~1-2.7s of chained round-trips).
+            val (profileTracks, newReleasesResult, homeResult) = coroutineScope {
+                val topTracksDeferred = async { SpotifyProfileCache.getTopTracks(context, database, limit = 20) }
+                val newReleasesDeferred = async { Spotify.newReleases(limit = 20) }
+                val homeDeferred = async { Spotify.home(sectionItemsLimit = 10) }
+                Triple(topTracksDeferred.await(), newReleasesDeferred.await(), homeDeferred.await())
+            }
+
             Timber.d("spotifyHome: top tracks from profile cache = ${profileTracks.size}")
             val topTracks = if (hideExplicit) profileTracks.filter { !it.explicit } else profileTracks
             if (topTracks.isNotEmpty()) {
@@ -671,8 +681,7 @@ class HomeViewModel @Inject constructor(
                 Timber.w("spotifyHome: no top tracks — skipping pinned section")
             }
 
-            Timber.d("spotifyHome: calling Spotify.newReleases()...")
-            Spotify.newReleases(limit = 20).onSuccess { newReleases ->
+            newReleasesResult.onSuccess { newReleases ->
                 val albums = newReleases.albums?.items.orEmpty()
                 if (albums.isNotEmpty()) {
                     sections.add(SpotifyHomeSection(
@@ -688,8 +697,7 @@ class HomeViewModel @Inject constructor(
                 Timber.e(e, "spotifyHome: newReleases() FAILED — ${e.javaClass.simpleName}: ${e.message}")
             }
 
-            Timber.d("spotifyHome: calling Spotify.home()...")
-            Spotify.home(sectionItemsLimit = 10).onSuccess { feed ->
+            homeResult.onSuccess { feed ->
                 Timber.d("spotifyHome: home() OK — greeting='${feed.greeting}' rawSections=${feed.sections.size}")
                 feed.sections.forEachIndexed { i, s ->
                     Timber.d("spotifyHome:   raw[$i] title='${s.title}' type=${s.typename} items=${s.items.size} totalCount=${s.totalCount}")

@@ -29,6 +29,8 @@ import com.metrolist.spotify.models.SpotifyTrack
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -147,27 +149,26 @@ constructor(
     // =========================================================================
 
     /**
-     * Loads ALL Spotify data sequentially with staggered delays.
-     * If any call hits a 429, waits the full Retry-After before proceeding
-     * to the next endpoint to avoid cascading rate-limit failures.
+     * Loads ALL Spotify data. Playlists and liked songs both come from GraphQL
+     * (not subject to the aggressive REST rate limits), so they are fetched
+     * concurrently instead of being serialized behind stagger delays. Only the
+     * REST top-tracks call is guarded by a stagger/Retry-After cooldown.
      */
     fun loadAll() {
         Timber.d("SpotifyVM: loadAll() triggered")
         viewModelScope.launch(Dispatchers.IO) {
-            var rateLimitDelay = 0L
-
-            rateLimitDelay = loadPlaylistsInternal()
-            if (rateLimitDelay > 0) {
-                Timber.d("SpotifyVM: loadAll() waiting ${rateLimitDelay}s after playlists 429")
-                delay(rateLimitDelay * 1000)
-            } else {
-                delay(STAGGER_DELAY_MS)
+            val gqlDelays = coroutineScope {
+                val playlistsDeferred = async { loadPlaylistsInternal() }
+                val likedDeferred = async { loadLikedSongsInternal() }
+                listOf(playlistsDeferred.await(), likedDeferred.await())
             }
 
-            rateLimitDelay = loadLikedSongsInternal()
-            if (rateLimitDelay > 0) {
-                Timber.d("SpotifyVM: loadAll() waiting ${rateLimitDelay}s after liked songs 429")
-                delay(rateLimitDelay * 1000)
+            // If a GQL call unexpectedly hit a 429, honor the longest Retry-After
+            // before the REST call; otherwise a single stagger delay suffices.
+            val gqlDelay = gqlDelays.maxOrNull() ?: 0L
+            if (gqlDelay > 0) {
+                Timber.d("SpotifyVM: loadAll() waiting ${gqlDelay}s after GQL 429")
+                delay(gqlDelay * 1000)
             } else {
                 delay(STAGGER_DELAY_MS)
             }
