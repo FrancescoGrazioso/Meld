@@ -1296,6 +1296,16 @@ class SyncUtils @Inject constructor(
             val resolvedYtIds = resolved.map { it.metadata.id }.toSet()
             val existingByYtId = database.getSongsByIds(resolvedYtIds.toList()).associateBy { it.id }
 
+            // Batch-fetch the Spotify matches for local liked songs that weren't just
+            // resolved, in a single indexed query, instead of one reverse lookup per
+            // song inside the transaction (previously an N+1 over the match table).
+            val unlikeCandidateIds = localLiked.map { it.id }.filter { it !in resolvedYtIds }
+            val matchByYtId = if (unlikeCandidateIds.isEmpty()) {
+                emptyMap()
+            } else {
+                database.getSpotifyMatchesByYouTubeIds(unlikeCandidateIds).associateBy { it.youtubeId }
+            }
+
             val now = LocalDateTime.now()
 
             database.withTransaction {
@@ -1320,7 +1330,7 @@ class SyncUtils @Inject constructor(
                 //     left alone — they may simply have never been resolved.
                 localLiked.forEach { song ->
                     if (song.id in resolvedYtIds) return@forEach
-                    val match = getSpotifyMatchByYouTubeId(song.id) ?: return@forEach
+                    val match = matchByYtId[song.id] ?: return@forEach
                     if (match.spotifyId !in resolvedSpotifyIds) {
                         try {
                             update(song.song.copy(liked = false, likedDate = null))

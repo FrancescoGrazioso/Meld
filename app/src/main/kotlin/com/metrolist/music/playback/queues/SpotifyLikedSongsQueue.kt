@@ -152,11 +152,20 @@ class SpotifyLikedSongsQueue(
             }
             if (allTracks.isEmpty()) return@withContext null
             val targetIndex = startIndex.coerceIn(0, allTracks.size - 1)
+            // Resolve all tracks in parallel batches (order preserved) instead of
+            // one-by-one; on a large library the serial loop blocked shuffle-all for
+            // tens of seconds. Batch size matches nextPage() to bound concurrency.
+            val resolved = ArrayList<MediaItem?>(allTracks.size)
+            for (chunk in allTracks.chunked(RESOLVE_BATCH_SIZE)) {
+                resolved += coroutineScope {
+                    chunk.map { track -> async { mapper.resolveToMediaItem(track) } }.awaitAll()
+                }
+            }
             val resolvedItems = mutableListOf<MediaItem>()
             var mediaItemIndex = 0
             for (i in allTracks.indices) {
                 if (i == targetIndex) mediaItemIndex = resolvedItems.size
-                mapper.resolveToMediaItem(allTracks[i])?.let { resolvedItems.add(it) }
+                resolved[i]?.let { resolvedItems.add(it) }
             }
             if (resolvedItems.isEmpty()) return@withContext null
             mediaItemIndex = mediaItemIndex.coerceIn(0, resolvedItems.size - 1)

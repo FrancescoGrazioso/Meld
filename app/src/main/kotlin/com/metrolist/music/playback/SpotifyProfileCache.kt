@@ -566,6 +566,32 @@ object SpotifyProfileCache {
         true
     }
 
+    /**
+     * Clears all persisted Spotify profile/library caches (in-memory + DataStore).
+     * Called on logout / account switch so a subsequent login never surfaces the
+     * previous account's tracks, artists, followed artists or playlists.
+     */
+    suspend fun clearAllPersisted(context: Context) {
+        invalidate()
+        try {
+            context.dataStore.edit { prefs ->
+                prefs.remove(CACHE_KEY_TRACKS)
+                prefs.remove(CACHE_KEY_ARTISTS)
+                prefs.remove(CACHE_KEY_TIMESTAMP)
+                prefs.remove(CACHE_KEY_HAD_REST)
+                prefs.remove(CACHE_KEY_FOLLOWED_ARTISTS)
+                prefs.remove(CACHE_KEY_FOLLOWED_TS)
+                prefs.remove(CACHE_KEY_RELATED_NAMES)
+                prefs.remove(CACHE_KEY_RELATED_TS)
+                // Owned by SpotifyViewModel; cleared here so logout wipes every cache in one place.
+                prefs.remove(stringPreferencesKey("spotify_cached_playlists_json"))
+            }
+            Timber.d("$TAG: Cleared all persisted Spotify caches")
+        } catch (e: Exception) {
+            Timber.w(e, "$TAG: Failed to clear persisted Spotify caches")
+        }
+    }
+
     private suspend fun persistToDataStore(context: Context) {
         try {
             val tracksJson = json.encodeToString(CachedTrackList(cachedTracks.take(100)))
