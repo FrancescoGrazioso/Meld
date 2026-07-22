@@ -1500,23 +1500,28 @@ object Spotify {
 
     // ── Artists (GQL: queryArtistOverview) ───────────────────────────────
 
-    suspend fun artist(artistId: String): Result<SpotifyArtist> =
-        runCatching {
-            val vars =
-                buildJsonObject {
+    /**
+     * Runs the queryArtistOverview GQL query for [artistId] and returns the
+     * `data.artistUnion` object (or throws). Shared by [artist],
+     * [artistTopTracks] and [artistRelatedArtists], which only differ in which
+     * fields of the union they read.
+     */
+    private suspend fun artistUnion(artistId: String): JsonObject {
+        val response =
+            graphqlPost(
+                operationName = "queryArtistOverview",
+                variables = buildJsonObject {
                     put("uri", "spotify:artist:$artistId")
                     put("locale", "")
-                }
+                },
+            )
+        return response.obj("data")?.obj("artistUnion")
+            ?: throw SpotifyException(500, "Invalid queryArtistOverview response")
+    }
 
-            val response =
-                graphqlPost(
-                    operationName = "queryArtistOverview",
-                    variables = vars,
-                )
-
-            val artistData =
-                response.obj("data")?.obj("artistUnion")
-                    ?: throw SpotifyException(500, "Invalid queryArtistOverview response")
+    suspend fun artist(artistId: String): Result<SpotifyArtist> =
+        runCatching {
+            val artistData = artistUnion(artistId)
 
             SpotifyArtist(
                 id = artistId,
@@ -1531,21 +1536,7 @@ object Spotify {
         market: String = "US",
     ): Result<ArtistTopTracksResponse> =
         runCatching {
-            val vars =
-                buildJsonObject {
-                    put("uri", "spotify:artist:$artistId")
-                    put("locale", "")
-                }
-
-            val response =
-                graphqlPost(
-                    operationName = "queryArtistOverview",
-                    variables = vars,
-                )
-
-            val artistData =
-                response.obj("data")?.obj("artistUnion")
-                    ?: throw SpotifyException(500, "Invalid queryArtistOverview response")
+            val artistData = artistUnion(artistId)
 
             val topTracksItems =
                 artistData.obj("discography")
@@ -1566,21 +1557,7 @@ object Spotify {
      */
     suspend fun artistRelatedArtists(artistId: String): Result<List<SpotifyArtist>> =
         runCatching {
-            val vars =
-                buildJsonObject {
-                    put("uri", "spotify:artist:$artistId")
-                    put("locale", "")
-                }
-
-            val response =
-                graphqlPost(
-                    operationName = "queryArtistOverview",
-                    variables = vars,
-                )
-
-            val artistData =
-                response.obj("data")?.obj("artistUnion")
-                    ?: throw SpotifyException(500, "Invalid queryArtistOverview response")
+            val artistData = artistUnion(artistId)
 
             val relatedItems =
                 artistData.obj("relatedContent")
