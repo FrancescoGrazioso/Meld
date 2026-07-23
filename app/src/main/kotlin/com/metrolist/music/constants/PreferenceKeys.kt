@@ -221,6 +221,14 @@ val QobuzBackendKey = stringPreferencesKey("qobuzBackend")
 val QobuzCountryKey = stringPreferencesKey("qobuzCountry")
 val QobuzMatchOverridesKey = stringPreferencesKey("qobuzMatchOverrides")
 
+// Optional user overrides for the resolver base URLs. Blank = use the built-in
+// default. Lets users point at a self-hosted squid.wtf instance when the public
+// mirrors are down.
+val QobuzSquidEndpointKey = stringPreferencesKey("qobuzSquidEndpoint")
+val QobuzKennyEndpointKey = stringPreferencesKey("qobuzKennyEndpoint")
+val QobuzTryptEndpointKey = stringPreferencesKey("qobuzTryptEndpoint")
+val QobuzJumoEndpointKey = stringPreferencesKey("qobuzJumoEndpoint")
+
 enum class QobuzAudioQuality {
     AAC_320,
     CD_QUALITY,

@@ -44,30 +44,33 @@ object QobuzBackendHealthChecker {
         val message: String,
     )
 
-    val targets: List<Target> = listOf(
-        Target(
-            backend = QobuzAudioProvider.ResolverBackend.TRYPT,
-            name = "TrypT HiFi",
-            endpoint = "${QobuzAudioProvider.TRYPT_BASE_URL}/api/get-music?q=test&offset=0",
-            tokenCountry = "US",
-        ),
-        Target(
-            backend = QobuzAudioProvider.ResolverBackend.JUMO,
-            name = "Jumo",
-            endpoint = "${QobuzAudioProvider.JUMO_BASE_URL}/",
-        ),
-        Target(
-            backend = QobuzAudioProvider.ResolverBackend.MONOKENNY,
-            name = "Monokenny",
-            endpoint = "${QobuzAudioProvider.KENNY_BASE_URL}/api/get-music?q=test&offset=0",
-        ),
-        Target(
-            backend = QobuzAudioProvider.ResolverBackend.SQUID,
-            name = "Squid",
-            endpoint = "${QobuzAudioProvider.SQUID_BASE_URL}/api/get-music?q=test&offset=0",
-            tokenCountry = "US",
-        ),
-    )
+    // Computed each call so user-configured endpoint overrides (applied via
+    // QobuzAudioProvider.configureEndpoints) are reflected in the health check.
+    val targets: List<Target>
+        get() = listOf(
+            Target(
+                backend = QobuzAudioProvider.ResolverBackend.TRYPT,
+                name = "TrypT HiFi",
+                endpoint = "${QobuzAudioProvider.tryptBase}/api/get-music?q=test&offset=0",
+                tokenCountry = "US",
+            ),
+            Target(
+                backend = QobuzAudioProvider.ResolverBackend.JUMO,
+                name = "Jumo",
+                endpoint = "${QobuzAudioProvider.jumoBase}/",
+            ),
+            Target(
+                backend = QobuzAudioProvider.ResolverBackend.MONOKENNY,
+                name = "Monokenny",
+                endpoint = "${QobuzAudioProvider.kennyBase}/api/get-music?q=test&offset=0",
+            ),
+            Target(
+                backend = QobuzAudioProvider.ResolverBackend.SQUID,
+                name = "Squid",
+                endpoint = "${QobuzAudioProvider.squidBase}/api/get-music?q=test&offset=0",
+                tokenCountry = "US",
+            ),
+        )
 
     private val client = OkHttpClient.Builder()
         .connectTimeout(5, TimeUnit.SECONDS)

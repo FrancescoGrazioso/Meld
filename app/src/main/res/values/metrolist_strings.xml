@@ -541,6 +541,15 @@
 
     <string name="qobuz_country_description">Two-letter ISO code (e.g. US, IT, FR). Affects catalog and availability.</string>
 
+    <string name="qobuz_endpoints">Custom endpoints (advanced)</string>
+    <string name="qobuz_endpoints_description">Override the resolver base URLs, e.g. to point at a self-hosted instance. Leave blank to use the built-in default.</string>
+    <string name="qobuz_endpoint_squid">Squid endpoint</string>
+    <string name="qobuz_endpoint_kenny">Monokenny endpoint</string>
+    <string name="qobuz_endpoint_trypt">TrypT endpoint</string>
+    <string name="qobuz_endpoint_jumo">Jumo endpoint</string>
+    <string name="qobuz_endpoint_default">Default</string>
+    <string name="qobuz_endpoint_hint">https://example.com (blank = default)</string>
+
     <string name="details_desc">View the song\'s details</string>
     <string name="edit_desc">Edit the title or artist</string>
     <string name="start_radio_desc">Start a radio based on this item</string>
