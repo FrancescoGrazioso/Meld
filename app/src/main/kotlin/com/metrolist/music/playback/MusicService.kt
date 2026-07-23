@@ -93,7 +93,11 @@ import com.metrolist.music.constants.QobuzAudioQualityKey
 import com.metrolist.music.constants.QobuzBackend
 import com.metrolist.music.constants.QobuzBackendKey
 import com.metrolist.music.constants.QobuzCountryKey
+import com.metrolist.music.constants.QobuzJumoEndpointKey
+import com.metrolist.music.constants.QobuzKennyEndpointKey
 import com.metrolist.music.constants.QobuzMatchOverridesKey
+import com.metrolist.music.constants.QobuzSquidEndpointKey
+import com.metrolist.music.constants.QobuzTryptEndpointKey
 import com.metrolist.music.qobuz.QobuzAudioProvider
 import com.metrolist.music.qobuz.QobuzMatchOverride
 import com.metrolist.music.qobuz.QobuzMatchOverrides
@@ -736,6 +740,10 @@ class MusicService :
         // backend, country, or quality should take effect on the next track
         // boundary without requiring a full app restart — reload the current
         // item so it picks up the new source immediately.
+        // Apply any user-configured endpoint overrides at startup so the first
+        // resolve already uses them.
+        applyQobuzEndpointOverrides()
+
         var isFirstQobuzEmit = true
         scope.launch {
             dataStore.data
@@ -745,6 +753,10 @@ class MusicService :
                         it[QobuzAudioQualityKey].orEmpty(),
                         it[QobuzBackendKey].orEmpty(),
                         it[QobuzCountryKey].orEmpty(),
+                        it[QobuzSquidEndpointKey].orEmpty(),
+                        it[QobuzKennyEndpointKey].orEmpty(),
+                        it[QobuzTryptEndpointKey].orEmpty(),
+                        it[QobuzJumoEndpointKey].orEmpty(),
                     ).joinToString("|")
                 }.distinctUntilChanged()
                 .collect {
@@ -752,6 +764,9 @@ class MusicService :
                         isFirstQobuzEmit = false
                         return@collect
                     }
+                    // A settings change may have edited an endpoint — re-apply
+                    // before reloading the current stream.
+                    applyQobuzEndpointOverrides()
                     val mediaId = player.currentMediaItem?.mediaId ?: return@collect
                     val currentPosition = player.currentPosition
                     val wasPlaying = player.isPlaying
@@ -3452,6 +3467,15 @@ class MusicService :
             }
     }
 
+    private fun applyQobuzEndpointOverrides() {
+        QobuzAudioProvider.configureEndpoints(
+            squid = dataStore.get(QobuzSquidEndpointKey, ""),
+            kenny = dataStore.get(QobuzKennyEndpointKey, ""),
+            trypt = dataStore.get(QobuzTryptEndpointKey, ""),
+            jumo = dataStore.get(QobuzJumoEndpointKey, ""),
+        )
+    }
+
     private fun qobuzCacheKey(mediaId: String, qualityCode: Int) =
         "qobuz:$qualityCode:$mediaId"
 
@@ -3557,6 +3581,16 @@ class MusicService :
                 val dbSong = runBlocking(Dispatchers.IO) { database.getSongById(mediaId) }
                 val qobuzQuery = buildQobuzQuery(mediaId, spotifyTrack, dbSong, qobuzQualityEnum)
 
+                Timber.tag("Qobuz").d(
+                    "attempt ▶ %s | spotifyMeta=%b dbSong=%b query=%b quality=%s",
+                    mediaId, spotifyTrack != null, dbSong != null, qobuzQuery != null, qobuzQualityEnum.name,
+                )
+                if (qobuzQuery == null) {
+                    Timber.tag("Qobuz").d(
+                        "skip %s: no query built (missing title/artist metadata)", mediaId,
+                    )
+                }
+
                 if (qobuzQuery != null) {
                     // Manual override wins over auto-match: when the user has
                     // pinned a Qobuz track ID for this mediaId, swap the query's
@@ -3614,13 +3648,26 @@ class MusicService :
                     // Tighter primary timeout (was 15s). 10s is well above the
                     // observed P95 for a real Qobuz match and halves the perceived
                     // "loading" hang for the common "track is not on Qobuz" case.
-                    var qobuzResolved = if (skipQobuzForMiss) null else runCatching {
-                        runBlocking(Dispatchers.IO) {
-                            withTimeout(10_000L) {
-                                QobuzAudioProvider.resolve(effectiveQuery)
+                    var qobuzResolved = if (skipQobuzForMiss) {
+                        null
+                    } else {
+                        runCatching {
+                            runBlocking(Dispatchers.IO) {
+                                withTimeout(10_000L) {
+                                    QobuzAudioProvider.resolve(effectiveQuery)
+                                }
                             }
-                        }
-                    }.getOrNull()
+                        }.onFailure { e ->
+                            val reason = if (e is TimeoutCancellationException) {
+                                "timed out after 10s"
+                            } else {
+                                e.message ?: e.javaClass.simpleName
+                            }
+                            Timber.tag("Qobuz").d(
+                                "primary ✘ %s via %s: %s", mediaId, effectiveQuery.backend.name, reason,
+                            )
+                        }.getOrNull()
+                    }
 
                     // Cross-backend fallback: cycle through every other backend
                     // before giving up to YouTube. Order: primary → others in enum order.
@@ -3633,6 +3680,10 @@ class MusicService :
                         val altBackends = QobuzAudioProvider.ResolverBackend.entries
                             .filter { it != effectiveQuery.backend }
                             .take(2) // cap the cascade
+                        Timber.tag("Qobuz").d(
+                            "alt ▶ %s: primary failed but track known on Qobuz, trying %s",
+                            mediaId, altBackends.joinToString { it.name },
+                        )
                         for (altBackend in altBackends) {
                             val altQuery = effectiveQuery.copy(backend = altBackend)
                             qobuzResolved = runCatching {
@@ -3641,6 +3692,15 @@ class MusicService :
                                         QobuzAudioProvider.resolve(altQuery)
                                     }
                                 }
+                            }.onFailure { e ->
+                                val reason = if (e is TimeoutCancellationException) {
+                                    "timed out after 5s"
+                                } else {
+                                    e.message ?: e.javaClass.simpleName
+                                }
+                                Timber.tag("Qobuz").d(
+                                    "alt ✘ %s via %s: %s", mediaId, altBackend.name, reason,
+                                )
                             }.getOrNull()
                             if (qobuzResolved != null) break
                         }
@@ -3651,11 +3711,15 @@ class MusicService :
                     // already have a known match (those failures are transient).
                     if (qobuzResolved == null && !knownOnQobuz) {
                         qobuzMissUntilMs[mediaId] = System.currentTimeMillis() + QOBUZ_MISS_TTL_MS
+                        Timber.tag("Qobuz").d(
+                            "negative-cache set for %s (%dm)", mediaId, QOBUZ_MISS_TTL_MS / 60_000,
+                        )
                     }
 
                     if (qobuzResolved != null) {
-                        Timber.tag("MusicService").i(
-                            "Using Qobuz stream for $mediaId: ${qobuzResolved.label}",
+                        Timber.tag("Qobuz").i(
+                            "resolved ✔ %s → %s (%dbps, trackId=%s)",
+                            mediaId, qobuzResolved.label, qobuzResolved.bitrate, qobuzResolved.trackId,
                         )
                         // Persist the match + any newly-discovered ISRC so the next
                         // play of this track is a deterministic, search-free hit.
@@ -3685,6 +3749,10 @@ class MusicService :
                             .build()
                     }
                 }
+
+                // Reached only when Qobuz produced no playable stream — every
+                // return@Factory above is on the success path.
+                Timber.tag("Qobuz").d("fallback → YouTube for %s (Qobuz did not resolve)", mediaId)
             }
 
             if (!shouldBypassCache) {

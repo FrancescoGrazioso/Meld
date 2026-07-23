@@ -59,6 +59,10 @@ import com.metrolist.music.constants.QobuzAudioQualityKey
 import com.metrolist.music.constants.QobuzBackend
 import com.metrolist.music.constants.QobuzBackendKey
 import com.metrolist.music.constants.QobuzCountryKey
+import com.metrolist.music.constants.QobuzJumoEndpointKey
+import com.metrolist.music.constants.QobuzKennyEndpointKey
+import com.metrolist.music.constants.QobuzSquidEndpointKey
+import com.metrolist.music.constants.QobuzTryptEndpointKey
 import com.metrolist.music.constants.SpotifyAccessTokenKey
 import com.metrolist.music.constants.SpotifySpDcKey
 import com.metrolist.music.constants.SpotifySpKeyKey
@@ -81,6 +85,10 @@ import com.metrolist.music.ui.component.ListDialog
 import com.metrolist.music.ui.component.PreferenceEntry
 import com.metrolist.music.ui.component.PreferenceGroupTitle
 import com.metrolist.music.ui.component.SwitchPreference
+import com.metrolist.music.ui.component.TextFieldDialog
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.datastore.preferences.core.Preferences
 import com.metrolist.music.ui.utils.backToMain
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
@@ -456,6 +464,22 @@ fun SpotifySettings(
                     onClick = { showQobuzCountryDialog = true },
                 )
 
+                PreferenceGroupTitle(title = stringResource(R.string.qobuz_endpoints))
+                PreferenceEntry(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.qobuz_endpoints_description),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    },
+                    description = null,
+                )
+                QobuzEndpointEntry(QobuzSquidEndpointKey, stringResource(R.string.qobuz_endpoint_squid))
+                QobuzEndpointEntry(QobuzKennyEndpointKey, stringResource(R.string.qobuz_endpoint_kenny))
+                QobuzEndpointEntry(QobuzTryptEndpointKey, stringResource(R.string.qobuz_endpoint_trypt))
+                QobuzEndpointEntry(QobuzJumoEndpointKey, stringResource(R.string.qobuz_endpoint_jumo))
+
                 QobuzBackendHealthSection(currentBackend = qobuzBackend)
             }
 
@@ -496,6 +520,38 @@ fun SpotifySettings(
                 )
             }
         },
+    )
+}
+
+/**
+ * A single editable resolver-endpoint override. Shows the current custom URL
+ * (or "Default") and opens a text-field dialog to change it. Submitting a blank
+ * value clears the override and reverts to the built-in default.
+ */
+@Composable
+private fun QobuzEndpointEntry(
+    key: Preferences.Key<String>,
+    title: String,
+) {
+    var value by rememberPreference(key, "")
+    var showDialog by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        TextFieldDialog(
+            title = { Text(title) },
+            initialTextFieldValue = TextFieldValue(value),
+            placeholder = { Text(stringResource(R.string.qobuz_endpoint_hint)) },
+            isInputValid = { true }, // blank is valid: it clears the override
+            keyboardType = KeyboardType.Uri,
+            onDone = { value = it.trim() },
+            onDismiss = { showDialog = false },
+        )
+    }
+
+    PreferenceEntry(
+        title = { Text(title) },
+        description = value.ifBlank { stringResource(R.string.qobuz_endpoint_default) },
+        onClick = { showDialog = true },
     )
 }
 

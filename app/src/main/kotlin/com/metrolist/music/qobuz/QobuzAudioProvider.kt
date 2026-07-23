@@ -23,6 +23,10 @@ object QobuzAudioProvider {
     const val BROWSER_USER_AGENT =
         "Mozilla/5.0 (Linux; Android 14; Pixel 8 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Mobile Safari/537.36"
 
+    // Single tag for the whole Qobuz resolution path so the full lifecycle of a
+    // resolution can be followed with `adb logcat -s Qobuz`.
+    const val LOG_TAG = "Qobuz"
+
     const val SQUID_BASE_URL = "https://qobuz.squid.wtf"
     const val JUMO_BASE_URL = "https://jumo-dl.pages.dev"
     const val KENNY_BASE_URL = "https://qobuz.kennyy.com.br"
@@ -91,9 +95,16 @@ object QobuzAudioProvider {
         val error: String? = null,
     )
 
+    // Tight timeouts so a dead/stalling backend fails fast on the FIRST play
+    // (before its cooldown is set). The MusicService withTimeout() wrapper can't
+    // interrupt these blocking OkHttp calls — cancellation is cooperative and
+    // execute() has no suspension point — so callTimeout is the real per-request
+    // cap that stops a Cloudflare 522 from hanging ~20s before we mark the host
+    // down and fall back to YouTube.
     private val client = OkHttpClient.Builder()
-        .connectTimeout(12, TimeUnit.SECONDS)
-        .readTimeout(25, TimeUnit.SECONDS)
+        .connectTimeout(8, TimeUnit.SECONDS)
+        .readTimeout(9, TimeUnit.SECONDS)
+        .callTimeout(9, TimeUnit.SECONDS)
         .build()
 
     private val trackCache = ConcurrentHashMap<String, MatchedTrack>()
@@ -101,6 +112,88 @@ object QobuzAudioProvider {
     // Backend cooldown after captcha/403. Skip the backend until the timestamp.
     private val backendCooldownUntilMs = ConcurrentHashMap<ResolverBackend, Long>()
     private val CAPTCHA_COOLDOWN_MS = 5 * 60 * 1000L
+
+    // Dead-host cooldown, keyed by hostname. When a backend host returns a hard
+    // infrastructure failure (DNS miss, connection refused, 5xx, or an HTML
+    // maintenance/"offline" page instead of JSON) we stop hitting it for a few
+    // minutes. Without this a fully-down backend burns the entire search matrix
+    // (up to ~7 terms × 3 search backends) plus the 4-step quality ladder on
+    // long socket timeouts before the caller can fall back to YouTube.
+    private val hostCooldownUntilMs = ConcurrentHashMap<String, Long>()
+    private const val HOST_COOLDOWN_MS = 3 * 60 * 1000L
+
+    // Runtime-overridable endpoints. Blank/invalid falls back to the built-in
+    // default constant. Set from settings via [configureEndpoints] so users can
+    // point at a self-hosted squid.wtf instance when the public mirrors are down.
+    @Volatile private var squidBaseOverride: String? = null
+    @Volatile private var kennyBaseOverride: String? = null
+    @Volatile private var tryptBaseOverride: String? = null
+    @Volatile private var jumoBaseOverride: String? = null
+
+    val squidBase: String get() = squidBaseOverride ?: SQUID_BASE_URL
+    val kennyBase: String get() = kennyBaseOverride ?: KENNY_BASE_URL
+    val tryptBase: String get() = tryptBaseOverride ?: TRYPT_BASE_URL
+    val jumoBase: String get() = jumoBaseOverride ?: JUMO_BASE_URL
+
+    /**
+     * Overrides the resolver base URLs from settings. A blank or malformed value
+     * clears the override and reverts to the built-in default for that backend.
+     */
+    fun configureEndpoints(
+        squid: String?,
+        kenny: String?,
+        trypt: String?,
+        jumo: String?,
+    ) {
+        fun norm(value: String?): String? =
+            value?.trim()?.trimEnd('/')?.takeIf { it.isNotBlank() && it.toHttpUrlOrNull() != null }
+        squidBaseOverride = norm(squid)
+        kennyBaseOverride = norm(kenny)
+        tryptBaseOverride = norm(trypt)
+        jumoBaseOverride = norm(jumo)
+        Timber.tag(LOG_TAG).d(
+            "endpoints configured | squid=%s kenny=%s trypt=%s jumo=%s",
+            squidBase, kennyBase, tryptBase, jumoBase,
+        )
+    }
+
+    private fun hostOf(baseUrl: String): String = baseUrl.toHttpUrlOrNull()?.host ?: baseUrl
+
+    /** Remaining cooldown ms for [baseUrl]'s host, or null when it's clear. */
+    private fun hostCoolingRemainingMs(baseUrl: String): Long? {
+        val host = hostOf(baseUrl)
+        val until = hostCooldownUntilMs[host] ?: return null
+        val now = System.currentTimeMillis()
+        return if (until > now) {
+            until - now
+        } else {
+            hostCooldownUntilMs.remove(host)
+            null
+        }
+    }
+
+    private fun markHostDown(baseUrl: String, reason: String) {
+        val host = hostOf(baseUrl)
+        hostCooldownUntilMs[host] = System.currentTimeMillis() + HOST_COOLDOWN_MS
+        Timber.tag(LOG_TAG).w(
+            "host %s marked down (%s), cooldown %dm", host, reason, HOST_COOLDOWN_MS / 60_000,
+        )
+    }
+
+    /** A network-level exception that means the host is unreachable, not a soft error. */
+    private fun isHostUnreachable(error: Throwable): Boolean =
+        error is java.net.UnknownHostException ||
+            error is java.net.ConnectException ||
+            // Covers both SocketTimeoutException (connect/read timeout) and the
+            // plain InterruptedIOException that OkHttp's callTimeout throws.
+            error is java.io.InterruptedIOException ||
+            error.message?.contains("Unable to resolve host", ignoreCase = true) == true
+
+    /** A JSON API never starts with '<'; an HTML body means a proxy/maintenance page. */
+    private fun looksLikeHtml(payload: String): Boolean {
+        val head = payload.trimStart().take(1).firstOrNull()
+        return head == '<'
+    }
 
     fun qualityCodeFor(audioQuality: QobuzAudioQuality): Int =
         when (audioQuality) {
@@ -133,12 +226,28 @@ object QobuzAudioProvider {
         }
         val now = System.currentTimeMillis()
 
+        Timber.tag(LOG_TAG).d(
+            "resolve ▶ '%s' by '%s' | backend=%s region=%s quality=%d isrc=%s dur=%sms",
+            query.title,
+            query.artists.joinToString(),
+            query.backend.name,
+            resolverRegion,
+            query.qualityCode,
+            query.isrc?.takeIf { it.isNotBlank() } ?: "-",
+            query.durationMs?.toString() ?: "-",
+        )
+
         // Skip backend if it's in captcha cooldown
         backendCooldownUntilMs[query.backend]?.let { cooldownUntil ->
             if (cooldownUntil > now) {
+                val remainingSec = (cooldownUntil - now) / 1000
+                Timber.tag(LOG_TAG).d(
+                    "resolve ✘ '%s': backend %s in captcha cooldown (%ds left)",
+                    query.title, query.backend.name, remainingSec,
+                )
                 throw QobuzResolutionException(
                     "Qobuz backend ${query.backend.name} in cooldown for " +
-                        "${(cooldownUntil - now) / 1000}s after captcha"
+                        "${remainingSec}s after captcha"
                 )
             } else {
                 backendCooldownUntilMs.remove(query.backend)
@@ -147,7 +256,10 @@ object QobuzAudioProvider {
 
         streamCache[streamCacheKey]
             ?.takeIf { it.expiresAtMs > now + 20_000L }
-            ?.let { return it }
+            ?.let {
+                Timber.tag(LOG_TAG).d("resolve ✔ '%s': stream-cache hit (%s)", query.title, it.label)
+                return it
+            }
 
         // Direct-ID short-circuit: when the mediaId encodes a Qobuz track ID
         // (bare digits, "qobuz:track:<id>" URI, or a qobuz.com URL), skip the
@@ -155,6 +267,7 @@ object QobuzAudioProvider {
         val directTrackId = query.mediaId.toQobuzTrackIdOrNull()
         val trackCacheKey = query.trackCacheKey()
         val track = if (directTrackId != null) {
+            Timber.tag(LOG_TAG).d("resolve · '%s': direct track id %s (skipping search)", query.title, directTrackId)
             MatchedTrack(
                 trackId = directTrackId,
                 hires = false,
@@ -164,13 +277,20 @@ object QobuzAudioProvider {
             )
         } else {
             trackCache[trackCacheKey]
+                ?.also { Timber.tag(LOG_TAG).d("resolve · '%s': track-cache hit id=%s", query.title, it.trackId) }
                 ?: run {
+                    Timber.tag(LOG_TAG).d("resolve · '%s': searching (region=%s)…", query.title, trackSearchRegion)
                     val lookup = findBestTrack(query, trackSearchRegion)
-                    lookup.track?.also { trackCache[trackCacheKey] = it } ?: run {
+                    lookup.track?.also {
+                        trackCache[trackCacheKey] = it
+                        Timber.tag(LOG_TAG).d("resolve · '%s': search matched id=%s", query.title, it.trackId)
+                    } ?: run {
                         val reason = lookup.error?.takeIf { it.isNotBlank() }
                         if (reason != null) {
+                            Timber.tag(LOG_TAG).d("resolve ✘ '%s': search failed: %s", query.title, reason)
                             throw QobuzResolutionException("Qobuz search failed for ${query.title}: $reason")
                         }
+                        Timber.tag(LOG_TAG).d("resolve ✘ '%s': no catalog match", query.title)
                         throw QobuzResolutionException("Qobuz match not found for ${query.title}")
                     }
                 }
@@ -186,12 +306,22 @@ object QobuzAudioProvider {
             }
             attempt.resolved?.let { resolved ->
                 streamCache[streamCacheKey] = resolved
+                Timber.tag(LOG_TAG).d(
+                    "resolve ✔ '%s' via %s quality=%d → %s (%dbps%s, trackId=%s)",
+                    query.title,
+                    query.backend.name,
+                    quality,
+                    resolved.label,
+                    resolved.bitrate,
+                    resolved.sampleRate?.let { ", ${it}Hz" } ?: "",
+                    resolved.trackId,
+                )
                 return resolved
             }
             if (!attempt.error.isNullOrBlank()) {
                 lastError = attempt.error
-                Timber.tag("QobuzAudioProvider").d(
-                    "Stream attempt failed for %s (%s, region=%s, quality=%d): %s",
+                Timber.tag(LOG_TAG).d(
+                    "stream ✘ '%s' (%s, region=%s, quality=%d): %s",
                     query.title,
                     query.backend.name,
                     resolverRegion,
@@ -200,7 +330,7 @@ object QobuzAudioProvider {
                 )
                 if (attempt.error.contains("captcha", ignoreCase = true)) {
                     backendCooldownUntilMs[query.backend] = System.currentTimeMillis() + CAPTCHA_COOLDOWN_MS
-                    Timber.tag("QobuzAudioProvider").w(
+                    Timber.tag(LOG_TAG).w(
                         "Backend %s captcha-blocked, cooldown for %d minutes",
                         query.backend.name,
                         CAPTCHA_COOLDOWN_MS / 60_000,
@@ -211,16 +341,31 @@ object QobuzAudioProvider {
                     // Preview = track not in catalog at this quality tier.
                     // Cascading to lower qualities almost always hits the same
                     // preview wall — short-circuit to save ~9s per failure.
-                    Timber.tag("QobuzAudioProvider").d(
-                        "Preview detected at quality %d for %s, aborting ladder",
+                    Timber.tag(LOG_TAG).d(
+                        "stream · preview at quality %d for '%s', aborting ladder",
                         quality,
                         query.title,
+                    )
+                    break
+                }
+                if (attempt.error.contains("cooling down", ignoreCase = true) ||
+                    attempt.error.contains("offline", ignoreCase = true) ||
+                    attempt.error.contains("HTTP 5", ignoreCase = true)
+                ) {
+                    // Host is down/cooling — every quality tier hits the same wall.
+                    // Abort the ladder immediately so the caller falls back fast.
+                    Timber.tag(LOG_TAG).d(
+                        "stream · backend down for '%s', aborting ladder", query.title,
                     )
                     break
                 }
             }
         }
 
+        Timber.tag(LOG_TAG).d(
+            "resolve ✘ '%s' via %s: exhausted quality ladder (%s)",
+            query.title, query.backend.name, lastError ?: "no stream",
+        )
         throw QobuzResolutionException(lastError ?: "Qobuz stream not found for ${query.title}")
     }
 
@@ -271,11 +416,25 @@ object QobuzAudioProvider {
                 }
                 if (search.error != null) {
                     lastSearchError = search.error
+                    Timber.tag(LOG_TAG).d(
+                        "search ✘ term='%s' backend=%s: %s", term, backend.name, search.error,
+                    )
                 }
                 val results = search.items ?: continue
-                selectBestTrack(results, query)?.let { return TrackLookupResult(track = it) }
+                Timber.tag(LOG_TAG).d(
+                    "search · term='%s' backend=%s → %d results", term, backend.name, results.length(),
+                )
+                selectBestTrack(results, query)?.let {
+                    Timber.tag(LOG_TAG).d(
+                        "search ✔ matched id=%s (term='%s', backend=%s)", it.trackId, term, backend.name,
+                    )
+                    return TrackLookupResult(track = it)
+                }
             }
         }
+        Timber.tag(LOG_TAG).d(
+            "search ✘ '%s': no match across %d term(s)", query.title, searchTerms(query).size,
+        )
         return TrackLookupResult(error = lastSearchError)
     }
 
@@ -302,9 +461,14 @@ object QobuzAudioProvider {
         backend: SearchBackend,
     ): TrackSearchResult {
         val baseUrl = when (backend) {
-            SearchBackend.KENNY -> KENNY_BASE_URL
-            SearchBackend.SQUID -> SQUID_BASE_URL
-            SearchBackend.TRYPT -> TRYPT_BASE_URL
+            SearchBackend.KENNY -> kennyBase
+            SearchBackend.SQUID -> squidBase
+            SearchBackend.TRYPT -> tryptBase
+        }
+        hostCoolingRemainingMs(baseUrl)?.let { remaining ->
+            return TrackSearchResult(
+                error = "${backend.name} search skipped: host cooling down for ${remaining / 1000}s",
+            )
         }
         val url = "$baseUrl/api/get-music".toHttpUrlOrNull()
             ?.newBuilder()
@@ -330,12 +494,21 @@ object QobuzAudioProvider {
             client.newCall(request).execute().use { response ->
                 val payload = response.body?.string().orEmpty()
                 if (!response.isSuccessful) {
+                    if (response.code in 500..599) {
+                        markHostDown(baseUrl, "HTTP ${response.code}")
+                    }
                     return@use TrackSearchResult(
                         error = "${backend.name} search HTTP ${response.code}: ${payload.take(160)}"
                     )
                 }
                 if (payload.isBlank()) {
                     return@use TrackSearchResult(error = "${backend.name} search returned an empty response")
+                }
+                if (looksLikeHtml(payload)) {
+                    markHostDown(baseUrl, "HTML response (offline/maintenance page)")
+                    return@use TrackSearchResult(
+                        error = "${backend.name} search backend offline (returned HTML, not JSON)"
+                    )
                 }
                 val root = JSONObject(payload)
                 if (!root.optBoolean("success", false)) {
@@ -350,6 +523,9 @@ object QobuzAudioProvider {
                 )
             }
         }.getOrElse { error ->
+            if (isHostUnreachable(error)) {
+                markHostDown(baseUrl, error.message ?: error.javaClass.simpleName)
+            }
             TrackSearchResult(error = "${backend.name} search request failed: ${error.message ?: error.javaClass.simpleName}")
         }
     }
@@ -358,7 +534,10 @@ object QobuzAudioProvider {
         term: String,
         region: String,
     ): TrackSearchResult {
-        val url = "$JUMO_BASE_URL/search".toHttpUrlOrNull()
+        hostCoolingRemainingMs(jumoBase)?.let { remaining ->
+            return TrackSearchResult(error = "JUMO search skipped: host cooling down for ${remaining / 1000}s")
+        }
+        val url = "$jumoBase/search".toHttpUrlOrNull()
             ?.newBuilder()
             ?.addQueryParameter("query", term)
             ?.addQueryParameter("offset", "0")
@@ -378,12 +557,21 @@ object QobuzAudioProvider {
             client.newCall(request).execute().use { response ->
                 val payload = response.body?.string().orEmpty()
                 if (!response.isSuccessful) {
+                    if (response.code in 500..599) {
+                        markHostDown(jumoBase, "HTTP ${response.code}")
+                    }
                     return@use TrackSearchResult(
                         error = "JUMO search HTTP ${response.code}: ${payload.take(160)}"
                     )
                 }
                 if (payload.isBlank()) {
                     return@use TrackSearchResult(error = "JUMO search returned an empty response")
+                }
+                if (looksLikeHtml(payload)) {
+                    markHostDown(jumoBase, "HTML response (offline/maintenance page)")
+                    return@use TrackSearchResult(
+                        error = "JUMO search backend offline (returned HTML, not JSON)"
+                    )
                 }
                 val root = JSONObject(payload)
                 if (!root.optBoolean("success", false)) {
@@ -398,6 +586,9 @@ object QobuzAudioProvider {
                 )
             }
         }.getOrElse { error ->
+            if (isHostUnreachable(error)) {
+                markHostDown(jumoBase, error.message ?: error.javaClass.simpleName)
+            }
             TrackSearchResult(error = "JUMO search request failed: ${error.message ?: error.javaClass.simpleName}")
         }
     }
@@ -562,7 +753,7 @@ object QobuzAudioProvider {
                     "${it.trackId} score=${it.score} downloadable=${it.downloadable} title='${it.title}' artists='${it.artists}'"
                 }
             if (top.isNotBlank()) {
-                Timber.tag("QobuzAudioProvider").w(
+                Timber.tag(LOG_TAG).w(
                     "No acceptable Qobuz candidate for '%s' by '%s' (backend=%s, country=%s, min=%d). Top matches: %s",
                     query.title,
                     query.artists.joinToString(),
@@ -583,7 +774,10 @@ object QobuzAudioProvider {
         qualityCode: Int,
         durationMs: Long?,
     ): StreamAttempt {
-        val url = "$SQUID_BASE_URL/api/download-music".toHttpUrlOrNull()
+        hostCoolingRemainingMs(squidBase)?.let { remaining ->
+            return StreamAttempt(error = "Qobuz backend cooling down for ${remaining / 1000}s")
+        }
+        val url = "$squidBase/api/download-music".toHttpUrlOrNull()
             ?.newBuilder()
             ?.addQueryParameter("track_id", track.trackId)
             ?.addQueryParameter("quality", qualityCode.toString())
@@ -596,8 +790,8 @@ object QobuzAudioProvider {
             .header("Accept", "application/json")
             .header("Accept-Language", "en-US,en;q=0.9")
             .header("Token-Country", countryCode)
-            .header("Origin", SQUID_BASE_URL)
-            .header("Referer", "$SQUID_BASE_URL/")
+            .header("Origin", squidBase)
+            .header("Referer", "$squidBase/")
             .header("User-Agent", BROWSER_USER_AGENT)
             .build()
 
@@ -605,10 +799,15 @@ object QobuzAudioProvider {
             client.newCall(request).execute().use { response ->
                 val payload = response.body?.string().orEmpty()
                 if (!response.isSuccessful) {
+                    if (response.code in 500..599) markHostDown(squidBase, "HTTP ${response.code}")
                     return@use StreamAttempt(error = "Qobuz HTTP ${response.code}: ${payload.take(160)}")
                 }
                 if (payload.isBlank()) {
                     return@use StreamAttempt(error = "Qobuz returned an empty response")
+                }
+                if (looksLikeHtml(payload)) {
+                    markHostDown(squidBase, "HTML response (offline/maintenance page)")
+                    return@use StreamAttempt(error = "Qobuz backend offline (returned HTML, not JSON)")
                 }
                 val root = JSONObject(payload)
                 if (!root.optBoolean("success", false)) {
@@ -646,6 +845,7 @@ object QobuzAudioProvider {
                 StreamAttempt(resolved = format.toResolved(streamUrl, track.trackId, track.isrc))
             }
         }.getOrElse { error ->
+            if (isHostUnreachable(error)) markHostDown(squidBase, error.message ?: error.javaClass.simpleName)
             StreamAttempt(error = "Qobuz request failed: ${error.message ?: error.javaClass.simpleName}")
         }
     }
@@ -656,7 +856,10 @@ object QobuzAudioProvider {
         region: String,
         durationMs: Long?,
     ): StreamAttempt {
-        val url = "$JUMO_BASE_URL/fetch".toHttpUrlOrNull()
+        hostCoolingRemainingMs(jumoBase)?.let { remaining ->
+            return StreamAttempt(error = "JUMO backend cooling down for ${remaining / 1000}s")
+        }
+        val url = "$jumoBase/fetch".toHttpUrlOrNull()
             ?.newBuilder()
             ?.addQueryParameter("track_id", track.trackId)
             ?.addQueryParameter("format_id", qualityCode.toString())
@@ -669,8 +872,8 @@ object QobuzAudioProvider {
             .get()
             .header("Accept", "application/json,text/plain,*/*")
             .header("Accept-Language", "en-US,en;q=0.9")
-            .header("Origin", JUMO_BASE_URL)
-            .header("Referer", "$JUMO_BASE_URL/")
+            .header("Origin", jumoBase)
+            .header("Referer", "$jumoBase/")
             .header("User-Agent", BROWSER_USER_AGENT)
             .build()
 
@@ -678,10 +881,15 @@ object QobuzAudioProvider {
             client.newCall(request).execute().use { response ->
                 val payload = response.body?.string().orEmpty()
                 if (!response.isSuccessful) {
+                    if (response.code in 500..599) markHostDown(jumoBase, "HTTP ${response.code}")
                     return@use StreamAttempt(error = "JUMO HTTP ${response.code}: ${payload.take(160)}")
                 }
                 if (payload.isBlank()) {
                     return@use StreamAttempt(error = "JUMO returned an empty response")
+                }
+                if (looksLikeHtml(payload)) {
+                    markHostDown(jumoBase, "HTML response (offline/maintenance page)")
+                    return@use StreamAttempt(error = "JUMO backend offline (returned HTML, not JSON)")
                 }
                 val root = JSONObject(payload)
                 root.stringOrNull("error")?.takeIf { it.isNotBlank() }?.let { apiError ->
@@ -720,6 +928,7 @@ object QobuzAudioProvider {
                 )
             }
         }.getOrElse { error ->
+            if (isHostUnreachable(error)) markHostDown(jumoBase, error.message ?: error.javaClass.simpleName)
             StreamAttempt(error = "JUMO request failed: ${error.message ?: error.javaClass.simpleName}")
         }
     }
@@ -730,7 +939,10 @@ object QobuzAudioProvider {
         region: String,
         durationMs: Long?,
     ): StreamAttempt {
-        val url = "$KENNY_BASE_URL/api/download-music".toHttpUrlOrNull()
+        hostCoolingRemainingMs(kennyBase)?.let { remaining ->
+            return StreamAttempt(error = "Monokenny backend cooling down for ${remaining / 1000}s")
+        }
+        val url = "$kennyBase/api/download-music".toHttpUrlOrNull()
             ?.newBuilder()
             ?.addQueryParameter("track_id", track.trackId)
             ?.addQueryParameter("quality", qualityCode.toString())
@@ -742,8 +954,8 @@ object QobuzAudioProvider {
             .get()
             .header("Accept", "application/json")
             .header("Accept-Language", "en-US,en;q=0.9")
-            .header("Origin", KENNY_BASE_URL)
-            .header("Referer", "$KENNY_BASE_URL/")
+            .header("Origin", kennyBase)
+            .header("Referer", "$kennyBase/")
             .header("User-Agent", BROWSER_USER_AGENT)
             .build()
 
@@ -751,10 +963,15 @@ object QobuzAudioProvider {
             client.newCall(request).execute().use { response ->
                 val payload = response.body?.string().orEmpty()
                 if (!response.isSuccessful) {
+                    if (response.code in 500..599) markHostDown(kennyBase, "HTTP ${response.code}")
                     return@use StreamAttempt(error = "Monokenny HTTP ${response.code}: ${payload.take(160)}")
                 }
                 if (payload.isBlank()) {
                     return@use StreamAttempt(error = "Monokenny returned an empty response")
+                }
+                if (looksLikeHtml(payload)) {
+                    markHostDown(kennyBase, "HTML response (offline/maintenance page)")
+                    return@use StreamAttempt(error = "Monokenny backend offline (returned HTML, not JSON)")
                 }
                 val root = JSONObject(payload)
                 if (!root.optBoolean("success", false)) {
@@ -792,6 +1009,7 @@ object QobuzAudioProvider {
                 StreamAttempt(resolved = format.toResolved(streamUrl, track.trackId, track.isrc))
             }
         }.getOrElse { error ->
+            if (isHostUnreachable(error)) markHostDown(kennyBase, error.message ?: error.javaClass.simpleName)
             StreamAttempt(error = "Monokenny request failed: ${error.message ?: error.javaClass.simpleName}")
         }
     }
@@ -802,7 +1020,10 @@ object QobuzAudioProvider {
         region: String,
         durationMs: Long?,
     ): StreamAttempt {
-        val url = "$TRYPT_BASE_URL/api/download-music".toHttpUrlOrNull()
+        hostCoolingRemainingMs(tryptBase)?.let { remaining ->
+            return StreamAttempt(error = "TrypT backend cooling down for ${remaining / 1000}s")
+        }
+        val url = "$tryptBase/api/download-music".toHttpUrlOrNull()
             ?.newBuilder()
             ?.addQueryParameter("track_id", track.trackId)
             ?.addQueryParameter("quality", qualityCode.toString())
@@ -815,8 +1036,8 @@ object QobuzAudioProvider {
             .header("Accept", "application/json,text/plain,*/*")
             .header("Accept-Language", "en-US,en;q=0.9")
             .header("Token-Country", region)
-            .header("Origin", TRYPT_BASE_URL)
-            .header("Referer", "$TRYPT_BASE_URL/")
+            .header("Origin", tryptBase)
+            .header("Referer", "$tryptBase/")
             .header("User-Agent", BROWSER_USER_AGENT)
             .build()
 
@@ -824,10 +1045,15 @@ object QobuzAudioProvider {
             client.newCall(request).execute().use { response ->
                 val payload = response.body?.string().orEmpty()
                 if (!response.isSuccessful) {
+                    if (response.code in 500..599) markHostDown(tryptBase, "HTTP ${response.code}")
                     return@use StreamAttempt(error = "TrypT HTTP ${response.code}: ${payload.take(160)}")
                 }
                 if (payload.isBlank()) {
                     return@use StreamAttempt(error = "TrypT returned an empty response")
+                }
+                if (looksLikeHtml(payload)) {
+                    markHostDown(tryptBase, "HTML response (offline/maintenance page)")
+                    return@use StreamAttempt(error = "TrypT backend offline (returned HTML, not JSON)")
                 }
                 val root = JSONObject(payload)
                 if (!root.optBoolean("success", true)) {
@@ -873,6 +1099,7 @@ object QobuzAudioProvider {
                 StreamAttempt(resolved = format.toResolved(streamUrl, track.trackId, track.isrc))
             }
         }.getOrElse { error ->
+            if (isHostUnreachable(error)) markHostDown(tryptBase, error.message ?: error.javaClass.simpleName)
             StreamAttempt(error = "TrypT request failed: ${error.message ?: error.javaClass.simpleName}")
         }
     }
