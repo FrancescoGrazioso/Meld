@@ -91,6 +91,18 @@ object SpotifyMapper {
     }
 
     /**
+     * Returns a medium-resolution (200–400px) thumbnail from a Spotify track's album
+     * art, for list/grid tiles where the full-resolution player cover would waste
+     * bandwidth and decode memory. Falls back to the first available variant.
+     */
+    fun getTrackThumbnailMedium(track: SpotifyTrack): String? {
+        return track.album?.images?.let { images ->
+            images.firstOrNull { it.width in 200..400 }?.url
+                ?: images.firstOrNull()?.url
+        }
+    }
+
+    /**
      * Pre-computes normalized title/artist and their bigrams for a Spotify track.
      * Call once before scoring against multiple candidates to avoid redundant work.
      */

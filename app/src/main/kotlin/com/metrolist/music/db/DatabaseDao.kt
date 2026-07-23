@@ -1972,10 +1972,13 @@ interface DatabaseDao {
     @Query("SELECT * FROM spotify_match WHERE youtubeId = :youtubeId LIMIT 1")
     fun getSpotifyMatchByYouTubeId(youtubeId: String): SpotifyMatchEntity?
 
+    @Query("SELECT * FROM spotify_match WHERE youtubeId IN (:youtubeIds)")
+    fun getSpotifyMatchesByYouTubeIds(youtubeIds: List<String>): List<SpotifyMatchEntity>
+
     @Upsert
     fun upsertSpotifyMatch(match: SpotifyMatchEntity)
 
-    @Query("DELETE FROM spotify_match WHERE cachedAt < :before")
+    @Query("DELETE FROM spotify_match WHERE cachedAt < :before AND isManualOverride = 0")
     fun clearOldSpotifyMatches(before: Long)
 
     @Query("DELETE FROM spotify_match")

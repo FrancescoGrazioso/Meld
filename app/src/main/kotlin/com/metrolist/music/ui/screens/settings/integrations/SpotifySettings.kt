@@ -71,6 +71,8 @@ import com.metrolist.music.constants.SpotifyHomeOnlyKey
 import com.metrolist.music.constants.UseSpotifyHomeKey
 import com.metrolist.music.constants.UseSpotifySearchKey
 import com.metrolist.music.models.MediaMetadata
+import com.metrolist.music.playback.SpotifyMetadataRegistry
+import com.metrolist.music.playback.SpotifyProfileCache
 import com.metrolist.music.playback.SpotifyYouTubeMapper
 import com.metrolist.music.qobuz.QobuzBackendHealthChecker
 import com.metrolist.music.ui.component.EnumDialog
@@ -112,6 +114,9 @@ fun SpotifySettings(
         spotifyAccessToken.isNotEmpty() && spotifySpDc.isNotEmpty()
     }
 
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
     Column(
         Modifier
             .windowInsetsPadding(
@@ -151,6 +156,10 @@ fun SpotifySettings(
                         spotifyUserId = ""
                         onEnableSpotifyChange(false)
                         CookieManager.getInstance().removeAllCookies(null)
+                        // Clear all user-specific Spotify caches so a subsequent login
+                        // (possibly a different account) never surfaces stale data.
+                        SpotifyMetadataRegistry.clearAll()
+                        coroutineScope.launch { SpotifyProfileCache.clearAllPersisted(context) }
                     }) {
                         Text(stringResource(R.string.action_logout))
                     }
@@ -218,9 +227,7 @@ fun SpotifySettings(
                 defaultValue = false,
             )
 
-            val context = LocalContext.current
             val database = LocalDatabase.current
-            val coroutineScope = rememberCoroutineScope()
             val syncProgress by SpotifyLikeSyncState.progress.collectAsState()
             val isSyncing by SpotifyLikeSyncState.isSyncing.collectAsState()
 

@@ -5,6 +5,7 @@
 
 package com.metrolist.music.playback
 
+import android.util.LruCache
 import com.metrolist.innertube.YouTube
 import com.metrolist.innertube.models.SongItem
 import com.metrolist.innertube.pages.SearchSummaryPage
@@ -28,18 +29,6 @@ import timber.log.Timber
 class SpotifyYouTubeMapper(
     private val database: MusicDatabase,
 ) {
-
-    /**
-     * In-memory LRU cache of recently resolved Spotify→YouTube matches.
-     * Avoids DB I/O for tracks resolved in the same session (e.g. queue
-     * re-resolving after seek or shuffle).  Bounded to 512 entries (~30 KB).
-     */
-    private val memoryCache = object : LinkedHashMap<String, CachedMatch>(
-        MEM_CACHE_MAX_SIZE, 0.75f, true
-    ) {
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, CachedMatch>?): Boolean =
-            size > MEM_CACHE_MAX_SIZE
-    }
 
     private data class CachedMatch(
         val youtubeId: String,
@@ -65,9 +54,9 @@ class SpotifyYouTubeMapper(
         val cached = database.getSpotifyMatch(track.id)
         if (cached != null) {
             Timber.d("Spotify match cache hit: ${track.name} -> ${cached.youtubeId} (manual=${cached.isManualOverride})")
-            memoryCache[track.id] = CachedMatch(
+            memoryCache.put(track.id, CachedMatch(
                 cached.youtubeId, cached.title, cached.artist, cached.isManualOverride,
-            )
+            ))
             return@withContext buildMediaMetadata(cached.youtubeId, track, cached.title, cached.artist)
         }
 
@@ -88,9 +77,9 @@ class SpotifyYouTubeMapper(
                     matchScore = bestMatch.score,
                 )
             )
-            memoryCache[track.id] = CachedMatch(
+            memoryCache.put(track.id, CachedMatch(
                 bestMatch.id, bestMatch.title, bestMatch.artistName,
-            )
+            ))
             Timber.d("Spotify match found: ${track.name} -> ${bestMatch.id} (score: ${bestMatch.score})")
             return@withContext buildMediaMetadata(
                 youtubeId = bestMatch.id,
@@ -125,9 +114,9 @@ class SpotifyYouTubeMapper(
                 isManualOverride = true,
             )
         )
-        memoryCache[spotifyId] = CachedMatch(
+        memoryCache.put(spotifyId, CachedMatch(
             youtubeId, title, artist, isManualOverride = true,
-        )
+        ))
         Timber.d("Manual override saved: $spotifyId -> $youtubeId ($title by $artist)")
     }
 
@@ -316,5 +305,15 @@ class SpotifyYouTubeMapper(
     companion object {
         private const val MIN_MATCH_THRESHOLD = 0.35
         private const val MEM_CACHE_MAX_SIZE = 512
+
+        /**
+         * Process-wide, thread-safe LRU cache of recently resolved Spotify→YouTube
+         * matches. Shared across all mapper instances (each screen/queue builds its
+         * own mapper) so a match resolved on one screen is reused everywhere without
+         * DB I/O. [android.util.LruCache] serializes get/put internally, which is
+         * required because queues resolve batches in parallel on Dispatchers.IO.
+         * Bounded to 512 entries (~30 KB).
+         */
+        private val memoryCache = LruCache<String, CachedMatch>(MEM_CACHE_MAX_SIZE)
     }
 }

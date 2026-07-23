@@ -30,6 +30,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -108,7 +109,7 @@ fun SpotifyTrackSectionRow(
             items = tracks,
             key = { "spotify_track_${it.id}" }
         ) { track ->
-            val songItem = track.toSongItem()
+            val songItem = remember(track.id) { track.toSongItem() }
             YouTubeListItem(
                 item = songItem,
                 isActive = false,
@@ -143,8 +144,10 @@ fun SpotifyArtistSectionRow(
             items = artists,
             key = { "spotify_artist_${it.id}" }
         ) { artist ->
-            val thumbnail = artist.images.firstOrNull { it.width in 200..400 }?.url
-                ?: artist.images.firstOrNull()?.url
+            val thumbnail = remember(artist.id) {
+                artist.images.firstOrNull { it.width in 200..400 }?.url
+                    ?: artist.images.firstOrNull()?.url
+            }
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -195,7 +198,7 @@ fun SpotifyAlbumSectionRow(
             items = albums,
             key = { "spotify_album_${it.id}" }
         ) { album ->
-            val albumItem = album.toAlbumItem()
+            val albumItem = remember(album.id) { album.toAlbumItem() }
             YouTubeGridItem(
                 item = albumItem,
                 isActive = false,
@@ -232,7 +235,7 @@ fun SpotifyPlaylistSectionRow(
             items = playlists,
             key = { "spotify_playlist_${it.id}" }
         ) { playlist ->
-            val playlistItem = playlist.toPlaylistItem()
+            val playlistItem = remember(playlist.id) { playlist.toPlaylistItem() }
             YouTubeGridItem(
                 item = playlistItem,
                 isActive = false,

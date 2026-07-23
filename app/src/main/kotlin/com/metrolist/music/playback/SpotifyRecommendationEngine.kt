@@ -16,7 +16,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import kotlin.math.abs
 
 /**
  * Recommendation engine that builds personalized queues using Spotify user data.
@@ -33,8 +32,8 @@ import kotlin.math.abs
  *    artist similarity without the deprecated related-artists endpoint.
  * 4. **Candidate generation** — 4 sources: seed artist top tracks, same album,
  *    genre-neighbor artist top tracks, user top tracks pool.
- * 5. **Composite scoring** — source relevance, artist affinity, popularity
- *    similarity, and recency boost.
+ * 5. **Composite scoring** — source relevance, artist affinity, genre overlap,
+ *    and recency boost.
  * 6. **Diversification** — per-artist cap and bucket interleaving for variety.
  */
 object SpotifyRecommendationEngine {
@@ -43,12 +42,14 @@ object SpotifyRecommendationEngine {
     private const val MAX_TRACKS_PER_ARTIST = 3
     private const val TAG = "SpotifyRecEngine"
 
-    // Scoring weights
-    private const val W_SOURCE = 0.25f
-    private const val W_AFFINITY = 0.30f
-    private const val W_GENRE = 0.20f
-    private const val W_POPULARITY = 0.10f
-    private const val W_RECENCY = 0.15f
+    // Scoring weights (sum to 1.0). A popularity-similarity term was removed:
+    // GQL-sourced candidate tracks never carry a popularity value, so the term
+    // was a constant across every candidate — inert for ranking — and its 10%
+    // budget has been redistributed proportionally over the remaining signals.
+    private const val W_SOURCE = 0.28f
+    private const val W_AFFINITY = 0.33f
+    private const val W_GENRE = 0.22f
+    private const val W_RECENCY = 0.17f
 
     // Cached user profile
     @Volatile
@@ -90,14 +91,12 @@ object SpotifyRecommendationEngine {
         val sourceScore: Float,
         val artistAffinity: Float,
         val genreOverlap: Float,
-        val popularitySimilarity: Float,
         val recencyBoost: Float,
     ) {
         val finalScore: Float
             get() = (W_SOURCE * sourceScore) +
                 (W_AFFINITY * artistAffinity) +
                 (W_GENRE * genreOverlap) +
-                (W_POPULARITY * popularitySimilarity) +
                 (W_RECENCY * recencyBoost)
     }
 
@@ -229,79 +228,55 @@ object SpotifyRecommendationEngine {
         val candidates = mutableListOf<ScoredCandidate>()
         val seenIds = mutableSetOf(seedTrack.id)
         val seedArtistIds = seedTrack.artists.mapNotNull { it.id }.toSet()
-        val seedPopularity = seedTrack.popularity ?: 50
         val seedGenres = seedArtistIds.flatMap { artistGenreMap[it].orEmpty() }.toSet()
 
         Timber.d(
             "$TAG: Generating recommendations for '${seedTrack.name}' " +
-                "(artists: ${seedArtistIds.size}, genres: ${seedGenres.size}, pop: $seedPopularity)"
+                "(artists: ${seedArtistIds.size}, genres: ${seedGenres.size})"
         )
 
-        // --- Source 1: Seed artist top tracks (highest relevance) ---
-        coroutineScope {
-            seedArtistIds.take(2).map { artistId ->
-                async {
-                    Spotify.artistTopTracks(artistId).getOrNull()?.tracks?.let { tracks ->
-                        synchronized(candidates) {
-                            for (track in tracks) {
-                                if (track.id.isNotEmpty() && seenIds.add(track.id)) {
-                                    candidates.add(
-                                        buildCandidate(
-                                            track, Bucket.SEED_ARTIST,
-                                            seedPopularity, seedGenres,
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                        Timber.d("$TAG: Source SEED_ARTIST($artistId): ${tracks.size} tracks")
-                    }
-                }
-            }.awaitAll()
-        }
-
-        // --- Source 2: Same album tracks ---
-        seedTrack.album?.id?.let { albumId ->
-            Spotify.album(albumId).getOrNull()?.tracks?.items?.let { albumTracks ->
-                for (track in albumTracks) {
-                    if (track.id.isNotEmpty() && seenIds.add(track.id)) {
-                        candidates.add(
-                            buildCandidate(
-                                track, Bucket.SAME_ALBUM,
-                                seedPopularity, seedGenres,
-                            )
-                        )
-                    }
-                }
-                Timber.d("$TAG: Source SAME_ALBUM($albumId): ${albumTracks.size} tracks")
-            }
-        }
-
-        // --- Source 3: Genre-neighbor artist top tracks ---
+        // Genre neighbors are derived purely from profile data (no network), so they
+        // can be computed before any fetch.
         val neighborArtistIds = findGenreNeighbors(seedArtistIds, seedGenres)
         Timber.d("$TAG: Found ${neighborArtistIds.size} genre-neighbor artists")
 
-        coroutineScope {
-            neighborArtistIds.take(4).map { artistId ->
-                async {
-                    Spotify.artistTopTracks(artistId).getOrNull()?.tracks?.let { tracks ->
-                        synchronized(candidates) {
-                            for (track in tracks) {
-                                if (track.id.isNotEmpty() && seenIds.add(track.id)) {
-                                    candidates.add(
-                                        buildCandidate(
-                                            track, Bucket.GENRE_NEIGHBOR,
-                                            seedPopularity, seedGenres,
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                        Timber.d("$TAG: Source GENRE_NEIGHBOR($artistId): ${tracks.size} tracks")
-                    }
-                }
-            }.awaitAll()
+        // --- Sources 1-3: fetch seed-artist top tracks, same-album tracks and
+        //     genre-neighbor top tracks all in a single parallel wave (previously
+        //     three sequential waves). Candidates are then assigned to buckets
+        //     sequentially in priority order, so dedup/bucketing stays deterministic.
+        val (seedArtistTracks, albumTracks, neighborTracks) = coroutineScope {
+            val seedDeferred = seedArtistIds.take(2).map { artistId ->
+                async { Spotify.artistTopTracks(artistId).getOrNull()?.tracks.orEmpty() }
+            }
+            val albumDeferred = async {
+                seedTrack.album?.id?.let { albumId ->
+                    Spotify.album(albumId).getOrNull()?.tracks?.items
+                }.orEmpty()
+            }
+            val neighborDeferred = neighborArtistIds.take(4).map { artistId ->
+                async { Spotify.artistTopTracks(artistId).getOrNull()?.tracks.orEmpty() }
+            }
+            Triple(
+                seedDeferred.awaitAll().flatten(),
+                albumDeferred.await(),
+                neighborDeferred.awaitAll().flatten(),
+            )
         }
+
+        fun addCandidates(tracks: List<SpotifyTrack>, bucket: Bucket) {
+            for (track in tracks) {
+                if (track.id.isNotEmpty() && seenIds.add(track.id)) {
+                    candidates.add(buildCandidate(track, bucket, seedGenres))
+                }
+            }
+        }
+        addCandidates(seedArtistTracks, Bucket.SEED_ARTIST)
+        addCandidates(albumTracks, Bucket.SAME_ALBUM)
+        addCandidates(neighborTracks, Bucket.GENRE_NEIGHBOR)
+        Timber.d(
+            "$TAG: Sources 1-3 — seedArtist=${seedArtistTracks.size}, " +
+                "album=${albumTracks.size}, neighbor=${neighborTracks.size}"
+        )
 
         // --- Source 4: User's top tracks pool (personalized background) ---
         for (weightedTrack in topTrackPool) {
@@ -310,7 +285,7 @@ object SpotifyRecommendationEngine {
                 candidates.add(
                     buildCandidate(
                         track, Bucket.USER_TOP,
-                        seedPopularity, seedGenres,
+                        seedGenres,
                     )
                 )
             }
@@ -328,7 +303,6 @@ object SpotifyRecommendationEngine {
     private fun buildCandidate(
         track: SpotifyTrack,
         bucket: Bucket,
-        seedPopularity: Int,
         seedGenres: Set<String>,
     ): ScoredCandidate {
         val trackArtistIds = track.artists.mapNotNull { it.id }
@@ -349,10 +323,6 @@ object SpotifyRecommendationEngine {
             0f
         }
 
-        // Popularity similarity: how close to seed's popularity (normalized)
-        val popDiff = abs((track.popularity ?: 50) - seedPopularity)
-        val popSimilarity = 1.0f - (popDiff.toFloat() / 100f)
-
         // Recency boost: extra score if artist is in the user's short-term favorites
         val recency = if (trackArtistIds.any { it in shortTermArtistIds }) 1.0f else 0f
 
@@ -362,7 +332,6 @@ object SpotifyRecommendationEngine {
             sourceScore = bucket.sourceScore,
             artistAffinity = affinity,
             genreOverlap = genreOverlap,
-            popularitySimilarity = popSimilarity,
             recencyBoost = recency,
         )
     }

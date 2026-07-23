@@ -67,6 +67,7 @@ import com.metrolist.spotify.Spotify
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -626,14 +627,6 @@ class HomeViewModel @Inject constructor(
             }.onFailure {
                 reportException(it)
             }
-
-            YouTube.explore().onSuccess { page ->
-                explorePage.value = page.copy(
-                    newReleaseAlbums = page.newReleaseAlbums.filterExplicit(hideExplicit)
-                )
-            }.onFailure {
-                reportException(it)
-            }
         }
 
         if (!isSpotifyOnly) {
@@ -645,87 +638,18 @@ class HomeViewModel @Inject constructor(
 
         isLoading.value = false
 
-        // Phase 2: Heavy multi-request operations — run in background without blocking the UI.
-        viewModelScope.launch(Dispatchers.IO) { getDailyDiscover() }
-
-        viewModelScope.launch(Dispatchers.IO) { getCommunityPlaylists() }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            YouTube.explore().onSuccess { page ->
-                explorePage.value = page.copy(
-                    newReleaseAlbums = page.newReleaseAlbums.filterExplicit(hideExplicit)
-                )
-            }.onFailure { reportException(it) }
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            val artistRecommendations = database.mostPlayedArtists(fromTimeStamp, limit = 15).first()
-                .filter { it.artist.isYouTubeArtist }
-                .shuffled().take(4)
-                .mapNotNull {
-                    val items = mutableListOf<YTItem>()
-                    YouTube.artist(it.id).onSuccess { page ->
-                        page.sections.takeLast(3).forEach { section -> items += section.items }
-                    }
-                    SimilarRecommendation(
-                        title = it,
-                        items = items
-                            .distinctBy { item -> item.id }
-                            .filterExplicit(hideExplicit)
-                            .filterVideoSongs(hideVideoSongs)
-                            .shuffled().take(12)
-                            .ifEmpty { return@mapNotNull null }
+        // Load YouTube explore (mood & genres) in the background — it is also shown
+        // alongside Spotify home sections, but never in Spotify-only mode.
+        // dailyDiscover, communityPlaylists and similarRecommendations already ran
+        // synchronously above (gated by !isSpotifyOnly); they are no longer re-run here.
+        if (!isSpotifyOnly) {
+            viewModelScope.launch(Dispatchers.IO) {
+                YouTube.explore().onSuccess { page ->
+                    explorePage.value = page.copy(
+                        newReleaseAlbums = page.newReleaseAlbums.filterExplicit(hideExplicit)
                     )
-                }
-
-            val songRecommendations = database.mostPlayedSongs(fromTimeStamp, limit = 15).first()
-                .filter { it.album != null }
-                .shuffled().take(3)
-                .mapNotNull { song ->
-                    val endpoint = YouTube.next(WatchEndpoint(videoId = song.id)).getOrNull()?.relatedEndpoint
-                        ?: return@mapNotNull null
-                    val page = YouTube.related(endpoint).getOrNull() ?: return@mapNotNull null
-                    SimilarRecommendation(
-                        title = song,
-                        items = (page.songs.shuffled().take(10) +
-                                page.albums.shuffled().take(5) +
-                                page.artists.shuffled().take(3) +
-                                page.playlists.shuffled().take(3))
-                            .distinctBy { it.id }
-                            .filterExplicit(hideExplicit)
-                            .filterVideoSongs(hideVideoSongs)
-                            .shuffled()
-                            .ifEmpty { return@mapNotNull null }
-                    )
-                }
-
-            val albumRecommendations = database.mostPlayedAlbums(fromTimeStamp, limit = 10).first()
-                .filter { it.album.thumbnailUrl != null }
-                .shuffled().take(2)
-                .mapNotNull { album ->
-                    val items = mutableListOf<YTItem>()
-                    YouTube.album(album.id).onSuccess { page ->
-                        page.otherVersions.let { items += it }
-                    }
-                    album.artists.firstOrNull()?.id?.let { artistId ->
-                        YouTube.artist(artistId).onSuccess { page ->
-                            page.sections.lastOrNull()?.items?.let { items += it }
-                        }
-                    }
-                    SimilarRecommendation(
-                        title = album,
-                        items = items
-                            .distinctBy { it.id }
-                            .filterExplicit(hideExplicit)
-                            .filterVideoSongs(hideVideoSongs)
-                            .shuffled().take(10)
-                            .ifEmpty { return@mapNotNull null }
-                    )
-                }
-
-            similarRecommendations.value = (artistRecommendations + songRecommendations + albumRecommendations).shuffled()
-            allYtItems.value = similarRecommendations.value?.flatMap { it.items }.orEmpty() +
-                    homePage.value?.sections?.flatMap { it.items }.orEmpty()
+                }.onFailure { reportException(it) }
+            }
         }
     }
 
@@ -734,7 +658,16 @@ class HomeViewModel @Inject constructor(
         val sections = mutableListOf<SpotifyHomeSection>()
 
         try {
-            val profileTracks = SpotifyProfileCache.getTopTracks(context, database, limit = 20)
+            // These three sources are independent — fetch them concurrently and then
+            // assemble the sections in a fixed display order. Previously they ran
+            // strictly sequentially (~1-2.7s of chained round-trips).
+            val (profileTracks, newReleasesResult, homeResult) = coroutineScope {
+                val topTracksDeferred = async { SpotifyProfileCache.getTopTracks(context, database, limit = 20) }
+                val newReleasesDeferred = async { Spotify.newReleases(limit = 20) }
+                val homeDeferred = async { Spotify.home(sectionItemsLimit = 10) }
+                Triple(topTracksDeferred.await(), newReleasesDeferred.await(), homeDeferred.await())
+            }
+
             Timber.d("spotifyHome: top tracks from profile cache = ${profileTracks.size}")
             val topTracks = if (hideExplicit) profileTracks.filter { !it.explicit } else profileTracks
             if (topTracks.isNotEmpty()) {
@@ -748,8 +681,7 @@ class HomeViewModel @Inject constructor(
                 Timber.w("spotifyHome: no top tracks — skipping pinned section")
             }
 
-            Timber.d("spotifyHome: calling Spotify.newReleases()...")
-            Spotify.newReleases(limit = 20).onSuccess { newReleases ->
+            newReleasesResult.onSuccess { newReleases ->
                 val albums = newReleases.albums?.items.orEmpty()
                 if (albums.isNotEmpty()) {
                     sections.add(SpotifyHomeSection(
@@ -765,8 +697,7 @@ class HomeViewModel @Inject constructor(
                 Timber.e(e, "spotifyHome: newReleases() FAILED — ${e.javaClass.simpleName}: ${e.message}")
             }
 
-            Timber.d("spotifyHome: calling Spotify.home()...")
-            Spotify.home(sectionItemsLimit = 10).onSuccess { feed ->
+            homeResult.onSuccess { feed ->
                 Timber.d("spotifyHome: home() OK — greeting='${feed.greeting}' rawSections=${feed.sections.size}")
                 feed.sections.forEachIndexed { i, s ->
                     Timber.d("spotifyHome:   raw[$i] title='${s.title}' type=${s.typename} items=${s.items.size} totalCount=${s.totalCount}")

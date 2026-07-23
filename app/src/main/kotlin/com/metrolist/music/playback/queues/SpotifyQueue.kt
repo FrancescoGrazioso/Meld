@@ -27,15 +27,15 @@ import timber.log.Timber
  *
  * The engine builds a user taste profile from Spotify top tracks/artists,
  * then generates recommendations by combining seed-artist relevance, genre
- * similarity, user affinity, and popularity matching — with diversification
- * to avoid monotony.
+ * similarity, and user affinity — with diversification to avoid monotony.
  *
  * If the engine fails (e.g. network issues), falls back to a basic queue
  * built from the seed artist's top tracks.
  *
- * Optimized for fast playback start: only the initial track is resolved in
- * [getInitialStatus]. Subsequent tracks are resolved progressively in
- * [nextPage] batches.
+ * Optimized for fast playback start: [getInitialStatus] resolves ONLY the
+ * initial track and returns immediately. The network-heavy recommendation
+ * generation is deferred to the first [nextPage] call (by which point audio
+ * is already playing), instead of blocking playback start on it.
  */
 class SpotifyQueue(
     private val initialTrack: SpotifyTrack,
@@ -53,6 +53,11 @@ class SpotifyQueue(
     private val queuedTracks = mutableListOf<SpotifyTrack>()
     private var resolveOffset = 0
 
+    // Recommendations are generated lazily on the first nextPage() so playback
+    // start is never blocked on the network-heavy engine call. Guarded here
+    // because nextPage() is invoked sequentially by the player.
+    private var recommendationsGenerated = false
+
     override suspend fun getInitialStatus(): Queue.Status = withContext(Dispatchers.IO) {
         val initialMediaItem = mapper.resolveToMediaItem(initialTrack)
 
@@ -65,6 +70,25 @@ class SpotifyQueue(
             )
         }
 
+        Timber.d(
+            "SpotifyQueue: Resolved initial track '${initialTrack.name}' instantly; " +
+                "recommendations deferred to first nextPage()"
+        )
+
+        Queue.Status(
+            title = null,
+            items = listOf(initialMediaItem),
+            mediaItemIndex = 0,
+        )
+    }
+
+    /**
+     * Generates the recommendation queue on demand (once), with the same timeout
+     * and fallback behaviour that previously ran inside [getInitialStatus].
+     */
+    private suspend fun ensureRecommendations() {
+        if (recommendationsGenerated) return
+        recommendationsGenerated = true
         try {
             val recommendations = withTimeoutOrNull(RECOMMENDATION_TIMEOUT_MS) {
                 SpotifyRecommendationEngine.getRecommendations(
@@ -92,17 +116,6 @@ class SpotifyQueue(
             Timber.e(e, "SpotifyQueue: Engine failed, falling back to basic queue")
             buildFallbackQueue()
         }
-
-        Timber.d(
-            "SpotifyQueue: Resolved initial track '${initialTrack.name}' instantly, " +
-                "${queuedTracks.size} tracks queued for resolution"
-        )
-
-        Queue.Status(
-            title = null,
-            items = listOf(initialMediaItem),
-            mediaItemIndex = 0,
-        )
     }
 
     /**
@@ -137,9 +150,11 @@ class SpotifyQueue(
     }
 
     override fun hasNextPage(): Boolean =
-        resolveOffset < queuedTracks.size
+        !recommendationsGenerated || resolveOffset < queuedTracks.size
 
     override suspend fun nextPage(): List<MediaItem> = withContext(Dispatchers.IO) {
+        ensureRecommendations()
+
         if (resolveOffset >= queuedTracks.size) {
             return@withContext emptyList()
         }
