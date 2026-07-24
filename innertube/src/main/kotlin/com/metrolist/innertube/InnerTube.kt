@@ -196,15 +196,21 @@ class InnerTube {
         query: String? = null,
         params: String? = null,
         continuation: String? = null,
+        setLogin: Boolean? = null,
     ) = withRetry {
+        // When [setLogin] is null, fall back to the global browse-login preference.
+        // Callers can pass `false` to force an anonymous search (no auth header,
+        // no dataSyncId) so the query is NOT recorded in the user's YouTube search
+        // history — used for background Spotify→YouTube matching.
+        val effectiveLogin = setLogin ?: useLoginForBrowse
         httpClient.post("search") {
-            ytClient(client, setLogin = useLoginForBrowse)
+            ytClient(client, setLogin = effectiveLogin)
             setBody(
                 SearchBody(
                     context = client.toContext(
                         locale,
                         visitorData,
-                        if (useLoginForBrowse) dataSyncId else null
+                        if (effectiveLogin) dataSyncId else null
                     ),
                     query = query,
                     params = params
