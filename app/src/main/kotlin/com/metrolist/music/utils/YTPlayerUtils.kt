@@ -20,7 +20,6 @@ import com.metrolist.innertube.models.YouTubeClient.Companion.IOS
 import com.metrolist.innertube.models.YouTubeClient.Companion.IPADOS
 import com.metrolist.innertube.models.YouTubeClient.Companion.MOBILE
 import com.metrolist.innertube.models.YouTubeClient.Companion.TVHTML5
-import com.metrolist.innertube.models.YouTubeClient.Companion.TVHTML5_SIMPLY_EMBEDDED_PLAYER
 import com.metrolist.innertube.models.YouTubeClient.Companion.WEB
 import com.metrolist.innertube.models.YouTubeClient.Companion.WEB_CREATOR
 import com.metrolist.innertube.models.YouTubeClient.Companion.WEB_REMIX
@@ -54,8 +53,6 @@ object YTPlayerUtils {
     private val MAIN_CLIENT: YouTubeClient = WEB_REMIX
 
     private val STREAM_FALLBACK_CLIENTS: Array<YouTubeClient> = arrayOf(
-        TVHTML5_SIMPLY_EMBEDDED_PLAYER,  // Try embedded player first for age-restricted content
-        TVHTML5,
         ANDROID_VR_1_43_32,
         ANDROID_VR_1_61_48,
         ANDROID_CREATOR,
@@ -63,6 +60,7 @@ object YTPlayerUtils {
         ANDROID_VR_NO_AUTH,
         MOBILE,
         IOS,
+        TVHTML5,
         WEB,
         WEB_CREATOR
     )
@@ -195,11 +193,15 @@ object YTPlayerUtils {
         // Check if this is a privately owned track (uploaded song)
         val isPrivateTrack = mainPlayerResponse.videoDetails?.musicVideoType == "MUSIC_VIDEO_TYPE_PRIVATELY_OWNED_TRACK"
 
-        // For private tracks: use TVHTML5 (index 1) with PoToken + n-transform
+        // For private tracks: use TVHTML5 with PoToken + n-transform
         // For age-restricted: skip main client, start with fallbacks
         // For normal content: standard order
+        val tvHtml5Index = STREAM_FALLBACK_CLIENTS.indexOf(TVHTML5)
         val startIndex = when {
-            isPrivateTrack -> 1  // TVHTML5
+            isPrivateTrack -> if (tvHtml5Index != -1) tvHtml5Index else {
+                Timber.tag(logTag).w("TVHTML5 client not found in fallback clients array for private track")
+                0
+            }
             isAgeRestricted -> 0
             skipMainClient -> 0  // MAIN_CLIENT streams unplayable without PoToken
             // Normal content: skip the WEB_REMIX stream attempt (cipher unsolvable) and
@@ -269,7 +271,14 @@ object YTPlayerUtils {
 
                 Timber.tag(logTag).d("Format found: ${format.mimeType}, bitrate: ${format.bitrate}")
 
-                streamUrl = findUrlOrNull(format, videoId, responseToUse, skipNewPipe = wasOriginallyAgeRestricted)
+                val isLastResort = clientIndex == STREAM_FALLBACK_CLIENTS.size - 1
+                streamUrl = findUrlOrNull(
+                    format,
+                    videoId,
+                    responseToUse,
+                    skipNewPipe = wasOriginallyAgeRestricted,
+                    isLastResort = isLastResort
+                )
                 if (streamUrl == null) {
                     Timber.tag(logTag).d("Stream URL not found for format")
                     continue
@@ -542,9 +551,10 @@ object YTPlayerUtils {
         format: PlayerResponse.StreamingData.Format,
         videoId: String,
         playerResponse: PlayerResponse,
-        skipNewPipe: Boolean = false
+        skipNewPipe: Boolean = false,
+        isLastResort: Boolean = false
     ): String? {
-        Timber.tag(logTag).d("Finding stream URL for format: ${format.mimeType}, videoId: $videoId, skipNewPipe: $skipNewPipe")
+        Timber.tag(logTag).d("Finding stream URL for format: ${format.mimeType}, videoId: $videoId, skipNewPipe: $skipNewPipe, isLastResort: $isLastResort")
 
         // First check if format already has a URL
         if (!format.url.isNullOrEmpty()) {
@@ -561,7 +571,11 @@ object YTPlayerUtils {
                 Timber.tag(logTag).d("Stream URL obtained via custom cipher deobfuscation")
                 return customDeobfuscatedUrl
             }
-            Timber.tag(logTag).d("Custom cipher deobfuscation failed")
+            if (!isLastResort) {
+                Timber.tag(logTag).d("Custom cipher deobfuscation failed, fast-failing to try next client")
+                return null
+            }
+            Timber.tag(logTag).d("Custom cipher deobfuscation failed, attempting NewPipe HTML scrape as last resort")
         }
 
         // Skip NewPipe for age-restricted content
