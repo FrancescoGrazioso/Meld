@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-07-23T08:22:07Z",
-  "bundle_id": "web-player.ba35dcdb.js",
+  "last_updated": "2026-07-24T08:16:46Z",
+  "bundle_id": "web-player.470ce0a3.js",
   "operations": {
     "profileAttributes": {
       "hash": "08ffb4730af3746e04a8301396f20875dbbce10c75243803091a9274eacc8ac0",
       "previous_hash": "b197b5adb4b761690f76ad9d9fb278c14c14e7331f357c04a56e7001af7106e0",
       "type": "query",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": "2026-07-23T08:22:07Z"
     },
     "libraryV3": {
@@ -16,7 +16,7 @@
       "previous_hash": "973e511ca44261fda7eebac8b653155e7caee3675abb4fb110cc1b8c78b091c3",
       "type": "query",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": "2026-07-23T08:22:07Z"
     },
     "fetchPlaylist": {
@@ -24,7 +24,7 @@
       "previous_hash": "a65e12194ed5fc443a1cdebed5fabe33ca5b07b987185d63c72483867ad13cb4",
       "type": "query",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": "2026-07-23T08:22:07Z"
     },
     "fetchLibraryTracks": {
@@ -32,7 +32,7 @@
       "previous_hash": null,
       "type": "query",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": null
     },
     "searchDesktop": {
@@ -48,7 +48,7 @@
       "previous_hash": "7f86ff63e38c24973a2842b672abe44c910c1973978dc8a4a0cb648edef34527",
       "type": "query",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": "2026-05-30T07:01:03Z"
     },
     "getAlbum": {
@@ -56,7 +56,7 @@
       "previous_hash": null,
       "type": "query",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": null
     },
     "queryWhatsNewFeed": {
@@ -64,7 +64,7 @@
       "previous_hash": "3b53dede3c6054e8b7c962dd280eb6761c5d1c82b06b039f4110d76a62b4966b",
       "type": "query",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": "2026-03-31T06:30:04Z"
     },
     "addToPlaylist": {
@@ -72,7 +72,7 @@
       "previous_hash": null,
       "type": "mutation",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": null
     },
     "removeFromPlaylist": {
@@ -80,7 +80,7 @@
       "previous_hash": null,
       "type": "mutation",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": null
     },
     "moveItemsInPlaylist": {
@@ -88,7 +88,7 @@
       "previous_hash": null,
       "type": "mutation",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": null
     },
     "editPlaylistAttributes": {
@@ -104,7 +104,7 @@
       "previous_hash": "7c5a69420e2bfae3da5cc4e14cbc8bb3f6090f80afc00ffc179177f19be3f33d",
       "type": "mutation",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": "2026-07-04T08:29:50Z"
     },
     "removeFromLibrary": {
@@ -112,7 +112,7 @@
       "previous_hash": "7c5a69420e2bfae3da5cc4e14cbc8bb3f6090f80afc00ffc179177f19be3f33d",
       "type": "mutation",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": "2026-07-04T08:29:50Z"
     },
     "home": {
@@ -120,7 +120,7 @@
       "previous_hash": "5366cbf1f73f8c813dd0f1addc6934950f0dd529cec907107c85851e645c2d16",
       "type": "query",
       "status": "verified",
-      "last_verified": "2026-07-23T08:22:07Z",
+      "last_verified": "2026-07-24T08:16:46Z",
       "last_changed": "2026-07-17T08:00:38Z"
     }
   }
