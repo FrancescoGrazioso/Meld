@@ -158,6 +158,13 @@ class SpotifyYouTubeMapper(
             .filterIsInstance<SongItem>()
 
         var bestCandidate: MatchCandidate? = null
+        // Ranking score = raw match score minus a penalty for non-studio variants
+        // (live/MV/karaoke/…). Kept separate from the stored `score` so the final
+        // MIN_MATCH_THRESHOLD check and DB record use the true match quality — a
+        // track that ONLY exists as a live version still resolves rather than being
+        // skipped, it's just deprioritised when a studio version is also present.
+        var bestAdjusted = Double.NEGATIVE_INFINITY
+        val spotifyTitleLower = spotifyTrack.name.lowercase()
         val earlyExitThreshold = SpotifyMapper.earlyExitThreshold()
 
         for (song in songs) {
@@ -167,8 +174,10 @@ class SpotifyYouTubeMapper(
                 candidateArtist = song.artists.firstOrNull()?.name ?: "",
                 candidateDurationSec = song.duration,
             )
+            val adjusted = score - variantPenalty(spotifyTitleLower, song.title)
 
-            if (bestCandidate == null || score > bestCandidate.score) {
+            if (adjusted > bestAdjusted) {
+                bestAdjusted = adjusted
                 bestCandidate = MatchCandidate(
                     id = song.id,
                     title = song.title,
@@ -182,7 +191,7 @@ class SpotifyYouTubeMapper(
                     score = score,
                 )
                 // Early exit: if this match is excellent, skip remaining candidates
-                if (score >= earlyExitThreshold) break
+                if (adjusted >= earlyExitThreshold) break
             }
         }
 
@@ -216,6 +225,27 @@ class SpotifyYouTubeMapper(
             explicit = spotifyTrack.explicit,
             isrc = spotifyTrack.isrc,
         )
+    }
+
+    /**
+     * Penalises YouTube candidates that look like a non-studio variant (live, music
+     * video, karaoke, cover, sped-up/slowed edits, …) when the Spotify track itself
+     * is not such a variant. This steers automatic matching toward the official
+     * studio audio for tracks like "As It Was", where a live/MV upload would
+     * otherwise tie on title/artist and win purely on search order (see #211).
+     *
+     * Markers are matched as whole words to avoid false positives (e.g. "live"
+     * inside "Alive"). The penalty only applies to markers present in the candidate
+     * but absent from the Spotify title, so intentional live/remix tracks are unaffected.
+     */
+    private fun variantPenalty(spotifyTitleLower: String, candidateTitle: String): Double {
+        val candMarkers = VARIANT_MARKER_REGEX.findAll(candidateTitle.lowercase())
+            .map { it.value }.toSet()
+        if (candMarkers.isEmpty()) return 0.0
+        val spotifyMarkers = VARIANT_MARKER_REGEX.findAll(spotifyTitleLower)
+            .map { it.value }.toSet()
+        val extra = candMarkers - spotifyMarkers
+        return (extra.size * VARIANT_PENALTY_PER_MARKER).coerceAtMost(MAX_VARIANT_PENALTY)
     }
 
     private data class MatchCandidate(
@@ -307,6 +337,16 @@ class SpotifyYouTubeMapper(
     companion object {
         private const val MIN_MATCH_THRESHOLD = 0.35
         private const val MEM_CACHE_MAX_SIZE = 512
+
+        /** Per-marker ranking penalty for non-studio variants, capped by [MAX_VARIANT_PENALTY]. */
+        private const val VARIANT_PENALTY_PER_MARKER = 0.15
+        private const val MAX_VARIANT_PENALTY = 0.30
+
+        /** Whole-word markers that indicate a non-studio upload (live/MV/edit/etc.). */
+        private val VARIANT_MARKER_REGEX = Regex(
+            "\\b(live|en vivo|en directo|ao vivo|karaoke|cover|instrumental|" +
+                "sped up|spedup|slowed|nightcore|8d|music video|official video|lyric video)\\b"
+        )
 
         /**
          * Process-wide, thread-safe LRU cache of recently resolved Spotify→YouTube
