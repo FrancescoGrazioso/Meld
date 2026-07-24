@@ -64,7 +64,9 @@ class SpotifyYouTubeMapper(
         val query = SpotifyMapper.buildSearchQuery(track)
         Timber.d("Searching YouTube for Spotify track: $query")
 
-        val searchResult = YouTube.searchSummary(query).getOrNull() ?: return@withContext null
+        // Anonymous search: this is a background match, not a user-initiated
+        // search, so it must not be recorded in the user's YouTube search history.
+        val searchResult = YouTube.searchSummary(query, incognito = true).getOrNull() ?: return@withContext null
         val bestMatch = findBestMatch(track, searchResult)
 
         if (bestMatch != null) {

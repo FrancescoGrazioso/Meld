@@ -139,8 +139,17 @@ object YouTube {
         )
     }
 
-    suspend fun searchSummary(query: String): Result<SearchSummaryPage> = runCatching {
-        val response = innerTube.search(WEB_REMIX, query).body<SearchResponse>()
+    /**
+     * @param incognito when true the request is sent anonymously (no login),
+     * so the query is not recorded in the user's YouTube search history. Used
+     * for background Spotify→YouTube matching to avoid polluting the history.
+     */
+    suspend fun searchSummary(query: String, incognito: Boolean = false): Result<SearchSummaryPage> = runCatching {
+        val response = innerTube.search(
+            WEB_REMIX,
+            query,
+            setLogin = if (incognito) false else null,
+        ).body<SearchResponse>()
         val allSummaries = mutableListOf<SearchSummary>()
 
         response.contents?.tabbedSearchResultsRenderer?.tabs?.firstOrNull()
