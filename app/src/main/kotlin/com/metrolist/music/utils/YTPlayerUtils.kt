@@ -52,7 +52,7 @@ object YTPlayerUtils {
 
     private val MAIN_CLIENT: YouTubeClient = WEB_REMIX
 
-    private val STREAM_FALLBACK_CLIENTS: Array<YouTubeClient> = arrayOf(
+    internal val STREAM_FALLBACK_CLIENTS: Array<YouTubeClient> = arrayOf(
         ANDROID_VR_1_43_32,
         ANDROID_VR_1_61_48,
         ANDROID_CREATOR,
@@ -74,7 +74,7 @@ object YTPlayerUtils {
      * guaranteed-failing cipher attempt plus two unusable fallback clients (~3.5s).
      * Metadata/history still come from the WEB_REMIX response fetched above.
      */
-    private val NORMAL_CONTENT_STREAM_START_INDEX: Int =
+    internal val NORMAL_CONTENT_STREAM_START_INDEX: Int =
         STREAM_FALLBACK_CLIENTS.indexOf(ANDROID_VR_1_43_32).takeIf { it >= 0 } ?: -1
 
     data class PlaybackData(
@@ -194,20 +194,27 @@ object YTPlayerUtils {
         val isPrivateTrack = mainPlayerResponse.videoDetails?.musicVideoType == "MUSIC_VIDEO_TYPE_PRIVATELY_OWNED_TRACK"
 
         // For private tracks: use TVHTML5 with PoToken + n-transform
-        // For age-restricted: skip main client, start with fallbacks
+        // For age-restricted: skip main client, start with fallbacks (logged out jumps straight to WEB)
         // For normal content: standard order
         val tvHtml5Index = STREAM_FALLBACK_CLIENTS.indexOf(TVHTML5)
+        val webIndex = STREAM_FALLBACK_CLIENTS.indexOf(WEB)
         val startIndex = when {
             isPrivateTrack -> if (tvHtml5Index != -1) tvHtml5Index else {
                 Timber.tag(logTag).w("TVHTML5 client not found in fallback clients array for private track")
                 0
             }
-            isAgeRestricted -> 0
+            isAgeRestricted -> if (!isLoggedIn && YouTube.cookie == null && webIndex != -1) webIndex else 0
             skipMainClient -> 0  // MAIN_CLIENT streams unplayable without PoToken
             // Normal content: skip the WEB_REMIX stream attempt (cipher unsolvable) and
             // jump straight to ANDROID_VR, which serves pre-signed URLs. See
             // NORMAL_CONTENT_STREAM_START_INDEX. Falls back to -1 if the client is absent.
             else -> NORMAL_CONTENT_STREAM_START_INDEX
+        }
+
+        // Dynamically find the last client index that will actually be attempted for this session,
+        // ensuring logged-out users trigger the NewPipe safety net on WEB instead of fast-failing.
+        val lastAttemptableClientIndex = STREAM_FALLBACK_CLIENTS.indexOfLast { client ->
+            !client.loginRequired || isLoggedIn || YouTube.cookie != null
         }
 
         for (clientIndex in (startIndex until STREAM_FALLBACK_CLIENTS.size)) {
@@ -271,7 +278,7 @@ object YTPlayerUtils {
 
                 Timber.tag(logTag).d("Format found: ${format.mimeType}, bitrate: ${format.bitrate}")
 
-                val isLastResort = clientIndex == STREAM_FALLBACK_CLIENTS.size - 1
+                val isLastResort = clientIndex == lastAttemptableClientIndex
                 streamUrl = findUrlOrNull(
                     format,
                     videoId,
