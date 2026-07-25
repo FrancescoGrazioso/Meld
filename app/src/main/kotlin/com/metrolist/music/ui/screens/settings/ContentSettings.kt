@@ -62,6 +62,7 @@ import com.metrolist.music.constants.EnableBetterLyricsKey
 import com.metrolist.music.constants.EnableKugouKey
 import com.metrolist.music.constants.EnableLrcLibKey
 import com.metrolist.music.constants.EnablePaxsenixKey
+import com.metrolist.music.constants.EnableNetEaseKey
 import com.metrolist.music.constants.EnableLyricsPlus
 import com.metrolist.music.constants.HideExplicitKey
 import com.metrolist.music.constants.HideVideoSongsKey
@@ -120,6 +121,7 @@ fun ContentSettings(
     val (enableLrclib, onEnableLrclibChange) = rememberPreference(key = EnableLrcLibKey, defaultValue = true)
     val (enableBetterLyrics, onEnableBetterLyricsChange) = rememberPreference(key = EnableBetterLyricsKey, defaultValue = true)
     val (enablePaxsenix, onEnablePaxsenixChange) = rememberPreference(key = EnablePaxsenixKey, defaultValue = true)
+    val (enableNetEase, onEnableNetEaseChange) = rememberPreference(key = EnableNetEaseKey, defaultValue = true)
     val (enableLyricsPlus, onEnableLyricsPlusChange) = rememberPreference(key = EnableLyricsPlus, defaultValue = false)
     val (lyricsProviderOrder, onLyricsProviderOrderChange) = rememberPreference(
         key = LyricsProviderOrderKey,
@@ -466,6 +468,35 @@ fun ContentSettings(
                         Column(
                             modifier = Modifier.weight(1f)
                         ) {
+                            Text(stringResource(R.string.enable_netease))
+                            Text(
+                                text = stringResource(R.string.enable_netease_desc),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Switch(
+                            checked = enableNetEase,
+                            onCheckedChange = onEnableNetEaseChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (enableNetEase) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f)
+                        ) {
                             Text(stringResource(R.string.enable_lyricsplus))
                             Text(
                                 text = stringResource(R.string.enable_lyricsplus_desc),
@@ -580,6 +611,7 @@ fun ContentSettings(
         val enabledProviders = setOf(
             "LrcLib".takeIf { enableLrclib },
             "KuGou".takeIf { enableKugou },
+            "NetEase".takeIf { enableNetEase },
             "BetterLyrics".takeIf { enableBetterLyrics },
             "Paxsenix".takeIf { enablePaxsenix },
             "LyricsPlus".takeIf { enableLyricsPlus },
@@ -587,7 +619,7 @@ fun ContentSettings(
         val lyricsIcon = painterResource(R.drawable.lyrics)
         val draggableItems = remember { mutableStateListOf<DraggableLyricsProviderItem>() }
 
-        LaunchedEffect(normalizedOrder, enableLrclib, enableKugou, enableBetterLyrics, enablePaxsenix, enableLyricsPlus) {
+        LaunchedEffect(normalizedOrder, enableLrclib, enableKugou, enableNetEase, enableBetterLyrics, enablePaxsenix, enableLyricsPlus) {
             val orderedEnabledProviders = normalizedOrder.filter { it in enabledProviders }
             draggableItems.clear()
             draggableItems.addAll(
@@ -601,6 +633,8 @@ fun ContentSettings(
                 }
             )
         }
+
+        val isOrderChanged = normalizedOrder != defaultOrder
 
         AlertDialog(
             onDismissRequest = { showProviderPriorityDialog = false },
@@ -632,6 +666,20 @@ fun ContentSettings(
                     )
                 }
             },
+            dismissButton = if (isOrderChanged) {
+                {
+                    TextButton(
+                        onClick = {
+                            val defaultOrderList = LyricsProviderRegistry.getDefaultProviderOrder()
+                            onLyricsProviderOrderChange(
+                                LyricsProviderRegistry.serializeProviderOrder(defaultOrderList)
+                            )
+                        }
+                    ) {
+                        Text(stringResource(R.string.reset_to_default))
+                    }
+                }
+            } else null,
             confirmButton = {
                 TextButton(
                     onClick = { showProviderPriorityDialog = false }
