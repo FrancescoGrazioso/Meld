@@ -82,13 +82,6 @@ class DiscordRPC(
             }
         }
 
-        Timber.tag("DiscordRPC").d(
-            "buttons=%s",
-            buttonsList.joinToString(prefix = "[", postfix = "]") {
-                "{label='${it.first}'(${it.first.length}), url='${it.second}'}"
-            },
-        )
-
         val type = when (activityType) {
             "playing" -> Type.PLAYING
             "watching" -> Type.WATCHING
@@ -99,6 +92,16 @@ class DiscordRPC(
         val name = activityName.ifEmpty {
             context.getString(R.string.app_name).removeSuffix(" Debug")
         }.take(ACTIVITY_NAME_MAX)
+
+        Timber.tag("new feature").d(
+            "[Discord] type=%s name='%s'(%d) buttons=%s",
+            activityType,
+            name,
+            name.length,
+            buttonsList.joinToString(prefix = "[", postfix = "]") {
+                "{label='${it.first}'(${it.first.length}), url='${it.second}'}"
+            },
+        )
 
         setActivity(
             name = name,

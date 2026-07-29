@@ -80,7 +80,7 @@ object MusixmatchLyricsProvider : LyricsProvider {
                 val status = message?.get("header")?.jsonObject
                     ?.get("status_code")?.jsonPrimitive?.intOrNull
                 if (status != 200) {
-                    Timber.tag("Musixmatch").d("token.get status=%s", status)
+                    Timber.tag("new feature").d("[Musixmatch] token.get FAILED status=%s", status)
                     return@runCatching null
                 }
                 message.get("body")?.jsonObject
@@ -88,6 +88,7 @@ object MusixmatchLyricsProvider : LyricsProvider {
                     ?.takeIf { it.isNotBlank() && it != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly" }
             }.getOrNull()
             userToken = fetched
+            Timber.tag("new feature").d("[Musixmatch] token acquired=%b", fetched != null)
             fetched
         }
     }
@@ -107,6 +108,10 @@ object MusixmatchLyricsProvider : LyricsProvider {
         duration: Int,
         album: String?,
     ): Result<String> = runCatching {
+        Timber.tag("new feature").d(
+            "[Musixmatch] query track='%s' artist='%s' album='%s' durMs=%d",
+            title, artist, album ?: "", duration,
+        )
         val token = ensureToken() ?: throw IllegalStateException("Musixmatch token unavailable")
         val durationSec = if (duration > 0) duration / 1000 else -1
 
@@ -139,6 +144,7 @@ object MusixmatchLyricsProvider : LyricsProvider {
             ?.get("subtitle_body")?.jsonPrimitive?.contentOrNull
 
         if (!subtitle.isNullOrBlank()) {
+            Timber.tag("new feature").d("[Musixmatch] result=SYNCED (lrc, %d chars)", subtitle.length)
             return@runCatching subtitle
         }
 
@@ -148,9 +154,11 @@ object MusixmatchLyricsProvider : LyricsProvider {
             ?.get("lyrics_body")?.jsonPrimitive?.contentOrNull
 
         if (!plain.isNullOrBlank()) {
+            Timber.tag("new feature").d("[Musixmatch] result=PLAIN (unsynced, %d chars)", plain.length)
             return@runCatching plain
         }
 
+        Timber.tag("new feature").d("[Musixmatch] result=NONE (no lyrics for this track)")
         throw IllegalStateException("Lyrics unavailable")
     }
 }
