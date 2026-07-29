@@ -84,6 +84,7 @@ import com.metrolist.lastfm.LastFM
 import com.metrolist.music.MainActivity
 import com.metrolist.music.R
 import com.metrolist.music.constants.AndroidAutoTargetPlaylistKey
+import com.metrolist.music.constants.AudioFocusEnabledKey
 import com.metrolist.music.constants.AudioNormalizationKey
 import com.metrolist.music.constants.AudioOffload
 import com.metrolist.music.constants.AudioQualityKey
@@ -293,6 +294,7 @@ class MusicService :
     private var lastAudioFocusState = AudioManager.AUDIOFOCUS_NONE
     private var wasPlayingBeforeAudioFocusLoss = false
     private var hasAudioFocus = false
+    @Volatile private var audioFocusEnabled = true
     private var reentrantFocusGain = false
     private var wasPlayingBeforeVolumeMute = false
     private var isPausedByVolumeMute = false
@@ -876,6 +878,30 @@ class MusicService :
                 }
             }
 
+        dataStore.data
+            .map { it[AudioFocusEnabledKey] ?: true }
+            .distinctUntilChanged()
+            .collectLatest(scope) { enabled ->
+                audioFocusEnabled = enabled
+                if (!enabled) {
+                    // User opted to keep playing alongside other audio: give up focus so the
+                    // system stops asking us to pause/duck, and mark ourselves free to play.
+                    abandonAudioFocus()
+                    hasAudioFocus = true
+                    audioFocusVolumeMultiplier.value = 1f
+                    applyEffectiveVolume()
+                } else {
+                    // Restore normal focus management; reacquire now if we're actively playing.
+                    hasAudioFocus = false
+                    if (player.playWhenReady &&
+                        (player.playbackState == Player.STATE_READY ||
+                            player.playbackState == Player.STATE_BUFFERING)
+                    ) {
+                        requestAudioFocus()
+                    }
+                }
+            }
+
         combine(
             currentFormat,
             dataStore.data
@@ -1187,6 +1213,8 @@ class MusicService :
     }
 
     private fun handleAudioFocusChange(focusChange: Int) {
+        // When focus handling is disabled we never own focus, so ignore stray callbacks.
+        if (!audioFocusEnabled) return
         when (focusChange) {
             AudioManager.AUDIOFOCUS_GAIN,
             AudioManager.AUDIOFOCUS_GAIN_TRANSIENT,
@@ -1258,6 +1286,11 @@ class MusicService :
     }
 
     private fun requestAudioFocus(): Boolean {
+        if (!audioFocusEnabled) {
+            // Never grab focus: allow playback to run mixed with other apps' audio.
+            hasAudioFocus = true
+            return true
+        }
         if (hasAudioFocus) return true
 
         audioFocusRequest?.let { request ->
