@@ -885,6 +885,11 @@ class MusicService :
             .distinctUntilChanged()
             .collectLatest(scope) { enabled ->
                 audioFocusEnabled = enabled
+                Timber.tag("new feature").d(
+                    "[AudioFocus] audioFocusEnabled=%b (play-over-other-audio=%b)",
+                    enabled,
+                    !enabled,
+                )
                 if (!enabled) {
                     // User opted to keep playing alongside other audio: give up focus so the
                     // system stops asking us to pause/duck, and mark ourselves free to play.
@@ -1216,7 +1221,10 @@ class MusicService :
 
     private fun handleAudioFocusChange(focusChange: Int) {
         // When focus handling is disabled we never own focus, so ignore stray callbacks.
-        if (!audioFocusEnabled) return
+        if (!audioFocusEnabled) {
+            Timber.tag("new feature").d("[AudioFocus] ignoring focus change=%d (play-over-other-audio on)", focusChange)
+            return
+        }
         when (focusChange) {
             AudioManager.AUDIOFOCUS_GAIN,
             AudioManager.AUDIOFOCUS_GAIN_TRANSIENT,
@@ -1290,6 +1298,7 @@ class MusicService :
     private fun requestAudioFocus(): Boolean {
         if (!audioFocusEnabled) {
             // Never grab focus: allow playback to run mixed with other apps' audio.
+            Timber.tag("new feature").d("[AudioFocus] requestAudioFocus skipped (play-over-other-audio on)")
             hasAudioFocus = true
             return true
         }
