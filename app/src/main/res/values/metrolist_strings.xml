@@ -141,6 +141,8 @@
     <string name="enable_paxsenix_desc">High-quality synchronized lyrics from Paxsenix API</string>
     <string name="enable_lyricsplus">Enable LyricsPlus</string>
     <string name="enable_lyricsplus_desc">Synchronized lyrics from multiple sources</string>
+    <string name="enable_musixmatch">Enable Musixmatch</string>
+    <string name="enable_musixmatch_desc">Time-synced lyrics from Musixmatch (unofficial API, may be rate-limited)</string>
     <string name="lyrics_provider_selection">Provider selection</string>
     <string name="lyrics_provider_selection_desc">Choose which lyrics providers are enabled</string>
     <string name="auto_scroll">Re-sync</string>
