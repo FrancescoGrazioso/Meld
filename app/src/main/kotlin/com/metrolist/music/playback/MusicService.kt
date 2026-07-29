@@ -115,8 +115,10 @@ import com.metrolist.music.constants.DiscordActivityTypeKey
 import com.metrolist.music.constants.DiscordAdvancedModeKey
 import com.metrolist.music.constants.DiscordAvatarKey
 import com.metrolist.music.constants.DiscordButton1TextKey
+import com.metrolist.music.constants.DiscordButton1UrlKey
 import com.metrolist.music.constants.DiscordButton1VisibleKey
 import com.metrolist.music.constants.DiscordButton2TextKey
+import com.metrolist.music.constants.DiscordButton2UrlKey
 import com.metrolist.music.constants.DiscordButton2VisibleKey
 import com.metrolist.music.constants.DiscordStatusKey
 import com.metrolist.music.constants.DiscordTokenKey
@@ -3479,8 +3481,10 @@ class MusicService :
         val status = if (advancedMode) dataStore.get(DiscordStatusKey, "online") else "online"
         val b1Text = if (advancedMode) dataStore.get(DiscordButton1TextKey, "") else ""
         val b1Visible = if (advancedMode) dataStore.get(DiscordButton1VisibleKey, true) else true
+        val b1Url = if (advancedMode) dataStore.get(DiscordButton1UrlKey, "") else ""
         val b2Text = if (advancedMode) dataStore.get(DiscordButton2TextKey, "") else ""
         val b2Visible = if (advancedMode) dataStore.get(DiscordButton2VisibleKey, true) else true
+        val b2Url = if (advancedMode) dataStore.get(DiscordButton2UrlKey, "") else ""
         val activityType = if (advancedMode) dataStore.get(DiscordActivityTypeKey, "listening") else "listening"
         val activityName = if (advancedMode) dataStore.get(DiscordActivityNameKey, "") else ""
 
@@ -3496,8 +3500,10 @@ class MusicService :
                         status,
                         b1Text,
                         b1Visible,
+                        b1Url,
                         b2Text,
                         b2Visible,
+                        b2Url,
                         activityType,
                         activityName,
                     )?.onFailure {

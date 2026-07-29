@@ -300,6 +300,7 @@ fun TextFieldDialog(
     maxLines: Int = if (singleLine) 1 else 10,
     isInputValid: (String) -> Boolean = { it.isNotEmpty() },
     keyboardType: KeyboardType = KeyboardType.Text,
+    maxLength: Int? = null,
     onDone: (String) -> Unit = {},
     // new multi-field support
     textFields: List<Pair<String, TextFieldValue>>? = null,
@@ -396,7 +397,14 @@ fun TextFieldDialog(
                 ) {
                     TextField(
                         value = legacyFieldState.value,
-                        onValueChange = { legacyFieldState.value = it },
+                        onValueChange = {
+                            legacyFieldState.value =
+                                if (maxLength != null && it.text.length > maxLength) {
+                                    it.copy(text = it.text.take(maxLength))
+                                } else {
+                                    it
+                                }
+                        },
                         placeholder = placeholder,
                         singleLine = singleLine,
                         maxLines = maxLines,
@@ -417,6 +425,22 @@ fun TextFieldDialog(
                             Modifier
                                 .fillMaxWidth()
                                 .focusRequester(focusRequester),
+                    )
+                }
+                if (maxLength != null) {
+                    Text(
+                        text = "${legacyFieldState.value.text.length}/$maxLength",
+                        style = MaterialTheme.typography.labelSmall,
+                        color =
+                            if (legacyFieldState.value.text.length >= maxLength) {
+                                MaterialTheme.colorScheme.error
+                            } else {
+                                MaterialTheme.colorScheme.onSurfaceVariant
+                            },
+                        modifier =
+                            Modifier
+                                .align(Alignment.End)
+                                .padding(top = 4.dp),
                     )
                 }
             }

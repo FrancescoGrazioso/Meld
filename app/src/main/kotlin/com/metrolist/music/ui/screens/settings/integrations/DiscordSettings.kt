@@ -61,6 +61,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -78,8 +79,10 @@ import com.metrolist.music.constants.DiscordActivityTypeKey
 import com.metrolist.music.constants.DiscordAdvancedModeKey
 import com.metrolist.music.constants.DiscordAvatarKey
 import com.metrolist.music.constants.DiscordButton1TextKey
+import com.metrolist.music.constants.DiscordButton1UrlKey
 import com.metrolist.music.constants.DiscordButton1VisibleKey
 import com.metrolist.music.constants.DiscordButton2TextKey
+import com.metrolist.music.constants.DiscordButton2UrlKey
 import com.metrolist.music.constants.DiscordButton2VisibleKey
 import com.metrolist.music.constants.DiscordInfoDismissedKey
 import com.metrolist.music.constants.DiscordNameKey
@@ -109,6 +112,12 @@ import kotlinx.coroutines.launch
 private enum class DiscordStatus { ONLINE, IDLE, DND }
 
 private enum class DiscordActivityType { LISTENING, PLAYING, WATCHING, COMPETING }
+
+// Discord-enforced limits: button labels are capped at 32 chars and the activity
+// name at 128. A label that exceeds 32 is silently dropped by Discord (the button
+// won't render), so we clamp both in the UI and again before sending the payload.
+private const val DISCORD_BUTTON_LABEL_MAX = 32
+private const val DISCORD_ACTIVITY_NAME_MAX = 128
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -141,8 +150,10 @@ fun DiscordSettings(
     var discordStatus by rememberPreference(DiscordStatusKey, "online")
     var button1Text by rememberPreference(DiscordButton1TextKey, "")
     var button1Visible by rememberPreference(DiscordButton1VisibleKey, true)
+    var button1Url by rememberPreference(DiscordButton1UrlKey, "")
     var button2Text by rememberPreference(DiscordButton2TextKey, "")
     var button2Visible by rememberPreference(DiscordButton2VisibleKey, true)
+    var button2Url by rememberPreference(DiscordButton2UrlKey, "")
     var activityType by rememberPreference(DiscordActivityTypeKey, "listening")
     var activityName by rememberPreference(DiscordActivityNameKey, "")
 
@@ -152,7 +163,9 @@ fun DiscordSettings(
     var showStatusDialog by rememberSaveable { mutableStateOf(false) }
     var showActivityTypeDialog by rememberSaveable { mutableStateOf(false) }
     var showButton1TextDialog by rememberSaveable { mutableStateOf(false) }
+    var showButton1UrlDialog by rememberSaveable { mutableStateOf(false) }
     var showButton2TextDialog by rememberSaveable { mutableStateOf(false) }
+    var showButton2UrlDialog by rememberSaveable { mutableStateOf(false) }
     var showActivityNameDialog by rememberSaveable { mutableStateOf(false) }
 
     // Map string prefs to enums for dialogs
@@ -319,9 +332,29 @@ fun DiscordSettings(
                 showButton1TextDialog = false
             },
             singleLine = true,
+            maxLength = DISCORD_BUTTON_LABEL_MAX,
+            isInputValid = { true },
             initialTextFieldValue = TextFieldValue(button1Text),
             extraContent = {
                 InfoLabel(text = stringResource(R.string.discord_button_text_variables))
+            },
+        )
+    }
+
+    if (showButton1UrlDialog) {
+        TextFieldDialog(
+            onDismiss = { showButton1UrlDialog = false },
+            onDone = {
+                button1Url = it.trim()
+                showButton1UrlDialog = false
+            },
+            singleLine = true,
+            keyboardType = KeyboardType.Uri,
+            isInputValid = { true },
+            initialTextFieldValue = TextFieldValue(button1Url),
+            placeholder = { Text("https://music.youtube.com/watch?v=…") },
+            extraContent = {
+                InfoLabel(text = stringResource(R.string.discord_button_url_description))
             },
         )
     }
@@ -334,9 +367,29 @@ fun DiscordSettings(
                 showButton2TextDialog = false
             },
             singleLine = true,
+            maxLength = DISCORD_BUTTON_LABEL_MAX,
+            isInputValid = { true },
             initialTextFieldValue = TextFieldValue(button2Text),
             extraContent = {
                 InfoLabel(text = stringResource(R.string.discord_button_text_variables))
+            },
+        )
+    }
+
+    if (showButton2UrlDialog) {
+        TextFieldDialog(
+            onDismiss = { showButton2UrlDialog = false },
+            onDone = {
+                button2Url = it.trim()
+                showButton2UrlDialog = false
+            },
+            singleLine = true,
+            keyboardType = KeyboardType.Uri,
+            isInputValid = { true },
+            initialTextFieldValue = TextFieldValue(button2Url),
+            placeholder = { Text("https://example.com") },
+            extraContent = {
+                InfoLabel(text = stringResource(R.string.discord_button_url_description))
             },
         )
     }
@@ -349,6 +402,8 @@ fun DiscordSettings(
                 showActivityNameDialog = false
             },
             singleLine = true,
+            maxLength = DISCORD_ACTIVITY_NAME_MAX,
+            isInputValid = { true },
             initialTextFieldValue = TextFieldValue(activityName),
             extraContent = {
                 InfoLabel(text = stringResource(R.string.discord_activity_name_description))
@@ -699,9 +754,21 @@ fun DiscordSettings(
                                 onClick = { showButton1TextDialog = true },
                             ),
                             Material3SettingsItem(
+                                title = { Text(stringResource(R.string.discord_button_1_url)) },
+                                description = {
+                                    Text(
+                                        button1Url.ifEmpty {
+                                            stringResource(R.string.discord_button_1_url_default)
+                                        },
+                                    )
+                                },
+                                enabled = button1Visible,
+                                onClick = { showButton1UrlDialog = true },
+                            ),
+                            Material3SettingsItem(
                                 title = { Text(stringResource(R.string.discord_button_2)) },
                                 description = {
-                                    Text(button2Text.ifEmpty { "Visit Metrolist" })
+                                    Text(button2Text.ifEmpty { "Visit Meld" })
                                 },
                                 trailingContent = {
                                     Switch(
@@ -710,6 +777,18 @@ fun DiscordSettings(
                                     )
                                 },
                                 onClick = { showButton2TextDialog = true },
+                            ),
+                            Material3SettingsItem(
+                                title = { Text(stringResource(R.string.discord_button_2_url)) },
+                                description = {
+                                    Text(
+                                        button2Url.ifEmpty {
+                                            stringResource(R.string.discord_button_2_url_default)
+                                        },
+                                    )
+                                },
+                                enabled = button2Visible,
+                                onClick = { showButton2UrlDialog = true },
                             ),
                         ),
                 )
@@ -765,8 +844,10 @@ fun DiscordSettings(
             activityName = activityName,
             button1Text = button1Text,
             button1Visible = button1Visible,
+            button1Url = button1Url,
             button2Text = button2Text,
             button2Visible = button2Visible,
+            button2Url = button2Url,
         )
 
         // Bottom padding for mini player
@@ -798,8 +879,10 @@ fun RichPresence(
     activityName: String = "",
     button1Text: String = "",
     button1Visible: Boolean = true,
+    button1Url: String = "",
     button2Text: String = "",
     button2Visible: Boolean = true,
+    button2Url: String = "",
 ) {
     val context = LocalContext.current
 
@@ -931,15 +1014,21 @@ fun RichPresence(
                     } else {
                         button1Text.ifEmpty { "Listen on YouTube Music" }
                     }
+                val resolvedButton1Url =
+                    if (song != null) {
+                        button1Url.ifEmpty { "https://music.youtube.com/watch?v=${song.id}" }
+                            .let { DiscordRPC.resolveVariables(it, song) }
+                    } else {
+                        button1Url.ifEmpty { "https://music.youtube.com/" }
+                    }
                 OutlinedButton(
                     enabled = song != null,
                     onClick = {
-                        val intent =
-                            Intent(
-                                Intent.ACTION_VIEW,
-                                "https://music.youtube.com/watch?v=${song?.id}".toUri(),
+                        runCatching {
+                            context.startActivity(
+                                Intent(Intent.ACTION_VIEW, resolvedButton1Url.toUri()),
                             )
-                        context.startActivity(intent)
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
                 ) {
@@ -957,14 +1046,20 @@ fun RichPresence(
                     } else {
                         button2Text.ifEmpty { "Visit Meld" }
                     }
+                val resolvedButton2Url =
+                    if (song != null) {
+                        button2Url.ifEmpty { "https://github.com/FrancescoGrazioso/Meld" }
+                            .let { DiscordRPC.resolveVariables(it, song) }
+                    } else {
+                        button2Url.ifEmpty { "https://github.com/FrancescoGrazioso/Meld" }
+                    }
                 OutlinedButton(
                     onClick = {
-                        val intent =
-                            Intent(
-                                Intent.ACTION_VIEW,
-                                "https://github.com/FrancescoGrazioso/Meld".toUri(),
+                        runCatching {
+                            context.startActivity(
+                                Intent(Intent.ACTION_VIEW, resolvedButton2Url.toUri()),
                             )
-                        context.startActivity(intent)
+                        }
                     },
                     modifier = Modifier.fillMaxWidth(),
                 ) {

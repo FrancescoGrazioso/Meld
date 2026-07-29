@@ -930,7 +930,12 @@
     <string name="discord_status_dnd">Do Not Disturb</string>
     <string name="discord_buttons">Buttons</string>
     <string name="discord_button_1">Button 1</string>
+    <string name="discord_button_1_url">Button 1 URL</string>
+    <string name="discord_button_1_url_default">Default: current song on YouTube Music</string>
     <string name="discord_button_2">Button 2</string>
+    <string name="discord_button_2_url">Button 2 URL</string>
+    <string name="discord_button_2_url_default">Default: Meld on GitHub</string>
+    <string name="discord_button_url_description">Destination link opened when someone clicks the button. Must start with http:// or https://. Supports {song_name}, {artist_name}, {album_name}.</string>
     <string name="login_successful">Login successful!</string>
     <string name="discord_information_warning">This feature uses the KizzyRPC library to connect to Discord\'s Gateway and update your Rich Presence status. While no account suspensions from similar usage have been reported, this method is not officially supported by Discord and may be considered a Terms of Service violation. Your token is handled locally and never sent to third-party servers. Proceed at your own discretion!</string>
     <string name="discord_activity_type">Activity type</string>
