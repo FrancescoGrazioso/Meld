@@ -10,7 +10,6 @@ import com.metrolist.music.R
 import com.metrolist.music.db.entities.Song
 import com.my.kizzy.rpc.KizzyRPC
 import com.my.kizzy.rpc.RpcImage
-import timber.log.Timber
 
 class DiscordRPC(
     val context: Context,
@@ -92,16 +91,6 @@ class DiscordRPC(
         val name = activityName.ifEmpty {
             context.getString(R.string.app_name).removeSuffix(" Debug")
         }.take(ACTIVITY_NAME_MAX)
-
-        Timber.tag("new feature").d(
-            "[Discord] type=%s name='%s'(%d) buttons=%s",
-            activityType,
-            name,
-            name.length,
-            buttonsList.joinToString(prefix = "[", postfix = "]") {
-                "{label='${it.first}'(${it.first.length}), url='${it.second}'}"
-            },
-        )
 
         setActivity(
             name = name,
