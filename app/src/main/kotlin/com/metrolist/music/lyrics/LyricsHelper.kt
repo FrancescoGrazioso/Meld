@@ -29,10 +29,16 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 import javax.inject.Inject
+import javax.inject.Singleton
 
 private const val MAX_LYRICS_FETCH_MS = 30000L
 private const val PROVIDER_NONE = ""
 
+// Must be a singleton: MusicService is the only place that collects `preferred` to
+// populate `lyricsProviders`. If each injection point got its own instance, the
+// LyricsMenu/ViewModel copy would keep the hardcoded default list (missing any
+// runtime-configured provider like Musixmatch) and never query it.
+@Singleton
 class LyricsHelper
 @Inject
 constructor(
@@ -46,6 +52,7 @@ constructor(
             LrcLibLyricsProvider,
             KuGouLyricsProvider,
             LyricsPlusProvider,
+            MusixmatchLyricsProvider,
             YouTubeSubtitleLyricsProvider,
             YouTubeLyricsProvider
         )
