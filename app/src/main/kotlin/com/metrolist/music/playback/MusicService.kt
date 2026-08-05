@@ -221,6 +221,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -1122,6 +1123,9 @@ class MusicService :
             }
         }
 
+        // Single background consumer for widget renders; see updateWidgetUI
+        startWidgetRenderer()
+
         // Save queue periodically to prevent queue loss from crash or force kill
         scope.launch {
             while (isActive) {
@@ -1155,12 +1159,12 @@ class MusicService :
 
         val silenceProcessor = SilenceDetectorAudioProcessor { handleLongSilenceDetected() }
 
-        // Set initial state
-        runBlocking {
-            val skipSilence = dataStore.get(SkipSilenceKey, false)
-            val instantSkip = dataStore.get(SkipSilenceInstantKey, false)
-            silenceProcessor.instantModeEnabled = skipSilence && instantSkip
-        }
+        // Set initial state. `dataStore.get(key, default)` is already synchronous (it
+        // reads the in-memory snapshot); wrapping it in runBlocking only spun up a
+        // coroutine event loop on the main thread for nothing.
+        val skipSilence = dataStore.get(SkipSilenceKey, false)
+        val instantSkip = dataStore.get(SkipSilenceInstantKey, false)
+        silenceProcessor.instantModeEnabled = skipSilence && instantSkip
 
         val player =
             ExoPlayer
@@ -1184,12 +1188,10 @@ class MusicService :
         playerSilenceProcessors[player] = silenceProcessor
 
         player.apply {
-            runBlocking {
-                val offload = dataStore.get(AudioOffload, false)
-                val crossfade = dataStore.get(CrossfadeEnabledKey, false)
-                setOffloadEnabled(if (crossfade) false else offload)
-                skipSilenceEnabled = dataStore.get(SkipSilenceKey, false)
-            }
+            val offload = dataStore.get(AudioOffload, false)
+            val crossfade = dataStore.get(CrossfadeEnabledKey, false)
+            setOffloadEnabled(if (crossfade) false else offload)
+            skipSilenceEnabled = skipSilence
             addAnalyticsListener(PlaybackStatsListener(false, this@MusicService))
 
             // Cleanup handled manually in onDestroy/release
@@ -1933,12 +1935,74 @@ class MusicService :
             }
         }
 
+        // Capture the already-played part of the shuffle order *before* mutating the
+        // queue. addMediaItems() appends, so existing indices stay valid afterwards.
+        val playedBefore =
+            if (player.shuffleModeEnabled) playedShuffleIndices(player.currentMediaItemIndex) else emptyList()
+
         player.addMediaItems(items)
         if (player.shuffleModeEnabled) {
             val shufflePlaylistFirst = dataStore.get(ShufflePlaylistFirstKey, false)
-            applyShuffleOrder(player.currentMediaItemIndex, player.mediaItemCount, shufflePlaylistFirst)
+            if (playedBefore.isEmpty()) {
+                applyShuffleOrder(player.currentMediaItemIndex, player.mediaItemCount, shufflePlaylistFirst)
+            } else {
+                // Reshuffling the whole queue here would drop the listening history and put
+                // already-played tracks back in front of the user (issue #232). Keep the
+                // played prefix intact and randomise only what's still ahead.
+                applyShuffleOrderKeepingHistory(
+                    playedBefore,
+                    player.currentMediaItemIndex,
+                    player.mediaItemCount,
+                )
+            }
         }
         player.prepare()
+    }
+
+    /**
+     * Indices already traversed in the current shuffle order, in play order, up to but
+     * excluding [currentIndex]. Derived from the timeline instead of tracked separately so
+     * it cannot drift out of sync with ExoPlayer's own shuffle order.
+     */
+    private fun playedShuffleIndices(currentIndex: Int): List<Int> {
+        val timeline = player.currentTimeline
+        if (timeline.isEmpty) return emptyList()
+
+        val played = mutableListOf<Int>()
+        var idx = currentIndex
+        // getPreviousWindowIndex with REPEAT_MODE_OFF terminates at the start of the
+        // order; the step cap is a guard against a malformed order looping forever.
+        var steps = 0
+        while (steps++ < timeline.windowCount) {
+            idx = timeline.getPreviousWindowIndex(idx, Player.REPEAT_MODE_OFF, true)
+            if (idx == C.INDEX_UNSET || idx == currentIndex) break
+            played.add(idx)
+        }
+        played.reverse()
+        return played.distinct()
+    }
+
+    private fun applyShuffleOrderKeepingHistory(
+        playedIndices: List<Int>,
+        currentIndex: Int,
+        totalCount: Int,
+    ) {
+        if (totalCount == 0) return
+
+        val played = playedIndices.filter { it in 0 until totalCount && it != currentIndex }
+        val playedSet = played.toSet()
+        val remaining = (0 until totalCount)
+            .filter { it != currentIndex && it !in playedSet }
+            .toMutableList()
+        remaining.shuffle()
+
+        val order = IntArray(totalCount)
+        var pos = 0
+        played.forEach { order[pos++] = it }
+        order[pos++] = currentIndex
+        remaining.forEach { order[pos++] = it }
+
+        player.setShuffleOrder(DefaultShuffleOrder(order, System.currentTimeMillis()))
     }
 
     fun toggleLibrary() {
@@ -2251,7 +2315,7 @@ class MusicService :
 
         // Force Repeat One if the player ignored it and auto-advanced
         if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
-            val repeatMode = runBlocking { dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) }
+            val repeatMode = dataStore.get(RepeatModeKey, REPEAT_MODE_OFF)
             if (repeatMode == REPEAT_MODE_ONE &&
                 previousMediaItemIndex != C.INDEX_UNSET &&
                 previousMediaItemIndex != player.currentMediaItemIndex
@@ -2331,7 +2395,7 @@ class MusicService :
     ) {
         // Force Repeat All if the player ignored it and ended playback
         if (playbackState == Player.STATE_ENDED) {
-            val repeatMode = runBlocking { dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) }
+            val repeatMode = dataStore.get(RepeatModeKey, REPEAT_MODE_OFF)
             if (repeatMode == REPEAT_MODE_ALL && player.mediaItemCount > 0) {
                 player.seekTo(0, 0)
                 player.prepare()
@@ -4285,26 +4349,60 @@ class MusicService :
     /**
      * Updates all app widgets with current playback state
      */
-    private fun updateWidgetUI(isPlaying: Boolean) {
-        scope.launch {
-            try {
-                val songData = currentSong.value
-                val song = songData?.song
-                val songTitle = song?.title ?: getString(R.string.no_song_playing)
-                val artistName = songData?.artists?.joinToString(", ") { it.name } ?: getString(R.string.tap_to_open)
-                val isLiked = songData?.song?.liked == true
+    private data class WidgetUiState(
+        val title: String,
+        val artist: String,
+        val artworkUri: String?,
+        val isPlaying: Boolean,
+        val isLiked: Boolean,
+        val duration: Long,
+        val currentPosition: Long,
+    )
 
-                widgetManager.updateWidgets(
-                    title = songTitle,
-                    artist = artistName,
-                    artworkUri = song?.thumbnailUrl,
-                    isPlaying = isPlaying,
-                    isLiked = isLiked,
-                    duration = if (player.duration != C.TIME_UNSET) player.duration else 0,
-                    currentPosition = player.currentPosition,
-                )
-            } catch (e: Exception) {
-                // Widget not added to home screen or other error
+    /**
+     * Requests a widget render for the current player state.
+     *
+     * The Media3 player is Main-bound, so its state is sampled on the caller thread and
+     * the actual rendering (bitmap work plus AppWidgetManager binder traffic) happens on
+     * [widgetRenderRequests]' consumer, off the main thread. The channel is CONFLATED, so
+     * a render slower than the request rate collapses to "latest state wins" instead of
+     * queueing. Previously each tick did a fire-and-forget `scope.launch` on
+     * Dispatchers.Main, which piled up without bound and saturated the main looper.
+     */
+    private fun updateWidgetUI(isPlaying: Boolean) {
+        val songData = currentSong.value
+        val song = songData?.song
+        widgetRenderRequests.trySend(
+            WidgetUiState(
+                title = song?.title ?: getString(R.string.no_song_playing),
+                artist = songData?.artists?.joinToString(", ") { it.name } ?: getString(R.string.tap_to_open),
+                artworkUri = song?.thumbnailUrl,
+                isPlaying = isPlaying,
+                isLiked = song?.liked == true,
+                duration = if (player.duration != C.TIME_UNSET) player.duration else 0,
+                currentPosition = player.currentPosition,
+            )
+        )
+    }
+
+    private val widgetRenderRequests = Channel<WidgetUiState>(Channel.CONFLATED)
+
+    private fun startWidgetRenderer() {
+        scope.launch(Dispatchers.Default) {
+            for (state in widgetRenderRequests) {
+                try {
+                    widgetManager.updateWidgets(
+                        title = state.title,
+                        artist = state.artist,
+                        artworkUri = state.artworkUri,
+                        isPlaying = state.isPlaying,
+                        isLiked = state.isLiked,
+                        duration = state.duration,
+                        currentPosition = state.currentPosition,
+                    )
+                } catch (e: Exception) {
+                    // Widget not added to home screen or other error
+                }
             }
         }
     }
@@ -4319,7 +4417,7 @@ class MusicService :
                     if (player.isPlaying) {
                         updateWidgetUI(true)
                     }
-                    delay(200)
+                    delay(WIDGET_REFRESH_MS)
                 }
             }
     }
@@ -4328,6 +4426,14 @@ class MusicService :
         widgetUpdateJob?.cancel()
         widgetUpdateJob = null
     }
+
+    /**
+     * Widget refresh cadence while playing. The widget shows a coarse progress bar, so
+     * 1s granularity is indistinguishable from the previous 200ms — which cost five
+     * AppWidgetManager binder round-trips per second (plus a full bitmap re-render)
+     * even when no widget was on the home screen.
+     */
+    private val WIDGET_REFRESH_MS = 1_000L
 
     private fun shareSong() {
         val songData = currentSong.value
@@ -4577,9 +4683,8 @@ class MusicService :
         if (isCrossfading) return
 
         // Preserve player state before creating the secondary player
-        // Use runBlocking to ensure we get the correct state from DataStore
-        val savedRepeatMode = runBlocking { dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) }
-        val savedShuffleEnabled = runBlocking { dataStore.get(ShuffleModeKey, false) }
+        val savedRepeatMode = dataStore.get(RepeatModeKey, REPEAT_MODE_OFF)
+        val savedShuffleEnabled = dataStore.get(ShuffleModeKey, false)
 
         // For repeat-one, crossfade back into the same track
         val targetIndex =
