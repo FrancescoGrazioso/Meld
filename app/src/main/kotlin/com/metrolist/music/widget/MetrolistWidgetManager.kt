@@ -28,6 +28,8 @@ import com.metrolist.music.R
 import com.metrolist.music.db.MusicDatabase
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -43,10 +45,25 @@ class MetrolistWidgetManager @Inject constructor(
             .build()
     }
 
-    // Cache for album art to avoid reloading
+    /**
+     * Renders are serialized: [updateWidgets] now runs off the main thread and can be
+     * invoked from the periodic refresh loop and from player events at the same time,
+     * which would otherwise race on the bitmap caches below.
+     */
+    private val renderMutex = Mutex()
+
+    // Cache for album art to avoid reloading. The *derived* bitmaps are cached too —
+    // rounding/circle-cropping allocates two ARGB_8888 bitmaps and runs a Canvas pass,
+    // which used to happen on every single refresh tick.
     private var cachedArtworkUri: String? = null
     private var cachedAlbumArt: Bitmap? = null
+    private var cachedRoundedAlbumArt: Bitmap? = null
     private var cachedCircularAlbumArt: Bitmap? = null
+
+    // The launcher-icon fallbacks are constant; building them meant a PackageManager
+    // lookup plus a 300x300 draw per render.
+    private val defaultRoundedIcon: Bitmap by lazy { getRoundedDefaultIcon(DEFAULT_CORNER_RADIUS) }
+    private val defaultCircularIcon: Bitmap by lazy { getCircularDefaultIcon() }
 
     suspend fun updateWidgets(
         title: String,
@@ -57,55 +74,59 @@ class MetrolistWidgetManager @Inject constructor(
         duration: Long = 0,
         currentPosition: Long = 0
     ) {
-        val appWidgetManager = AppWidgetManager.getInstance(context)
+        renderMutex.withLock {
+            val appWidgetManager = AppWidgetManager.getInstance(context) ?: return
 
-        // Use cached album art if URI hasn't changed, otherwise load new one
-        val albumArt: Bitmap?
-        val circularAlbumArt: Bitmap?
-        
-        if (artworkUri != null && artworkUri == cachedArtworkUri && cachedAlbumArt != null) {
-            albumArt = cachedAlbumArt
-            circularAlbumArt = cachedCircularAlbumArt
-        } else {
-            albumArt = artworkUri?.let { loadAlbumArt(it, 300) }
-            circularAlbumArt = albumArt?.let { getCircularBitmap(it) }
-            // Update cache
-            cachedArtworkUri = artworkUri
-            cachedAlbumArt = albumArt
-            cachedCircularAlbumArt = circularAlbumArt
-        }
+            val componentName = ComponentName(context, MusicWidgetReceiver::class.java)
+            val turntableComponentName = ComponentName(context, TurntableWidgetReceiver::class.java)
+            val widgetIds = runCatching { appWidgetManager.getAppWidgetIds(componentName) }
+                .getOrNull() ?: IntArray(0)
+            val turntableWidgetIds = runCatching { appWidgetManager.getAppWidgetIds(turntableComponentName) }
+                .getOrNull() ?: IntArray(0)
 
-        // Update main music player widgets
-        val componentName = ComponentName(context, MusicWidgetReceiver::class.java)
-        val widgetIds = appWidgetManager.getAppWidgetIds(componentName)
-        if (widgetIds.isNotEmpty()) {
+            // Nothing on the home screen — skip artwork decoding and all the binder traffic
+            // below. The refresh loop runs for the whole playback session, so this is the
+            // common case for most users.
+            if (widgetIds.isEmpty() && turntableWidgetIds.isEmpty()) return
+
+            // Reload album art only when the track actually changed.
+            if (artworkUri != cachedArtworkUri || (artworkUri != null && cachedAlbumArt == null)) {
+                val albumArt = artworkUri?.let { loadAlbumArt(it, ARTWORK_SIZE) }
+                cachedArtworkUri = artworkUri
+                cachedAlbumArt = albumArt
+                cachedRoundedAlbumArt = albumArt?.let { getRoundedCornerBitmap(it, DEFAULT_CORNER_RADIUS) }
+                cachedCircularAlbumArt = albumArt?.let { getCircularBitmap(it) }
+            }
+
+            val roundedAlbumArt = cachedRoundedAlbumArt ?: defaultRoundedIcon
+            val circularAlbumArt = cachedCircularAlbumArt ?: defaultCircularIcon
+
+            // Update main music player widgets
             widgetIds.forEach { widgetId ->
                 val options = appWidgetManager.getAppWidgetOptions(widgetId)
                 val views = createRemoteViewsForSize(
                     options,
                     title,
                     artist,
-                    albumArt,
+                    roundedAlbumArt,
                     isPlaying,
                     isLiked,
                     duration,
                     currentPosition
                 )
-                appWidgetManager.updateAppWidget(widgetId, views)
+                runCatching { appWidgetManager.updateAppWidget(widgetId, views) }
             }
-        }
 
-        // Update turntable widgets
-        val turntableComponentName = ComponentName(context, TurntableWidgetReceiver::class.java)
-        val turntableWidgetIds = appWidgetManager.getAppWidgetIds(turntableComponentName)
-        if (turntableWidgetIds.isNotEmpty()) {
-            val turntableViews = createTurntableRemoteViews(
-                circularAlbumArt,
-                isPlaying,
-                isLiked
-            )
-            turntableWidgetIds.forEach { widgetId ->
-                appWidgetManager.updateAppWidget(widgetId, turntableViews)
+            // Update turntable widgets
+            if (turntableWidgetIds.isNotEmpty()) {
+                val turntableViews = createTurntableRemoteViews(
+                    circularAlbumArt,
+                    isPlaying,
+                    isLiked
+                )
+                turntableWidgetIds.forEach { widgetId ->
+                    runCatching { appWidgetManager.updateAppWidget(widgetId, turntableViews) }
+                }
             }
         }
     }
@@ -114,7 +135,7 @@ class MetrolistWidgetManager @Inject constructor(
         options: Bundle,
         title: String,
         artist: String,
-        albumArt: Bitmap?,
+        albumArt: Bitmap,
         isPlaying: Boolean,
         isLiked: Boolean,
         duration: Long,
@@ -146,7 +167,7 @@ class MetrolistWidgetManager @Inject constructor(
     private fun createRemoteViews(
         title: String,
         artist: String,
-        albumArt: Bitmap?,
+        albumArt: Bitmap,
         isPlaying: Boolean,
         isLiked: Boolean,
         duration: Long = 0,
@@ -158,13 +179,8 @@ class MetrolistWidgetManager @Inject constructor(
         views.setTextViewText(R.id.widget_song_title, title)
         views.setTextViewText(R.id.widget_artist_name, artist)
 
-        // Set album art with rounded corners
-        if (albumArt != null) {
-            val roundedAlbumArt = getRoundedCornerBitmap(albumArt, 48f)
-            views.setImageViewBitmap(R.id.widget_album_art, roundedAlbumArt)
-        } else {
-            views.setImageViewBitmap(R.id.widget_album_art, getRoundedDefaultIcon(48f))
-        }
+        // Album art arrives already rounded and cached by updateWidgets
+        views.setImageViewBitmap(R.id.widget_album_art, albumArt)
 
         // Set play/pause icon
         val playPauseIcon = if (isPlaying) R.drawable.ic_widget_pause else R.drawable.ic_widget_play
@@ -183,9 +199,9 @@ class MetrolistWidgetManager @Inject constructor(
         }
 
         // Set click intents
-        views.setOnClickPendingIntent(R.id.widget_album_art, getOpenAppIntent())
-        views.setOnClickPendingIntent(R.id.widget_play_pause_container, getPlayPauseIntent())
-        views.setOnClickPendingIntent(R.id.widget_like_button, getLikeIntent())
+        views.setOnClickPendingIntent(R.id.widget_album_art, openAppIntent)
+        views.setOnClickPendingIntent(R.id.widget_play_pause_container, playPauseIntent)
+        views.setOnClickPendingIntent(R.id.widget_like_button, likeIntent)
 
         return views
     }
@@ -257,26 +273,21 @@ class MetrolistWidgetManager @Inject constructor(
     }
 
     private fun createCompactSquareRemoteViews(
-        albumArt: Bitmap?,
+        albumArt: Bitmap,
         isPlaying: Boolean
     ): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.widget_compact_square)
 
-        // Set album art with rounded corners
-        if (albumArt != null) {
-            val roundedAlbumArt = getRoundedCornerBitmap(albumArt, 48f)
-            views.setImageViewBitmap(R.id.widget_compact_album_art, roundedAlbumArt)
-        } else {
-            views.setImageViewBitmap(R.id.widget_compact_album_art, getRoundedDefaultIcon(48f))
-        }
+        // Album art arrives already rounded and cached by updateWidgets
+        views.setImageViewBitmap(R.id.widget_compact_album_art, albumArt)
 
         // Set play/pause icon - using low style icons
         val playPauseIcon = if (isPlaying) R.drawable.ic_widget_pause_low else R.drawable.ic_widget_play_low
         views.setImageViewResource(R.id.widget_compact_play_pause, playPauseIcon)
 
         // Set click intents
-        views.setOnClickPendingIntent(R.id.widget_compact_album_art, getOpenAppIntent())
-        views.setOnClickPendingIntent(R.id.widget_compact_play_container, getPlayPauseIntent())
+        views.setOnClickPendingIntent(R.id.widget_compact_album_art, openAppIntent)
+        views.setOnClickPendingIntent(R.id.widget_compact_play_container, playPauseIntent)
 
         return views
     }
@@ -284,7 +295,7 @@ class MetrolistWidgetManager @Inject constructor(
     private fun createCompactWideRemoteViews(
         title: String,
         artist: String,
-        albumArt: Bitmap?,
+        albumArt: Bitmap,
         isPlaying: Boolean,
         isLiked: Boolean
     ): RemoteViews {
@@ -294,14 +305,8 @@ class MetrolistWidgetManager @Inject constructor(
         views.setTextViewText(R.id.widget_wide_song_title, title)
         views.setTextViewText(R.id.widget_wide_artist_name, artist)
 
-        // Set album art with rounded corners (48f to match 12dp at ~4x density for 48dp view)
-        if (albumArt != null) {
-            val roundedAlbumArt = getRoundedCornerBitmap(albumArt, 48f)
-            views.setImageViewBitmap(R.id.widget_wide_album_art, roundedAlbumArt)
-        } else {
-            // Create rounded default icon
-            views.setImageViewBitmap(R.id.widget_wide_album_art, getRoundedDefaultIcon(48f))
-        }
+        // Album art arrives already rounded and cached by updateWidgets
+        views.setImageViewBitmap(R.id.widget_wide_album_art, albumArt)
 
         // Set play/pause icon - using low style icons
         val playPauseIcon = if (isPlaying) R.drawable.ic_widget_pause_low else R.drawable.ic_widget_play_low
@@ -312,37 +317,32 @@ class MetrolistWidgetManager @Inject constructor(
         views.setImageViewResource(R.id.widget_wide_like_button, likeIcon)
 
         // Set click intents
-        views.setOnClickPendingIntent(R.id.widget_wide_album_art, getOpenAppIntent())
-        views.setOnClickPendingIntent(R.id.widget_wide_play_container, getPlayPauseIntent())
-        views.setOnClickPendingIntent(R.id.widget_wide_like_button, getLikeIntent())
+        views.setOnClickPendingIntent(R.id.widget_wide_album_art, openAppIntent)
+        views.setOnClickPendingIntent(R.id.widget_wide_play_container, playPauseIntent)
+        views.setOnClickPendingIntent(R.id.widget_wide_like_button, likeIntent)
 
         return views
     }
 
     private fun createTurntableRemoteViews(
-        circularAlbumArt: Bitmap?,
+        circularAlbumArt: Bitmap,
         isPlaying: Boolean,
         isLiked: Boolean
     ): RemoteViews {
         val views = RemoteViews(context.packageName, R.layout.widget_turntable)
 
-        // Set circular album art - create circular default icon if no album art
-        if (circularAlbumArt != null) {
-            views.setImageViewBitmap(R.id.widget_turntable_album_art, circularAlbumArt)
-        } else {
-            // Load and make the default icon circular
-            views.setImageViewBitmap(R.id.widget_turntable_album_art, getCircularDefaultIcon())
-        }
+        // Album art arrives already circle-cropped and cached by updateWidgets
+        views.setImageViewBitmap(R.id.widget_turntable_album_art, circularAlbumArt)
 
         // Set play/pause icon - using secondary color icons for turntable
         val playPauseIcon = if (isPlaying) R.drawable.ic_widget_pause_secondary else R.drawable.ic_widget_play_secondary
         views.setImageViewResource(R.id.widget_turntable_play_pause, playPauseIcon)
 
         // Set click intents
-        views.setOnClickPendingIntent(R.id.widget_turntable_album_art, getOpenAppIntent())
-        views.setOnClickPendingIntent(R.id.widget_turntable_play_container, getTurntablePlayPauseIntent())
-        views.setOnClickPendingIntent(R.id.widget_turntable_prev_button, getTurntablePreviousIntent())
-        views.setOnClickPendingIntent(R.id.widget_turntable_next_button, getTurntableNextIntent())
+        views.setOnClickPendingIntent(R.id.widget_turntable_album_art, openAppIntent)
+        views.setOnClickPendingIntent(R.id.widget_turntable_play_container, turntablePlayPauseIntent)
+        views.setOnClickPendingIntent(R.id.widget_turntable_prev_button, turntablePreviousIntent)
+        views.setOnClickPendingIntent(R.id.widget_turntable_next_button, turntableNextIntent)
 
         return views
     }
@@ -369,73 +369,56 @@ class MetrolistWidgetManager @Inject constructor(
         return getRoundedCornerBitmap(bitmap, cornerRadius)
     }
 
-    private fun getOpenAppIntent(): PendingIntent {
-        val intent = Intent(context, MainActivity::class.java)
-        return PendingIntent.getActivity(
+    // The click intents never change, but building one is a binder round-trip. They used
+    // to be rebuilt on every render — up to nine per frame for the turntable layout.
+    private val openAppIntent: PendingIntent by lazy {
+        PendingIntent.getActivity(
             context,
             0,
-            intent,
+            Intent(context, MainActivity::class.java),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
     }
 
-    private fun getPlayPauseIntent(): PendingIntent {
-        val intent = Intent(context, MusicWidgetReceiver::class.java).apply {
-            action = MusicWidgetReceiver.ACTION_PLAY_PAUSE
-        }
-        return PendingIntent.getBroadcast(
-            context,
-            1,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+    private val playPauseIntent: PendingIntent by lazy {
+        broadcastIntent(1, MusicWidgetReceiver::class.java, MusicWidgetReceiver.ACTION_PLAY_PAUSE)
     }
 
-    private fun getLikeIntent(): PendingIntent {
-        val intent = Intent(context, MusicWidgetReceiver::class.java).apply {
-            action = MusicWidgetReceiver.ACTION_LIKE
-        }
-        return PendingIntent.getBroadcast(
-            context,
-            2,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+    private val likeIntent: PendingIntent by lazy {
+        broadcastIntent(2, MusicWidgetReceiver::class.java, MusicWidgetReceiver.ACTION_LIKE)
     }
 
-    private fun getTurntablePlayPauseIntent(): PendingIntent {
-        val intent = Intent(context, TurntableWidgetReceiver::class.java).apply {
-            action = TurntableWidgetReceiver.ACTION_TURNTABLE_PLAY_PAUSE
-        }
-        return PendingIntent.getBroadcast(
-            context,
+    private val turntablePlayPauseIntent: PendingIntent by lazy {
+        broadcastIntent(
             3,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            TurntableWidgetReceiver::class.java,
+            TurntableWidgetReceiver.ACTION_TURNTABLE_PLAY_PAUSE
         )
     }
 
-    private fun getTurntableNextIntent(): PendingIntent {
-        val intent = Intent(context, TurntableWidgetReceiver::class.java).apply {
-            action = TurntableWidgetReceiver.ACTION_TURNTABLE_NEXT
-        }
-        return PendingIntent.getBroadcast(
-            context,
-            4,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
+    private val turntableNextIntent: PendingIntent by lazy {
+        broadcastIntent(4, TurntableWidgetReceiver::class.java, TurntableWidgetReceiver.ACTION_TURNTABLE_NEXT)
     }
 
-    private fun getTurntablePreviousIntent(): PendingIntent {
-        val intent = Intent(context, TurntableWidgetReceiver::class.java).apply {
-            action = TurntableWidgetReceiver.ACTION_TURNTABLE_PREVIOUS
-        }
-        return PendingIntent.getBroadcast(
+    private fun broadcastIntent(requestCode: Int, receiver: Class<*>, actionName: String): PendingIntent =
+        PendingIntent.getBroadcast(
             context,
+            requestCode,
+            Intent(context, receiver).apply { action = actionName },
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+    private val turntablePreviousIntent: PendingIntent by lazy {
+        broadcastIntent(
             5,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            TurntableWidgetReceiver::class.java,
+            TurntableWidgetReceiver.ACTION_TURNTABLE_PREVIOUS
         )
+    }
+
+    private companion object {
+        /** Matches 12dp at ~4x density for the 48dp artwork views. */
+        const val DEFAULT_CORNER_RADIUS = 48f
+        const val ARTWORK_SIZE = 300
     }
 }
