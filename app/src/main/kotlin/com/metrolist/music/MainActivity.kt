@@ -604,7 +604,7 @@ class MainActivity : ComponentActivity() {
                         dataStore.edit { settings ->
                             // Remove SimpMusic from serialized order string and append Paxsenix if missing
                             val currentOrder = settings[LyricsProviderOrderKey] ?: ""
-                            if (currentOrder.contains("SimpMusic") || !currentOrder.contains("Paxsenix")) {
+                            if (currentOrder.isNotBlank() && (currentOrder.contains("SimpMusic") || !currentOrder.contains("Paxsenix"))) {
                                 val orderList = currentOrder.split(",")
                                     .map { it.trim() }
                                     .filter { it.isNotBlank() && it != "SimpMusic" }

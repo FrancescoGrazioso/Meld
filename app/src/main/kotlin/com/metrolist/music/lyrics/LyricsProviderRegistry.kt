@@ -11,6 +11,7 @@ object LyricsProviderRegistry {
         "Paxsenix" to PaxsenixLyricsProvider,
         "LrcLib" to LrcLibLyricsProvider,
         "KuGou" to KuGouLyricsProvider,
+        "NetEase" to NetEaseLyricsProvider,
         "LyricsPlus" to LyricsPlusProvider,
         "YouTubeSubtitle" to YouTubeSubtitleLyricsProvider,
         "YouTube" to YouTubeLyricsProvider,
@@ -27,7 +28,9 @@ object LyricsProviderRegistry {
         if (orderString.isBlank()) {
             return getDefaultProviderOrder()
         }
-        return orderString.split(",").map { it.trim() }.filter { it in providerNames }
+        val userList = orderString.split(",").map { it.trim() }.filter { it in providerNames }
+        val missingDefaults = getDefaultProviderOrder().filter { it !in userList }
+        return userList + missingDefaults
     }
 
     fun serializeProviderOrder(providers: List<String>): String {
@@ -35,10 +38,11 @@ object LyricsProviderRegistry {
     }
 
     fun getDefaultProviderOrder(): List<String> = listOf(
+        "LrcLib",
+        "NetEase",
+        "KuGou",
         "BetterLyrics",
         "Paxsenix",
-        "LrcLib",
-        "KuGou",
         "LyricsPlus",
         "YouTubeSubtitle",
         "YouTube",

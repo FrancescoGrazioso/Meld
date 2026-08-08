@@ -821,19 +821,25 @@ class MusicService :
         ) { mediaMetadata, showLyrics ->
             mediaMetadata to showLyrics
         }.collectLatest(scope) { (mediaMetadata, showLyrics) ->
-            if (showLyrics && mediaMetadata != null && database
-                    .lyrics(mediaMetadata.id)
-                    .first() == null
-            ) {
-                val lyricsWithProvider = lyricsHelper.getLyrics(mediaMetadata)
-                database.query {
-                    upsert(
-                        LyricsEntity(
-                            id = mediaMetadata.id,
-                            lyrics = lyricsWithProvider.lyrics,
-                            provider = lyricsWithProvider.provider,
-                        ),
-                    )
+            if (mediaMetadata != null) {
+                // If lyrics view is active (showLyrics == true), fetch immediately (0ms).
+                // Otherwise, wait 1s to prevent unnecessary background requests on rapid track skips.
+                val debounceMs = if (showLyrics) 0L else 1000L
+                if (debounceMs > 0L) {
+                    delay(debounceMs)
+                }
+
+                if (database.lyrics(mediaMetadata.id).first() == null) {
+                    val lyricsWithProvider = lyricsHelper.getLyrics(mediaMetadata)
+                    database.query {
+                        upsert(
+                            LyricsEntity(
+                                id = mediaMetadata.id,
+                                lyrics = lyricsWithProvider.lyrics,
+                                provider = lyricsWithProvider.provider,
+                            ),
+                        )
+                    }
                 }
             }
         }

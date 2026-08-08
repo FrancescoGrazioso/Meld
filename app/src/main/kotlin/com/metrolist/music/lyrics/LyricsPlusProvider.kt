@@ -60,9 +60,9 @@ object LyricsPlusProvider : LyricsProvider {
             }
 
             install(HttpTimeout) {
-                requestTimeoutMillis = 15000
-                connectTimeoutMillis = 10000
-                socketTimeoutMillis = 15000
+                requestTimeoutMillis = 5000
+                connectTimeoutMillis = 3000
+                socketTimeoutMillis = 5000
             }
 
             expectSuccess = false
