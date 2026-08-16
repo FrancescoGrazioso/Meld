@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.metrolist.lastfm.LastFM
+import com.metrolist.music.BuildConfig
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.R
 import com.metrolist.music.constants.EnableLastFMScrobblingKey
@@ -121,6 +122,7 @@ fun LastFMSettings(
     var showLoginDialog by rememberSaveable { mutableStateOf(false) }
     var isLoggingIn by rememberSaveable { mutableStateOf(false) }
     var loginError by rememberSaveable { mutableStateOf<String?>(null) }
+    val lastFmApiCredentialsMissingError = stringResource(R.string.lastfm_api_credentials_missing)
 
     if (showLoginDialog) {
         var tempUsername by rememberSaveable { mutableStateOf("") }
@@ -198,6 +200,10 @@ fun LastFMSettings(
                     onClick = {
                         if (tempUsername.isBlank() || tempPassword.isBlank()) {
                             loginError = "Please enter both username and password"
+                            return@TextButton
+                        }
+                        if (BuildConfig.LASTFM_API_KEY.isBlank() || BuildConfig.LASTFM_SECRET.isBlank()) {
+                            loginError = lastFmApiCredentialsMissingError
                             return@TextButton
                         }
 

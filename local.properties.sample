@@ -1,0 +1,12 @@
+# Copy this file to local.properties and fill in only the values you need.
+# local.properties is ignored by Git and must never be committed with real secrets.
+
+# Required for Last.fm login/scrobbling in locally built APKs.
+# Create an API account at https://www.last.fm/api/account/create
+LASTFM_API_KEY=
+LASTFM_SECRET=
+
+# Optional: enables GitHub issue crash reporting for local builds.
+# Leave commented unless you have a token scoped to the target repository.
+# CRASH_REPORT_REPO=francescograzioso/Meld
+# CRASH_REPORT_TOKEN=

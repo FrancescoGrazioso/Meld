@@ -14,6 +14,12 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
 import java.security.MessageDigest
 
 object LastFM {
@@ -116,11 +122,20 @@ object LastFM {
         override fun toString(): String = "LastFmException(code=$code, message=$message)"
     }
 
+    class LastFmIgnoredException(
+        val method: String,
+        val ignoredCode: Int,
+        override val message: String
+    ) : Exception(message) {
+        override fun toString(): String =
+            "LastFmIgnoredException(method=$method, ignoredCode=$ignoredCode, message=$message)"
+    }
+
     suspend fun updateNowPlaying(
         artist: String, track: String,
         album: String? = null, trackNumber: Int? = null, duration: Int? = null
     ) = runCatching {
-        client.post {
+        val response = client.post {
             lastfmParams(
                 method = "track.updateNowPlaying",
                 apiKey = API_KEY,
@@ -136,13 +151,18 @@ object LastFM {
             )
             parameter("format", "json")
         }
+        validateLastFmResponse(
+            method = "track.updateNowPlaying",
+            responseText = response.bodyAsText(),
+            statusCode = response.status.value,
+        )
     }
 
     suspend fun scrobble(
         artist: String, track: String, timestamp: Long,
         album: String? = null, trackNumber: Int? = null, duration: Int? = null
     ) = runCatching {
-        client.post {
+        val response = client.post {
             lastfmParams(
                 method = "track.scrobble",
                 apiKey = API_KEY,
@@ -159,6 +179,11 @@ object LastFM {
             )
             parameter("format", "json")
         }
+        validateLastFmResponse(
+            method = "track.scrobble",
+            responseText = response.bodyAsText(),
+            statusCode = response.status.value,
+        )
     }
 
     suspend fun setLoveStatus(
@@ -195,6 +220,95 @@ object LastFM {
     }
 
     fun isInitialized(): Boolean = API_KEY.isNotEmpty() && SECRET.isNotEmpty()
+
+    internal fun validateLastFmResponse(
+        method: String,
+        responseText: String,
+        statusCode: Int = 200
+    ) {
+        val root = runCatching { json.parseToJsonElement(responseText).jsonObject }
+            .getOrElse {
+                if (statusCode !in 200..299) {
+                    throw LastFmException(statusCode, "Last.fm $method failed with HTTP $statusCode")
+                }
+                throw LastFmException(-1, "Last.fm $method returned an invalid response")
+            }
+
+        root.intValue("error")?.let { code ->
+            throw LastFmException(code, root.stringValue("message") ?: "Last.fm $method failed")
+        }
+
+        if (statusCode !in 200..299) {
+            throw LastFmException(statusCode, "Last.fm $method failed with HTTP $statusCode")
+        }
+
+        when (method) {
+            "track.scrobble" -> {
+                val scrobbles = root["scrobbles"]?.jsonObjectOrNull()
+                    ?: throw LastFmException(-1, "Last.fm $method returned an invalid response")
+                validateScrobbleResult(scrobbles)
+            }
+
+            "track.updateNowPlaying" -> {
+                val nowPlaying = root["nowplaying"]?.jsonObjectOrNull()
+                    ?: throw LastFmException(-1, "Last.fm $method returned an invalid response")
+                nowPlaying.findIgnoredMessage()?.throwIfIgnored(method)
+            }
+        }
+    }
+
+    private fun validateScrobbleResult(scrobbles: JsonObject) {
+        val ignoredCount = scrobbles["@attr"]
+            ?.jsonObjectOrNull()
+            ?.intValue("ignored")
+            ?: 0
+
+        val ignoredMessage = scrobbles["scrobble"]
+            ?.asIterable()
+            ?.mapNotNull { it.jsonObjectOrNull()?.findIgnoredMessage() }
+            ?.firstOrNull { it.code != 0 }
+
+        if (ignoredCount > 0) {
+            (ignoredMessage ?: IgnoredMessage(code = -1, message = "Last.fm ignored the scrobble"))
+                .throwIfIgnored("track.scrobble")
+        }
+    }
+
+    private fun JsonObject.findIgnoredMessage(): IgnoredMessage? {
+        val ignoredMessage = this["ignoredMessage"]?.jsonObjectOrNull()
+            ?: this["ignoredmessage"]?.jsonObjectOrNull()
+            ?: return null
+
+        return IgnoredMessage(
+            code = ignoredMessage.intValue("code") ?: 0,
+            message = ignoredMessage.stringValue("#text")
+                ?: ignoredMessage.stringValue("text")
+                ?: ignoredMessage.stringValue("message")
+                ?: "Last.fm ignored the request"
+        )
+    }
+
+    private fun IgnoredMessage.throwIfIgnored(method: String) {
+        if (code == 0) return
+        throw LastFmIgnoredException(method, code, message.ifBlank { "Last.fm ignored the request" })
+    }
+
+    private fun JsonElement.asIterable(): List<JsonElement> =
+        runCatching { jsonArray.toList() }.getOrElse { listOf(this) }
+
+    private fun JsonElement.jsonObjectOrNull(): JsonObject? =
+        runCatching { jsonObject }.getOrNull()
+
+    private fun JsonObject.stringValue(key: String): String? =
+        (this[key] as? JsonPrimitive)?.contentOrNull
+
+    private fun JsonObject.intValue(key: String): Int? =
+        stringValue(key)?.toIntOrNull()
+
+    private data class IgnoredMessage(
+        val code: Int,
+        val message: String
+    )
 
     const val DEFAULT_SCROBBLE_DELAY_PERCENT = 0.5f
     const val DEFAULT_SCROBBLE_MIN_SONG_DURATION = 30

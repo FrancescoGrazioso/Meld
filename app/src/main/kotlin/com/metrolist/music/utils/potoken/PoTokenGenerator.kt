@@ -81,32 +81,6 @@ class PoTokenGenerator {
     }
 
     /**
-     * Forces recreation of the PoToken generator (and associated WebView).
-     * This should be called when we hit persistent 403 errors.
-     *
-     * Note: This method is safe to call from any thread (including main thread).
-     * The actual invalidation and WebView close() is dispatched off the main thread.
-     */
-    fun invalidateForVideo(videoId: String) {
-        Timber.tag(TAG).d("Invalidate requested for videoId: $videoId")
-
-        // Dispatch the heavy work (lock + WebView close) to background
-        CoroutineScope(Dispatchers.IO).launch {
-            webPoTokenGenLock.withLock {
-                // Close the old WebView on Main thread safely
-                withContext(Dispatchers.Main) {
-                    webPoTokenGenerator?.close()
-                }
-                webPoTokenGenerator = null
-                webPoTokenSessionId = null
-                webPoTokenStreamingPot = null
-            }
-
-            Timber.tag(TAG).i("PoTokenGenerator invalidated for videoId: $videoId")
-        }
-    }
-
-    /**
      * @param forceRecreate whether to force the recreation of [webPoTokenGenerator], to be used in
      * case the current [webPoTokenGenerator] threw an error last time
      * [PoTokenWebView.generatePoToken] was called

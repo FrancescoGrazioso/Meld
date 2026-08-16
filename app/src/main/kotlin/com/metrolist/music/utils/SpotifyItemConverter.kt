@@ -34,7 +34,7 @@ fun SpotifyTrack.toSongItem(): SongItem = SongItem(
     artists = artists.map { Artist(name = it.name, id = it.id?.let { i -> "$SPOTIFY_ID_PREFIX$i" }) },
     album = album?.let { Album(name = it.name, id = "$SPOTIFY_ID_PREFIX${it.id}") },
     duration = durationMs / 1000,
-    thumbnail = SpotifyMapper.getTrackThumbnail(this) ?: "",
+    thumbnail = SpotifyMapper.getTrackThumbnailMedium(this) ?: "",
     explicit = explicit,
 )
 

@@ -227,6 +227,7 @@ fun SpotifyLikedSongsScreen(
                                         SpotifyLikedSongsQueue(
                                             startIndex = 0,
                                             mapper = viewModel.mapper,
+                                            tracks = sortedTracks,
                                         )
                                     )
                                 },
@@ -353,6 +354,7 @@ fun SpotifyLikedSongsScreen(
                                     SpotifyLikedSongsQueue(
                                         startIndex = originalIndex,
                                         mapper = viewModel.mapper,
+                                        tracks = sortedTracks,
                                     )
                                 )
                             },

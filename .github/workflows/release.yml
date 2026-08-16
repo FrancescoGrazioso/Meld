@@ -115,6 +115,10 @@ jobs:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
           LASTFM_SECRET: ${{ secrets.LASTFM_SECRET }}
+          # Without these the in-app crash/ANR reporter silently disables itself
+          # (CrashReporter.isEnabledSafe), so shipped builds report nothing.
+          CRASH_REPORT_TOKEN: ${{ secrets.CRASH_REPORT_TOKEN }}
+          CRASH_REPORT_REPO: ${{ vars.CRASH_REPORT_REPO || 'FrancescoGrazioso/Meld' }}
 
       - name: Sign APK
         uses: ilharp/sign-android-release@v2.0.0

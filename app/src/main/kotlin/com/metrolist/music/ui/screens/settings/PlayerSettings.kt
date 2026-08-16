@@ -38,6 +38,7 @@ import androidx.navigation.NavController
 import com.metrolist.music.BuildConfig
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.R
+import com.metrolist.music.constants.AudioFocusEnabledKey
 import com.metrolist.music.constants.AudioNormalizationKey
 import com.metrolist.music.constants.AudioOffload
 import com.metrolist.music.constants.AudioQuality
@@ -121,6 +122,10 @@ fun PlayerSettings(
     )
     val (audioNormalization, onAudioNormalizationChange) = rememberPreference(
         AudioNormalizationKey,
+        defaultValue = true
+    )
+    val (audioFocusEnabled, onAudioFocusEnabledChange) = rememberPreference(
+        AudioFocusEnabledKey,
         defaultValue = true
     )
 
@@ -430,6 +435,27 @@ fun PlayerSettings(
                         )
                     },
                     onClick = { onAudioNormalizationChange(!audioNormalization) }
+                ))
+                add(Material3SettingsItem(
+                    icon = painterResource(R.drawable.music_note),
+                    title = { Text(stringResource(R.string.play_over_other_audio)) },
+                    description = { Text(stringResource(R.string.play_over_other_audio_desc)) },
+                    trailingContent = {
+                        Switch(
+                            checked = !audioFocusEnabled,
+                            onCheckedChange = { onAudioFocusEnabledChange(!it) },
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (!audioFocusEnabled) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onAudioFocusEnabledChange(!audioFocusEnabled) }
                 ))
                 add(Material3SettingsItem(
                     icon = painterResource(R.drawable.graphic_eq),

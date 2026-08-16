@@ -84,6 +84,7 @@ import com.metrolist.lastfm.LastFM
 import com.metrolist.music.MainActivity
 import com.metrolist.music.R
 import com.metrolist.music.constants.AndroidAutoTargetPlaylistKey
+import com.metrolist.music.constants.AudioFocusEnabledKey
 import com.metrolist.music.constants.AudioNormalizationKey
 import com.metrolist.music.constants.AudioOffload
 import com.metrolist.music.constants.AudioQualityKey
@@ -93,7 +94,11 @@ import com.metrolist.music.constants.QobuzAudioQualityKey
 import com.metrolist.music.constants.QobuzBackend
 import com.metrolist.music.constants.QobuzBackendKey
 import com.metrolist.music.constants.QobuzCountryKey
+import com.metrolist.music.constants.QobuzJumoEndpointKey
+import com.metrolist.music.constants.QobuzKennyEndpointKey
 import com.metrolist.music.constants.QobuzMatchOverridesKey
+import com.metrolist.music.constants.QobuzSquidEndpointKey
+import com.metrolist.music.constants.QobuzTryptEndpointKey
 import com.metrolist.music.qobuz.QobuzAudioProvider
 import com.metrolist.music.qobuz.QobuzMatchOverride
 import com.metrolist.music.qobuz.QobuzMatchOverrides
@@ -110,8 +115,10 @@ import com.metrolist.music.constants.DiscordActivityTypeKey
 import com.metrolist.music.constants.DiscordAdvancedModeKey
 import com.metrolist.music.constants.DiscordAvatarKey
 import com.metrolist.music.constants.DiscordButton1TextKey
+import com.metrolist.music.constants.DiscordButton1UrlKey
 import com.metrolist.music.constants.DiscordButton1VisibleKey
 import com.metrolist.music.constants.DiscordButton2TextKey
+import com.metrolist.music.constants.DiscordButton2UrlKey
 import com.metrolist.music.constants.DiscordButton2VisibleKey
 import com.metrolist.music.constants.DiscordStatusKey
 import com.metrolist.music.constants.DiscordTokenKey
@@ -150,9 +157,11 @@ import com.metrolist.music.constants.ScrobbleMinSongDurationKey
 import com.metrolist.music.constants.ShowLyricsKey
 import com.metrolist.music.constants.ShuffleModeKey
 import com.metrolist.music.constants.ShufflePlaylistFirstKey
+import com.metrolist.music.constants.StopMusicOnTaskClearKey
 import com.metrolist.music.constants.SimilarContent
 import com.metrolist.music.constants.SkipSilenceInstantKey
 import com.metrolist.music.constants.SkipSilenceKey
+import com.metrolist.music.constants.StopMusicOnTaskClearKey
 import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.db.entities.Event
 import com.metrolist.music.db.entities.FormatEntity
@@ -198,6 +207,7 @@ import com.metrolist.music.utils.NetworkConnectivityObserver
 import com.metrolist.music.utils.ScrobbleManager
 import com.metrolist.music.utils.SyncUtils
 import com.metrolist.music.utils.YTPlayerUtils
+import com.metrolist.music.utils.cipher.CipherDeobfuscator
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.get
 import com.metrolist.music.utils.reportException
@@ -211,6 +221,7 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -286,6 +297,7 @@ class MusicService :
     private var lastAudioFocusState = AudioManager.AUDIOFOCUS_NONE
     private var wasPlayingBeforeAudioFocusLoss = false
     private var hasAudioFocus = false
+    @Volatile private var audioFocusEnabled = true
     private var reentrantFocusGain = false
     private var wasPlayingBeforeVolumeMute = false
     private var isPausedByVolumeMute = false
@@ -734,6 +746,10 @@ class MusicService :
         // backend, country, or quality should take effect on the next track
         // boundary without requiring a full app restart — reload the current
         // item so it picks up the new source immediately.
+        // Apply any user-configured endpoint overrides at startup so the first
+        // resolve already uses them.
+        applyQobuzEndpointOverrides()
+
         var isFirstQobuzEmit = true
         scope.launch {
             dataStore.data
@@ -743,6 +759,10 @@ class MusicService :
                         it[QobuzAudioQualityKey].orEmpty(),
                         it[QobuzBackendKey].orEmpty(),
                         it[QobuzCountryKey].orEmpty(),
+                        it[QobuzSquidEndpointKey].orEmpty(),
+                        it[QobuzKennyEndpointKey].orEmpty(),
+                        it[QobuzTryptEndpointKey].orEmpty(),
+                        it[QobuzJumoEndpointKey].orEmpty(),
                     ).joinToString("|")
                 }.distinctUntilChanged()
                 .collect {
@@ -750,6 +770,9 @@ class MusicService :
                         isFirstQobuzEmit = false
                         return@collect
                     }
+                    // A settings change may have edited an endpoint — re-apply
+                    // before reloading the current stream.
+                    applyQobuzEndpointOverrides()
                     val mediaId = player.currentMediaItem?.mediaId ?: return@collect
                     val currentPosition = player.currentPosition
                     val wasPlaying = player.isPlaying
@@ -858,6 +881,30 @@ class MusicService :
                 }
             }
 
+        dataStore.data
+            .map { it[AudioFocusEnabledKey] ?: true }
+            .distinctUntilChanged()
+            .collectLatest(scope) { enabled ->
+                audioFocusEnabled = enabled
+                if (!enabled) {
+                    // User opted to keep playing alongside other audio: give up focus so the
+                    // system stops asking us to pause/duck, and mark ourselves free to play.
+                    abandonAudioFocus()
+                    hasAudioFocus = true
+                    audioFocusVolumeMultiplier.value = 1f
+                    applyEffectiveVolume()
+                } else {
+                    // Restore normal focus management; reacquire now if we're actively playing.
+                    hasAudioFocus = false
+                    if (player.playWhenReady &&
+                        (player.playbackState == Player.STATE_READY ||
+                            player.playbackState == Player.STATE_BUFFERING)
+                    ) {
+                        requestAudioFocus()
+                    }
+                }
+            }
+
         combine(
             currentFormat,
             dataStore.data
@@ -932,14 +979,18 @@ class MusicService :
                     val minSongDuration =
                         dataStore.get(ScrobbleMinSongDurationKey, LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION)
                     val delaySeconds = dataStore.get(ScrobbleDelaySecondsKey, LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS)
-                    scrobbleManager =
+                    val manager =
                         ScrobbleManager(
                             scope,
                             minSongDuration = minSongDuration,
                             scrobbleDelayPercent = delayPercent,
                             scrobbleDelaySeconds = delaySeconds,
                         )
-                    scrobbleManager?.useNowPlaying = dataStore.get(LastFMUseNowPlaying, false)
+                    scrobbleManager = manager
+                    manager.useNowPlaying = dataStore.get(LastFMUseNowPlaying, false)
+                    if (::player.isInitialized && player.isPlaying) {
+                        manager.onSongStart(player.currentMetadata, duration = player.duration)
+                    }
                 } else if (!enabled && scrobbleManager != null) {
                     scrobbleManager?.destroy()
                     scrobbleManager = null
@@ -1072,6 +1123,9 @@ class MusicService :
             }
         }
 
+        // Single background consumer for widget renders; see updateWidgetUI
+        startWidgetRenderer()
+
         // Save queue periodically to prevent queue loss from crash or force kill
         scope.launch {
             while (isActive) {
@@ -1105,12 +1159,12 @@ class MusicService :
 
         val silenceProcessor = SilenceDetectorAudioProcessor { handleLongSilenceDetected() }
 
-        // Set initial state
-        runBlocking {
-            val skipSilence = dataStore.get(SkipSilenceKey, false)
-            val instantSkip = dataStore.get(SkipSilenceInstantKey, false)
-            silenceProcessor.instantModeEnabled = skipSilence && instantSkip
-        }
+        // Set initial state. `dataStore.get(key, default)` is already synchronous (it
+        // reads the in-memory snapshot); wrapping it in runBlocking only spun up a
+        // coroutine event loop on the main thread for nothing.
+        val skipSilence = dataStore.get(SkipSilenceKey, false)
+        val instantSkip = dataStore.get(SkipSilenceInstantKey, false)
+        silenceProcessor.instantModeEnabled = skipSilence && instantSkip
 
         val player =
             ExoPlayer
@@ -1134,12 +1188,10 @@ class MusicService :
         playerSilenceProcessors[player] = silenceProcessor
 
         player.apply {
-            runBlocking {
-                val offload = dataStore.get(AudioOffload, false)
-                val crossfade = dataStore.get(CrossfadeEnabledKey, false)
-                setOffloadEnabled(if (crossfade) false else offload)
-                skipSilenceEnabled = dataStore.get(SkipSilenceKey, false)
-            }
+            val offload = dataStore.get(AudioOffload, false)
+            val crossfade = dataStore.get(CrossfadeEnabledKey, false)
+            setOffloadEnabled(if (crossfade) false else offload)
+            skipSilenceEnabled = skipSilence
             addAnalyticsListener(PlaybackStatsListener(false, this@MusicService))
 
             // Cleanup handled manually in onDestroy/release
@@ -1165,6 +1217,8 @@ class MusicService :
     }
 
     private fun handleAudioFocusChange(focusChange: Int) {
+        // When focus handling is disabled we never own focus, so ignore stray callbacks.
+        if (!audioFocusEnabled) return
         when (focusChange) {
             AudioManager.AUDIOFOCUS_GAIN,
             AudioManager.AUDIOFOCUS_GAIN_TRANSIENT,
@@ -1213,7 +1267,11 @@ class MusicService :
             }
 
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> {
-                hasAudioFocus = false
+                // We still HOLD audio focus while ducking — the system only asks us to lower our
+                // volume, not to give up focus. Keeping hasAudioFocus = true prevents the player
+                // event handler from re-requesting AUDIOFOCUS_GAIN, which caused a focus ping-pong
+                // with the foreground app and snapped our volume from 0.2 back to 1.0 (issue #116).
+                hasAudioFocus = true
                 audioFocusVolumeMultiplier.value = 0.2f
                 wasPlayingBeforeAudioFocusLoss = player.isPlaying
                 if (player.isPlaying) {
@@ -1232,6 +1290,11 @@ class MusicService :
     }
 
     private fun requestAudioFocus(): Boolean {
+        if (!audioFocusEnabled) {
+            // Never grab focus: allow playback to run mixed with other apps' audio.
+            hasAudioFocus = true
+            return true
+        }
         if (hasAudioFocus) return true
 
         audioFocusRequest?.let { request ->
@@ -1351,7 +1414,9 @@ class MusicService :
                         ),
                     ).setIconResId(if (currentSong.value?.song?.liked == true) R.drawable.ic_heart else R.drawable.ic_heart_outline)
                     .setSessionCommand(CommandToggleLike)
-                    .setEnabled(currentSong.value != null)
+                    // Enable as long as a track is playing, even if it isn't cached in the
+                    // local DB yet (e.g. Spotify/YouTube tracks). toggleLike() inserts it on demand.
+                    .setEnabled(currentMediaMetadata.value != null)
                     .build(),
                 CommandButton
                     .Builder()
@@ -1870,12 +1935,74 @@ class MusicService :
             }
         }
 
+        // Capture the already-played part of the shuffle order *before* mutating the
+        // queue. addMediaItems() appends, so existing indices stay valid afterwards.
+        val playedBefore =
+            if (player.shuffleModeEnabled) playedShuffleIndices(player.currentMediaItemIndex) else emptyList()
+
         player.addMediaItems(items)
         if (player.shuffleModeEnabled) {
             val shufflePlaylistFirst = dataStore.get(ShufflePlaylistFirstKey, false)
-            applyShuffleOrder(player.currentMediaItemIndex, player.mediaItemCount, shufflePlaylistFirst)
+            if (playedBefore.isEmpty()) {
+                applyShuffleOrder(player.currentMediaItemIndex, player.mediaItemCount, shufflePlaylistFirst)
+            } else {
+                // Reshuffling the whole queue here would drop the listening history and put
+                // already-played tracks back in front of the user (issue #232). Keep the
+                // played prefix intact and randomise only what's still ahead.
+                applyShuffleOrderKeepingHistory(
+                    playedBefore,
+                    player.currentMediaItemIndex,
+                    player.mediaItemCount,
+                )
+            }
         }
         player.prepare()
+    }
+
+    /**
+     * Indices already traversed in the current shuffle order, in play order, up to but
+     * excluding [currentIndex]. Derived from the timeline instead of tracked separately so
+     * it cannot drift out of sync with ExoPlayer's own shuffle order.
+     */
+    private fun playedShuffleIndices(currentIndex: Int): List<Int> {
+        val timeline = player.currentTimeline
+        if (timeline.isEmpty) return emptyList()
+
+        val played = mutableListOf<Int>()
+        var idx = currentIndex
+        // getPreviousWindowIndex with REPEAT_MODE_OFF terminates at the start of the
+        // order; the step cap is a guard against a malformed order looping forever.
+        var steps = 0
+        while (steps++ < timeline.windowCount) {
+            idx = timeline.getPreviousWindowIndex(idx, Player.REPEAT_MODE_OFF, true)
+            if (idx == C.INDEX_UNSET || idx == currentIndex) break
+            played.add(idx)
+        }
+        played.reverse()
+        return played.distinct()
+    }
+
+    private fun applyShuffleOrderKeepingHistory(
+        playedIndices: List<Int>,
+        currentIndex: Int,
+        totalCount: Int,
+    ) {
+        if (totalCount == 0) return
+
+        val played = playedIndices.filter { it in 0 until totalCount && it != currentIndex }
+        val playedSet = played.toSet()
+        val remaining = (0 until totalCount)
+            .filter { it != currentIndex && it !in playedSet }
+            .toMutableList()
+        remaining.shuffle()
+
+        val order = IntArray(totalCount)
+        var pos = 0
+        played.forEach { order[pos++] = it }
+        order[pos++] = currentIndex
+        remaining.forEach { order[pos++] = it }
+
+        player.setShuffleOrder(DefaultShuffleOrder(order, System.currentTimeMillis()))
     }
 
     fun toggleLibrary() {
@@ -1901,7 +2028,15 @@ class MusicService :
 
     fun toggleLike() {
         scope.launch {
-            val songToToggle = currentSong.first()
+            var songToToggle = currentSong.first()
+            // The current track may not be cached in the local DB yet (common for
+            // Spotify/YouTube tracks played from quick picks, radio or imports). Insert
+            // it first so the like can be applied and synced instead of silently no-oping.
+            if (songToToggle == null) {
+                val metadata = currentMediaMetadata.value ?: player.currentMetadata ?: return@launch
+                database.query { insert(metadata) }
+                songToToggle = database.song(metadata.id).first()
+            }
             songToToggle?.let { librarySong ->
                 val songEntity = librarySong.song
 
@@ -2180,7 +2315,7 @@ class MusicService :
 
         // Force Repeat One if the player ignored it and auto-advanced
         if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
-            val repeatMode = runBlocking { dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) }
+            val repeatMode = dataStore.get(RepeatModeKey, REPEAT_MODE_OFF)
             if (repeatMode == REPEAT_MODE_ONE &&
                 previousMediaItemIndex != C.INDEX_UNSET &&
                 previousMediaItemIndex != player.currentMediaItemIndex
@@ -2199,7 +2334,7 @@ class MusicService :
         // Restart SponsorBlock for the new track (no-op when disabled).
         startSponsorBlockForCurrentTrack()
 
-        scrobbleManager?.onSongStop()
+        scrobbleManager?.onSongStop(finalize = reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO)
         if (player.playWhenReady && player.playbackState == Player.STATE_READY) {
             scrobbleManager?.onSongStart(player.currentMetadata, duration = player.duration)
         }
@@ -2260,7 +2395,7 @@ class MusicService :
     ) {
         // Force Repeat All if the player ignored it and ended playback
         if (playbackState == Player.STATE_ENDED) {
-            val repeatMode = runBlocking { dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) }
+            val repeatMode = dataStore.get(RepeatModeKey, REPEAT_MODE_OFF)
             if (repeatMode == REPEAT_MODE_ALL && player.mediaItemCount > 0) {
                 player.seekTo(0, 0)
                 player.prepare()
@@ -2287,7 +2422,9 @@ class MusicService :
             scheduleCrossfade()
         }
 
-        if (playbackState == Player.STATE_IDLE || playbackState == Player.STATE_ENDED) {
+        if (playbackState == Player.STATE_ENDED) {
+            scrobbleManager?.onSongStop(finalize = true)
+        } else if (playbackState == Player.STATE_IDLE) {
             scrobbleManager?.onSongStop()
         }
     }
@@ -2389,8 +2526,16 @@ class MusicService :
         }
 
         // Scrobbling
-        if (events.containsAny(Player.EVENT_IS_PLAYING_CHANGED)) {
-            scrobbleManager?.onPlayerStateChanged(player.isPlaying, player.currentMetadata, duration = player.duration)
+        if (events.containsAny(
+                Player.EVENT_IS_PLAYING_CHANGED,
+                Player.EVENT_PLAYBACK_STATE_CHANGED,
+            )
+        ) {
+            scrobbleManager?.onPlayerStateChanged(
+                player.isPlaying,
+                player.currentMetadata,
+                duration = player.duration,
+            )
         }
     }
 
@@ -3075,6 +3220,21 @@ class MusicService :
             Timber.tag(TAG).e(e, "Failed to clear caches for $mediaId")
         }
 
+        // A 403 can also mean the cipher produced a wrong-but-non-throwing signature from a
+        // stale/wrong player config — invisible to the cipher's own exception-retry. Ask it to
+        // re-fetch its config (rate-limited); if that corrects the table, PlayerConfigStore's
+        // configEpoch advances and the cipher rebuilds its WebView on the next decipher, so the
+        // retry below re-resolves the URL with the corrected recipe — no app restart needed.
+        scope.launch {
+            try {
+                if (CipherDeobfuscator.onStreamRejected()) {
+                    Timber.tag(TAG).d("Player config changed after stream rejection for $mediaId")
+                }
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "onStreamRejected failed for $mediaId")
+            }
+        }
+
         retryJob?.cancel()
         retryJob = scope.launch {
             // Slightly longer delay on 403 errors
@@ -3399,8 +3559,10 @@ class MusicService :
         val status = if (advancedMode) dataStore.get(DiscordStatusKey, "online") else "online"
         val b1Text = if (advancedMode) dataStore.get(DiscordButton1TextKey, "") else ""
         val b1Visible = if (advancedMode) dataStore.get(DiscordButton1VisibleKey, true) else true
+        val b1Url = if (advancedMode) dataStore.get(DiscordButton1UrlKey, "") else ""
         val b2Text = if (advancedMode) dataStore.get(DiscordButton2TextKey, "") else ""
         val b2Visible = if (advancedMode) dataStore.get(DiscordButton2VisibleKey, true) else true
+        val b2Url = if (advancedMode) dataStore.get(DiscordButton2UrlKey, "") else ""
         val activityType = if (advancedMode) dataStore.get(DiscordActivityTypeKey, "listening") else "listening"
         val activityName = if (advancedMode) dataStore.get(DiscordActivityNameKey, "") else ""
 
@@ -3416,8 +3578,10 @@ class MusicService :
                         status,
                         b1Text,
                         b1Visible,
+                        b1Url,
                         b2Text,
                         b2Visible,
+                        b2Url,
                         activityType,
                         activityName,
                     )?.onFailure {
@@ -3434,6 +3598,15 @@ class MusicService :
                         }
                     }
             }
+    }
+
+    private fun applyQobuzEndpointOverrides() {
+        QobuzAudioProvider.configureEndpoints(
+            squid = dataStore.get(QobuzSquidEndpointKey, ""),
+            kenny = dataStore.get(QobuzKennyEndpointKey, ""),
+            trypt = dataStore.get(QobuzTryptEndpointKey, ""),
+            jumo = dataStore.get(QobuzJumoEndpointKey, ""),
+        )
     }
 
     private fun qobuzCacheKey(mediaId: String, qualityCode: Int) =
@@ -3541,6 +3714,16 @@ class MusicService :
                 val dbSong = runBlocking(Dispatchers.IO) { database.getSongById(mediaId) }
                 val qobuzQuery = buildQobuzQuery(mediaId, spotifyTrack, dbSong, qobuzQualityEnum)
 
+                Timber.tag("Qobuz").d(
+                    "attempt ▶ %s | spotifyMeta=%b dbSong=%b query=%b quality=%s",
+                    mediaId, spotifyTrack != null, dbSong != null, qobuzQuery != null, qobuzQualityEnum.name,
+                )
+                if (qobuzQuery == null) {
+                    Timber.tag("Qobuz").d(
+                        "skip %s: no query built (missing title/artist metadata)", mediaId,
+                    )
+                }
+
                 if (qobuzQuery != null) {
                     // Manual override wins over auto-match: when the user has
                     // pinned a Qobuz track ID for this mediaId, swap the query's
@@ -3598,13 +3781,26 @@ class MusicService :
                     // Tighter primary timeout (was 15s). 10s is well above the
                     // observed P95 for a real Qobuz match and halves the perceived
                     // "loading" hang for the common "track is not on Qobuz" case.
-                    var qobuzResolved = if (skipQobuzForMiss) null else runCatching {
-                        runBlocking(Dispatchers.IO) {
-                            withTimeout(10_000L) {
-                                QobuzAudioProvider.resolve(effectiveQuery)
+                    var qobuzResolved = if (skipQobuzForMiss) {
+                        null
+                    } else {
+                        runCatching {
+                            runBlocking(Dispatchers.IO) {
+                                withTimeout(10_000L) {
+                                    QobuzAudioProvider.resolve(effectiveQuery)
+                                }
                             }
-                        }
-                    }.getOrNull()
+                        }.onFailure { e ->
+                            val reason = if (e is TimeoutCancellationException) {
+                                "timed out after 10s"
+                            } else {
+                                e.message ?: e.javaClass.simpleName
+                            }
+                            Timber.tag("Qobuz").d(
+                                "primary ✘ %s via %s: %s", mediaId, effectiveQuery.backend.name, reason,
+                            )
+                        }.getOrNull()
+                    }
 
                     // Cross-backend fallback: cycle through every other backend
                     // before giving up to YouTube. Order: primary → others in enum order.
@@ -3617,6 +3813,10 @@ class MusicService :
                         val altBackends = QobuzAudioProvider.ResolverBackend.entries
                             .filter { it != effectiveQuery.backend }
                             .take(2) // cap the cascade
+                        Timber.tag("Qobuz").d(
+                            "alt ▶ %s: primary failed but track known on Qobuz, trying %s",
+                            mediaId, altBackends.joinToString { it.name },
+                        )
                         for (altBackend in altBackends) {
                             val altQuery = effectiveQuery.copy(backend = altBackend)
                             qobuzResolved = runCatching {
@@ -3625,6 +3825,15 @@ class MusicService :
                                         QobuzAudioProvider.resolve(altQuery)
                                     }
                                 }
+                            }.onFailure { e ->
+                                val reason = if (e is TimeoutCancellationException) {
+                                    "timed out after 5s"
+                                } else {
+                                    e.message ?: e.javaClass.simpleName
+                                }
+                                Timber.tag("Qobuz").d(
+                                    "alt ✘ %s via %s: %s", mediaId, altBackend.name, reason,
+                                )
                             }.getOrNull()
                             if (qobuzResolved != null) break
                         }
@@ -3635,11 +3844,15 @@ class MusicService :
                     // already have a known match (those failures are transient).
                     if (qobuzResolved == null && !knownOnQobuz) {
                         qobuzMissUntilMs[mediaId] = System.currentTimeMillis() + QOBUZ_MISS_TTL_MS
+                        Timber.tag("Qobuz").d(
+                            "negative-cache set for %s (%dm)", mediaId, QOBUZ_MISS_TTL_MS / 60_000,
+                        )
                     }
 
                     if (qobuzResolved != null) {
-                        Timber.tag("MusicService").i(
-                            "Using Qobuz stream for $mediaId: ${qobuzResolved.label}",
+                        Timber.tag("Qobuz").i(
+                            "resolved ✔ %s → %s (%dbps, trackId=%s)",
+                            mediaId, qobuzResolved.label, qobuzResolved.bitrate, qobuzResolved.trackId,
                         )
                         // Persist the match + any newly-discovered ISRC so the next
                         // play of this track is a deterministic, search-free hit.
@@ -3669,6 +3882,10 @@ class MusicService :
                             .build()
                     }
                 }
+
+                // Reached only when Qobuz produced no playable stream — every
+                // return@Factory above is on the success path.
+                Timber.tag("Qobuz").d("fallback → YouTube for %s (Qobuz did not resolve)", mediaId)
             }
 
             if (!shouldBypassCache) {
@@ -3997,6 +4214,14 @@ class MusicService :
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
     override fun onTaskRemoved(rootIntent: Intent?) {
+        // When the app is swiped away from recents, a foreground media service keeps the
+        // process (and playback) alive, so relying on MainActivity.onDestroy is unreliable.
+        // Android guarantees this callback, so honor "Stop music on task clear" here: halt
+        // playback immediately and tear the service down (onDestroy persists queue/state).
+        if (playerInitialized.value && dataStore.get(StopMusicOnTaskClearKey, false)) {
+            player.stop()
+            stopSelf()
+        }
         super.onTaskRemoved(rootIntent)
     }
 
@@ -4138,26 +4363,60 @@ class MusicService :
     /**
      * Updates all app widgets with current playback state
      */
-    private fun updateWidgetUI(isPlaying: Boolean) {
-        scope.launch {
-            try {
-                val songData = currentSong.value
-                val song = songData?.song
-                val songTitle = song?.title ?: getString(R.string.no_song_playing)
-                val artistName = songData?.artists?.joinToString(", ") { it.name } ?: getString(R.string.tap_to_open)
-                val isLiked = songData?.song?.liked == true
+    private data class WidgetUiState(
+        val title: String,
+        val artist: String,
+        val artworkUri: String?,
+        val isPlaying: Boolean,
+        val isLiked: Boolean,
+        val duration: Long,
+        val currentPosition: Long,
+    )
 
-                widgetManager.updateWidgets(
-                    title = songTitle,
-                    artist = artistName,
-                    artworkUri = song?.thumbnailUrl,
-                    isPlaying = isPlaying,
-                    isLiked = isLiked,
-                    duration = if (player.duration != C.TIME_UNSET) player.duration else 0,
-                    currentPosition = player.currentPosition,
-                )
-            } catch (e: Exception) {
-                // Widget not added to home screen or other error
+    /**
+     * Requests a widget render for the current player state.
+     *
+     * The Media3 player is Main-bound, so its state is sampled on the caller thread and
+     * the actual rendering (bitmap work plus AppWidgetManager binder traffic) happens on
+     * [widgetRenderRequests]' consumer, off the main thread. The channel is CONFLATED, so
+     * a render slower than the request rate collapses to "latest state wins" instead of
+     * queueing. Previously each tick did a fire-and-forget `scope.launch` on
+     * Dispatchers.Main, which piled up without bound and saturated the main looper.
+     */
+    private fun updateWidgetUI(isPlaying: Boolean) {
+        val songData = currentSong.value
+        val song = songData?.song
+        widgetRenderRequests.trySend(
+            WidgetUiState(
+                title = song?.title ?: getString(R.string.no_song_playing),
+                artist = songData?.artists?.joinToString(", ") { it.name } ?: getString(R.string.tap_to_open),
+                artworkUri = song?.thumbnailUrl,
+                isPlaying = isPlaying,
+                isLiked = song?.liked == true,
+                duration = if (player.duration != C.TIME_UNSET) player.duration else 0,
+                currentPosition = player.currentPosition,
+            )
+        )
+    }
+
+    private val widgetRenderRequests = Channel<WidgetUiState>(Channel.CONFLATED)
+
+    private fun startWidgetRenderer() {
+        scope.launch(Dispatchers.Default) {
+            for (state in widgetRenderRequests) {
+                try {
+                    widgetManager.updateWidgets(
+                        title = state.title,
+                        artist = state.artist,
+                        artworkUri = state.artworkUri,
+                        isPlaying = state.isPlaying,
+                        isLiked = state.isLiked,
+                        duration = state.duration,
+                        currentPosition = state.currentPosition,
+                    )
+                } catch (e: Exception) {
+                    // Widget not added to home screen or other error
+                }
             }
         }
     }
@@ -4172,7 +4431,7 @@ class MusicService :
                     if (player.isPlaying) {
                         updateWidgetUI(true)
                     }
-                    delay(200)
+                    delay(WIDGET_REFRESH_MS)
                 }
             }
     }
@@ -4181,6 +4440,14 @@ class MusicService :
         widgetUpdateJob?.cancel()
         widgetUpdateJob = null
     }
+
+    /**
+     * Widget refresh cadence while playing. The widget shows a coarse progress bar, so
+     * 1s granularity is indistinguishable from the previous 200ms — which cost five
+     * AppWidgetManager binder round-trips per second (plus a full bitmap re-render)
+     * even when no widget was on the home screen.
+     */
+    private val WIDGET_REFRESH_MS = 1_000L
 
     private fun shareSong() {
         val songData = currentSong.value
@@ -4430,9 +4697,8 @@ class MusicService :
         if (isCrossfading) return
 
         // Preserve player state before creating the secondary player
-        // Use runBlocking to ensure we get the correct state from DataStore
-        val savedRepeatMode = runBlocking { dataStore.get(RepeatModeKey, REPEAT_MODE_OFF) }
-        val savedShuffleEnabled = runBlocking { dataStore.get(ShuffleModeKey, false) }
+        val savedRepeatMode = dataStore.get(RepeatModeKey, REPEAT_MODE_OFF)
+        val savedShuffleEnabled = dataStore.get(ShuffleModeKey, false)
 
         // For repeat-one, crossfade back into the same track
         val targetIndex =

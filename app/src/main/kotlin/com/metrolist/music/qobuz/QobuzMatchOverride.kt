@@ -22,9 +22,30 @@ data class QobuzMatchOverride(
 }
 
 object QobuzMatchOverrides {
+    // Memoize the last decode keyed on the raw JSON string. decode() runs on the
+    // ExoPlayer loader thread for every stream resolve, so re-parsing the whole
+    // overrides JSON each time is wasteful when it rarely changes. Keyed on the
+    // exact input, so no manual invalidation is needed — a changed overrides
+    // string simply misses and re-parses.
+    @Volatile private var cachedRaw: String? = null
+    @Volatile private var cachedMap: Map<String, QobuzMatchOverride> = emptyMap()
+
     fun decode(value: String?): MutableMap<String, QobuzMatchOverride> {
         if (value.isNullOrBlank()) return mutableMapOf()
-        return runCatching {
+        val snapshot = if (value == cachedRaw) {
+            cachedMap
+        } else {
+            val parsed = parse(value)
+            cachedRaw = value
+            cachedMap = parsed
+            parsed
+        }
+        // Defensive copy so callers (e.g. the set/encode path) can mutate freely.
+        return LinkedHashMap(snapshot)
+    }
+
+    private fun parse(value: String): Map<String, QobuzMatchOverride> =
+        runCatching {
             val root = JSONObject(value)
             val out = mutableMapOf<String, QobuzMatchOverride>()
             root.keys().forEach { mediaId ->
@@ -47,8 +68,7 @@ object QobuzMatchOverrides {
                 )
             }
             out
-        }.getOrDefault(mutableMapOf())
-    }
+        }.getOrDefault(emptyMap())
 
     fun encode(overrides: Map<String, QobuzMatchOverride>): String {
         val root = JSONObject()

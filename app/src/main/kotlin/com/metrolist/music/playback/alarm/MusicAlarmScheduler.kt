@@ -11,6 +11,11 @@ import java.util.Calendar
 object MusicAlarmScheduler {
     fun scheduleFromPreferences(context: Context) {
         val alarms = MusicAlarmStore.loadBlocking(context)
+        // Nothing to (re)schedule when the alarm feature isn't in use. Bailing out here avoids
+        // waking the app process and writing to DataStore on every BOOT_COMPLETED broadcast when
+        // the user never set up an alarm (see issue #32). After a reboot AlarmManager entries are
+        // cleared by the system anyway, so there is nothing to cancel in that case.
+        if (alarms.none { it.enabled && it.playlistId.isNotBlank() }) return
         scheduleAll(context, alarms)
     }
 

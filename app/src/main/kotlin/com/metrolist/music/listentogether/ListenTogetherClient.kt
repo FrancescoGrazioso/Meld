@@ -252,6 +252,25 @@ class ListenTogetherClient
         // Initialize scope early before init block since it's used in observeNetworkChanges()
         private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
+        // Network connectivity monitoring. Declared BEFORE the init block (which launches
+        // observeNetworkChanges) so the lazy delegate and isNetworkAvailable are already
+        // initialized by the time that coroutine runs. If declared after init, the lazy
+        // delegate field is still null when accessed and getValue() throws (init-order NPE).
+        private val connectivityObserver: NetworkConnectivityObserver? by lazy {
+            try {
+                NetworkConnectivityObserver(context)
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Failed to create NetworkConnectivityObserver")
+                null
+            }
+        }
+        private var isNetworkAvailable =
+            try {
+                connectivityObserver?.isCurrentlyConnected() ?: true
+            } catch (e: Exception) {
+                true
+            }
+
         // State flows - initialized before init block to avoid NullPointerException when accessing log()
         private val _connectionState = MutableStateFlow(ConnectionState.DISCONNECTED)
         val connectionState: StateFlow<ConnectionState> = _connectionState.asStateFlow()
@@ -490,22 +509,6 @@ class ListenTogetherClient
 
         // Track notification IDs for suggestions to dismiss them similarly
         private val suggestionNotifications = mutableMapOf<String, Int>()
-
-        // Network connectivity monitoring - use lazy to avoid initialization order issues
-        private val connectivityObserver: NetworkConnectivityObserver? by lazy {
-            try {
-                NetworkConnectivityObserver(context)
-            } catch (e: Exception) {
-                Timber.tag(TAG).e(e, "Failed to create NetworkConnectivityObserver")
-                null
-            }
-        }
-        private var isNetworkAvailable =
-            try {
-                connectivityObserver?.isCurrentlyConnected() ?: true
-            } catch (e: Exception) {
-                true
-            }
 
         private val client =
             OkHttpClient

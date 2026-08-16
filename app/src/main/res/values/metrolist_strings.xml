@@ -141,6 +141,8 @@
     <string name="enable_paxsenix_desc">High-quality synchronized lyrics from Paxsenix API</string>
     <string name="enable_lyricsplus">Enable LyricsPlus</string>
     <string name="enable_lyricsplus_desc">Synchronized lyrics from multiple sources</string>
+    <string name="enable_musixmatch">Enable Musixmatch</string>
+    <string name="enable_musixmatch_desc">Time-synced lyrics from Musixmatch (unofficial API, may be rate-limited)</string>
     <string name="lyrics_provider_selection">Provider selection</string>
     <string name="lyrics_provider_selection_desc">Choose which lyrics providers are enabled</string>
     <string name="auto_scroll">Re-sync</string>
@@ -410,6 +412,7 @@
     <string name="lastfm_integration">Last.fm integration</string>
     <string name="enable_scrobbling">Enable scrobbling</string>
     <string name="lastfm_now_playing">Send Now Playing status</string>
+    <string name="lastfm_api_credentials_missing">Last.fm API credentials are missing from this build.</string>
     <string name="last_fm_send_likes">Sync Loved and Unloved</string>
     <string name="last_fm_send_likes_description">Love or unlove songs in Last.fm when you like or unlike them in Meld</string>
     <string name="logging_in">Logging in…</string>
@@ -539,6 +542,15 @@
     <string name="qobuz_provider_health_latency">%1$d ms</string>
 
     <string name="qobuz_country_description">Two-letter ISO code (e.g. US, IT, FR). Affects catalog and availability.</string>
+
+    <string name="qobuz_endpoints">Custom endpoints (advanced)</string>
+    <string name="qobuz_endpoints_description">Override the resolver base URLs, e.g. to point at a self-hosted instance. Leave blank to use the built-in default.</string>
+    <string name="qobuz_endpoint_squid">Squid endpoint</string>
+    <string name="qobuz_endpoint_kenny">Monokenny endpoint</string>
+    <string name="qobuz_endpoint_trypt">TrypT endpoint</string>
+    <string name="qobuz_endpoint_jumo">Jumo endpoint</string>
+    <string name="qobuz_endpoint_default">Default</string>
+    <string name="qobuz_endpoint_hint">https://example.com (blank = default)</string>
 
     <string name="details_desc">View the song\'s details</string>
     <string name="edit_desc">Edit the title or artist</string>
@@ -920,7 +932,12 @@
     <string name="discord_status_dnd">Do Not Disturb</string>
     <string name="discord_buttons">Buttons</string>
     <string name="discord_button_1">Button 1</string>
+    <string name="discord_button_1_url">Button 1 URL</string>
+    <string name="discord_button_1_url_default">Default: current song on YouTube Music</string>
     <string name="discord_button_2">Button 2</string>
+    <string name="discord_button_2_url">Button 2 URL</string>
+    <string name="discord_button_2_url_default">Default: Meld on GitHub</string>
+    <string name="discord_button_url_description">Destination link opened when someone clicks the button. Must start with http:// or https://. Supports {song_name}, {artist_name}, {album_name}.</string>
     <string name="login_successful">Login successful!</string>
     <string name="discord_information_warning">This feature uses the KizzyRPC library to connect to Discord\'s Gateway and update your Rich Presence status. While no account suspensions from similar usage have been reported, this method is not officially supported by Discord and may be considered a Terms of Service violation. Your token is handled locally and never sent to third-party servers. Proceed at your own discretion!</string>
     <string name="discord_activity_type">Activity type</string>

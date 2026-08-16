@@ -1,0 +1,31 @@
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${UID:-1000}
+        GROUP_ID: ${GID:-1000}
+    image: meld-android-dev:local
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    environment:
+      ANDROID_HOME: /opt/android-sdk
+      ANDROID_SDK_ROOT: /opt/android-sdk
+      GRADLE_USER_HOME: /home/dev/.gradle
+      LASTFM_API_KEY: ${LASTFM_API_KEY:-}
+      LASTFM_SECRET: ${LASTFM_SECRET:-}
+      CRASH_REPORT_REPO: ${CRASH_REPORT_REPO:-francescograzioso/Meld}
+      CRASH_REPORT_TOKEN: ${CRASH_REPORT_TOKEN:-}
+      METROLIST_APPLICATION_ID: ${METROLIST_APPLICATION_ID:-}
+      METROLIST_APP_NAME: ${METROLIST_APP_NAME:-}
+    volumes:
+      - .:/workspace
+      - gradle-cache:/home/dev/.gradle
+      - android-user-cache:/home/dev/.android
+    command: bash
+
+volumes:
+  gradle-cache:
+  android-user-cache:
