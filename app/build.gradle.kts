@@ -133,14 +133,7 @@ android {
             if (appNameOverride == null) {
                 resValue("string", "app_name", "Meld Debug")
             }
-            signingConfig =
-                if (workflowDebugKeystoreFile != null) {
-                    signingConfigs.getByName("workflowDebug")
-                } else if (persistentDebugKeystoreFile.exists()) {
-                    signingConfigs.getByName("persistentDebug")
-                } else {
-                    signingConfigs.getByName("debug")
-                }
+            signingConfig = signingConfigs.getByName("debug")
             ndk {
                 debugSymbolLevel = "FULL"
             }
