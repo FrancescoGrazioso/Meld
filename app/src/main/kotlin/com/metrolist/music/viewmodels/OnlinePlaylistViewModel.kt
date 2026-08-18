@@ -150,7 +150,7 @@ class OnlinePlaylistViewModel @Inject constructor(
                 playlistSongs.value = applySongFilters(playlistPage.songs)
                 continuation = playlistPage.songsContinuation
                 _isLoading.value = false
-                if (continuation != null) {
+                if (continuation != null && !playlistId.removePrefix("VL").startsWith("RD")) {
                     startProactiveBackgroundLoading()
                 }
             }.onFailure { throwable ->
@@ -260,7 +260,7 @@ class OnlinePlaylistViewModel @Inject constructor(
                 }.also {
                     _isLoadingMore.value = false
                     // Resume proactive loading if there's still a continuation
-                    if (continuation != null && isActive) {
+                    if (continuation != null && isActive && !playlistId.removePrefix("VL").startsWith("RD")) {
                         startProactiveBackgroundLoading()
                     }
                 }
