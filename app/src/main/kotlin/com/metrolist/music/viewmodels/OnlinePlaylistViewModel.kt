@@ -208,12 +208,19 @@ class OnlinePlaylistViewModel @Inject constructor(
         proactiveLoadJob?.cancel() // Cancel previous job if any
         proactiveLoadJob = viewModelScope.launch(Dispatchers.IO) {
             var currentProactiveToken = continuation
+            val isMix = playlistId.removePrefix("VL").startsWith("RD")
+
             while (currentProactiveToken != null && isActive) {
                 // If a manual loadMore is happening, pause proactive loading
                 if (_isLoadingMore.value) {
                     // Wait until manual load is finished, then re-evaluate
                     // This simple break and restart strategy from loadMoreSongs is preferred
                     break 
+                }
+
+                // Limit proactive loading for Mixes to avoid infinite loops and high memory usage
+                if (isMix && playlistSongs.value.size >= 500) {
+                    break
                 }
 
                 YouTube.playlistContinuation(currentProactiveToken)
