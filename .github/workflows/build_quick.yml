@@ -12,6 +12,9 @@ on:
       - ".github/FUNDING.yml"
       - ".github/ISSUE_TEMPLATE/**"
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 permissions:
   contents: write
 
@@ -59,6 +62,7 @@ jobs:
           CRASH_REPORT_REPO: ${{ vars.CRASH_REPORT_REPO || 'FrancescoGrazioso/Meld' }}
 
       - name: Sign APK
+        if: ${{ secrets.KEYSTORE != '' && secrets.KEY_ALIAS != '' && secrets.KEYSTORE_PASSWORD != '' && secrets.KEY_PASSWORD != '' }}
         uses: ilharp/sign-android-release@v2.0.0
         with:
           releaseDir: app/build/outputs/apk/foss/release/
@@ -68,13 +72,21 @@ jobs:
           keyPassword: ${{ secrets.KEY_PASSWORD }}
           buildToolsVersion: 35.0.0
 
-      - name: Move signed APK
+      - name: Prepare APK artifact
         run: |
           OUTPUT_DIR="app/build/outputs/apk/foss/release"
           mkdir -p "$OUTPUT_DIR/out"
-          find "$OUTPUT_DIR" -name "*-signed.apk" -o -name "*-unsigned-signed.apk" | xargs -I{} mv {} "$OUTPUT_DIR/out/app-universal-test-release.apk"
+          SIGNED="$(find "$OUTPUT_DIR" -type f \( -name "*-signed.apk" -o -name "*-unsigned-signed.apk" \) | head -n 1)"
+          if [ -n "$SIGNED" ]; then
+            cp "$SIGNED" "$OUTPUT_DIR/out/app-universal-test-release.apk"
+          else
+            UNSIGNED="$(find "$OUTPUT_DIR" -maxdepth 1 -type f -name "*.apk" | head -n 1)"
+            test -n "$UNSIGNED"
+            cp "$UNSIGNED" "$OUTPUT_DIR/out/app-universal-test-release.apk"
+            echo "No signing secrets configured; retaining unsigned APK for CI artifact."
+          fi
 
-      - name: Upload Signed APK
+      - name: Upload APK
         uses: actions/upload-artifact@v6
         with:
           name: app-universal-test-release

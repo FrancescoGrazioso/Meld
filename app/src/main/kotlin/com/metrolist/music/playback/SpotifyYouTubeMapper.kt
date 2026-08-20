@@ -96,6 +96,12 @@ class SpotifyYouTubeMapper(
         null
     }
 
+    /** Invalidates a stale Spotify match and its process-local cache entry. */
+    suspend fun invalidateMatch(spotifyId: String) = withContext(Dispatchers.IO) {
+        memoryCache.remove(spotifyId)
+        database.deleteSpotifyMatch(spotifyId)
+    }
+
     /**
      * Persists a user-chosen YouTube match for a Spotify track.
      * Manual overrides are never replaced by the automatic fuzzy matcher.

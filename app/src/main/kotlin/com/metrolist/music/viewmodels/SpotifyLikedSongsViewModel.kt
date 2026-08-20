@@ -5,6 +5,7 @@
 
 package com.metrolist.music.viewmodels
 
+import java.util.LinkedHashMap
 import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -78,18 +79,20 @@ constructor(
             _total.value = paging.total
 
             // Emit first page immediately so the UI shows content within ~500ms
-            _tracks.value = firstPage
-            _isLoading.value = false
+            val allTracksById = LinkedHashMap<String, SpotifyTrack>(paging.items.size)
+            firstPage.forEach { allTracksById.putIfAbsent(it.id, it) }
+            _tracks.value = allTracksById.values.toList()
 
             val remaining = paging.total - paging.items.size
             if (remaining <= 0) {
-                Timber.d("SpotifyLikedSongs: Loaded ${firstPage.size} tracks (all in first page)")
+                _isLoading.value = false
+                Timber.d("SpotifyLikedSongs: Loaded ${allTracksById.size} tracks (all in first page)")
                 return@onSuccess
             }
 
             // Fetch remaining pages in parallel batches to avoid rate-limiting.
             // GROUP_SIZE concurrent requests at a time, emitting results progressively.
-            val allTracks = firstPage.toMutableList()
+            val allTracks = allTracksById
             val pageCount = (remaining + PAGE_SIZE - 1) / PAGE_SIZE
             val offsets = (0 until pageCount).map { paging.items.size + it * PAGE_SIZE }
 
@@ -103,7 +106,7 @@ constructor(
                 var failed = false
                 for (result in results) {
                     result.onSuccess { page ->
-                        allTracks.addAll(page.items.map { it.track }.filter { !it.isLocal })
+                        page.items.map { it.track }.filter { !it.isLocal }.forEach { allTracks.putIfAbsent(it.id, it) }
                     }.onFailure { e ->
                         Timber.e(e, "Failed to load liked songs page")
                         failed = true
@@ -111,11 +114,11 @@ constructor(
                 }
 
                 // Emit progressively so the UI updates as pages arrive
-                _tracks.value = allTracks.toList()
+                _tracks.value = allTracks.values.toList()
 
                 if (failed) break
             }
-
+            _isLoading.value = false
             Timber.d("SpotifyLikedSongs: Loaded ${allTracks.size} tracks (total=${paging.total})")
         }.onFailure { e ->
             _error.value = e.message ?: "Failed to load liked songs"

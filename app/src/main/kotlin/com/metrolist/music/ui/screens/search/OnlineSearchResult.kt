@@ -578,7 +578,7 @@ fun OnlineSearchResult(
 
                             items(
                                 items = summary.items,
-                                key = { "${summary.title}/${it.id}/${summary.items.indexOf(it)}" },
+                                key = { "${summary.title}/${it.id}" },
                                 itemContent = ytItemContent,
                             )
                         }
@@ -589,6 +589,16 @@ fun OnlineSearchResult(
                                     icon = R.drawable.search,
                                     text = stringResource(R.string.no_results_found),
                                 )
+                            }
+                        }
+
+                        if (viewModel.hasMoreAll()) {
+                            item(key = "loading") {
+                                ShimmerHost {
+                                    repeat(3) {
+                                        ListItemPlaceHolder()
+                                    }
+                                }
                             }
                         }
                     } else {

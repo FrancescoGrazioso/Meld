@@ -81,6 +81,8 @@ class CastConnectionHandler(
     private var currentMediaId: String? = null
     private var lastCastItemId: Int = -1
     private var isReloadingQueue: Boolean = false
+    private var initialized = false
+    private var castWasPlayingBeforeEnd = false
     
     // Flag to prevent reverse sync when Cast triggers local player update
     var isSyncingFromCast: Boolean = false
@@ -113,6 +115,7 @@ class CastConnectionHandler(
         
         override fun onMediaError(error: com.google.android.gms.cast.MediaError) {
             Timber.e("Cast media error: ${error.reason}")
+            handleCastFailure("remote media error: ${error.reason}")
         }
         
         override fun onQueueStatusUpdated() {
@@ -243,7 +246,7 @@ class CastConnectionHandler(
                     if (itemsToAdd.isNotEmpty()) {
                         Timber.d("Appending ${itemsToAdd.size} items to Cast queue")
                         withContext(Dispatchers.Main) {
-                            client.queueAppendItem(itemsToAdd.first(), null)
+                            itemsToAdd.forEach { client.queueAppendItem(it, null) }
                         }
                     }
                 }
@@ -340,6 +343,29 @@ class CastConnectionHandler(
         }
     }
     
+    private fun attachRemoteMediaClient(client: RemoteMediaClient?) {
+        remoteMediaClient?.unregisterCallback(remoteMediaClientCallback)
+        remoteMediaClient = client
+        remoteMediaClient?.registerCallback(remoteMediaClientCallback)
+    }
+
+    private fun detachRemoteMediaClient() {
+        remoteMediaClient?.unregisterCallback(remoteMediaClientCallback)
+        remoteMediaClient = null
+    }
+
+    private fun handleCastFailure(reason: String) {
+        Timber.w("Cast failure: $reason")
+        val resumeLocal = castWasPlayingBeforeEnd || musicService.player.playWhenReady
+        detachRemoteMediaClient()
+        stopPositionUpdates()
+        _isCasting.value = false
+        _isConnecting.value = false
+        _castIsBuffering.value = false
+        castSession = null
+        if (resumeLocal && musicService.player.mediaItemCount > 0) musicService.player.play()
+    }
+
     private val sessionManagerListener = object : SessionManagerListener<CastSession> {
         override fun onSessionStarting(session: CastSession) {
             Timber.d("Cast session starting")
@@ -352,8 +378,7 @@ class CastConnectionHandler(
             _isConnecting.value = false
             _castDeviceName.value = session.castDevice?.friendlyName
             castSession = session
-            remoteMediaClient = session.remoteMediaClient
-            remoteMediaClient?.registerCallback(remoteMediaClientCallback)
+            attachRemoteMediaClient(session.remoteMediaClient)
             
             // Get initial volume
             _castVolume.value = session.volume.toFloat()
@@ -373,6 +398,7 @@ class CastConnectionHandler(
         
         override fun onSessionEnding(session: CastSession) {
             Timber.d("Cast session ending")
+            castWasPlayingBeforeEnd = remoteMediaClient?.isPlaying == true || musicService.player.playWhenReady
             // Capture Cast position before session ends
             val castPosition = remoteMediaClient?.approximateStreamPosition ?: _castPosition.value
             if (castPosition > 0) {
@@ -389,13 +415,10 @@ class CastConnectionHandler(
             _castDeviceName.value = null
             castSession = null
             
-            remoteMediaClient?.unregisterCallback(remoteMediaClientCallback)
-            remoteMediaClient = null
-            
+            detachRemoteMediaClient()
             stopPositionUpdates()
-            
-            // Pause local playback when disconnecting from Cast
-            musicService.player.pause()
+            if (castWasPlayingBeforeEnd && musicService.player.mediaItemCount > 0) musicService.player.play()
+            castWasPlayingBeforeEnd = false
         }
         
         override fun onSessionResuming(session: CastSession, sessionId: String) {
@@ -407,8 +430,7 @@ class CastConnectionHandler(
             _isConnecting.value = false
             _castDeviceName.value = session.castDevice?.friendlyName
             
-            remoteMediaClient = session.remoteMediaClient
-            remoteMediaClient?.registerCallback(remoteMediaClientCallback)
+            attachRemoteMediaClient(session.remoteMediaClient)
             
             startPositionUpdates()
         }
@@ -421,6 +443,7 @@ class CastConnectionHandler(
     }
     
     fun initialize(): Boolean {
+        if (initialized) return true
         return try {
             castContext = CastContext.getSharedInstance(context)
             sessionManager = castContext?.sessionManager
@@ -430,6 +453,7 @@ class CastConnectionHandler(
                 .build()
             
             sessionManager?.addSessionManagerListener(sessionManagerListener, CastSession::class.java)
+            initialized = true
             
             // Check if already connected
             sessionManager?.currentCastSession?.let { session ->
@@ -772,7 +796,16 @@ class CastConnectionHandler(
     
     fun release() {
         stopPositionUpdates()
-        remoteMediaClient?.unregisterCallback(remoteMediaClientCallback)
+        syncResetJob?.cancel()
+        detachRemoteMediaClient()
         sessionManager?.removeSessionManagerListener(sessionManagerListener, CastSession::class.java)
+        sessionManager = null
+        castContext = null
+        mediaRouter = null
+        routeSelector = null
+        castSession = null
+        initialized = false
+        _isCasting.value = false
+        _isConnecting.value = false
     }
 }
