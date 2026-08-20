@@ -151,6 +151,13 @@ class InnerTube {
             append("X-YouTube-Client-Version", client.clientVersion)
             append("X-Origin", YouTubeClient.ORIGIN_YOUTUBE_MUSIC)
             append("Referer", YouTubeClient.REFERER_YOUTUBE_MUSIC)
+            // Sent to EVERY client, including `loginSupported = false` ones. Withholding it from
+            // those (on the theory that an account-bound visitor id without credentials looks like
+            // a hijacked session) was tried and measured to be backwards: VISIONOS and
+            // ANDROID_VR 1.65.10 — the only clients that currently mint a fully readable stream
+            // URL — *require* it. Without one they answer UNPLAYABLE / LOGIN_REQUIRED with zero
+            // formats. `dataSyncId` is the genuinely account-scoped identifier and stays gated on
+            // `loginSupported` in YouTubeClient.toContext (`onBehalfOfUser`).
             visitorData?.let { append("X-Goog-Visitor-Id", it) }
             if (setLogin && client.loginSupported) {
                 cookie?.let { cookie ->
@@ -232,6 +239,7 @@ class InnerTube {
             ytClient(client, setLogin = true)
             setBody(
                 PlayerBody(
+                    // Must stay consistent with the X-Goog-Visitor-Id header set in ytClient.
                     context = client.toContext(locale, visitorData, dataSyncId).let {
                         if (client.isEmbedded) {
                             it.copy(

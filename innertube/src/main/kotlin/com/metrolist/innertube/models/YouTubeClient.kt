@@ -65,6 +65,17 @@ data class YouTubeClient(
             useWebPoTokens = true,
         )
 
+        /**
+         * The only client that answers `OK` for age-restricted / explicit tracks, because it is the
+         * only authenticated one left in the stream chain. Everything else is refused with
+         * "sign in to confirm your age".
+         *
+         * `useWebPoTokens` is load-bearing and was missing: yt-dlp lists `web_creator` as requiring
+         * a GVS PO token, and the flag is what makes `YTPlayerUtils` append `pot=` to the
+         * deciphered URL at all. Without it we produced a URL with a correct signature and a
+         * transformed `n` that googlevideo still rejected with 403 on the very first byte
+         * (`hasPot=false` in the fix403 trace). Upstream sets the same flag.
+         */
         val WEB_CREATOR = YouTubeClient(
             clientName = "WEB_CREATOR",
             clientVersion = "1.20260213.00.00",
@@ -73,6 +84,7 @@ data class YouTubeClient(
             loginSupported = true,
             loginRequired = true,
             useSignatureTimestamp = true,
+            useWebPoTokens = true,
         )
 
         val TVHTML5 = YouTubeClient(
@@ -160,6 +172,40 @@ data class YouTubeClient(
             cronetVersion = "132.0.6808.3",
             packageName = "com.google.android.apps.youtube.vr.oculus",
             friendlyName = "Android VR 1.61",
+            loginSupported = false,
+            useSignatureTimestamp = false
+        )
+
+        /**
+         * Current ANDROID_VR pin, matching yt-dlp master and YouTube.js.
+         *
+         * [ANDROID_VR_1_43_32] and [ANDROID_VR_1_61_48] are bot-gated **by client version**:
+         * measured on three videoIds, both return `LOGIN_REQUIRED / "Sign in to confirm you're not
+         * a bot"` with zero formats, anonymously *and* signed in, with or without visitorData, and
+         * with the device fields stripped. Only the version differs here, and 1.65.10 returns
+         * `OK` with 100% direct-url formats — so this is a server-side version gate, not a
+         * malformed request.
+         *
+         * Note the deliberate omissions versus the older two: no `buildId`, no `cronetVersion`,
+         * no `packageName`, `osVersion` is `"12L"` (not `"12"`), and the user agent is the
+         * `... gzip` form rather than the Cronet form. Those are the values yt-dlp and YouTube.js
+         * both pin, byte-for-byte. A Cronet-style variant was probed and behaves identically, so
+         * the UA is not the discriminator — but there is no reason to diverge from upstream.
+         *
+         * Requires a visitorData: without one it returns LOGIN_REQUIRED like its older siblings.
+         * See the X-Goog-Visitor-Id note in `InnerTube.ytClient`.
+         */
+        val ANDROID_VR_1_65_10 = YouTubeClient(
+            clientName = "ANDROID_VR",
+            clientVersion = "1.65.10",
+            clientId = "28",
+            userAgent = "com.google.android.apps.youtube.vr.oculus/1.65.10 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip",
+            osName = "Android",
+            osVersion = "12L",
+            deviceMake = "Oculus",
+            deviceModel = "Quest 3",
+            androidSdkVersion = "32",
+            friendlyName = "Android VR 1.65",
             loginSupported = false,
             useSignatureTimestamp = false
         )

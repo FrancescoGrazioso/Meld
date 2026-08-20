@@ -29,8 +29,30 @@ object PlayerConfigStore {
     private const val TAG = "Metrolist_CipherConfig"
     private const val ASSET_NAME = "player_configs.json"
 
+    /**
+     * `MetrolistGroup/faraday` — the registry upstream migrated to, refreshed every few hours.
+     *
+     * The previous source was the `player_configs.json` committed in the Metrolist app repo, which
+     * stopped being updated on 2026-07-31. Measured against the player YouTube actually serves:
+     *
+     * ```
+     * source                entries   maxSts   contains live player (sts 20676/20677)
+     * bundled asset         153       20656    no
+     * old remote source     220       20671    no
+     * faraday               259       20681    yes
+     * ```
+     *
+     * That gap is not cosmetic. Normal playback does not need the cipher — VISIONOS and ANDROID_VR
+     * hand back pre-signed URLs — but **age-restricted / explicit tracks do**: every client that
+     * streams without authentication is refused with "sign in to confirm your age", leaving only
+     * WEB_CREATOR, whose formats are all behind the signature cipher. With no config for the
+     * current player the cipher cannot be solved, so those tracks were unplayable outright
+     * (`urlSource=SIG_CIPHER resolved=false`).
+     *
+     * `schemaVersion` is 1 in both, so this is a drop-in swap for [PlayerConfigParser].
+     */
     private val REMOTE_URL by lazy {
-        val encoded = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL01ldHJvbGlzdEdyb3VwL01ldHJvbGlzdC9tYWluL2FwcC9zcmMvbWFpbi9hc3NldHMvcGxheWVyX2NvbmZpZ3MuanNvbg=="
+        val encoded = "aHR0cHM6Ly9yYXcuZ2l0aHVidXNlcmNvbnRlbnQuY29tL01ldHJvbGlzdEdyb3VwL2ZhcmFkYXkvbWFzdGVyL3JlZ2lzdHJ5L3BsYXllcl9jb25maWdzLmpzb24="
         String(Base64.decode(encoded, Base64.DEFAULT), StandardCharsets.UTF_8)
     }
 
@@ -44,8 +66,13 @@ object PlayerConfigStore {
     // Note: names must not start with "player_" — PlayerJsFetcher.writeToCache() purges
     // "player_*" from this shared dir on every player-JS refresh. PlayerJsFetcher.invalidateCache()
     // deletes only player_*/current_hash.txt, so the config cache + ETag survive cipher retries.
-    private const val CACHE_FILE = "configs_remote.json"
-    private const val META_FILE = "configs_remote.meta"
+    // Renamed alongside the source swap above. Reusing "configs_remote.*" would carry the ETag of
+    // the *old* registry into conditional requests against the new one, and pair it with a cached
+    // body that predates the live player — so an install that already had a last-good cache could
+    // sit on stale configs instead of downloading the new table. New names guarantee a clean 200 on
+    // the first fetch after upgrading. The old files are simply orphaned in the cache dir.
+    private const val CACHE_FILE = "configs_faraday.json"
+    private const val META_FILE = "configs_faraday.meta"
 
     @Volatile
     private var appContext: Context? = null

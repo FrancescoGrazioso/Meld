@@ -129,9 +129,28 @@ class PoTokenGenerator {
 
         Timber.tag(TAG).d("poToken generated successfully: session=${streamingPot.take(20)}..., video=${playerPot.take(20)}...")
 
+        /*
+         * Content binding, per yt-dlp's `get_webpo_content_binding` and NewPipe's
+         * PoTokenProviderImpl:
+         *   - GVS context (the `pot=` appended to a googlevideo URL) -> bound to the SESSION,
+         *     i.e. dataSyncId when authenticated, visitor_data otherwise.
+         *   - PLAYER context (`serviceIntegrityDimensions` in the /player body) -> bound to the
+         *     video id, with WEB_REMIX special-cased back into the session branch.
+         *
+         * `streamingDataPoToken` is what gets appended as `pot=`, so it must be the SESSION-bound
+         * one. It was `playerPot` (video-id bound), which is the opposite. The device trace shows
+         * the mismatch directly: `playerRequestPoToken` stays identical across different videoIds
+         * within a process (session-bound) while `streamingDataPoToken` changes every call.
+         *
+         * `playerRequestPoToken` is deliberately left as `streamingPot`: MAIN_CLIENT is WEB_REMIX,
+         * which is exactly the client yt-dlp special-cases into the session branch for the PLAYER
+         * context too. Swapping the two fields would fix the URL and break the /player request.
+         * A separate video-id-bound field would be needed to serve TVHTML5/WEB_CREATOR correctly
+         * on the PLAYER side; not added until there is a measurement asking for it.
+         */
         return PoTokenResult(
             playerRequestPoToken = streamingPot,
-            streamingDataPoToken = playerPot,
+            streamingDataPoToken = streamingPot,
         )
     }
 }

@@ -207,6 +207,7 @@ import com.metrolist.music.utils.DiscordRPC
 import com.metrolist.music.utils.NetworkConnectivityObserver
 import com.metrolist.music.utils.ScrobbleManager
 import com.metrolist.music.utils.SyncUtils
+import com.metrolist.music.utils.Fix403
 import com.metrolist.music.utils.YTPlayerUtils
 import com.metrolist.music.utils.cipher.CipherDeobfuscator
 import com.metrolist.music.utils.dataStore
@@ -2891,6 +2892,46 @@ class MusicService :
             .tag(TAG)
             .w(error, "Player error occurred for $mediaId: errorCode=${error.errorCode}, message=${error.message}")
 
+        /*
+         * error.message is always "Source error" and the code is often a re-classification, so
+         * neither identifies the failure. The cause chain does: it carries the HTTP status, the
+         * DataSourceException reason the resolver chose, and the original exception text.
+         */
+        val fx = Fix403.nextId("err")
+        Fix403.e(
+            fx, "player.error",
+            Fix403.kv(
+                "mediaId" to mediaId,
+                "errorCode" to error.errorCode,
+                "errorCodeName" to error.errorCodeName,
+                "message" to error.message,
+                "position" to Fix403.trap(fx, "player.position") { player.currentPosition },
+                "duration" to Fix403.trap(fx, "player.duration") { player.duration },
+                "bufferedPosition" to Fix403.trap(fx, "player.buffered") { player.bufferedPosition },
+            ),
+        )
+        Fix403.fail(fx, "player.error.cause", error)
+        (error.cause as? androidx.media3.datasource.HttpDataSource.InvalidResponseCodeException)?.let { http ->
+            Fix403.e(
+                fx, "player.error.http",
+                Fix403.kv(
+                    "responseCode" to http.responseCode,
+                    "responseMessage" to http.responseMessage,
+                    "uri" to http.dataSpec.uri.host,
+                    "position" to http.dataSpec.position,
+                    "length" to http.dataSpec.length,
+                    // A Range-less (position=0,length=UNSET) or open-ended request is answered
+                    // 403 by googlevideo on art tracks — see the urlCache.hit note in the resolver.
+                    "rangeShape" to when {
+                        http.dataSpec.position == 0L && http.dataSpec.length == -1L -> "NONE"
+                        http.dataSpec.length == -1L -> "OPEN_ENDED"
+                        else -> "BOUNDED"
+                    },
+                    "requestHeaders" to http.headerFields.keys.joinToString(","),
+                ),
+            )
+        }
+
         // Transient YouTube CDN / decoder errors are auto-recovered; skip crash reporting.
         val isRecoverableYouTubeError = isRangeNotSatisfiableError(error) ||
             isExpiredUrlError(error) ||
@@ -3890,6 +3931,28 @@ class MusicService :
 
                 songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {
                     scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
+                    Fix403.i(
+                        Fix403.nextId("cache"), "urlCache.hit",
+                        Fix403.kv(
+                            "mediaId" to mediaId,
+                            "expiresInMs" to (it.second - System.currentTimeMillis()),
+                            "position" to dataSpec.position,
+                            "length" to dataSpec.length,
+                        ),
+                    )
+                    /*
+                     * The .subrange() is NOT optional and must match the fresh-resolution path
+                     * below. ExoPlayer opens a track with position=0 / length=LENGTH_UNSET, and
+                     * media3's HttpUtil.buildRangeRequestHeader returns null for exactly that
+                     * pair — so without a subrange the media GET carries no Range header at all.
+                     * googlevideo answers a Range-less request with 403 on every YouTube Music
+                     * art track (`- Topic` uploads, i.e. nearly everything played here) while
+                     * serving the ranged request with 206.
+                     *
+                     * That asymmetry made playback fail only for songs whose URL was already in
+                     * songUrlCache — first play resolved fresh and worked, replaying or skipping
+                     * back to it took this branch and 403'd.
+                     */
                     return@Factory dataSpec.withUri(it.first.toUri()).subrange(0, CHUNK_LENGTH)
                 }
             } else {
@@ -3914,6 +3977,23 @@ class MusicService :
                         Result.failure(java.net.SocketTimeoutException("Stream resolution timed out"))
                     }
                 }.getOrElse { throwable ->
+                    /*
+                     * Everything thrown from here travels through Media3's Loader, and Loader
+                     * only preserves an error code when the exception is a DataSourceException
+                     * (ExoPlayerImplInternal catches it specifically and propagates `reason`).
+                     *
+                     * PlaybackException extends Exception, NOT IOException, so throwing one here
+                     * used to be caught by `Loader.LoadTask`'s generic `catch (Exception)`, wrapped
+                     * in `Loader.UnexpectedLoaderException`, and re-classified as
+                     * ERROR_CODE_IO_UNSPECIFIED (2000) — silently discarding the code chosen below.
+                     * The wrapper also made DefaultLoadErrorHandlingPolicy return C.TIME_UNSET,
+                     * disabling ExoPlayer's own 3x retry, so the user saw the failure immediately.
+                     *
+                     * Worse, the message was overwritten with a generic "Unknown error", which is
+                     * what PlaybackError reads (`error.cause?.cause?.message`). Propagating the
+                     * real message instead is what lets the UI's restricted/age/login detection
+                     * see YouTube's actual reason.
+                     */
                     when (throwable) {
                         is PlaybackException -> {
                             throw DataSourceException(
