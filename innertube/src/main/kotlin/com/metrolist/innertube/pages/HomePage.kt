@@ -147,14 +147,10 @@ data class HomePage(
                             id = it.navigationEndpoint?.browseEndpoint?.browseId
                         )
                     } ?: return null,
-                    album = secondaryLine.getOrNull(1)?.firstOrNull()
-                        ?.takeIf { it.navigationEndpoint?.browseEndpoint != null }
-                        ?.let {
-                            Album(
-                                name = it.text,
-                                id = it.navigationEndpoint?.browseEndpoint?.browseId!!
-                            )
-                        },
+                    album = secondaryLine.getOrNull(1)?.firstOrNull()?.let {
+                        val browseId = it.navigationEndpoint?.browseEndpoint?.browseId ?: return@let null
+                        Album(name = it.text, id = browseId)
+                    },
                     duration = secondaryLine.lastOrNull()?.firstOrNull()?.text?.parseTime(),
                     thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
                     explicit = renderer.badges?.find {
@@ -261,7 +257,7 @@ data class HomePage(
                             shuffleEndpoint = renderer.menu?.menuRenderer?.items?.find {
                                 it.menuNavigationItemRenderer?.icon?.iconType == "MUSIC_SHUFFLE"
                             }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null,
-                            radioEndpoint = renderer.menu.menuRenderer.items.find {
+                            radioEndpoint = renderer.menu?.menuRenderer?.items?.find {
                                 it.menuNavigationItemRenderer?.icon?.iconType == "MIX"
                             }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint
                         )
@@ -275,7 +271,7 @@ data class HomePage(
                             shuffleEndpoint = renderer.menu?.menuRenderer?.items?.find {
                                 it.menuNavigationItemRenderer?.icon?.iconType == "MUSIC_SHUFFLE"
                             }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null,
-                            radioEndpoint = renderer.menu.menuRenderer.items.find {
+                            radioEndpoint = renderer.menu?.menuRenderer?.items?.find {
                                 it.menuNavigationItemRenderer?.icon?.iconType == "MIX"
                             }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null,
                         )
@@ -348,9 +344,9 @@ data class HomePage(
                                 it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
                             } == true,
                             endpoint = renderer.thumbnailOverlay
-                                .musicItemThumbnailOverlayRenderer.content
-                                .musicPlayButtonRenderer.playNavigationEndpoint
-                                .watchEndpoint,
+                                ?.musicItemThumbnailOverlayRenderer?.content
+                                ?.musicPlayButtonRenderer?.playNavigationEndpoint
+                                ?.watchEndpoint,
                             libraryAddToken = libraryTokens.addToken,
                             libraryRemoveToken = libraryTokens.removeToken,
                         )

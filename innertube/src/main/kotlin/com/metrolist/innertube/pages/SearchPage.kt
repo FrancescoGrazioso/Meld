@@ -172,8 +172,10 @@ object SearchPage {
                             ?.navigationEndpoint
                             ?.watchPlaylistEndpoint ?: return null,
                     radioEndpoint =
-                        renderer.menu.menuRenderer.items
-                            .find { it.menuNavigationItemRenderer?.icon?.iconType == "MIX" }
+                        renderer.menu
+                            ?.menuRenderer
+                            ?.items
+                            ?.find { it.menuNavigationItemRenderer?.icon?.iconType == "MIX" }
                             ?.menuNavigationItemRenderer
                             ?.navigationEndpoint
                             ?.watchPlaylistEndpoint ?: return null,
@@ -296,8 +298,10 @@ object SearchPage {
                             ?.navigationEndpoint
                             ?.watchPlaylistEndpoint ?: return null,
                     radioEndpoint =
-                        renderer.menu.menuRenderer.items
-                            .find { it.menuNavigationItemRenderer?.icon?.iconType == "MIX" }
+                        renderer.menu
+                            ?.menuRenderer
+                            ?.items
+                            ?.find { it.menuNavigationItemRenderer?.icon?.iconType == "MIX" }
                             ?.menuNavigationItemRenderer
                             ?.navigationEndpoint
                             ?.watchPlaylistEndpoint ?: return null,
