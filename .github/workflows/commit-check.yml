@@ -45,6 +45,22 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      - name: Create standard debug keystore
+        run: |
+          DEBUG_KEYSTORE="${ANDROID_USER_HOME:-$HOME/.config/.android}/debug.keystore"
+          mkdir -p "$(dirname "$DEBUG_KEYSTORE")"
+          if [ ! -f "$DEBUG_KEYSTORE" ]; then
+            keytool -genkeypair -v \
+              -keystore "$DEBUG_KEYSTORE" \
+              -storepass android \
+              -alias androiddebugkey \
+              -keypass android \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+          fi
+
       - name: Run unit tests
         run: ./gradlew --console=plain :app:testFossDebugUnitTest :spotify:test :betterlyrics:test --warning-mode summary
 
