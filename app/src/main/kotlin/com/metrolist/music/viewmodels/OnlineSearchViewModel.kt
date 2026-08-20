@@ -133,8 +133,9 @@ constructor(
             return
         }
 
-        val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
-        val specs = allFilterSpecs(hideVideoSongs)
+        coroutineScope {
+            val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+            val specs = allFilterSpecs(hideVideoSongs)
 
         // Episode search has known parser incompatibilities on the dedicated endpoint;
         // use the already-parsed episode section from the summary response for that one
@@ -178,8 +179,9 @@ constructor(
                 ItemsPage(items = episodeItems.distinctBy { it.id }, continuation = null)
         }
 
-        allInitialized = true
-        rebuildAllSummary()
+            allInitialized = true
+            rebuildAllSummary()
+        }
     }
 
 
