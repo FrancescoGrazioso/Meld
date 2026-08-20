@@ -71,8 +71,22 @@ jobs:
           CRASH_REPORT_TOKEN: ${{ secrets.CRASH_REPORT_TOKEN }}
           CRASH_REPORT_REPO: ${{ vars.CRASH_REPORT_REPO || 'FrancescoGrazioso/Meld' }}
 
+      - name: Check signing credentials
+        id: signing
+        env:
+          KEYSTORE: ${{ secrets.KEYSTORE }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [[ -n "$KEYSTORE" && -n "$KEY_ALIAS" && -n "$KEYSTORE_PASSWORD" && -n "$KEY_PASSWORD" ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Sign APK
-        if: ${{ secrets.KEYSTORE != '' && secrets.KEY_ALIAS != '' && secrets.KEYSTORE_PASSWORD != '' && secrets.KEY_PASSWORD != '' }}
+        if: steps.signing.outputs.available == 'true'
         uses: ilharp/sign-android-release@v2.0.0
         with:
           releaseDir: app/build/outputs/apk/${{ matrix.variant }}/release/
