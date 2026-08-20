@@ -85,7 +85,6 @@ android {
             keyAlias = "androiddebugkey"
             keyPassword = "android"
             storePassword = "android"
-            storeFile = file("${System.getProperty("user.home")}/.android/debug.keystore")
         }
 
         // Release signing configuration: requires credentials set via environment variables

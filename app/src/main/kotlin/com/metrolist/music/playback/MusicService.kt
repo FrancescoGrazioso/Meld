@@ -51,6 +51,7 @@ import androidx.media3.common.Timeline
 import androidx.media3.common.audio.SonicAudioProcessor
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DataSourceException
 import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.HttpDataSource
@@ -3889,7 +3890,7 @@ class MusicService :
 
                 songUrlCache[mediaId]?.takeIf { it.second > System.currentTimeMillis() }?.let {
                     scope.launch(Dispatchers.IO) { recoverSong(mediaId) }
-                    return@Factory dataSpec.withUri(it.first.toUri())
+                    return@Factory dataSpec.withUri(it.first.toUri()).subrange(0, CHUNK_LENGTH)
                 }
             } else {
                 Timber.tag("MusicService").i("BYPASSING CACHE for $mediaId due to quality change")
@@ -3915,11 +3916,15 @@ class MusicService :
                 }.getOrElse { throwable ->
                     when (throwable) {
                         is PlaybackException -> {
-                            throw throwable
+                            throw DataSourceException(
+                                throwable.message,
+                                throwable,
+                                throwable.errorCode,
+                            )
                         }
 
                         is java.net.ConnectException, is java.net.UnknownHostException -> {
-                            throw PlaybackException(
+                            throw DataSourceException(
                                 getString(R.string.error_no_internet),
                                 throwable,
                                 PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_FAILED,
@@ -3927,7 +3932,7 @@ class MusicService :
                         }
 
                         is java.net.SocketTimeoutException -> {
-                            throw PlaybackException(
+                            throw DataSourceException(
                                 getString(R.string.error_timeout),
                                 throwable,
                                 PlaybackException.ERROR_CODE_IO_NETWORK_CONNECTION_TIMEOUT,
@@ -3935,10 +3940,10 @@ class MusicService :
                         }
 
                         else -> {
-                            throw PlaybackException(
-                                getString(R.string.error_unknown),
+                            throw DataSourceException(
+                                throwable.message ?: getString(R.string.error_unknown),
                                 throwable,
-                                PlaybackException.ERROR_CODE_REMOTE_ERROR,
+                                PlaybackException.ERROR_CODE_IO_UNSPECIFIED,
                             )
                         }
                     }
