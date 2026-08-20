@@ -1495,8 +1495,58 @@ object QobuzAudioProvider {
         val samplingRateKhz: Double?,
     )
 
+    private fun candidateRelevanceScore(query: Query, candidate: CandidateMetadata): Int {
+        val wantedTitle = query.title.normalized()
+        val candidateTitle = candidate.title.normalized()
+        val wantedArtists = query.artists.map { it.normalized() }.filter { it.isNotBlank() }
+        val candidateArtist = candidate.artist.normalized()
+        val wantedAlbum = query.album.normalized()
+        val candidateAlbum = candidate.album.normalized()
+        val wantedIsrc = query.isrc?.trim()?.uppercase(Locale.US).orEmpty()
+        val candidateIsrc = candidate.isrc?.trim()?.uppercase(Locale.US).orEmpty()
+        var score = 0
+
+        if (wantedIsrc.isNotBlank() && wantedIsrc == candidateIsrc) score += 1_000
+        score += when {
+            wantedTitle.isBlank() || candidateTitle.isBlank() -> 0
+            wantedTitle == candidateTitle -> 420
+            candidateTitle.contains(wantedTitle) || wantedTitle.contains(candidateTitle) -> 220
+            wantedTitle.wordsOverlap(candidateTitle) >= 2 -> 100
+            else -> -100
+        }
+        if (wantedArtists.isNotEmpty()) {
+            score += when {
+                wantedArtists.any { it == candidateArtist } -> 320
+                wantedArtists.any { artistNamesMatch(it, candidateArtist) } -> 160
+                else -> -180
+            }
+        }
+        if (wantedAlbum.isNotBlank() && candidateAlbum.isNotBlank()) {
+            score += when {
+                wantedAlbum == candidateAlbum -> 140
+                candidateAlbum.contains(wantedAlbum) || wantedAlbum.contains(candidateAlbum) -> 60
+                wantedAlbum.wordsOverlap(candidateAlbum) >= 2 -> 30
+                else -> -30
+            }
+        }
+        query.durationMs?.takeIf { it > 0L }?.let { durationMs ->
+            candidate.durationMs?.takeIf { it > 0L }?.let { candidateDurationMs ->
+                val differenceSeconds = abs(durationMs - candidateDurationMs) / 1_000L
+                score += when {
+                    differenceSeconds <= 2L -> 160
+                    differenceSeconds <= 5L -> 100
+                    differenceSeconds <= 10L -> 40
+                    differenceSeconds <= 20L -> -20
+                    else -> -100
+                }
+            }
+        }
+        if (candidate.hires) score += 10
+        return score
+    }
+
     /**
-     * Returns up to [limit] de-duplicated Qobuz candidates for the query,
+     * Returns up to [limit] de-duplicated and relevance-ranked Qobuz candidates for the query,
      * gathered across every available search backend and every search-term
      * variant. Used by the manual override UI.
      */
@@ -1540,11 +1590,16 @@ object QobuzAudioProvider {
                         bitDepth = bitDepth,
                         samplingRateKhz = samplingRate,
                     )
-                    if (results.size >= limit) return results.values.toList()
+                    if (results.size >= 96) break
                 }
             }
         }
-        return results.values.toList()
+        return results.values
+            .sortedWith(
+                compareByDescending<CandidateMetadata> { candidateRelevanceScore(query, it) }
+                    .thenBy { it.trackId },
+            )
+            .take(limit)
     }
 
 }
