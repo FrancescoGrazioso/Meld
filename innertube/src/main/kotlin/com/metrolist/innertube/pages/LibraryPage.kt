@@ -70,7 +70,7 @@ data class LibraryPage(
                     shuffleEndpoint = renderer.menu?.menuRenderer?.items?.find {
                         it.menuNavigationItemRenderer?.icon?.iconType == "MUSIC_SHUFFLE"
                     }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null,
-                    radioEndpoint = renderer.menu.menuRenderer.items.find {
+                    radioEndpoint = renderer.menu?.menuRenderer?.items?.find {
                         it.menuNavigationItemRenderer?.icon?.iconType == "MIX"
                     }?.menuNavigationItemRenderer?.navigationEndpoint?.watchPlaylistEndpoint ?: return null,
                 )
@@ -130,10 +130,8 @@ data class LibraryPage(
                             )
                         } ?: emptyList(),
                         album = subtitleRuns?.getOrNull(1)?.firstOrNull()?.let {
-                            Album(
-                                name = it.text,
-                                id = it.navigationEndpoint?.browseEndpoint?.browseId ?: ""
-                            )
+                            val albumId = it.navigationEndpoint?.browseEndpoint?.browseId ?: return@let null
+                            Album(name = it.text, id = albumId)
                         },
                         duration = subtitleRuns?.lastOrNull()?.firstOrNull()?.text?.parseTime(),
                         thumbnail = renderer.thumbnailRenderer.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
@@ -141,9 +139,9 @@ data class LibraryPage(
                             it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
                         } == true,
                         endpoint = renderer.thumbnailOverlay
-                            .musicItemThumbnailOverlayRenderer.content
-                            .musicPlayButtonRenderer.playNavigationEndpoint
-                            .watchEndpoint,
+                            ?.musicItemThumbnailOverlayRenderer?.content
+                            ?.musicPlayButtonRenderer?.playNavigationEndpoint
+                            ?.watchEndpoint,
                         libraryAddToken = libraryTokens.addToken,
                         libraryRemoveToken = libraryTokens.removeToken,
                         isEpisode = renderer.isEpisode,

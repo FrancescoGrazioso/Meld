@@ -5,6 +5,7 @@
 
 package com.metrolist.music.playback.queues
 
+import kotlinx.coroutines.CancellationException
 import androidx.media3.common.MediaItem
 import com.metrolist.music.models.MediaMetadata
 import com.metrolist.music.playback.SpotifyYouTubeMapper
@@ -59,6 +60,11 @@ abstract class SpotifyPagedQueue(
 
     // All Spotify tracks fetched so far (may span multiple API pages)
     private val allTracks = mutableListOf<SpotifyTrack>()
+    private val seenSpotifyIds = HashSet<String>()
+
+    private fun appendUniqueTracks(tracks: List<SpotifyTrack>) {
+        tracks.forEach { if (seenSpotifyIds.add(it.id)) allTracks.add(it) }
+    }
 
     // Index into [allTracks] for the next batch to resolve to YouTube
     private var resolveOffset = 0
@@ -72,14 +78,14 @@ abstract class SpotifyPagedQueue(
         try {
             val provided = providedTracks
             if (provided != null) {
-                allTracks.addAll(provided)
+                appendUniqueTracks(provided)
                 apiTotal = provided.size
                 apiFetchOffset = apiTotal
                 apiHasMore = false
             } else {
                 val page = fetchPage(offset = 0, limit = SPOTIFY_PAGE_SIZE)
                 apiTotal = page.total
-                allTracks.addAll(page.tracks)
+                appendUniqueTracks(page.tracks)
                 apiFetchOffset = page.rawCount
                 apiHasMore = apiFetchOffset < apiTotal
             }
@@ -120,6 +126,8 @@ abstract class SpotifyPagedQueue(
                 items = resolvedItems,
                 mediaItemIndex = mediaItemIndex,
             )
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Timber.e(e, "$logTag: Failed initial fetch")
             Queue.Status(title = null, items = emptyList(), mediaItemIndex = 0)
@@ -131,9 +139,10 @@ abstract class SpotifyPagedQueue(
             // Build the full list from scratch so we always include tracks 0..N
             // (not just from startIndex onwards).
             allTracks.clear()
+            seenSpotifyIds.clear()
             val provided = providedTracks
             if (provided != null) {
-                allTracks.addAll(provided)
+                appendUniqueTracks(provided)
                 apiTotal = provided.size
                 apiFetchOffset = apiTotal
                 apiHasMore = false
@@ -142,7 +151,7 @@ abstract class SpotifyPagedQueue(
                 apiHasMore = true
                 val page = fetchPage(offset = 0, limit = SPOTIFY_PAGE_SIZE)
                 apiTotal = page.total
-                allTracks.addAll(page.tracks)
+                appendUniqueTracks(page.tracks)
                 apiFetchOffset = page.rawCount
                 apiHasMore = apiFetchOffset < apiTotal
             }
@@ -172,6 +181,8 @@ abstract class SpotifyPagedQueue(
             apiHasMore = false
             Timber.d("$logTag: getFullStatus resolved ${resolvedItems.size} tracks (startIndex=$targetIndex)")
             Queue.Status(title = null, items = resolvedItems, mediaItemIndex = mediaItemIndex)
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Timber.e(e, "$logTag: getFullStatus failed")
             null
@@ -225,10 +236,12 @@ abstract class SpotifyPagedQueue(
         if (!apiHasMore) return
         try {
             val page = fetchPage(offset = apiFetchOffset, limit = SPOTIFY_PAGE_SIZE)
-            allTracks.addAll(page.tracks)
+            appendUniqueTracks(page.tracks)
             apiFetchOffset += page.rawCount
             apiHasMore = apiFetchOffset < apiTotal
             Timber.d("$logTag: Fetched API page, now have ${allTracks.size} tracks")
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: Exception) {
             Timber.e(e, "$logTag: Failed to fetch next API page")
             apiHasMore = false

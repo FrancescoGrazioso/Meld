@@ -33,7 +33,8 @@ constructor(
     database: MusicDatabase,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    val top = savedStateHandle.get<String>("top")!!
+    private val topCount = savedStateHandle.get<String>("top")?.toIntOrNull() ?: 6
+    val top = topCount.toString()
 
     val topPeriod = MutableStateFlow(MyTopFilter.ALL_TIME)
 
@@ -44,7 +45,7 @@ constructor(
             context.dataStore.data.map { it[HideVideoSongsKey] ?: false }.distinctUntilChanged()
         ) { period, hideVideoSongs -> period to hideVideoSongs }
             .flatMapLatest { (period, hideVideoSongs) ->
-                database.mostPlayedSongs(period.toTimeMillis(), top.toInt()).map { songs ->
+                database.mostPlayedSongs(period.toTimeMillis(), topCount).map { songs ->
                     if (hideVideoSongs) songs.filter { !it.song.isVideo } else songs
                 }
             }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())

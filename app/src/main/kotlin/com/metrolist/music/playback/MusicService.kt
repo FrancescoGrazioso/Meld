@@ -7,6 +7,7 @@
 
 package com.metrolist.music.playback
 
+import android.os.SystemClock
 import android.app.ForegroundServiceStartNotAllowedException
 import android.app.Notification
 import android.app.NotificationChannel
@@ -248,6 +249,7 @@ import timber.log.Timber
 import java.io.ObjectInputStream
 import java.io.ObjectOutputStream
 import java.time.LocalDateTime
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import kotlin.coroutines.coroutineContext
 import kotlin.random.Random
@@ -308,6 +310,8 @@ class MusicService :
     private var crossfadeDuration = 5000f
     private var crossfadeGapless = true
     private var crossfadeTriggerJob: Job? = null
+    private val spotifyYouTubeMapper by lazy { SpotifyYouTubeMapper(database) }
+    private val spotifyRematchAttempts = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
 
     // SponsorBlock: per-track job that fetches skip segments and polls playback
     // position to seek past them. Cancelled and restarted on every track change.
@@ -436,7 +440,7 @@ class MusicService :
     private var preCacheJob: Job? = null
 
     // URL cache for stream URLs - class-level so it can be invalidated on errors
-    private val songUrlCache = HashMap<String, Pair<String, Long>>()
+    private val songUrlCache = ConcurrentHashMap<String, Pair<String, Long>>()
 
     // Flag to bypass cache when quality changes - forces fresh stream fetch
     private val bypassCacheForQualityChange = mutableSetOf<String>()
@@ -2418,6 +2422,7 @@ class MusicService :
 
             // Reset retry count for current song on successful playback
             player.currentMediaItem?.mediaId?.let { mediaId ->
+                spotifyRematchAttempts.remove(mediaId)
                 resetRetryCount(mediaId)
                 Timber.tag(TAG).d("Playback successful for $mediaId, reset retry count")
             }
@@ -2944,6 +2949,27 @@ class MusicService :
             reportException(error)
         }
 
+        if (mediaId != null && spotifyRematchAttempts.add(mediaId)) {
+            val spotifyTrack = SpotifyMetadataRegistry.get(mediaId)
+            if (spotifyTrack != null) {
+                scope.launch(SilentHandler) {
+                    try {
+                        spotifyYouTubeMapper.invalidateMatch(spotifyTrack.id)
+                        val rematched = spotifyYouTubeMapper.resolveToMediaItem(spotifyTrack)
+                        if (rematched != null && player.currentMediaItem?.mediaId == mediaId) {
+                            player.setMediaItem(rematched, player.currentPosition.coerceAtLeast(0L))
+                            player.prepare()
+                            player.playWhenReady = true
+                            Timber.tag(TAG).d("Recovered stale Spotify mapping for ${spotifyTrack.id}")
+                        }
+                    } catch (e: Exception) {
+                        Timber.tag(TAG).w(e, "Spotify rematch failed for ${spotifyTrack.id}")
+                    }
+                }
+                return
+            }
+        }
+
         // Check if this song has failed too many times
         if (mediaId != null && hasExceededRetryLimit(mediaId)) {
             Timber.tag(TAG).w("Song $mediaId has exceeded retry limit, skipping")
@@ -3230,6 +3256,22 @@ class MusicService :
     /**
      * Handles expired URL (403) errors by clearing caches and retrying.
      */
+    private fun reprepareCurrentMediaSource() {
+        val currentIndex = player.currentMediaItemIndex
+        if (currentIndex == C.INDEX_UNSET || player.mediaItemCount == 0) return
+
+        val position = player.currentPosition.coerceAtLeast(0L)
+        val wasPlaying = player.playWhenReady
+        val items = player.mediaItems
+
+        // Replace the source graph, not just the playback position. This forces the
+        // ResolvingDataSource resolver to run again instead of reusing a prepared
+        // source that still contains the rejected URL.
+        player.setMediaItems(items, currentIndex, position)
+        player.prepare()
+        player.playWhenReady = wasPlaying
+    }
+
     private fun handleExpiredUrlError(mediaId: String?) {
         if (mediaId == null) {
             handleFinalFailure()
@@ -3269,13 +3311,10 @@ class MusicService :
             scope.launch {
                 delay(RETRY_DELAY_MS)
 
-                // Seek to current position to force URL re-resolution
-                val currentPosition = player.currentPosition
-                val currentIndex = player.currentMediaItemIndex
-                player.seekTo(currentIndex, currentPosition)
-                player.prepare()
+                // Rebuild the prepared MediaSource so the resolver fetches a fresh URL.
+                reprepareCurrentMediaSource()
 
-                Timber.tag(TAG).d("Retrying playback for $mediaId after 403 error")
+                Timber.tag(TAG).d("Retrying playback for $mediaId after 403 error with a fresh MediaSource")
             }
     }
 
@@ -4737,7 +4776,7 @@ class MusicService :
     private fun scheduleCrossfade() {
         crossfadeTriggerJob?.cancel()
         crossfadeTriggerJob = null
-        if (!crossfadeEnabled || player.duration == C.TIME_UNSET || player.duration <= crossfadeDuration) return
+        if (!crossfadeEnabled || crossfadeDuration <= 0f || player.duration == C.TIME_UNSET || player.duration <= crossfadeDuration) return
         if (crossfadeGapless && isNextItemGapless()) return
         if (!player.hasNextMediaItem() && player.repeatMode != REPEAT_MODE_ONE) return
 
@@ -4856,35 +4895,28 @@ class MusicService :
 
         crossfadeJob =
             scope.launch {
-                val duration = crossfadeDuration.toLong()
-                val steps = 20
-                val stepTime = duration / steps
-                val startVolume =
-                    try {
-                        fadingPlayer?.volume ?: 1f
-                    } catch (e: Exception) {
-                        1f
+                val duration = crossfadeDuration.toLong().coerceAtLeast(0L)
+                val startVolume = try { fadingPlayer?.volume ?: 1f } catch (e: Exception) { 1f }
+
+                if (duration > 0L) {
+                    val startTime = SystemClock.elapsedRealtime()
+                    while (isActive) {
+                        while (!player.isPlaying && isActive) delay(100)
+                        if (!isActive) break
+
+                        val elapsed = (SystemClock.elapsedRealtime() - startTime).coerceAtLeast(0L)
+                        val progress = (elapsed.toDouble() / duration.toDouble()).coerceIn(0.0, 1.0).toFloat()
+                        val fadeIn = 1f - (1f - progress) * (1f - progress)
+                        val fadeOut = (1f - progress) * (1f - progress)
+                        try {
+                            player.volume = startVolume * fadeIn
+                            fadingPlayer?.volume = startVolume * fadeOut
+                        } catch (e: Exception) {
+                            break
+                        }
+                        if (progress >= 1f) break
+                        delay((duration - elapsed).coerceAtMost(16L).coerceAtLeast(1L))
                     }
-
-                for (i in 0..steps) {
-                    if (!isActive) break
-                    // Pause volume ramp if player is paused
-                    while (!player.isPlaying && isActive) {
-                        delay(100)
-                    }
-
-                    val progress = i / steps.toFloat()
-                    val fadeIn = 1.0f - (1.0f - progress) * (1.0f - progress)
-                    val fadeOut = (1.0f - progress) * (1.0f - progress)
-
-                    try {
-                        player.volume = startVolume * fadeIn
-                        fadingPlayer?.volume = startVolume * fadeOut
-                    } catch (e: Exception) {
-                        break
-                    }
-
-                    delay(stepTime)
                 }
 
                 try {

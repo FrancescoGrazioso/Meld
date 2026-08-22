@@ -20,8 +20,7 @@ data class AlbumPage(
     companion object {
         fun getPlaylistId(response: BrowseResponse): String? {
             var playlistId = response.microformat?.microformatDataRenderer?.urlCanonical?.substringAfterLast('=')
-            if (playlistId == null)
-            {
+            if (playlistId == null) {
                 playlistId = response.header?.musicDetailHeaderRenderer?.menu?.menuRenderer?.topLevelButtons?.firstOrNull()
                     ?.buttonRenderer?.navigationEndpoint?.watchPlaylistEndpoint?.playlistId
             }
@@ -39,8 +38,8 @@ data class AlbumPage(
         }
 
         fun getThumbnail(response: BrowseResponse): String? {
-            return response.background?.musicThumbnailRenderer?.getThumbnailUrl() ?: response.header?.musicDetailHeaderRenderer?.thumbnail
-                ?.croppedSquareThumbnailRenderer?.getThumbnailUrl()
+            return response.background?.musicThumbnailRenderer?.getThumbnailUrl()
+                ?: response.header?.musicDetailHeaderRenderer?.thumbnail?.croppedSquareThumbnailRenderer?.getThumbnailUrl()
         }
 
         fun getArtists(response: BrowseResponse): List<Artist> {
@@ -69,9 +68,10 @@ data class AlbumPage(
         }
 
         fun getSongs(response: BrowseResponse, album: AlbumItem): List<SongItem> {
-            val tabs = response.contents?.singleColumnBrowseResultsRenderer?.tabs ?: response.contents?.twoColumnBrowseResultsRenderer?.tabs
-            val shelfRenderer = tabs?.firstOrNull()?.tabRenderer?.content?.sectionListRenderer?.contents?.firstOrNull()?.musicShelfRenderer ?:
-                response.contents?.twoColumnBrowseResultsRenderer?.secondaryContents?.sectionListRenderer?.contents?.firstOrNull()?.musicShelfRenderer
+            val tabs = response.contents?.singleColumnBrowseResultsRenderer?.tabs
+                ?: response.contents?.twoColumnBrowseResultsRenderer?.tabs
+            val shelfRenderer = tabs?.firstOrNull()?.tabRenderer?.content?.sectionListRenderer?.contents?.firstOrNull()?.musicShelfRenderer
+                ?: response.contents?.twoColumnBrowseResultsRenderer?.secondaryContents?.sectionListRenderer?.contents?.firstOrNull()?.musicShelfRenderer
 
             val songs = shelfRenderer?.contents?.getItems()?.mapNotNull {
                 getSong(it, album)
@@ -80,39 +80,55 @@ data class AlbumPage(
         }
 
         fun getSong(renderer: MusicResponsiveListItemRenderer, album: AlbumItem? = null): SongItem? {
-            // Extract library tokens using the new method that properly handles multiple toggle items
             val libraryTokens = PageHelper.extractLibraryTokensFromMenuItems(renderer.menu?.menuRenderer?.items)
+            val id = renderer.playlistItemData?.videoId ?: return null
+            val title = PageHelper.extractRuns(renderer.flexColumns, "MUSIC_VIDEO").firstOrNull()?.text ?: return null
+
+            val artists = PageHelper.extractRuns(renderer.flexColumns, "MUSIC_PAGE_TYPE_ARTIST").map {
+                Artist(
+                    name = it.text,
+                    id = it.navigationEndpoint?.browseEndpoint?.browseId,
+                )
+            }.ifEmpty {
+                album?.artists ?: emptyList()
+            }
+
+            val resolvedAlbum = album?.let { Album(it.title, it.browseId) } ?: run {
+                val albumRun = renderer.flexColumns.getOrNull(2)
+                    ?.musicResponsiveListItemFlexColumnRenderer
+                    ?.text
+                    ?.runs
+                    ?.firstOrNull()
+                val albumId = albumRun?.navigationEndpoint?.browseEndpoint?.browseId
+                val albumName = albumRun?.text
+                if (!albumId.isNullOrBlank() && !albumName.isNullOrBlank()) {
+                    Album(name = albumName, id = albumId)
+                } else {
+                    null
+                }
+            } ?: return null
+
+            val duration = renderer.fixedColumns?.firstOrNull()
+                ?.musicResponsiveListItemFlexColumnRenderer
+                ?.text
+                ?.runs
+                ?.firstOrNull()
+                ?.text
+                ?.parseTime() ?: return null
 
             return SongItem(
-                id = renderer.playlistItemData?.videoId ?: return null,
-                title = PageHelper.extractRuns(renderer.flexColumns, "MUSIC_VIDEO").firstOrNull()?.text ?: return null,
-                artists = PageHelper.extractRuns(renderer.flexColumns, "MUSIC_PAGE_TYPE_ARTIST").map{
-                    Artist(
-                        name = it.text,
-                        id = it.navigationEndpoint?.browseEndpoint?.browseId
-                    )
-                }.ifEmpty {
-                    // Fallback to album artists if no artists found in song data
-                    album?.artists ?: emptyList()
-                },
-                album = album?.let {
-                    Album(it.title, it.browseId)
-                } ?: renderer.flexColumns.getOrNull(2)?.musicResponsiveListItemFlexColumnRenderer?.text?.runs?.firstOrNull()?.let {
-                    Album(
-                        name = it.text,
-                        id = it.navigationEndpoint?.browseEndpoint?.browseId!!
-                    )
-                }!!,
-                duration = renderer.fixedColumns?.firstOrNull()
-                    ?.musicResponsiveListItemFlexColumnRenderer?.text?.runs?.firstOrNull()
-                    ?.text?.parseTime() ?: return null,
+                id = id,
+                title = title,
+                artists = artists,
+                album = resolvedAlbum,
+                duration = duration,
                 musicVideoType = renderer.musicVideoType,
-                thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: album?.thumbnail!!,
-                explicit = renderer.badges?.find {
+                thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: album?.thumbnail.orEmpty(),
+                explicit = renderer.badges?.any {
                     it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
-                } != null,
+                } == true,
                 libraryAddToken = libraryTokens.addToken,
-                libraryRemoveToken = libraryTokens.removeToken
+                libraryRemoveToken = libraryTokens.removeToken,
             )
         }
     }

@@ -19,13 +19,12 @@ data class HistoryPage(
     )
 
     companion object {
-        fun fromMusicShelfRenderer(renderer: MusicShelfRenderer): HistorySection {
-            return HistorySection(
-                title = renderer.title?.runs?.firstOrNull()?.text!!,
-                songs = renderer.contents?.getItems()?.mapNotNull {
-                    fromMusicResponsiveListItemRenderer(it)
-                }!!
-            )
+        fun fromMusicShelfRenderer(renderer: MusicShelfRenderer): HistorySection? {
+            val title = renderer.title?.runs?.firstOrNull()?.text ?: return null
+            val songs = renderer.contents?.getItems()?.mapNotNull {
+                fromMusicResponsiveListItemRenderer(it)
+            } ?: return null
+            return HistorySection(title = title, songs = songs)
         }
 
         private fun fromMusicResponsiveListItemRenderer(renderer: MusicResponsiveListItemRenderer): SongItem? {

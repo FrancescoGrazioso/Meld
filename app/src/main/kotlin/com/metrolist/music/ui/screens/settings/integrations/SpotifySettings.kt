@@ -431,10 +431,19 @@ fun SpotifySettings(
 
                 if (showQobuzCountryDialog) {
                     val countries = listOf(
-                        "US", "IT", "FR", "GB", "DE", "ES", "NL", "NZ", "JP", "BR",
+                        "US" to "United States",
+                        "IT" to "Italy",
+                        "FR" to "France",
+                        "GB" to "United Kingdom",
+                        "DE" to "Germany",
+                        "ES" to "Spain",
+                        "NL" to "Netherlands",
+                        "NZ" to "New Zealand",
+                        "JP" to "Japan",
+                        "BR" to "Brazil",
                     )
                     ListDialog(onDismiss = { showQobuzCountryDialog = false }) {
-                        items(countries) { code ->
+                        items(countries) { (code, name) ->
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
@@ -450,7 +459,7 @@ fun SpotifySettings(
                                     onClick = null,
                                 )
                                 Text(
-                                    text = code,
+                                    text = "$code — $name",
                                     modifier = Modifier.padding(start = 16.dp),
                                 )
                             }

@@ -5,6 +5,7 @@
 
 package com.metrolist.music.viewmodels
 
+import java.util.LinkedHashMap
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -99,15 +100,18 @@ constructor(
                 .filter { it.track != null && !it.isLocal }
 
             // Emit first page immediately so the UI shows content fast
-            _playlistItems.value = firstItems
-            _tracks.value = firstItems.mapNotNull { it.track }
-            _isLoading.value = false
+            val allItemsByTrackId = LinkedHashMap<String, SpotifyPlaylistTrack>(paging.items.size)
+            firstItems.forEach { item -> item.track?.let { allItemsByTrackId.putIfAbsent(it.id, item) } }
+            _playlistItems.value = allItemsByTrackId.values.toList()
+            _tracks.value = allItemsByTrackId.values.mapNotNull { it.track }
 
             val remaining = paging.total - paging.items.size
-            if (remaining <= 0) return@onSuccess
+            if (remaining <= 0) {
+                _isLoading.value = false
+                return@onSuccess
+            }
 
-            // Fetch remaining pages in parallel batches, emitting progressively
-            val allItems = firstItems.toMutableList()
+            // Keep loading=true until every page is available to playback.
             val pageCount = (remaining + PAGE_SIZE - 1) / PAGE_SIZE
             val offsets = (0 until pageCount).map { paging.items.size + it * PAGE_SIZE }
 
@@ -121,18 +125,21 @@ constructor(
                 var failed = false
                 for (result in results) {
                     result.onSuccess { page ->
-                        allItems.addAll(page.items.filter { it.track != null && !it.isLocal })
+                        page.items.filter { it.track != null && !it.isLocal }.forEach { item ->
+                            item.track?.let { allItemsByTrackId.putIfAbsent(it.id, item) }
+                        }
                     }.onFailure { e ->
                         Timber.e(e, "Failed to load playlist tracks page")
                         failed = true
                     }
                 }
 
-                _playlistItems.value = allItems.toList()
-                _tracks.value = allItems.mapNotNull { it.track }
+                _playlistItems.value = allItemsByTrackId.values.toList()
+                _tracks.value = allItemsByTrackId.values.mapNotNull { it.track }
 
                 if (failed) break
             }
+            _isLoading.value = false
         }.onFailure { e ->
             _error.value = e.message ?: "Failed to load playlist tracks"
             _isLoading.value = false
