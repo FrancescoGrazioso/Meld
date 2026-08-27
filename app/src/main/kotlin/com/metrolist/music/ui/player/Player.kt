@@ -167,6 +167,7 @@ import com.metrolist.music.ui.component.SquigglySlider
 import com.metrolist.music.ui.component.WavySlider
 import com.metrolist.music.ui.component.rememberBottomSheetState
 import com.metrolist.music.ui.menu.PlayerMenu
+import com.metrolist.music.ui.component.AudioQualityBadge
 import com.metrolist.music.ui.screens.settings.DarkMode
 import com.metrolist.music.ui.theme.PlayerColorExtractor
 import com.metrolist.music.ui.theme.PlayerSliderColors
@@ -312,6 +313,7 @@ fun BottomSheetPlayer(
     val playbackState by playerConnection.playbackState.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val currentSong by playerConnection.currentSong.collectAsState(initial = null)
+    val currentFormat by playerConnection.currentFormat.collectAsState(initial = null)
     val automix by playerConnection.service.automixItems.collectAsState()
     val repeatMode by playerConnection.repeatMode.collectAsState()
     val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
@@ -433,12 +435,18 @@ fun BottomSheetPlayer(
         }
     }
 
+    val isLightGradientBg = remember(gradientColors, playerBackground) {
+        if (playerBackground == PlayerBackgroundStyle.GRADIENT && gradientColors.isNotEmpty()) {
+            PlayerColorExtractor.isLightColor(gradientColors.first())
+        } else false
+    }
+
     val TextBackgroundColor by animateColorAsState(
         targetValue =
             when (playerBackground) {
                 PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.onBackground
                 PlayerBackgroundStyle.BLUR -> Color.White
-                PlayerBackgroundStyle.GRADIENT -> Color.White
+                PlayerBackgroundStyle.GRADIENT -> if (isLightGradientBg) Color(0xFF15151A) else Color.White
             },
         label = "TextBackgroundColor",
     )
@@ -448,7 +456,7 @@ fun BottomSheetPlayer(
             when (playerBackground) {
                 PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.surface
                 PlayerBackgroundStyle.BLUR -> Color.Black
-                PlayerBackgroundStyle.GRADIENT -> Color.Black
+                PlayerBackgroundStyle.GRADIENT -> if (isLightGradientBg) Color(0xFFE5E5EB) else Color.Black
             },
         label = "icBackgroundColor",
     )
@@ -839,7 +847,14 @@ fun BottomSheetPlayer(
                         ) { colors ->
                             if (colors.isNotEmpty()) {
                                 val gradientColorStops =
-                                    if (colors.size >= 3) {
+                                    if (colors.size >= 4) {
+                                        arrayOf(
+                                            0.0f to colors[0],
+                                            0.35f to colors[1],
+                                            0.70f to colors[2],
+                                            1.0f to colors[3],
+                                        )
+                                    } else if (colors.size >= 3) {
                                         arrayOf(
                                             0.0f to colors[0],
                                             0.5f to colors[1],
@@ -1067,6 +1082,14 @@ fun BottomSheetPlayer(
                                 )
                             }
                         }
+                    }
+
+                    if (currentFormat != null) {
+                        AudioQualityBadge(
+                            format = currentFormat,
+                            textColor = TextBackgroundColor,
+                            modifier = Modifier.padding(top = 4.dp),
+                        )
                     }
                 }
 

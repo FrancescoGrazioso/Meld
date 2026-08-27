@@ -67,6 +67,7 @@ fun EqScreen(
     val playerConnection = LocalPlayerConnection.current
 
     var showError by remember { mutableStateOf<String?>(null) }
+    var showAutoEqDialog by remember { mutableStateOf(false) }
 
     // Activity result launcher for system equalizer
     val activityResultLauncher = rememberLauncherForActivityResult(
@@ -121,10 +122,8 @@ fun EqScreen(
         profiles = state.profiles,
         activeProfileId = state.activeProfileId,
         onProfileSelected = { viewModel.selectProfile(it) },
-        onImportCustomEQ = {
-            // Launch file picker for .txt files
-            filePickerLauncher.launch("text/plain")
-        },
+        onImportCustomEQ = { filePickerLauncher.launch("*/*") },
+        onOpenAutoEq = { showAutoEqDialog = true },
         onOpenSystemEqualizer = {
             playerConnection?.let { connection ->
                 val intent = Intent(AudioEffect.ACTION_DISPLAY_AUDIO_EFFECT_CONTROL_PANEL).apply {
@@ -148,6 +147,16 @@ fun EqScreen(
         },
         onDeleteProfile = { viewModel.deleteProfile(it) }
     )
+
+    if (showAutoEqDialog) {
+        AutoEqSearchDialog(
+            onDismiss = { showAutoEqDialog = false },
+            onProfileImported = { profile ->
+                viewModel.saveProfile(profile)
+                viewModel.selectProfile(profile.id)
+            }
+        )
+    }
 
     // Error dialog
     if (showError != null) {
@@ -193,6 +202,7 @@ private fun EqScreenContent(
     activeProfileId: String?,
     onProfileSelected: (String?) -> Unit,
     onImportCustomEQ: () -> Unit,
+    onOpenAutoEq: () -> Unit,
     onOpenSystemEqualizer: () -> Unit,
     onDeleteProfile: (String) -> Unit
 ) {
@@ -230,6 +240,12 @@ private fun EqScreenContent(
                     )
                 }
                 Row {
+                    IconButton(onClick = onOpenAutoEq) {
+                        Icon(
+                            painter = painterResource(R.drawable.search),
+                            contentDescription = "Search AutoEQ Headphone Database"
+                        )
+                    }
                     IconButton(onClick = onImportCustomEQ) {
                         Icon(
                             painter = painterResource(R.drawable.add),
@@ -297,7 +313,11 @@ private fun EqScreenContent(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
-                                Button(onClick = onImportCustomEQ) {
+                                Button(onClick = onOpenAutoEq) {
+                                    Text("Search AutoEQ Database")
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                                OutlinedButton(onClick = onImportCustomEQ) {
                                     Text(stringResource(R.string.import_profile))
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))

@@ -1,6 +1,3 @@
 [submodule "metroproto"]
 	path = metroproto
 	url = https://github.com/MetrolistGroup/metroproto
-[submodule "notes"]
-	path = notes
-	url = https://github.com/FrancescoGrazioso/meld-notes.git

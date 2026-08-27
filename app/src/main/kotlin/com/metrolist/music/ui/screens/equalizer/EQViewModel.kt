@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.metrolist.music.eq.EqualizerService
 import com.metrolist.music.eq.data.EQProfileRepository
 import com.metrolist.music.eq.data.ParametricEQParser
+import com.metrolist.music.eq.data.SavedEQProfile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -132,6 +133,12 @@ class EQViewModel @Inject constructor(
             } catch (e: Exception) {
                 onError(Exception("Failed to import EQ profile: ${e.message}"))
             }
+        }
+    }
+
+    fun saveProfile(profile: SavedEQProfile) {
+        viewModelScope.launch {
+            eqProfileRepository.saveProfile(profile)
         }
     }
 }

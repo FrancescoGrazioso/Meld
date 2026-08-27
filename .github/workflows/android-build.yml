@@ -1,0 +1,72 @@
+name: Android CI/CD Build & Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build FOSS APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          submodules: false
+          fetch-depth: 0
+
+      - name: Set up JDK 21 (Zulu)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '21'
+
+      - name: Setup Gradle Cache
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Grant Execute Permission to gradlew
+        run: chmod +x ./gradlew
+
+      - name: Install Protoc & Generate Proto
+        run: |
+          PROTOC_VERSION=34.0
+          PROTOC_ZIP=protoc-${PROTOC_VERSION}-linux-x86_64.zip
+          curl -0L https://github.com/protocolbuffers/protobuf/releases/download/v${PROTOC_VERSION}/${PROTOC_ZIP} -o ${PROTOC_ZIP}
+          unzip -o ${PROTOC_ZIP} -d /tmp/protoc
+          export PATH=/tmp/protoc/bin:$PATH
+          chmod +x app/generate_proto.sh
+          ./app/generate_proto.sh
+
+      - name: Build FOSS Release APK
+        run: ./gradlew :app:assembleFossRelease --stacktrace
+
+      - name: Locate and Package APK
+        run: |
+          mkdir -p build-output
+          find app/build/outputs/apk -name "*.apk" -exec cp {} build-output/ \;
+          ls -la build-output/
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: loop-foss-release-apk
+          path: build-output/*.apk
+          retention-days: 14
+
+      - name: Create Release and Attach APK
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build-output/*.apk
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

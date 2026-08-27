@@ -225,6 +225,10 @@ val QobuzBackendKey = stringPreferencesKey("qobuzBackend")
 val QobuzCountryKey = stringPreferencesKey("qobuzCountry")
 val QobuzMatchOverridesKey = stringPreferencesKey("qobuzMatchOverrides")
 
+val EnableFlacStreamingKey = booleanPreferencesKey("enableFlacStreaming")
+val FlacAudioQualityPrefKey = stringPreferencesKey("flacAudioQualityPref")
+val FlacPreferredProviderKey = stringPreferencesKey("flacPreferredProvider")
+
 // Optional user overrides for the resolver base URLs. Blank = use the built-in
 // default. Lets users point at a self-hosted squid.wtf instance when the public
 // mirrors are down.

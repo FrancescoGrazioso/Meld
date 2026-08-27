@@ -414,7 +414,7 @@
     <string name="lastfm_now_playing">Send Now Playing status</string>
     <string name="lastfm_api_credentials_missing">Last.fm API credentials are missing from this build.</string>
     <string name="last_fm_send_likes">Sync Loved and Unloved</string>
-    <string name="last_fm_send_likes_description">Love or unlove songs in Last.fm when you like or unlike them in Meld</string>
+    <string name="last_fm_send_likes_description">Love or unlove songs in Last.fm when you like or unlike them in Loop</string>
     <string name="logging_in">Logging in…</string>
 
     <string name="scrobbling_configuration">Scrobbling configuration</string>
@@ -504,6 +504,10 @@
     <string name="spotify_sync_likes_failed">Failed to sync liked songs from Spotify</string>
     <string name="hide_ytm_liked_songs">Hide YouTube Music liked songs</string>
     <string name="hide_ytm_liked_songs_description">When syncing with Spotify, hide the local liked songs playlist to avoid duplicates. Disable to show both.</string>
+
+    <string name="flac_enable">Use SpotiFLAC lossless streaming</string>
+    <string name="flac_enable_description">Attempts to resolve and stream lossless FLAC audio via Tidal, Qobuz, or Amazon Music before falling back to YouTube Music.</string>
+    <string name="flac_stream_label">Lossless FLAC</string>
 
     <string name="qobuz_audio_quality_section">Audio quality (experimental)</string>
     <string name="qobuz_enable">Use Qobuz for lossless playback</string>
@@ -606,19 +610,19 @@
     <string name="wrapped_total_artists_subtitle">unique artists!</string>
     <string name="wrapped_total_songs_title">You\'ve listened to</string>
     <string name="wrapped_total_songs_subtitle">unique songs!</string>
-    <string name="wrapped_intro_title">MELD</string>
+    <string name="wrapped_intro_title">LOOP</string>
     <string name="wrapped_intro_subtitle">it\'s time to see what you\'ve been listening to all this year…</string>
     <string name="wrapped_intro_button">let\'s go!</string>
-    <string name="wrapped_end_thanks">Thanks for listening with Meld!</string>
+    <string name="wrapped_end_thanks">Thanks for listening with Loop!</string>
     <string name="wrapped_end_create_playlist">Create Your Wrapped Playlist</string>
     <string name="wrapped_end_creating_playlist">Creating...</string>
     <string name="wrapped_end_playlist_saved">Playlist Saved</string>
-    <string name="wrapped_logo_content_description">Meld Logo</string>
+    <string name="wrapped_logo_content_description">Loop Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">YOUR WRAPPED IS READY!</string>
     <string name="wrapped_ready_subtitle">Time to see what you loved all this year…</string>
     <string name="wrapped_thank_you">Thank you for listening!</string>
-    <string name="wrapped_special_thanks">Special thanks to MO Agamy for creating Metrolist, the foundation of Meld</string>
+    <string name="wrapped_special_thanks">Special thanks to MO Agamy for creating Metrolist, the foundation of Loop</string>
     <string name="wrapped_close">Close Wrapped</string>
     <string name="wrapped_playlist_title">Your %s Wrapped</string>
     <string name="wrapped_create_playlist">Create playlist</string>
@@ -652,9 +656,9 @@
     <string name="plays">plays</string>
     <string name="casting_to">Casting to %s</string>
     <string name="progress_percent">Progress %s%%</string>
-    <string name="listening_to_metrolist">Listening to Meld</string>
+    <string name="listening_to_metrolist">Listening to Loop</string>
     <string name="listen_on_youtube_music">Listen on YouTube Music</string>
-    <string name="visit_metrolist">Visit Meld</string>
+    <string name="visit_metrolist">Visit Loop</string>
     <string name="open">Open</string>
     <string name="failed_to_create_image">Failed to create image: %s</string>
     <string name="copied_title">Title copied</string>
@@ -678,13 +682,13 @@
     <!-- Widget strings -->
     <string name="album_art">Album art</string>
     <string name="no_song_playing">No song playing</string>
-    <string name="tap_to_open">Tap to open Meld</string>
+    <string name="tap_to_open">Tap to open Loop</string>
     <string name="previous">Previous</string>
     <string name="play_pause">Play/Pause</string>
     <string name="next">Next</string>
     <string name="like">Like</string>
     <string name="not_playing">No song playing</string>
-    <string name="tap_to_play">Tap to open Meld</string>
+    <string name="tap_to_play">Tap to open Loop</string>
     <string name="widget_description">Music player widget with playback controls</string>
     <string name="turntable_widget_description">Circular music widget with play and like controls</string>
     <string name="widget_music_player">Music Player</string>
@@ -850,7 +854,7 @@
     <string name="crash_description">An unexpected error occurred. Please share the crash report to help us fix the issue</string>
     <string name="crash_share_logs">Share logs</string>
     <string name="crash_share_title">Share crash report</string>
-    <string name="crash_report_subject">Meld Crash Report</string>
+    <string name="crash_report_subject">Loop Crash Report</string>
     <string name="crash_close">Close</string>
     <string name="crash_no_log">No crash log available</string>
 
@@ -901,7 +905,7 @@
     <string name="delete_from_history">Delete from history</string>
     <string name="re_listen">Re-listen</string>
     <string name="hold_to_recognize">Hold search icon to recognize music</string>
-    <string name="play_on_app">Play on Meld</string>
+    <string name="play_on_app">Play on Loop</string>
     <string name="recognized_track">Recognized Track</string>
     <string name="qs_tile_music_recognizer">Recognize music</string>
     <string name="recognition_notification_channel_name">Music recognition</string>
@@ -910,7 +914,7 @@
     <string name="recognition_notification_processing">Identifying…</string>
     <string name="recognition_notification_no_match">No match found</string>
     <string name="recognition_notification_failed">Recognition failed</string>
-    <string name="listen_on_metrolist">Listen on Metrolist</string>
+    <string name="listen_on_metrolist">Listen on Loop</string>
 
     <!-- CSV Import Strings -->
     <string name="map_csv_columns">Map CSV columns</string>
@@ -936,7 +940,7 @@
     <string name="discord_button_1_url_default">Default: current song on YouTube Music</string>
     <string name="discord_button_2">Button 2</string>
     <string name="discord_button_2_url">Button 2 URL</string>
-    <string name="discord_button_2_url_default">Default: Meld on GitHub</string>
+    <string name="discord_button_2_url_default">Default: Loop on GitHub</string>
     <string name="discord_button_url_description">Destination link opened when someone clicks the button. Must start with http:// or https://. Supports {song_name}, {artist_name}, {album_name}.</string>
     <string name="login_successful">Login successful!</string>
     <string name="discord_information_warning">This feature uses the KizzyRPC library to connect to Discord\'s Gateway and update your Rich Presence status. While no account suspensions from similar usage have been reported, this method is not officially supported by Discord and may be considered a Terms of Service violation. Your token is handled locally and never sent to third-party servers. Proceed at your own discretion!</string>
@@ -949,9 +953,9 @@
     <string name="discord_rpc_preview">Rich Presence preview</string>
     <string name="discord_presence">Presence</string>
     <string name="discord_connect_description">Sign in with Discord to share what you\'re listening to</string>
-    <string name="discord_playing_metrolist">Playing Meld</string>
-    <string name="discord_watching_metrolist">Watching Meld</string>
-    <string name="discord_competing_metrolist">Competing in Meld</string>
+    <string name="discord_playing_metrolist">Playing Loop</string>
+    <string name="discord_watching_metrolist">Watching Loop</string>
+    <string name="discord_competing_metrolist">Competing in Loop</string>
     <string name="discord_activity_name">Activity name</string>
     <string name="discord_activity_name_description">Custom name for the activity. Leave empty to use the default</string>
     <string name="discord_advanced_mode">Advanced mode</string>
