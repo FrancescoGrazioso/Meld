@@ -35,7 +35,7 @@ android {
         targetSdk = 36
         versionCode = 25
         versionName = "0.8.9"
-        resValue("string", "app_name", appNameOverride ?: "Meld")
+        resValue("string", "app_name", appNameOverride ?: "La Musica")
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
@@ -131,7 +131,7 @@ android {
             }
             isDebuggable = true
             if (appNameOverride == null) {
-                resValue("string", "app_name", "Meld Debug")
+                resValue("string", "app_name", "La Musica Debug")
             }
             signingConfig =
                 if (workflowDebugKeystoreFile != null) {
@@ -286,6 +286,7 @@ dependencies {
     implementation(project(":lrclib"))
     implementation(project(":kizzy"))
     implementation(project(":lastfm"))
+    implementation(project(":listenbrainz"))
     implementation(project(":betterlyrics"))
     implementation(project(":shazamkit"))
     implementation(project(":spotify"))

@@ -410,6 +410,16 @@
 
     <!-- Last.fm -->
     <string name="lastfm_integration">Last.fm integration</string>
+    <string name="listenbrainz_integration">ListenBrainz integration</string>
+    <string name="listenbrainz_token_hint">Get your user token at listenbrainz.org/profile - paste it here to link your account.</string>
+    <string name="listenbrainz_token_invalid">Token invalid or validation failed. Check it and try again.</string>
+    <string name="listenbrainz_login_subtitle">Paste your ListenBrainz user token to link your account</string>
+    <string name="listenbrainz_token">ListenBrainz user token</string>
+    <string name="not_logged_in">Not logged in</string>
+    <string name="action_login">Log in</string>
+    <string name="action_logout">Log out</string>
+    <string name="token">User token</string>
+    <string name="validating">Validating token…</string>
     <string name="enable_scrobbling">Enable scrobbling</string>
     <string name="lastfm_now_playing">Send Now Playing status</string>
     <string name="lastfm_api_credentials_missing">Last.fm API credentials are missing from this build.</string>

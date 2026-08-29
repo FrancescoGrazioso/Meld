@@ -126,6 +126,9 @@ import com.metrolist.music.constants.DiscordTokenKey
 import com.metrolist.music.constants.DiscordUseDetailsKey
 import com.metrolist.music.constants.EnableDiscordRPCKey
 import com.metrolist.music.constants.EnableLastFMScrobblingKey
+import com.metrolist.music.constants.EnableListenBrainzScrobblingKey
+import com.metrolist.music.constants.ListenBrainzTokenKey
+import com.metrolist.music.constants.ListenBrainzUseNowPlaying
 import com.metrolist.music.constants.EnableSongCacheKey
 import com.metrolist.music.constants.PreCacheOnlyWifiKey
 import com.metrolist.music.constants.PreCacheTracksKey
@@ -205,6 +208,7 @@ import com.metrolist.music.playback.queues.filterVideoSongs
 import com.metrolist.music.utils.CoilBitmapLoader
 import com.metrolist.music.utils.DiscordRPC
 import com.metrolist.music.utils.NetworkConnectivityObserver
+import com.metrolist.music.utils.LastFmScrobbleClient
 import com.metrolist.music.utils.ScrobbleManager
 import com.metrolist.music.utils.SyncUtils
 import com.metrolist.music.utils.Fix403
@@ -972,7 +976,10 @@ class MusicService :
             }
 
         dataStore.data
-            .map { it[EnableLastFMScrobblingKey] ?: false }
+            .map { prefs ->
+                (prefs[EnableLastFMScrobblingKey] ?: false) ||
+                    (prefs[EnableListenBrainzScrobblingKey] ?: false)
+            }
             .debounce(300)
             .distinctUntilChanged()
             .collect(scope) { enabled ->
@@ -981,15 +988,31 @@ class MusicService :
                     val minSongDuration =
                         dataStore.get(ScrobbleMinSongDurationKey, LastFM.DEFAULT_SCROBBLE_MIN_SONG_DURATION)
                     val delaySeconds = dataStore.get(ScrobbleDelaySecondsKey, LastFM.DEFAULT_SCROBBLE_DELAY_SECONDS)
+                    // Provider selection: LB si está activado (con token), si no LastFM
+                    val lbEnabled = dataStore.get(EnableListenBrainzScrobblingKey, false)
+                    val lbToken = dataStore.get(ListenBrainzTokenKey, "")
+                    val client =
+                        if (lbEnabled && lbToken.isNotBlank()) {
+                            com.metrolist.listenbrainz.ListenBrainz.token = lbToken
+                            LastFmScrobbleClient.ListenBrainzClient
+                        } else {
+                            LastFmScrobbleClient.Default
+                        }
                     val manager =
                         ScrobbleManager(
                             scope,
                             minSongDuration = minSongDuration,
                             scrobbleDelayPercent = delayPercent,
                             scrobbleDelaySeconds = delaySeconds,
+                            client = client,
                         )
                     scrobbleManager = manager
-                    manager.useNowPlaying = dataStore.get(LastFMUseNowPlaying, false)
+                    manager.useNowPlaying =
+                        if (lbEnabled && lbToken.isNotBlank()) {
+                            dataStore.get(ListenBrainzUseNowPlaying, false)
+                        } else {
+                            dataStore.get(LastFMUseNowPlaying, false)
+                        }
                     if (::player.isInitialized && player.isPlaying) {
                         manager.onSongStart(player.currentMetadata, duration = player.duration)
                     }

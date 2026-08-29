@@ -195,6 +195,12 @@ val LastFMUseNowPlaying = booleanPreferencesKey("lastfmUseNowPlaying")
 
 val LastFMUseSendLikes = booleanPreferencesKey("lastfmUseSendLikes")
 
+// ListenBrainz
+val ListenBrainzTokenKey = stringPreferencesKey("listenbrainzToken")
+val ListenBrainzUsernameKey = stringPreferencesKey("listenbrainzUsername")
+val EnableListenBrainzScrobblingKey = booleanPreferencesKey("listenbrainzScrobblingEnable")
+val ListenBrainzUseNowPlaying = booleanPreferencesKey("listenbrainzUseNowPlaying")
+
 val ScrobbleDelayPercentKey = floatPreferencesKey("scrobbleDelayPercent")
 val ScrobbleMinSongDurationKey = intPreferencesKey("scrobbleMinSongDuration")
 val ScrobbleDelaySecondsKey = intPreferencesKey("scrobbleDelaySeconds")

@@ -238,10 +238,8 @@
     <string name="big">Big</string>
 
     <string name="content">Content</string>
-    <string name="action_logout">Log out</string>
-    <string name="action_login">Log in</string>
     <string name="login">Login</string>
-    <string name="not_logged_in">Not logged in</string>
+    <string name="logout">Logout</string>
 
     <string name="content_language">Default content language</string>
     <string name="content_country">Default content country</string>

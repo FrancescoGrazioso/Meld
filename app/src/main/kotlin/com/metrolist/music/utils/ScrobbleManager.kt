@@ -277,4 +277,39 @@ interface LastFmScrobbleClient {
                 album = album,
             )
     }
+
+    /**
+     * ListenBrainz scrobbling client (https://listenbrainz.readthedocs.io).
+     * Implements the same contract as [Default] — selected in Settings → Integrations
+     * based on the user's preferred scrobbling provider.
+     */
+    object ListenBrainzClient : LastFmScrobbleClient {
+        override suspend fun updateNowPlaying(
+            artist: String,
+            track: String,
+            album: String?,
+            duration: Int?,
+        ): Result<Unit> =
+            com.metrolist.listenbrainz.ListenBrainz.updateNowPlaying(
+                artist = artist,
+                track = track,
+                album = album,
+                duration = duration,
+            )
+
+        override suspend fun scrobble(
+            artist: String,
+            track: String,
+            timestamp: Long,
+            album: String?,
+            duration: Int?,
+        ): Result<Unit> =
+            com.metrolist.listenbrainz.ListenBrainz.scrobble(
+                artist = artist,
+                track = track,
+                timestamp = timestamp,
+                album = album,
+                duration = duration,
+            )
+    }
 }
