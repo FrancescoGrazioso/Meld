@@ -254,6 +254,15 @@
     <string name="hide_changelog">Hide changelog</string>
     <string name="view_changelog">View changelog</string>
     <string name="failed_to_check_updates">Failed to check for updates: %s</string>
+    <string name="download_and_install">Download and install</string>
+    <string name="downloading_update">Downloading update… %d%%</string>
+    <string name="installing_update">Installing update…</string>
+    <string name="update_download_failed">Download failed. Check your connection and try again.</string>
+    <string name="update_install_failed">Install failed. You can download the APK from GitHub instead.</string>
+    <string name="update_install_permission_required">Meld needs permission to install apps before it can update itself.</string>
+    <string name="update_ready_to_install">Update ready to install</string>
+    <string name="tap_to_install_update">Tap to finish installing the update</string>
+    <string name="awaiting_install_confirmation">Waiting for install confirmation. Check your notifications if the prompt did not appear.</string>
 
     <string name="all_time">All time</string>
     <string name="past_24_hours">Past 24 hours</string>
