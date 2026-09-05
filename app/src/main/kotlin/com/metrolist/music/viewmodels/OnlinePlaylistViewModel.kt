@@ -150,7 +150,7 @@ class OnlinePlaylistViewModel @Inject constructor(
                 playlistSongs.value = applySongFilters(playlistPage.songs)
                 continuation = playlistPage.songsContinuation
                 _isLoading.value = false
-                if (continuation != null) {
+                if (continuation != null && !playlistId.removePrefix("VL").startsWith("RD")) {
                     startProactiveBackgroundLoading()
                 }
             }.onFailure { throwable ->
@@ -208,12 +208,19 @@ class OnlinePlaylistViewModel @Inject constructor(
         proactiveLoadJob?.cancel() // Cancel previous job if any
         proactiveLoadJob = viewModelScope.launch(Dispatchers.IO) {
             var currentProactiveToken = continuation
+            val isMix = playlistId.removePrefix("VL").startsWith("RD")
+
             while (currentProactiveToken != null && isActive) {
                 // If a manual loadMore is happening, pause proactive loading
                 if (_isLoadingMore.value) {
                     // Wait until manual load is finished, then re-evaluate
                     // This simple break and restart strategy from loadMoreSongs is preferred
                     break 
+                }
+
+                // Limit proactive loading for Mixes to avoid infinite loops and high memory usage
+                if (isMix && playlistSongs.value.size >= 500) {
+                    break
                 }
 
                 YouTube.playlistContinuation(currentProactiveToken)
@@ -253,7 +260,7 @@ class OnlinePlaylistViewModel @Inject constructor(
                 }.also {
                     _isLoadingMore.value = false
                     // Resume proactive loading if there's still a continuation
-                    if (continuation != null && isActive) {
+                    if (continuation != null && isActive && !playlistId.removePrefix("VL").startsWith("RD")) {
                         startProactiveBackgroundLoading()
                     }
                 }
