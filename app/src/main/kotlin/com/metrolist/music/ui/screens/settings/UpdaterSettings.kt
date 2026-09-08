@@ -19,11 +19,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +34,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -45,6 +49,9 @@ import com.metrolist.music.ui.component.IconButton
 import com.metrolist.music.ui.component.Material3SettingsGroup
 import com.metrolist.music.ui.component.Material3SettingsItem
 import com.metrolist.music.ui.utils.backToMain
+import com.metrolist.music.utils.UpdateInstallFailure
+import com.metrolist.music.utils.UpdateInstallState
+import com.metrolist.music.utils.UpdateInstaller
 import com.metrolist.music.utils.Updater
 import com.metrolist.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
@@ -66,22 +73,25 @@ fun UpdaterScreen(
     var showChangelog by remember { mutableStateOf(false) }
     var changelogContent by remember { mutableStateOf<String?>(null) }
     var checkError by remember { mutableStateOf<String?>(null) }
+    var downloadUrl by remember { mutableStateOf<String?>(null) }
     val failedToCheckUpdatesTemplate = stringResource(R.string.failed_to_check_updates)
+    val installState by UpdateInstaller.state.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
-    fun performManualCheck() {
+    fun performCheck(forceRefresh: Boolean) {
         coroutineScope.launch {
             isChecking = true
             checkError = null
             withContext(Dispatchers.IO) {
                 Updater
-                    .checkForUpdate(forceRefresh = true)
+                    .checkForUpdate(forceRefresh = forceRefresh)
                     .onSuccess { (releaseInfo, hasUpdate) ->
                         if (releaseInfo != null) {
                             latestVersion = releaseInfo.versionName
                             updateAvailable = hasUpdate
                             changelogContent = releaseInfo.description
+                            downloadUrl = Updater.getDownloadUrlForCurrentVariant(releaseInfo)
                         }
                     }.onFailure {
                         checkError = String.format(failedToCheckUpdatesTemplate, it.message ?: "Unknown error")
@@ -89,6 +99,11 @@ fun UpdaterScreen(
             }
             isChecking = false
         }
+    }
+
+    // Reuses the cached result so arriving from the update notification shows the action right away
+    LaunchedEffect(Unit) {
+        if (checkForUpdates) performCheck(forceRefresh = false)
     }
 
     Column(
@@ -199,7 +214,7 @@ fun UpdaterScreen(
                                 )
                             }
                         },
-                        onClick = { if (!isChecking) performManualCheck() },
+                        onClick = { if (!isChecking) performCheck(forceRefresh = true) },
                     ),
                 ),
         )
@@ -216,6 +231,90 @@ fun UpdaterScreen(
 
         if (updateAvailable && latestVersion != null) {
             Spacer(Modifier.height(16.dp))
+
+            when (val state = installState) {
+                is UpdateInstallState.Downloading -> {
+                    Text(
+                        text = stringResource(R.string.downloading_update, (state.progress * 100).toInt()),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    LinearProgressIndicator(
+                        progress = { state.progress },
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                        strokeCap = StrokeCap.Round,
+                    )
+                }
+
+                UpdateInstallState.Installing -> {
+                    Text(
+                        text = stringResource(R.string.installing_update),
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    LinearProgressIndicator(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                        strokeCap = StrokeCap.Round,
+                    )
+                }
+
+                else -> {
+                    Button(
+                        onClick = { downloadUrl?.let { UpdateInstaller.start(context, it) } },
+                        enabled = downloadUrl != null,
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                    ) {
+                        Text(stringResource(R.string.download_and_install))
+                    }
+                }
+            }
+
+            if (installState == UpdateInstallState.AwaitingConfirmation) {
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = stringResource(R.string.awaiting_install_confirmation),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+            }
+
+            (installState as? UpdateInstallState.Failed)?.let { failure ->
+                Spacer(Modifier.height(12.dp))
+                Text(
+                    text = stringResource(failure.reason.messageRes()),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+
+                if (failure.reason == UpdateInstallFailure.PermissionRequired) {
+                    Spacer(Modifier.height(8.dp))
+                    Button(
+                        onClick = {
+                            UpdateInstaller.reset()
+                            context.startActivity(UpdateInstaller.unknownSourcesSettingsIntent(context))
+                        },
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                    ) {
+                        Text(stringResource(R.string.grant_permission))
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(12.dp))
             Button(
                 onClick = { showChangelog = !showChangelog },
                 modifier =
@@ -257,3 +356,10 @@ fun UpdaterScreen(
         },
     )
 }
+
+private fun UpdateInstallFailure.messageRes(): Int =
+    when (this) {
+        UpdateInstallFailure.PermissionRequired -> R.string.update_install_permission_required
+        UpdateInstallFailure.Download -> R.string.update_download_failed
+        UpdateInstallFailure.Install -> R.string.update_install_failed
+    }
