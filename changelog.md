@@ -1,3 +1,9 @@
+---v13.6.3
+
+This is a hotfix release to fix borked lyrics and media controller. We apologize for the inconvenience.  
+
+~ MetrolistGroup
+
 ---v13.6.2
 # THE FUTURE OF METROLIST
 Metrolist KMP is almost ready. We are ironing out the remaining bugs and preparing for release, but it is still at least a couple of weeks away.

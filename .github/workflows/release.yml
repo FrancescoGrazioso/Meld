@@ -42,6 +42,14 @@ jobs:
 
           echo "Current version: $NEW_VERSION (code: $VERSION_CODE)"
 
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "Manual release requested for version $NEW_VERSION"
+            echo "version_changed=true" >> $GITHUB_OUTPUT
+            echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
+            echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
           if git show HEAD^:app/build.gradle.kts > /dev/null 2>&1; then
             OLD_VERSION=$(git show HEAD^:app/build.gradle.kts | grep -oP 'versionName\s*=\s*"\K[^"]+' || echo "")
             echo "Previous version: $OLD_VERSION"
