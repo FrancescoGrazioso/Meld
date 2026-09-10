@@ -15,7 +15,6 @@ import androidx.media3.datasource.cache.ContentMetadataMutations
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
-import androidx.room.Room
 import com.metrolist.music.constants.MaxSongCacheSizeKey
 import com.metrolist.music.db.InternalDatabase
 import com.metrolist.music.db.MusicDatabase
@@ -147,9 +146,7 @@ object AppModule {
     @Provides
     fun provideInternalDatabase(
         @ApplicationContext context: Context,
-    ): InternalDatabase = Room
-        .databaseBuilder(context, InternalDatabase::class.java, InternalDatabase.DB_NAME)
-        .build()
+    ): InternalDatabase = InternalDatabase.newInternalDatabaseInstance(context)
 
     @Singleton
     @Provides

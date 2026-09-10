@@ -119,13 +119,13 @@ fun ShowMediaInfo(videoId: String) {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        if (info != null && song != null) {
+        if (info != null) {
             item(contentType = "MediaDetails") {
                 Column {
                     val baseList = listOf(
-                        stringResource(R.string.song_title) to song?.title,
-                        stringResource(R.string.song_artists) to song?.artists?.joinToString { it.name },
-                        stringResource(R.string.media_id) to song?.id
+                        stringResource(R.string.song_title) to (info?.title ?: song?.title),
+                        stringResource(R.string.song_artists) to (info?.author ?: song?.artists?.joinToString { it.name }),
+                        stringResource(R.string.media_id) to (song?.id ?: info?.videoId)
                     )
 
                     val baseIconsList = listOf(

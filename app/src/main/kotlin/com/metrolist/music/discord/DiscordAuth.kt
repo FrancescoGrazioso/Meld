@@ -2,6 +2,7 @@ package com.metrolist.music.discord
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.Intent
 import android.util.Base64
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
@@ -18,9 +19,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.parameters
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import timber.log.Timber
 import java.io.IOException
@@ -50,39 +49,35 @@ class DiscordAuth(
     private val httpClient: HttpClient = defaultClient(),
 ) {
 
-    @Volatile
-    private var activeLoopback: LoopbackAuthServer? = null
-
-    private fun loopbackRedirectUri(port: Int): String = "http://127.0.0.1:$port/callback"
-
     suspend fun authorize(activity: Activity): DiscordAuthResult {
         val pkce = generatePkcePair()
         val state = generateState()
-        val loopback = LoopbackAuthServer(expectedState = state)
-        activeLoopback = loopback
+        DiscordOAuthActivity.newDeferred()
 
         try {
-            val port = withContext(Dispatchers.IO) { loopback.start() }
-            val redirectUri = loopbackRedirectUri(port)
-            Timber.tag(TAG).i("authorize: starting (redirectUri=%s)", redirectUri)
-
             val authUrl = buildAuthorizeUrl(
                 clientId = BuildConfig.DISCORD_APP_ID,
-                redirectUri = redirectUri,
+                redirectUri = REDIRECT_URI,
                 state = state,
                 challenge = pkce.challenge,
             )
 
             Timber.tag(TAG).i("authorize: launching URL (clientId prefix=%s)", BuildConfig.DISCORD_APP_ID.toString().take(8))
+
+            val intent = CustomTabsIntent.Builder().build().intent
+            intent.data = authUrl.toUri()
+            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
             try {
-                CustomTabsIntent.Builder().build().launchUrl(activity, authUrl.toUri())
+                activity.startActivity(intent)
             } catch (e: ActivityNotFoundException) {
                 Timber.tag(TAG).w(e, "authorize: no browser available to launch URL")
                 throw DiscordAuthException.NoBrowser()
             }
 
             val callback = try {
-                loopback.awaitCode(timeoutMs = 120_000L)
+                DiscordOAuthActivity.awaitCode(timeoutMs = 120_000L)
             } catch (e: TimeoutCancellationException) {
                 throw DiscordAuthException.UserCancelled()
             } catch (e: CancellationException) {
@@ -90,19 +85,27 @@ class DiscordAuth(
                 throw DiscordAuthException.UserCancelled()
             }
 
+            if (callback.state != state) {
+                Timber.tag(TAG).w(
+                    "authorize: state mismatch (expected=%s, got=%s)",
+                    state.take(8),
+                    callback.state.take(8),
+                )
+                throw DiscordAuthException.StateMismatch()
+            }
+
             return exchangeAuthorizationCode(
                 code = callback.code,
                 verifier = pkce.verifier,
-                redirectUri = redirectUri,
+                redirectUri = REDIRECT_URI,
             )
         } finally {
-            activeLoopback = null
-            loopback.stop()
+            // no cleanup needed — no local server
         }
     }
 
     fun cancel() {
-        activeLoopback?.cancel()
+        DiscordOAuthActivity.cancelPending()
     }
 
     fun close() {
@@ -208,6 +211,7 @@ class DiscordAuth(
 
     companion object {
         private const val TAG = "DiscordSvc"
+        const val REDIRECT_URI = "metrolistdiscord://oauth2/callback"
 
         private fun defaultClient(): HttpClient = HttpClient(CIO) {
             install(HttpTimeout) {

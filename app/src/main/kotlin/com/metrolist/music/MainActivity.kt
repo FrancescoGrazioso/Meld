@@ -106,7 +106,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.core.util.Consumer
 import androidx.core.view.WindowCompat
-import androidx.datastore.preferences.core.edit
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.coroutineScope
@@ -136,6 +135,7 @@ import com.metrolist.music.constants.DefaultOpenTabKey
 import com.metrolist.music.constants.DisableScreenshotKey
 import com.metrolist.music.constants.DynamicThemeKey
 import com.metrolist.music.constants.EnableHighRefreshRateKey
+import com.metrolist.music.constants.EnableLandscapeScalingKey
 import com.metrolist.music.constants.ExperimentalLyricsKey
 import com.metrolist.music.constants.LastSeenVersionKey
 import com.metrolist.music.constants.ListenTogetherInTopBarKey
@@ -194,6 +194,7 @@ import com.metrolist.music.utils.SearchRoutes
 import com.metrolist.music.utils.SyncUtils
 import com.metrolist.music.utils.Updater
 import com.metrolist.music.utils.dataStore
+import com.metrolist.music.utils.safeDataStoreEdit
 import com.metrolist.music.utils.get
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
@@ -204,7 +205,6 @@ import com.metrolist.music.widget.PlaylistWidgetReceiver
 import com.valentinilk.shimmer.LocalShimmerTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
@@ -260,26 +260,9 @@ class MainActivity : ComponentActivity() {
                 service: IBinder?,
             ) {
                 if (service is MusicBinder) {
-                    try {
-                        playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
-                        playerConnectionSnapshot = playerConnection
-                        Timber.tag("MainActivity").d("PlayerConnection created successfully")
-                        // Connect Listen Together manager to player
-                        listenTogetherManager.setPlayerConnection(playerConnection)
-                    } catch (e: Exception) {
-                        Timber.tag("MainActivity").e(e, "Failed to create PlayerConnection")
-                        // Retry after a delay of 500ms
-                        lifecycleScope.launch {
-                            delay(500)
-                            try {
-                                playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
-                                playerConnectionSnapshot = playerConnection
-                                listenTogetherManager.setPlayerConnection(playerConnection)
-                            } catch (e2: Exception) {
-                                Timber.tag("MainActivity").e(e2, "Failed to create PlayerConnection on retry")
-                            }
-                        }
-                    }
+                    playerConnection = PlayerConnection(this@MainActivity, service, database, lifecycleScope)
+                    playerConnectionSnapshot = playerConnection
+                    listenTogetherManager.setPlayerConnection(playerConnection)
                 }
             }
 
@@ -431,7 +414,7 @@ class MainActivity : ComponentActivity() {
 
             // SimpMusic Removal Migration
             if (preferences[SimpMusicMigrationDoneKey] != true) {
-                dataStore.edit { settings ->
+                safeDataStoreEdit { settings ->
                     val currentOrder = settings[LyricsProviderOrderKey] ?: ""
                     if (currentOrder.contains("SimpMusic")) {
                         val orderList =
@@ -456,7 +439,7 @@ class MainActivity : ComponentActivity() {
         }
 
         lifecycleScope.launch(Dispatchers.IO) {
-            dataStore.edit { settings ->
+            safeDataStoreEdit { settings ->
                 settings[LastSeenVersionKey] = BuildConfig.VERSION_NAME
             }
         }
@@ -576,6 +559,7 @@ class MainActivity : ComponentActivity() {
             setSystemBarAppearance(useDarkTheme)
         }
 
+        val enableLandscapeScaling by rememberPreference(EnableLandscapeScalingKey, defaultValue = false)
         val pureBlackEnabled by rememberPreference(PureBlackKey, defaultValue = false)
         val pureBlack =
             remember(pureBlackEnabled, useDarkTheme) {
@@ -652,14 +636,19 @@ class MainActivity : ComponentActivity() {
         ) {
             val currentDensity = LocalDensity.current
             val windowInfo = LocalWindowInfo.current
-            val containerWidthDp = windowInfo.containerDpSize.width
+            val containerSize = windowInfo.containerDpSize
+            val smallestDimensionDp = minOf(containerSize.width, containerSize.height)
 
-            val densityScale = remember(containerWidthDp) {
-                when {
-                    containerWidthDp >= 840.dp -> 1.25f
-                    containerWidthDp >= 720.dp -> 1.15f
-                    containerWidthDp >= 600.dp -> 1.1f
-                    else -> 1.0f
+            val densityScale = remember(smallestDimensionDp, enableLandscapeScaling) {
+                if (enableLandscapeScaling) {
+                    when {
+                        smallestDimensionDp >= 840.dp -> 1.15f
+                        smallestDimensionDp >= 720.dp -> 1.1f
+                        smallestDimensionDp >= 600.dp -> 1.05f
+                        else -> 1.0f
+                    }
+                } else {
+                    1.0f
                 }
             }
             val scaledDensity: Density = remember(currentDensity, densityScale) {
@@ -813,6 +802,12 @@ class MainActivity : ComponentActivity() {
                         expandedBound = maxHeight,
                     )
 
+                val playerReadyState =
+                    playerConnection?.service?.isPlayerReady?.collectAsStateWithLifecycle()
+                        ?: remember { mutableStateOf(false) }
+                val playerReady by playerReadyState
+                val activePlayerConnection = if (playerReady) playerConnection else null
+
                 val playerAwareWindowInsets =
                     remember(
                         bottomInset,
@@ -883,21 +878,23 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                LaunchedEffect(playerConnection) {
-                    val player = playerConnection?.player ?: return@LaunchedEffect
-                    if (player.currentMediaItem == null) {
+                LaunchedEffect(activePlayerConnection) {
+                    val player = runCatching { activePlayerConnection?.player }.getOrNull()
+                    if (player?.currentMediaItem == null) {
                         if (!playerBottomSheetState.isDismissed) {
                             playerBottomSheetState.dismiss()
                         }
-                    } else {
-                        if (playerBottomSheetState.isDismissed) {
-                            playerBottomSheetState.collapseSoft()
-                        }
+                        return@LaunchedEffect
+                    }
+
+                    if (playerBottomSheetState.isDismissed) {
+                        playerBottomSheetState.collapseSoft()
                     }
                 }
 
-                DisposableEffect(playerConnection, playerBottomSheetState) {
-                    val player = playerConnection?.player ?: return@DisposableEffect onDispose { }
+                DisposableEffect(activePlayerConnection, playerBottomSheetState) {
+                    val player = runCatching { activePlayerConnection?.player }.getOrNull()
+                        ?: return@DisposableEffect onDispose { }
                     val listener =
                         object : Player.Listener {
                             override fun onMediaItemTransition(
@@ -1152,11 +1149,13 @@ class MainActivity : ComponentActivity() {
 
                             if (!showRail && currentRoute != "wrapped") {
                                 Box {
-                                    BottomSheetPlayer(
-                                        state = playerBottomSheetState,
-                                        navController = navController,
-                                        pureBlack = pureBlack,
-                                    )
+                                    if (activePlayerConnection != null) {
+                                        BottomSheetPlayer(
+                                            state = playerBottomSheetState,
+                                            navController = navController,
+                                            pureBlack = pureBlack,
+                                        )
+                                    }
 
                                     AppNavigationBar(
                                         navigationItems = navigationItems,
@@ -1211,11 +1210,13 @@ class MainActivity : ComponentActivity() {
                                 }
                             } else {
                                 if (currentRoute != "wrapped") {
-                                    BottomSheetPlayer(
-                                        state = playerBottomSheetState,
-                                        navController = navController,
-                                        pureBlack = pureBlack,
-                                    )
+                                    if (activePlayerConnection != null) {
+                                        BottomSheetPlayer(
+                                            state = playerBottomSheetState,
+                                            navController = navController,
+                                            pureBlack = pureBlack,
+                                        )
+                                    }
                                 }
 
                                 Box(

@@ -285,7 +285,6 @@ fun ClickableArtistText(
     )
 }
 
-// Basic list item - optimized with inline to reduce recomposition
 @Composable
 inline fun ListItem(
     modifier: Modifier = Modifier,
@@ -403,7 +402,6 @@ fun ListItem(
     isActive = isActive
 )
 
-// merge badges and subtitle text and pass to basic list item
 @Composable
 fun ListItem(
     modifier: Modifier = Modifier,
@@ -555,28 +553,19 @@ fun SongListItem(
          ListItem(
              title = song.song.title,
              subtitle = {
-                 badges()
-                 if (subtitleOverride == null) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = song.orderedArtists.joinToArtistString(" ${stringResource(R.string.and)} ") { it.name },
-                            style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.secondary),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.weight(1f)
-                        )
-                        val durationText = makeTimeString(song.song.duration * 1000L)
-                        if (durationText.isNotEmpty()) {
-                            Text(
-                                text = " • $durationText",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.secondary,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                    }
-                 } else {
+                  badges()
+                  if (subtitleOverride == null) {
+                      Text(
+                          text = joinByBullet(
+                              song.orderedArtists.joinToArtistString(" ${stringResource(R.string.and)} ") { it.name },
+                              makeTimeString(song.song.duration * 1000L)
+                          ),
+                          style = MaterialTheme.typography.bodySmall,
+                          color = MaterialTheme.colorScheme.secondary,
+                          maxLines = 1,
+                          overflow = TextOverflow.Ellipsis,
+                      )
+                  } else {
                      Text(
                          text = subtitleOverride,
                          style = MaterialTheme.typography.bodySmall,
@@ -650,28 +639,16 @@ fun SongGridItem(
         )
     },
     subtitle = {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = song.orderedArtists.joinToArtistString(" ${stringResource(R.string.and)} ") { it.name },
-                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
-            val durationText = makeTimeString(song.song.duration * 1000L)
-            if (durationText.isNotEmpty()) {
-                Text(
-                    text = durationText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
+        Text(
+            text = joinByBullet(
+                song.orderedArtists.joinToArtistString(" ${stringResource(R.string.and)} ") { it.name },
+                makeTimeString(song.song.duration * 1000L)
+            ),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.secondary,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+        )
     },
     badges = badges,
     thumbnailContent = {
@@ -811,22 +788,17 @@ fun AlbumListItem(
     title = album.album.title,
     subtitle = {
         badges()
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = album.artists.joinToArtistString(" ${stringResource(R.string.and)} ") { it.name },
-                style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.secondary),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.weight(1f)
-            )
-            Text(
-                text = " • ${pluralStringResource(R.plurals.n_song, album.album.songCount, album.album.songCount)}${album.album.year?.let { " • $it" } ?: ""}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
+        Text(
+            text = joinByBullet(
+                album.artists.joinToArtistString(" ${stringResource(R.string.and)} ") { it.name },
+                pluralStringResource(R.plurals.n_song, album.album.songCount, album.album.songCount),
+                album.album.year?.toString()
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
     },
     thumbnailContent = {
         ItemThumbnail(
@@ -1133,41 +1105,24 @@ fun MediaMetadataListItem(
         title = mediaMetadata.title,
         subtitle = {
             if (mediaMetadata.explicit) Icon.Explicit()
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = mediaMetadata.artists.joinToArtistString(" ${stringResource(R.string.and)} ") { it.name },
-                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f)
-                )
-                val durationText = makeTimeString(mediaMetadata.duration * 1000L)
-                if (durationText.isNotEmpty()) {
-                    Text(
-                        text = " • $durationText",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
+            Text(
+                text = buildAnnotatedString {
+                    val base = joinByBullet(
+                        mediaMetadata.artists.joinToArtistString(" ${stringResource(R.string.and)} ") { it.name },
+                        makeTimeString(mediaMetadata.duration * 1000L)
                     )
-                }
-                if (mediaMetadata.suggestedBy != null) {
-                    Text(
-                        text = " • ",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Text(
-                        text = mediaMetadata.suggestedBy,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                        color = MaterialTheme.colorScheme.secondary,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
+                    append(base)
+                    if (mediaMetadata.suggestedBy != null && base.isNotEmpty()) {
+                        append(" • ")
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(mediaMetadata.suggestedBy)
+                        }
+                    }
+                },
+                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         },
         thumbnailContent = {
             ItemThumbnail(
@@ -1232,7 +1187,7 @@ fun YouTubeListItem(
                 is ArtistItem -> null
                 is PlaylistItem -> joinByBullet(item.author?.name, item.songCountText)
                 is PodcastItem -> joinByBullet(item.author?.name, item.episodeCountText)
-                is EpisodeItem -> joinByBullet(item.author?.name, item.publishDateText, makeTimeString(item.duration?.times(1000L)))
+                is EpisodeItem -> joinByBullet(item.author?.name, makeTimeString(item.duration?.times(1000L)))
             },
             badges = badges,
             thumbnailContent = {

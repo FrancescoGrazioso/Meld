@@ -11,7 +11,6 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.widget.Toast
-import androidx.datastore.preferences.core.edit
 import coil3.ImageLoader
 import coil3.PlatformContext
 import coil3.SingletonImageLoader
@@ -35,6 +34,7 @@ import com.metrolist.music.utils.CrashHandler
 import com.metrolist.music.utils.YTPlayerUtils
 import com.metrolist.music.utils.cipher.CipherDeobfuscator
 import com.metrolist.music.utils.dataStore
+import com.metrolist.music.utils.safeDataStoreEdit
 import com.metrolist.music.utils.reportException
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
@@ -209,7 +209,7 @@ class App :
                     YouTube.visitorData = visitorData?.takeIf { it != "null" }
                         ?: YouTube.visitorData().getOrNull()?.also { newVisitorData ->
                             try {
-                                dataStore.edit { settings ->
+                                safeDataStoreEdit { settings ->
                                     settings[VisitorDataKey] = newVisitorData
                                 }
                             } catch (e: IOException) {
@@ -331,7 +331,7 @@ class App :
 
             // Clear DataStore preferences
             Timber.d("forgetAccount: Clearing DataStore preferences")
-            context.dataStore.edit { settings ->
+            val cleared = context.safeDataStoreEdit { settings ->
                 settings.remove(InnerTubeCookieKey)
                 settings.remove(VisitorDataKey)
                 settings.remove(DataSyncIdKey)
@@ -339,7 +339,11 @@ class App :
                 settings.remove(AccountEmailKey)
                 settings.remove(AccountChannelHandleKey)
             }
-            Timber.d("forgetAccount: DataStore preferences cleared")
+            if (!cleared) {
+                Timber.e("forgetAccount: Failed to clear DataStore preferences — proceeding with in-memory cleanup only")
+            } else {
+                Timber.d("forgetAccount: DataStore preferences cleared")
+            }
 
             // Immediately clear YouTube object's auth state
             Timber.d("forgetAccount: Clearing YouTube object auth state")

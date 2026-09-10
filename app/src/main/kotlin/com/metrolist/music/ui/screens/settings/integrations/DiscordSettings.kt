@@ -2,7 +2,6 @@ package com.metrolist.music.ui.screens.settings.integrations
 
 import android.app.Activity
 import android.content.Intent
-import androidx.datastore.preferences.core.edit
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
@@ -107,6 +106,7 @@ import com.metrolist.music.ui.component.Material3SettingsItem
 import com.metrolist.music.ui.utils.backToMain
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.makeTimeString
+import com.metrolist.music.utils.safeDataStoreEdit
 import com.metrolist.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -730,7 +730,7 @@ fun DiscordSettings(
                 onActivityTypeChange(value)
                 showActivityTypeDialog = false
                 coroutineScope.launch(Dispatchers.IO) {
-                    context.dataStore.edit { it[DiscordActivityTypeKey] = value }
+                    context.safeDataStoreEdit { it[DiscordActivityTypeKey] = value }
                     withContext(Dispatchers.Main) { onPrefChanged() }
                 }
             },
@@ -755,7 +755,7 @@ fun DiscordSettings(
             onDone = {
                 onActivityNameChange(it)
                 coroutineScope.launch(Dispatchers.IO) {
-                    context.dataStore.edit { prefs -> prefs[DiscordActivityNameKey] = it }
+                    context.safeDataStoreEdit { prefs -> prefs[DiscordActivityNameKey] = it }
                     withContext(Dispatchers.Main) { onPrefChanged() }
                 }
             },
@@ -770,7 +770,7 @@ fun DiscordSettings(
             onDone = {
                 onStateTemplateChange(it)
                 coroutineScope.launch(Dispatchers.IO) {
-                    context.dataStore.edit { prefs -> prefs[DiscordStateTemplateKey] = it }
+                    context.safeDataStoreEdit { prefs -> prefs[DiscordStateTemplateKey] = it }
                     withContext(Dispatchers.Main) { onPrefChanged() }
                 }
             },
@@ -785,7 +785,7 @@ fun DiscordSettings(
             onDone = {
                 onDetailsTemplateChange(it)
                 coroutineScope.launch(Dispatchers.IO) {
-                    context.dataStore.edit { prefs -> prefs[DiscordDetailsTemplateKey] = it }
+                    context.safeDataStoreEdit { prefs -> prefs[DiscordDetailsTemplateKey] = it }
                     withContext(Dispatchers.Main) { onPrefChanged() }
                 }
             },
@@ -800,7 +800,7 @@ fun DiscordSettings(
             onDone = {
                 onBtn1LabelChange(it)
                 coroutineScope.launch(Dispatchers.IO) {
-                    context.dataStore.edit { prefs -> prefs[DiscordButton1LabelKey] = it }
+                    context.safeDataStoreEdit { prefs -> prefs[DiscordButton1LabelKey] = it }
                     withContext(Dispatchers.Main) { onPrefChanged() }
                 }
             },
@@ -815,7 +815,7 @@ fun DiscordSettings(
             onDone = {
                 onBtn1UrlChange(it)
                 coroutineScope.launch(Dispatchers.IO) {
-                    context.dataStore.edit { prefs -> prefs[DiscordButton1UrlKey] = it }
+                    context.safeDataStoreEdit { prefs -> prefs[DiscordButton1UrlKey] = it }
                     withContext(Dispatchers.Main) { onPrefChanged() }
                 }
             },
@@ -830,7 +830,7 @@ fun DiscordSettings(
             onDone = {
                 onBtn2LabelChange(it)
                 coroutineScope.launch(Dispatchers.IO) {
-                    context.dataStore.edit { prefs -> prefs[DiscordButton2LabelKey] = it }
+                    context.safeDataStoreEdit { prefs -> prefs[DiscordButton2LabelKey] = it }
                     withContext(Dispatchers.Main) { onPrefChanged() }
                 }
             },
@@ -845,7 +845,7 @@ fun DiscordSettings(
             onDone = {
                 onBtn2UrlChange(it)
                 coroutineScope.launch(Dispatchers.IO) {
-                    context.dataStore.edit { prefs -> prefs[DiscordButton2UrlKey] = it }
+                    context.safeDataStoreEdit { prefs -> prefs[DiscordButton2UrlKey] = it }
                     withContext(Dispatchers.Main) { onPrefChanged() }
                 }
             },
@@ -860,7 +860,7 @@ fun DiscordSettings(
                 onUserStatusChange(value)
                 showUserStatusDialog = false
                 coroutineScope.launch(Dispatchers.IO) {
-                    context.dataStore.edit { prefs -> prefs[DiscordUserStatusKey] = value }
+                    context.safeDataStoreEdit { prefs -> prefs[DiscordUserStatusKey] = value }
                     withContext(Dispatchers.Main) { onPrefChanged() }
                 }
             },

@@ -440,7 +440,6 @@
     <string name="delete_desc">Permanently remove this item</string>
     <string name="advanced_desc">Adjust the song\'s tempo and pitch</string>
     <string name="equalizer_desc">Open the audio equalizer</string>
-    <string name="enable_dynamic_icon">Enable dynamic icon</string>
     <string name="mini_player">Mini-player</string>
     <string name="pure_black_mini_player">Pure black mini-player</string>
     <string name="mini_player_background_style">Mini-player background style</string>
@@ -548,6 +547,7 @@
 
     <!-- Playback errors -->
     <string name="error_playback_failed">Playback failed</string>
+    <string name="error_job_cancelled">The video is not available for playback. Try again or skip to the next song.</string>
     <string name="error_episode_save">Failed to save episode</string>
     <string name="error_episode_remove">Failed to remove episode</string>
     <string name="error_podcast_subscribe">Failed to subscribe to podcast</string>
@@ -765,6 +765,9 @@
     <string name="play_all">Play all</string>
     <string name="enable_high_refresh_rate">Enable high refresh rate</string>
     <string name="enable_high_refresh_rate_desc">Forces the display to run at its highest supported refresh rate (e.g. 120Hz)</string>
+    <string name="enable_landscape_scaling">Landscape Scaling</string>
+    <string name="enable_landscape_scaling_desc">Scale UI in landscape mode for larger screens</string>
+    <string name="dynamic_theme">Dynamic Theme</string>
 
     <!-- Music Recognition -->
     <string name="recognize_music">Recognize music</string>
@@ -919,7 +922,7 @@
     <!-- Restore confirmation dialog -->
     <string name="restore_confirm_title">Restore backup?</string>
     <string name="restore_confirm_message">This will restore your app data from the selected backup</string>
-    <string name="restore_account_warning">You will need to log in again after restoring. The following account will be signed out:</string>
+    <string name="restore_account_warning">The following account information will be restored and preserved:</string>
     <string name="restore">Restore</string>
     <string name="restore_database_incompatible">Cannot restore backup: database version incompatible. Your current data has been preserved.</string>
     <string name="checking_previous_account">Checking for previous account…</string>
@@ -992,6 +995,8 @@
     <string name="not_applicable">N/A</string>
 
     <!-- Stream sources -->
+    <string name="enable_dynamic_icon">Dynamic icon colors</string>
+    <string name="enable_dynamic_icon_desc">Use dynamic theme colors for the app icon. When disabled, the icon uses solid colors.</string>
     <string name="stream_sources">Stream sources</string>
     <string name="stream_source_order">Stream order</string>
     <string name="stream_source_web_clients">Web clients</string>

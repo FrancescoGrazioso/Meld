@@ -157,6 +157,7 @@ class ArtistViewModel @Inject constructor(
                     fun com.metrolist.innertube.models.Artist.resolve() =
                         if (id == null) resolvedIdMap[name]?.let { copy(id = it) } ?: this else this
 
+                    // Resolve artist IDs and fetch durations from more endpoint
                     val resolvedSections = page.sections.map { section ->
                         section.copy(items = section.items.map { item ->
                             when (item) {
@@ -169,7 +170,43 @@ class ArtistViewModel @Inject constructor(
                             }
                         })
                     }
-                    val resolvedPage = page.copy(sections = resolvedSections)
+
+                    // Fetch song durations from the more endpoint if the first section has songs without duration
+                    var sectionsWithDurations = resolvedSections
+                    if (resolvedSections.isNotEmpty()) {
+                        val needDurations = resolvedSections.first().items.any {
+                            it is SongItem && it.duration == null
+                        }
+                        if (needDurations) {
+                            val moreEndpoint = resolvedSections.first().moreEndpoint
+                            if (moreEndpoint != null) {
+                                try {
+                                    val moreResult = withContext(Dispatchers.IO) {
+                                        YouTube.artistItems(moreEndpoint)
+                                    }
+                                    moreResult
+                                        .onSuccess { moreItems ->
+                                            val durationById = moreItems.items.filterIsInstance<SongItem>()
+                                                .associate { it.id to it.duration }
+                                            if (durationById.isNotEmpty()) {
+                                                sectionsWithDurations = listOf(resolvedSections.first().copy(
+                                                    items = resolvedSections.first().items.map { item ->
+                                                        if (item is SongItem && item.duration == null) {
+                                                            item.copy(duration = durationById[item.id] ?: item.duration)
+                                                        } else item
+                                                    }
+                                                )) + resolvedSections.drop(1)
+                                            }
+                                        }
+                                        .onFailure { e -> reportException(e) }
+                                } catch (e: Exception) {
+                                    reportException(e)
+                                }
+                            }
+                        }
+                    }
+
+                    val resolvedPage = page.copy(sections = sectionsWithDurations)
                     val filteredSections = resolvedPage.sections
                         .map { section ->
                             section.copy(items = section.items.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs).filterYoutubeShorts(hideYoutubeShorts))
