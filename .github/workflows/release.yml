@@ -10,7 +10,8 @@ on:
 jobs:
   check-version:
     if: "!contains(github.ref, 'refs/tags')"
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 15
     outputs:
       version_changed: ${{ steps.check_version.outputs.version_changed }}
       new_version: ${{ steps.check_version.outputs.new_version }}
@@ -72,7 +73,8 @@ jobs:
   build:
     needs: check-version
     if: needs.check-version.outputs.version_changed == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 15
     strategy:
       matrix:
         include:
@@ -158,7 +160,8 @@ jobs:
   create-release:
     needs: [check-version, build]
     if: needs.check-version.outputs.version_changed == 'true' || github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
         with:
@@ -206,9 +209,15 @@ jobs:
         run: |
           echo "Creating release v${{ needs.check-version.outputs.new_version }}"
 
+          {
+            echo "Released by @${{ github.triggering_actor }}"
+            echo ""
+            cat release_notes.md
+          } > attributed_release_notes.md
+
           gh release create "v${{ needs.check-version.outputs.new_version }}" \
             --title "${{ needs.check-version.outputs.new_version }}" \
-            --notes-file release_notes.md \
+            --notes-file attributed_release_notes.md \
             --latest \
             release_files/*.apk
 
@@ -219,5 +228,6 @@ jobs:
           echo "## Release Summary" >> $GITHUB_STEP_SUMMARY
           echo "- **Version**: v${{ needs.check-version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Version Code**: ${{ needs.check-version.outputs.version_code }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Released by**: @${{ github.triggering_actor }}" >> $GITHUB_STEP_SUMMARY
           echo "- **APKs Built**: $(ls release_files/*.apk | wc -l)" >> $GITHUB_STEP_SUMMARY
           echo "- **Release URL**: https://github.com/${{ github.repository }}/releases/tag/v${{ needs.check-version.outputs.new_version }}" >> $GITHUB_STEP_SUMMARY
