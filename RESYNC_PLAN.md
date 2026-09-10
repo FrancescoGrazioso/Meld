@@ -159,7 +159,46 @@ would fail to migrate.
 a new **version 40** (`artist.cachedPageJson`, `speed_dial_item.subtitleIds/albumId/albumName`),
 keep Meld's `1.json…39.json` untouched, add `40.json`, and cover it with a migration test.
 
-## 7. Execution order
+## 7. Result
+
+| check | result |
+|---|---|
+| `:app:assembleFossDebug` | green |
+| `:app:assembleGmsDebug` | green |
+| `:app:assembleIzzyDebug` | green |
+| `:app:testFossDebugUnitTest` + `:innertube:test` | **214 tests, 0 failures** |
+| `DatabaseMigrationLadderTest` | 6/6 — schema ladder contiguous, code version 40 matches the highest committed schema |
+| `:app:lintFossDebug` | green |
+| smoke test on a Pixel 10 emulator over an **existing v39 install** | see below |
+
+The smoke test is the one that matters, because it exercised the riskiest decision — the
+database — against real data rather than a fresh install:
+
+```
+DatabaseBackup: Database upgrade 39 -> 40, backing up first
+DatabaseBackup: Backed up database to .../database_backups/song.db_backup_2026-09-10_14-09-42.db
+MusicService: Player successfully initialized
+MusicService: Google Cast initialized
+Qobuz: endpoints configured | squid=… kenny=… trypt=… jumo=…
+```
+
+The library survived the migration (Recently Played and New Releases both render real
+history), Qobuz configured its endpoints, and playback resolved and buffered a stream
+through the new InnerTubeX path (`buffered position=5861, error=null`). No fatals, no ANRs.
+
+Branch `chore/metrolist-resync-v13.7.0`:
+
+```
+fix(branding): restore discord_information_warning
+fix(branding): re-assert Meld naming across the merged string resources
+fix: restore the helpers the merged test suite needs, unbreak gms + tests
+fix: port Meld's code onto the upstream v13.7.0 APIs
+merge: Metrolist v13.7.0 into Meld
+merge: record Metrolist v13.4.0 as merged, refresh translations
+docs: add Metrolist resync plan
+```
+
+## 8. Execution order
 
 * **Phase 0** — branch, green baseline build, `git rerere`, build the stitched upstream
   chain with `git commit-tree` (tree of v13.6.1/13.6.2/13.6.3/v13.7.0, each parented on the
@@ -228,6 +267,15 @@ Still open:
    `Preference.kt` primitives and will look different from upstream's redesigned settings.
 3. **Discord login route.** `settings/discord/login` was removed with Meld's screen; check
    nothing still navigates to it now that upstream uses `DiscordOAuthActivity`.
+4. **`scripts/diagnose-yt-403.ps1`** still probes the IOS/ANDROID_VR/VISIONOS cascade and
+   references `YTPlayerUtils`. Harmless (it is not compiled) but it now describes a stack
+   that no longer exists — rewrite it against InnerTubeX or drop it.
+5. **Playback in the field.** The two generic defects behind Meld's 403 work — a cached URL
+   going out without a Range header, and the resolver throwing a non-`IOException` so media3
+   reclassified every failure as "Unknown error" — are both structurally addressed by
+   upstream's `StreamUrlCache` (bounded ranges, per-stream headers) and its typed
+   `PlaybackException` mapping. Worth confirming on real content, especially
+   age-restricted tracks, since that is where Meld's chain differed most.
 
 ## 10. Rules held throughout
 
