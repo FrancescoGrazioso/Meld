@@ -175,7 +175,61 @@ keep Meld's `1.json…39.json` untouched, add `40.json`, and cover it with a mig
   version 0.9.0, merged workflows (keep `spotify-hash-check`, `pr_title_prefix`).
 * **Phase 6** — verify: `assembleFossDebug` + `Gms` + `Izzy`, unit tests, lint, smoke test.
 
-## 8. Rules held throughout
+## 8. Decisions taken during the merge
+
+Adopted from upstream (Meld's version dropped as superseded):
+
+| Area | Decision |
+|---|---|
+| Stream resolution | `innertubex` + `InnerTubeXPlayer`; deleted `YTPlayerUtils`, `utils/cipher/*`, `Fix403` |
+| `InnerTube`/`YouTube` | upstream's InnerTubeX facade (1786 → 3205 lines of API coverage) |
+| Download URL cache | upstream's `StreamUrlCache` (bounded ranges + per-stream headers) |
+| Discord | `music/discord/*`; deleted `utils/DiscordRPC.kt` and the `:kizzy` module |
+| Protobuf | upstream's protobuf Gradle plugin; dropped the `metroproto` submodule and `.github/actions/setup-protobuf` |
+| Modules | `settings.gradle.kts` down to `:app` + `:innertube`; `:spotify` folded into `app/src/main/kotlin/com/metrolist/spotify/`, `:paxsenix` replaced by upstream's in-app copy |
+| Lyrics | registry-driven provider order, per-provider timeout; Musixmatch kept alongside upstream's Zemer |
+| Equalizer, ListenTogether, PoToken, search screens, AppearanceSettings, ComposeToImage | upstream |
+| Room | upstream's `BackupBeforeMigrationFactory` + non-destructive fallback |
+
+Kept from Meld:
+
+* Everything Spotify and Qobuz, plus local files, New Releases, Recently Played,
+  SponsorBlock, Musixmatch, crash reporting, the GQL hash workflow.
+* `applicationId com.meld.app`, `app_name Meld`, Meld icons, Meld release/issue URLs.
+* Draft releases in `release.yml`, and the PR workflow's unit-test + lint gate.
+* `ui/component/Preference.kt` — upstream replaced these primitives with
+  `Material3SettingsGroup`, but Meld's own settings screens still use them.
+* Room schema lineage (see §6); database version is now **40**.
+
+## 9. Follow-ups
+
+Done during the resync:
+
+* **Incognito search** restored. `InnerTubeX.search` does take a nullable `setLogin`, so the
+  facade forwards it and `YouTube.searchSummary(query, incognito = true)` works again —
+  Spotify→YouTube matching still does not pollute the user's YouTube search history.
+* **Updater**: upstream prefers a `Metrolist-KMP` release over its own and shows
+  `kmp_upgrade_warning`. Meld has no KMP build and must not point users at another app, so
+  that path is removed (`getLatestKmpRelease`, `parseKmpRelease`, and the `kmpUpdate` branch).
+* **Schema 40** exported and verified: Meld's `spotify_match`/`qobuz_match`,
+  `song.localPath`/`isrc`, `artist.spotifyId`, plus upstream's `artist.cachedPageJson` and
+  `speed_dial_item.subtitleIds`/`albumId`/`albumName`.
+* **Widget rendering**: Meld's CONFLATED-channel renderer dropped in favour of upstream's
+  `pendingWidgetUpdate` loop — same fix for the same main-thread flooding problem.
+* **Lyrics shaping**: Meld's `requiresShapedRendering` fallback dropped; upstream's animation
+  walks grapheme clusters, which fixes the same Devanagari/Bengali issue (#141) properly.
+
+Still open:
+
+1. **Android Auto.** The merge kept Meld's Spotify sections in
+   `MediaLibrarySessionCallback` and dropped upstream's YouTube-playlist browsing; worth
+   having both.
+2. **Settings look.** Meld's Spotify/Qobuz/SponsorBlock screens still use the old
+   `Preference.kt` primitives and will look different from upstream's redesigned settings.
+3. **Discord login route.** `settings/discord/login` was removed with Meld's screen; check
+   nothing still navigates to it now that upstream uses `DiscordOAuthActivity`.
+
+## 10. Rules held throughout
 
 1. Naming, icons and application id stay **Meld**; the Kotlin package stays
    `com.metrolist.music` (renaming it would break every merge from here on).

@@ -11,11 +11,14 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
@@ -26,17 +29,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults.Indicator
 import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,7 +61,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
-import com.metrolist.music.constants.AlbumViewTypeKey
 import com.metrolist.music.constants.CONTENT_TYPE_HEADER
 import com.metrolist.music.constants.CONTENT_TYPE_PLAYLIST
 import com.metrolist.music.constants.GridItemSize
@@ -90,6 +92,7 @@ import com.metrolist.music.ui.component.AlbumGridItem
 import com.metrolist.music.ui.component.AlbumListItem
 import com.metrolist.music.ui.component.ArtistGridItem
 import com.metrolist.music.ui.component.ArtistListItem
+import com.metrolist.music.ui.component.CreatePlaylistDialog
 import com.metrolist.music.ui.component.LibrarySearchEmptyPlaceholder
 import com.metrolist.music.ui.component.LibrarySearchHeader
 import com.metrolist.music.ui.component.LocalMenuState
@@ -113,12 +116,16 @@ import kotlinx.coroutines.withContext
 import java.text.Collator
 import java.time.LocalDateTime
 import java.util.UUID
+import androidx.compose.material3.TextButton
+import com.metrolist.music.constants.AlbumViewTypeKey
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LibraryMixScreen(
     navController: NavController,
     filterContent: @Composable () -> Unit,
+    viewType: LibraryViewType,
+    onViewTypeChange: (LibraryViewType) -> Unit,
     viewModel: LibraryMixViewModel = hiltViewModel(),
     spotifyViewModel: SpotifyViewModel = hiltViewModel(),
 ) {
@@ -127,8 +134,8 @@ fun LibraryMixScreen(
     val keyboardController = LocalSoftwareKeyboardController.current
     val queueSearchedSongsStr = stringResource(R.string.queue_searched_songs)
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
     val isSpotifyActive by spotifyViewModel.isSpotifyActive.collectAsState()
     val spotifyPlaylists by spotifyViewModel.spotifyPlaylists.collectAsState()
@@ -153,8 +160,20 @@ fun LibraryMixScreen(
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
 
     var isSearchActive by rememberSaveable { mutableStateOf(false) }
-    val searchQuery by viewModel.searchQuery.collectAsState()
-    val debouncedSearchQuery by viewModel.debouncedSearchQuery.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val debouncedSearchQuery by viewModel.debouncedSearchQuery.collectAsStateWithLifecycle()
+    var showCreatePlaylistDialog by rememberSaveable { mutableStateOf(false) }
+    
+    if (showCreatePlaylistDialog) {
+        CreatePlaylistDialog(
+            onDismiss = { showCreatePlaylistDialog = false },
+            onPlaylistCreated = { playlistId ->
+                showCreatePlaylistDialog = false
+                navController.navigate("local_playlist/$playlistId")
+            }
+        )
+    }
+    
     val normalizedQuery = remember(isSearchActive, searchQuery, debouncedSearchQuery) {
         if (isSearchActive) {
             searchQuery.normalizeForSearch()
@@ -163,7 +182,7 @@ fun LibraryMixScreen(
         }
     }
 
-    val topSize by viewModel.topValue.collectAsState(initial = 50)
+    val topSize by viewModel.topValue.collectAsStateWithLifecycle(initialValue = 50)
     val likedPlaylist =
         Playlist(
             playlist =
@@ -237,10 +256,10 @@ fun LibraryMixScreen(
     val showCachedPlaylists = showCached && matchesNormalizedQuery(normalizedQuery, cachedPlaylist.playlist.name)
 
 
-    val albums = viewModel.albums.collectAsState()
-    val artist = viewModel.artists.collectAsState()
-    val songs = viewModel.songs.collectAsState()
-    val playlist = viewModel.playlists.collectAsState()
+    val albums = viewModel.albums.collectAsStateWithLifecycle()
+    val artist = viewModel.artists.collectAsStateWithLifecycle()
+    val songs = viewModel.songs.collectAsStateWithLifecycle()
+    val playlist = viewModel.playlists.collectAsStateWithLifecycle()
 
     var allItems = albums.value + artist.value + playlist.value
     val locale = LocalLocale.current.platformLocale
@@ -257,7 +276,7 @@ fun LibraryMixScreen(
                         is Album -> item.album.bookmarkedAt
                         is Artist -> item.artist.bookmarkedAt
                         is Playlist -> item.playlist.createdAt
-                        else -> LocalDateTime.now()
+                        is Song -> LocalDateTime.now()
                     }
                 }
             }
@@ -269,7 +288,7 @@ fun LibraryMixScreen(
                             is Album -> item.album.title
                             is Artist -> item.artist.name
                             is Playlist -> item.playlist.name
-                            else -> ""
+                            is Song -> ""
                         }
                     },
                 )
@@ -281,7 +300,7 @@ fun LibraryMixScreen(
                         is Album -> item.album.lastUpdateTime
                         is Artist -> item.artist.lastUpdateTime
                         is Playlist -> item.playlist.lastUpdateTime
-                        else -> LocalDateTime.now()
+                        is Song -> LocalDateTime.now()
                     }
                 }
             }
@@ -305,7 +324,6 @@ fun LibraryMixScreen(
 
                     is Artist -> matchesNormalizedQuery(normalizedQuery, item.artist.name)
                     is Playlist -> matchesNormalizedQuery(normalizedQuery, item.playlist.name)
-                    else -> true
                 }
             }
 
@@ -320,7 +338,6 @@ fun LibraryMixScreen(
                             is Song -> 1
                             is Artist -> 2
                             is Album -> 3
-                            else -> 4
                         }
                     val secondPriority =
                         when (second) {
@@ -328,7 +345,6 @@ fun LibraryMixScreen(
                             is Song -> 1
                             is Artist -> 2
                             is Album -> 3
-                            else -> 4
                         }
 
                     if (firstPriority != secondPriority) {
@@ -340,7 +356,6 @@ fun LibraryMixScreen(
                                 is Song -> first.song.title
                                 is Artist -> first.artist.name
                                 is Album -> first.album.title
-                                else -> ""
                             }
                         val secondName =
                             when (second) {
@@ -348,7 +363,6 @@ fun LibraryMixScreen(
                                 is Song -> second.song.title
                                 is Artist -> second.artist.name
                                 is Album -> second.album.title
-                                else -> ""
                             }
                         collator.compare(firstName, secondName)
                     }
@@ -363,7 +377,7 @@ fun LibraryMixScreen(
     val lazyGridState = rememberLazyGridState()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
-        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsStateWithLifecycle()
 
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {
@@ -423,7 +437,7 @@ fun LibraryMixScreen(
 
             IconButton(
                 onClick = {
-                    viewType = viewType.toggle()
+                    onViewTypeChange(viewType.toggle())
                 },
                 modifier = Modifier.padding(end = 8.dp).size(40.dp),
             ) {
@@ -446,7 +460,7 @@ fun LibraryMixScreen(
         }
     }
 
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val pullRefreshState = rememberPullToRefreshState()
 
     Box(
@@ -479,7 +493,7 @@ fun LibraryMixScreen(
                         headerContent()
                     }
 
-                    if (showLikedPlaylist && !hideYtmLiked) {
+                    if (showLikedPlaylist) {
                         item(
                             key = "likedPlaylist",
                             contentType = { CONTENT_TYPE_PLAYLIST },
@@ -755,7 +769,6 @@ fun LibraryMixScreen(
                                                 menuState.show {
                                                     SongMenu(
                                                         originalSong = item,
-                                                        navController = navController,
                                                         onDismiss = menuState::dismiss,
                                                     )
                                                 }
@@ -790,7 +803,6 @@ fun LibraryMixScreen(
                                                     menuState.show {
                                                         SongMenu(
                                                             originalSong = item,
-                                                            navController = navController,
                                                             onDismiss = menuState::dismiss,
                                                         )
                                                     }
@@ -853,7 +865,6 @@ fun LibraryMixScreen(
                                                 menuState.show {
                                                     AlbumMenu(
                                                         originalAlbum = item,
-                                                        navController = navController,
                                                         onDismiss = menuState::dismiss,
                                                     )
                                                 }
@@ -877,7 +888,6 @@ fun LibraryMixScreen(
                                                     menuState.show {
                                                         AlbumMenu(
                                                             originalAlbum = item,
-                                                            navController = navController,
                                                             onDismiss = menuState::dismiss,
                                                         )
                                                     }
@@ -885,8 +895,20 @@ fun LibraryMixScreen(
                                             ).animateItem(),
                                 )
                             }
+                        }
+                    }
 
-                            else -> {}
+                    if (
+                        filteredItems.isEmpty() &&
+                        !showLikedPlaylist &&
+                        !showDownloadedPlaylist &&
+                        !showCachedPlaylists &&
+                        !showTopPlaylists &&
+                        !showUploadedPlaylists &&
+                        searchQuery.isNotBlank()
+                    ) {
+                        item(key = "empty_search_result") {
+                            LibrarySearchEmptyPlaceholder(modifier = Modifier.animateItem())
                         }
                     }
 
@@ -931,7 +953,7 @@ fun LibraryMixScreen(
                         headerContent()
                     }
 
-                    if (showLikedPlaylist && !hideYtmLiked) {
+                    if (showLikedPlaylist) {
                         item(
                             key = "likedPlaylist",
                             contentType = { CONTENT_TYPE_PLAYLIST },
@@ -1226,7 +1248,6 @@ fun LibraryMixScreen(
                                                     menuState.show {
                                                         SongMenu(
                                                             originalSong = item,
-                                                            navController = navController,
                                                             onDismiss = menuState::dismiss,
                                                         )
                                                     }
@@ -1280,7 +1301,6 @@ fun LibraryMixScreen(
                                                     menuState.show {
                                                         AlbumMenu(
                                                             originalAlbum = item,
-                                                            navController = navController,
                                                             onDismiss = menuState::dismiss,
                                                         )
                                                     }
@@ -1288,8 +1308,23 @@ fun LibraryMixScreen(
                                             ).animateItem(),
                                 )
                             }
+                        }
+                    }
 
-                            else -> {}
+                    if (
+                        filteredItems.isEmpty() &&
+                        !showLikedPlaylist &&
+                        !showDownloadedPlaylist &&
+                        !showCachedPlaylists &&
+                        !showTopPlaylists &&
+                        !showUploadedPlaylists &&
+                        searchQuery.isNotBlank()
+                    ) {
+                        item(
+                            key = "empty_search_result",
+                            span = { GridItemSpan(maxLineSpan) },
+                        ) {
+                            LibrarySearchEmptyPlaceholder(modifier = Modifier.animateItem())
                         }
                     }
 
@@ -1311,6 +1346,23 @@ fun LibraryMixScreen(
                     }
                 }
             }
+        }
+
+        // Always visible + button (no scroll hiding)
+        FloatingActionButton(
+            onClick = { showCreatePlaylistDialog = true },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .windowInsetsPadding(
+                    LocalPlayerAwareWindowInsets.current
+                        .only(WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal)
+                )
+                .padding(16.dp)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.add),
+                contentDescription = stringResource(R.string.create_playlist),
+            )
         }
 
         Indicator(

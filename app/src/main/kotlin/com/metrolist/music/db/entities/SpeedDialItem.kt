@@ -19,17 +19,23 @@ data class SpeedDialItem(
     val secondaryId: String? = null,
     val title: String,
     val subtitle: String? = null,
+    val subtitleIds: String? = null,
     val thumbnailUrl: String? = null,
     val type: String, // "SONG", "ALBUM", "ARTIST", "PLAYLIST", "LOCAL_PLAYLIST"
     val explicit: Boolean = false,
-    val createDate: Long = System.currentTimeMillis()
+    val createDate: Long = System.currentTimeMillis(),
+    val albumId: String? = null,
+    val albumName: String? = null
 ) {
     fun toYTItem(): YTItem {
         return when (type) {
             "SONG" -> SongItem(
                 id = id,
                 title = title,
-                artists = subtitle?.split(", ")?.map { Artist(name = it, id = null) } ?: emptyList(),
+                artists = subtitle?.split(", ")?.mapIndexed { index, name ->
+                    Artist(name = name, id = subtitleIds?.split(", ")?.getOrNull(index))
+                } ?: emptyList(),
+                album = if (albumId != null && albumName != null) com.metrolist.innertube.models.Album(name = albumName, id = albumId) else null,
                 thumbnail = thumbnailUrl ?: "",
                 explicit = explicit
             )
@@ -37,7 +43,9 @@ data class SpeedDialItem(
                 browseId = id,
                 playlistId = secondaryId ?: "",
                 title = title,
-                artists = subtitle?.split(", ")?.map { Artist(name = it, id = null) },
+                artists = subtitle?.split(", ")?.mapIndexed { index, name ->
+                    Artist(name = name, id = subtitleIds?.split(", ")?.getOrNull(index))
+                },
                 thumbnail = thumbnailUrl ?: "",
                 explicit = explicit
             )
@@ -51,7 +59,9 @@ data class SpeedDialItem(
             "PLAYLIST", "LOCAL_PLAYLIST" -> PlaylistItem(
                 id = id,
                 title = title,
-                author = subtitle?.let { Artist(name = it, id = null) },
+                author = subtitle?.let { name ->
+                    Artist(name = name, id = subtitleIds)
+                },
                 songCountText = null,
                 thumbnail = thumbnailUrl,
                 playEndpoint = null,
@@ -69,15 +79,19 @@ data class SpeedDialItem(
                     id = item.id,
                     title = item.title,
                     subtitle = item.artists.joinToString(", ") { it.name },
+                    subtitleIds = item.artists.joinToString(", ") { it.id ?: "" },
                     thumbnailUrl = item.thumbnail,
                     type = "SONG",
-                    explicit = item.explicit
+                    explicit = item.explicit,
+                    albumId = item.album?.id,
+                    albumName = item.album?.name
                 )
                 is AlbumItem -> SpeedDialItem(
                     id = item.browseId,
                     secondaryId = item.playlistId,
                     title = item.title,
                     subtitle = item.artists?.joinToString(", ") { it.name },
+                    subtitleIds = item.artists?.joinToString(", ") { it.id ?: "" },
                     thumbnailUrl = item.thumbnail,
                     type = "ALBUM",
                     explicit = item.explicit
@@ -92,6 +106,7 @@ data class SpeedDialItem(
                     id = item.id,
                     title = item.title,
                     subtitle = item.author?.name,
+                    subtitleIds = item.author?.id,
                     thumbnailUrl = item.thumbnail,
                     type = "PLAYLIST"
                 )
@@ -99,6 +114,7 @@ data class SpeedDialItem(
                     id = item.id,
                     title = item.title,
                     subtitle = item.author?.name,
+                    subtitleIds = item.author?.id,
                     thumbnailUrl = item.thumbnail,
                     type = "PLAYLIST"
                 )
@@ -106,9 +122,12 @@ data class SpeedDialItem(
                     id = item.id,
                     title = item.title,
                     subtitle = item.author?.name,
+                    subtitleIds = item.author?.id,
                     thumbnailUrl = item.thumbnail,
                     type = "SONG",
-                    explicit = item.explicit
+                    explicit = item.explicit,
+                    albumId = item.podcast?.id,
+                    albumName = item.podcast?.name
                 )
             }
         }

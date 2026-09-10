@@ -5,9 +5,6 @@
 
 package com.metrolist.music.ui.screens.settings
 
-import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.os.Build
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,7 +27,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -48,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -64,6 +61,7 @@ import com.metrolist.music.constants.DensityScaleKey
 import com.metrolist.music.constants.DynamicThemeKey
 import com.metrolist.music.constants.EnableDynamicIconKey
 import com.metrolist.music.constants.EnableHighRefreshRateKey
+import com.metrolist.music.constants.EnableLandscapeScalingKey
 import com.metrolist.music.constants.ExperimentalLyricsKey
 import com.metrolist.music.constants.GridItemSize
 import com.metrolist.music.constants.GridItemsSizeKey
@@ -127,7 +125,6 @@ import kotlin.math.roundToInt
 @Composable
 fun AppearanceSettings(
     navController: NavController,
-    activity: Activity,
     snackbarHostState: SnackbarHostState,
 ) {
     val (dynamicTheme, onDynamicThemeChange) =
@@ -135,15 +132,25 @@ fun AppearanceSettings(
             DynamicThemeKey,
             defaultValue = true,
         )
-    val (enableDynamicIcon, onEnableDynamicIconChange) =
+    val (enableDynamicIcon, onEnableDynamicIconPrefChange) =
         rememberPreference(
             EnableDynamicIconKey,
             defaultValue = true,
         )
+    val iconContext = LocalContext.current
+    val onEnableDynamicIconChange: (Boolean) -> Unit = { newValue ->
+        onEnableDynamicIconPrefChange(newValue)
+        IconUtils.setIcon(iconContext, newValue)
+    }
     val (enableHighRefreshRate, onEnableHighRefreshRateChange) =
         rememberPreference(
             EnableHighRefreshRateKey,
             defaultValue = true,
+        )
+    val (enableLandscapeScaling, onEnableLandscapeScalingChange) =
+        rememberPreference(
+            EnableLandscapeScalingKey,
+            defaultValue = false,
         )
     val (selectedThemeColorInt) =
         rememberPreference(
@@ -152,44 +159,12 @@ fun AppearanceSettings(
         )
     // Check if user has selected a custom color (not the default/dynamic color)
     val isUsingCustomColor = selectedThemeColorInt != DefaultThemeColor.toArgb()
-    val coroutineScope = rememberCoroutineScope()
-
-    fun handleIconChange(enabled: Boolean) {
-        onEnableDynamicIconChange(enabled)
-        IconUtils.setIcon(activity, enabled)
-        coroutineScope.launch {
-            val result =
-                snackbarHostState.showSnackbar(
-                    message = "Icon updated, restart to apply",
-                    actionLabel = "Restart",
-                )
-            if (result == SnackbarResult.ActionPerformed) {
-                val packageManager = activity.packageManager
-                val intent = packageManager.getLaunchIntentForPackage(activity.packageName)
-                val componentName = intent?.component
-                val mainIntent = Intent.makeRestartActivityTask(componentName)
-                activity.startActivity(mainIntent)
-                Runtime.getRuntime().exit(0)
-            }
-        }
-    }
 
     val (useNewPlayerDesign, onUseNewPlayerDesignChange) =
         rememberPreference(
             UseNewPlayerDesignKey,
             defaultValue = true,
         )
-    val (showRecognizeButton, onShowRecognizeButtonChange) =
-        rememberPreference(
-            ShowRecognizeButtonKey,
-            defaultValue = true,
-        )
-    val (showPlayRandomButton, onShowPlayRandomButtonChange) =
-        rememberPreference(
-            ShowPlayRandomButtonKey,
-            defaultValue = true,
-        )
-
     val (miniPlayerBackground, onMiniPlayerBackgroundChange) =
         rememberEnumPreference(
             MiniPlayerBackgroundStyleKey,
@@ -251,7 +226,7 @@ fun AppearanceSettings(
             defaultValue = false,
         )
     val (respectAgentPositioning, onRespectAgentPositioningChange) = rememberPreference(RespectAgentPositioningKey, defaultValue = true)
-    val (experimentalLyrics, onExperimentalLyricsChange) = rememberPreference(ExperimentalLyricsKey, defaultValue = false)
+    val (experimentalLyrics, onExperimentalLyricsChange) = rememberPreference(ExperimentalLyricsKey, defaultValue = true)
 
     val (lyricsGlowEffect, onLyricsGlowEffectChange) = rememberPreference(LyricsGlowEffectKey, defaultValue = false)
     val (lyricsAnimationStyle, onLyricsAnimationStyleChange) =
@@ -299,25 +274,8 @@ fun AppearanceSettings(
             defaultValue = false,
         )
 
-    // Density scale preferences
-    val context = activity as Context
-    val sharedPreferences = remember { context.getSharedPreferences("metrolist_settings", Context.MODE_PRIVATE) }
-    val prefDensityScale =
-        remember(sharedPreferences) {
-            sharedPreferences.getFloat("density_scale_factor", 1.0f)
-        }
-    val (densityScale, setDensityScale) = rememberPreference(DensityScaleKey, defaultValue = prefDensityScale)
-    var showRestartDialog by rememberSaveable { mutableStateOf(false) }
+    val (densityScale, onDensityScaleChange) = rememberPreference(DensityScaleKey, defaultValue = 1f)
     var showDensityScaleDialog by rememberSaveable { mutableStateOf(false) }
-
-    val onDensityScaleChange: (Float) -> Unit = { newScale ->
-        setDensityScale(newScale)
-        // Write to SharedPreferences for DensityScaler to read on next startup
-        sharedPreferences.edit {
-            putFloat("density_scale_factor", newScale)
-        }
-        showRestartDialog = true
-    }
 
     val (listenTogetherInTopBar, onListenTogetherInTopBarChange) =
         rememberPreference(
@@ -696,45 +654,6 @@ fun AppearanceSettings(
         )
     }
 
-    if (showRestartDialog) {
-        DefaultDialog(
-            onDismiss = { showRestartDialog = false },
-            buttons = {
-                TextButton(
-                    onClick = { showRestartDialog = false },
-                ) {
-                    Text(text = stringResource(android.R.string.cancel))
-                }
-                TextButton(
-                    onClick = {
-                        showRestartDialog = false
-                        val intent =
-                            context.packageManager.getLaunchIntentForPackage(context.packageName)?.apply {
-                                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                            }
-                        context.startActivity(intent)
-                        Runtime.getRuntime().exit(0)
-                    },
-                ) {
-                    Text(text = stringResource(R.string.restart))
-                }
-            },
-        ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.restart_required),
-                    style = MaterialTheme.typography.titleLarge,
-                )
-                Text(
-                    text = stringResource(R.string.density_restart_message),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
-            }
-        }
-    }
-
     if (showDensityScaleDialog) {
         DefaultDialog(
             onDismiss = { showDensityScaleDialog = false },
@@ -991,29 +910,6 @@ fun AppearanceSettings(
                 buildList {
                     add(
                         Material3SettingsItem(
-                            icon = painterResource(R.drawable.ic_dynamic_icon),
-                            title = { Text(stringResource(R.string.enable_dynamic_icon)) },
-                            trailingContent = {
-                                Switch(
-                                    checked = enableDynamicIcon,
-                                    onCheckedChange = { handleIconChange(it) },
-                                    thumbContent = {
-                                        Icon(
-                                            painter =
-                                                painterResource(
-                                                    id = if (enableDynamicIcon) R.drawable.check else R.drawable.close,
-                                                ),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                                        )
-                                    },
-                                )
-                            },
-                            onClick = { handleIconChange(!enableDynamicIcon) },
-                        ),
-                    )
-                    add(
-                        Material3SettingsItem(
                             icon = painterResource(R.drawable.speed),
                             title = { Text(stringResource(R.string.enable_high_refresh_rate)) },
                             description = { Text(stringResource(R.string.enable_high_refresh_rate_desc)) },
@@ -1034,6 +930,30 @@ fun AppearanceSettings(
                                 )
                             },
                             onClick = { onEnableHighRefreshRateChange(!enableHighRefreshRate) },
+                        ),
+                    )
+                    add(
+                        Material3SettingsItem(
+                            icon = painterResource(R.drawable.fullscreen),
+                            title = { Text(stringResource(R.string.enable_landscape_scaling)) },
+                            description = { Text(stringResource(R.string.enable_landscape_scaling_desc)) },
+                            trailingContent = {
+                                Switch(
+                                    checked = enableLandscapeScaling,
+                                    onCheckedChange = onEnableLandscapeScalingChange,
+                                    thumbContent = {
+                                        Icon(
+                                            painter =
+                                                painterResource(
+                                                    id = if (enableLandscapeScaling) R.drawable.check else R.drawable.close,
+                                                ),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                                        )
+                                    },
+                                )
+                            },
+                            onClick = { onEnableLandscapeScalingChange(!enableLandscapeScaling) },
                         ),
                     )
                     // Only show dynamic theme option when using the default/dynamic color
@@ -1063,6 +983,30 @@ fun AppearanceSettings(
                             ),
                         )
                     }
+                    add(
+                        Material3SettingsItem(
+                            icon = painterResource(R.drawable.palette),
+                            title = { Text(stringResource(R.string.enable_dynamic_icon)) },
+                            description = { Text(stringResource(R.string.enable_dynamic_icon_desc)) },
+                            trailingContent = {
+                                Switch(
+                                    checked = enableDynamicIcon,
+                                    onCheckedChange = onEnableDynamicIconChange,
+                                    thumbContent = {
+                                        Icon(
+                                            painter =
+                                                painterResource(
+                                                    id = if (enableDynamicIcon) R.drawable.check else R.drawable.close,
+                                                ),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(SwitchDefaults.IconSize),
+                                        )
+                                    },
+                                )
+                            },
+                            onClick = { onEnableDynamicIconChange(!enableDynamicIcon) },
+                        ),
+                    )
                     add(
                         Material3SettingsItem(
                             icon = painterResource(R.drawable.palette),
@@ -1640,7 +1584,6 @@ fun AppearanceSettings(
                                     LibraryFilter.ALBUMS -> stringResource(R.string.albums)
                                     LibraryFilter.PLAYLISTS -> stringResource(R.string.playlists)
                                     LibraryFilter.PODCASTS -> stringResource(R.string.filter_podcasts)
-                                    LibraryFilter.LOCAL_FILES -> stringResource(R.string.filter_local_files)
                                     LibraryFilter.LIBRARY -> stringResource(R.string.filter_library)
                                 },
                             )
@@ -1731,50 +1674,6 @@ fun AppearanceSettings(
                             )
                         },
                         onClick = { onListenTogetherInTopBarChange(!listenTogetherInTopBar) },
-                    ),
-                    Material3SettingsItem(
-                        icon = painterResource(R.drawable.mic),
-                        title = { Text(stringResource(R.string.show_recognize_music_button)) },
-                        description = { Text(stringResource(R.string.show_recognize_music_button_desc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = showRecognizeButton,
-                                onCheckedChange = onShowRecognizeButtonChange,
-                                thumbContent = {
-                                    Icon(
-                                        painter =
-                                            painterResource(
-                                                id = if (showRecognizeButton) R.drawable.check else R.drawable.close,
-                                            ),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                                    )
-                                },
-                            )
-                        },
-                        onClick = { onShowRecognizeButtonChange(!showRecognizeButton) },
-                    ),
-                    Material3SettingsItem(
-                        icon = painterResource(R.drawable.shuffle),
-                        title = { Text(stringResource(R.string.show_play_random_button)) },
-                        description = { Text(stringResource(R.string.show_play_random_button_desc)) },
-                        trailingContent = {
-                            Switch(
-                                checked = showPlayRandomButton,
-                                onCheckedChange = onShowPlayRandomButtonChange,
-                                thumbContent = {
-                                    Icon(
-                                        painter =
-                                            painterResource(
-                                                id = if (showPlayRandomButton) R.drawable.check else R.drawable.close,
-                                            ),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(SwitchDefaults.IconSize),
-                                    )
-                                },
-                            )
-                        },
-                        onClick = { onShowPlayRandomButtonChange(!showPlayRandomButton) },
                     ),
                     Material3SettingsItem(
                         icon = painterResource(R.drawable.grid_view),
@@ -1968,9 +1867,4 @@ enum class LyricsPosition {
     LEFT,
     CENTER,
     RIGHT,
-}
-
-enum class PlayerTextAlignment {
-    SIDED,
-    CENTER,
 }

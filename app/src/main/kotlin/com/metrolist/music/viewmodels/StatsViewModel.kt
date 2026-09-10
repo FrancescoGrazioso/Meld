@@ -15,15 +15,15 @@ import com.metrolist.innertube.models.Artist
 import com.metrolist.music.constants.HideVideoSongsKey
 import com.metrolist.music.constants.LastMonthlyMostPlaylistSyncKey
 import com.metrolist.music.constants.LastWeeklyMostPlaylistSyncKey
+import com.metrolist.music.constants.ShowMostStatsPlaylistsKey
 import com.metrolist.music.constants.StatPeriod
 import com.metrolist.music.constants.statToPeriod
 import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.db.entities.PlaylistEntity
-import com.metrolist.music.db.entities.PlaylistSongMap
 import com.metrolist.music.ui.screens.OptionStats
 import com.metrolist.music.utils.dataStore
+import com.metrolist.music.utils.safeDataStoreEdit
 import com.metrolist.music.utils.reportException
-import androidx.datastore.preferences.core.edit
 import com.metrolist.music.R
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -35,12 +35,14 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZoneOffset
 import javax.inject.Inject
 import kotlinx.coroutines.sync.Mutex
@@ -58,6 +60,10 @@ constructor(
     private val periodicMostPlaylistSyncMutex = Mutex()
     val selectedOption = MutableStateFlow(OptionStats.CONTINUOUS)
     val indexChips = MutableStateFlow(0)
+    private val showMostStatsPlaylists =
+        context.dataStore.data
+            .map { it[ShowMostStatsPlaylistsKey] ?: true }
+            .distinctUntilChanged()
 
     val mostPlayedSongsStats =
         combine(
@@ -72,11 +78,7 @@ constructor(
                         limit = -1,
                         toTimeStamp =
                         if (selection == OptionStats.CONTINUOUS || t == 0) {
-                            LocalDateTime
-                                .now()
-                                .toInstant(
-                                    ZoneOffset.UTC,
-                                ).toEpochMilli()
+                            LocalDateTime.now()
                         } else {
                             statToPeriod(selection, t - 1)
                         },
@@ -98,11 +100,7 @@ constructor(
                         limit = -1,
                         toTimeStamp =
                         if (selection == OptionStats.CONTINUOUS || t == 0) {
-                            LocalDateTime
-                                .now()
-                                .toInstant(
-                                    ZoneOffset.UTC,
-                                ).toEpochMilli()
+                            LocalDateTime.now()
                         } else {
                             statToPeriod(selection, t - 1)
                         },
@@ -123,11 +121,7 @@ constructor(
                         limit = -1,
                         toTimeStamp =
                         if (selection == OptionStats.CONTINUOUS || t == 0) {
-                            LocalDateTime
-                                .now()
-                                .toInstant(
-                                    ZoneOffset.UTC,
-                                ).toEpochMilli()
+                            LocalDateTime.now()
                         } else {
                             statToPeriod(selection, t - 1)
                         },
@@ -147,11 +141,7 @@ constructor(
                     limit = -1,
                     toTimeStamp =
                     if (selection == OptionStats.CONTINUOUS || t == 0) {
-                        LocalDateTime
-                            .now()
-                            .toInstant(
-                                ZoneOffset.UTC,
-                            ).toEpochMilli()
+                        LocalDateTime.now()
                     } else {
                         statToPeriod(selection, t - 1)
                     },
@@ -219,13 +209,23 @@ constructor(
     }
 
     val weeklyMostPlaylist =
-        database
-            .playlist(PlaylistEntity.WEEKLY_MOST_PLAYLIST_ID)
+        showMostStatsPlaylists.flatMapLatest { isEnabled ->
+            if (isEnabled) {
+                database.playlist(PlaylistEntity.WEEKLY_MOST_PLAYLIST_ID)
+            } else {
+                flowOf(null)
+            }
+        }
             .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     val monthlyMostPlaylist =
-        database
-            .playlist(PlaylistEntity.MONTHLY_MOST_PLAYLIST_ID)
+        showMostStatsPlaylists.flatMapLatest { isEnabled ->
+            if (isEnabled) {
+                database.playlist(PlaylistEntity.MONTHLY_MOST_PLAYLIST_ID)
+            } else {
+                flowOf(null)
+            }
+        }
             .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     val recapPlaylists =
@@ -242,10 +242,16 @@ constructor(
     fun syncMostPlaylistsIfNeeded(force: Boolean = false) {
         viewModelScope.launch(Dispatchers.IO) {
             periodicMostPlaylistSyncMutex.withLock {
-                val now = LocalDateTime.now(ZoneOffset.UTC)
-                val nowEpochMillis = now.toInstant(ZoneOffset.UTC).toEpochMilli()
+                val now = LocalDateTime.now()
+                val nowEpochMillis = System.currentTimeMillis()
                 val preferences = context.dataStore.data.first()
                 val hideVideoSongs = preferences[HideVideoSongsKey] ?: false
+                val shouldShowMostStatsPlaylists = preferences[ShowMostStatsPlaylistsKey] ?: true
+
+                if (!shouldShowMostStatsPlaylists) {
+                    clearMostPlaylists()
+                    return@withLock
+                }
 
                 val weeklyPlaylistExists =
                     database.playlist(PlaylistEntity.WEEKLY_MOST_PLAYLIST_ID).first() != null
@@ -271,7 +277,7 @@ constructor(
                     syncMostPlaylist(
                         playlistId = PlaylistEntity.WEEKLY_MOST_PLAYLIST_ID,
                         playlistName = context.getString(R.string.weekly_most_playlist_name),
-                        fromTimeStamp = StatPeriod.WEEK_1.toTimeMillis(),
+                        fromTimeStamp = StatPeriod.WEEK_1.toLocalDateTime(),
                         hideVideoSongs = hideVideoSongs,
                         now = now,
                     )
@@ -281,7 +287,7 @@ constructor(
                     syncMostPlaylist(
                         playlistId = PlaylistEntity.MONTHLY_MOST_PLAYLIST_ID,
                         playlistName = context.getString(R.string.monthly_most_playlist_name),
-                        fromTimeStamp = StatPeriod.MONTH_1.toTimeMillis(),
+                        fromTimeStamp = StatPeriod.MONTH_1.toLocalDateTime(),
                         hideVideoSongs = hideVideoSongs,
                         now = now,
                     )
@@ -289,12 +295,31 @@ constructor(
 
                 // Only write "last sync" when it was a scheduled sync, not a forced rebuild
                 if (!force) {
-                    context.dataStore.edit { settings ->
+                    context.safeDataStoreEdit { settings ->
                         if (shouldSyncWeekly) settings[LastWeeklyMostPlaylistSyncKey] = nowEpochMillis
                         if (shouldSyncMonthly) settings[LastMonthlyMostPlaylistSyncKey] = nowEpochMillis
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun clearMostPlaylists() {
+        database.withTransaction {
+            clearPlaylist(PlaylistEntity.WEEKLY_MOST_PLAYLIST_ID)
+            clearPlaylist(PlaylistEntity.MONTHLY_MOST_PLAYLIST_ID)
+            delete(
+                PlaylistEntity(
+                    id = PlaylistEntity.WEEKLY_MOST_PLAYLIST_ID,
+                    name = "",
+                ),
+            )
+            delete(
+                PlaylistEntity(
+                    id = PlaylistEntity.MONTHLY_MOST_PLAYLIST_ID,
+                    name = "",
+                ),
+            )
         }
     }
 
@@ -304,7 +329,7 @@ constructor(
     ): Boolean {
         if (lastSyncMillis == null || lastSyncMillis <= 0L) return true
 
-        val lastSyncAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastSyncMillis), ZoneOffset.UTC)
+        val lastSyncAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastSyncMillis), ZoneId.systemDefault())
         return !lastSyncAt.plusWeeks(1).isAfter(now)
     }
 
@@ -314,14 +339,14 @@ constructor(
     ): Boolean {
         if (lastSyncMillis == null || lastSyncMillis <= 0L) return true
 
-        val lastSyncAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastSyncMillis), ZoneOffset.UTC)
+        val lastSyncAt = LocalDateTime.ofInstant(Instant.ofEpochMilli(lastSyncMillis), ZoneId.systemDefault())
         return !lastSyncAt.plusMonths(1).isAfter(now)
     }
 
     private suspend fun syncMostPlaylist(
         playlistId: String,
         playlistName: String,
-        fromTimeStamp: Long,
+        fromTimeStamp: LocalDateTime,
         hideVideoSongs: Boolean,
         now: LocalDateTime,
     ) {
@@ -330,7 +355,7 @@ constructor(
                 .mostPlayedSongs(
                     fromTimeStamp = fromTimeStamp,
                     limit = -1,
-                    toTimeStamp = now.toInstant(ZoneOffset.UTC).toEpochMilli(),
+                    toTimeStamp = now,
                 ).first()
                 .let { mostPlayedSongs ->
                     if (hideVideoSongs) {
@@ -363,14 +388,9 @@ constructor(
 
         database.clearPlaylist(playlistId)
 
-        songs.forEachIndexed { position, song ->
-            database.insert(
-                PlaylistSongMap(
-                    songId = song.song.id,
-                    playlistId = playlistId,
-                    position = position,
-                ),
-            )
+        val fullPlaylist = database.playlist(playlistId).first()
+        if (fullPlaylist != null) {
+            database.addSongsToPlaylist(fullPlaylist, songs.map { it.id to null })
         }
     }
 

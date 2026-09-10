@@ -3,7 +3,10 @@ name: Build APKs
 on:
   workflow_dispatch:
   push:
-    branches: ["**"]
+    # Feature branches are covered by "Build PR". Building them here too added
+    # four more APK builds on top of it for every push. Use workflow_dispatch
+    # when a branch needs nightly artifacts.
+    branches: ["main"]
     paths-ignore:
       - "README.md"
       - "fastlane/**"
@@ -16,25 +19,30 @@ permissions:
   contents: write
   discussions: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_release:
     name: Build Release (${{ matrix.variant }})
     if: github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 15
 
     strategy:
       matrix:
         include:
-          - variant: foss
-            variantName: Foss
+          # FOSS and Izzy differ from GMS only by ~80 lines of Cast stubs,
+          # plus the updater flag for Izzy (GMS and FOSS enable the updater,
+          # Izzy disables it). Both are still built by the release workflow,
+          # so building them nightly too doubled this workflow for almost no
+          # extra coverage.
           - variant: gms
             variantName: Gms
 
     steps:
       - uses: actions/checkout@v6
-
-      - name: Init metroproto submodule
-        run: git submodule update --init metroproto
 
       - name: Set up JDK 21
         uses: actions/setup-java@v5
@@ -48,17 +56,15 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_KEY }}
           cache-cleanup: on-success
 
-      - name: Setup and Generate Protobuf
-        uses: ./.github/actions/setup-protobuf
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
-      - name: Build Release APK and Run Lint
-        run: ./gradlew --console=plain assemble${{ matrix.variantName }}Release :app:lint${{ matrix.variantName }}Release --warning-mode summary
+      - name: Build Release APK
+        run: ./gradlew --console=plain assemble${{ matrix.variantName }}Release --warning-mode summary
         env:
           METROLIST_APPLICATION_ID: com.meld.app
           METROLIST_APP_NAME: Meld Nightly
+          METROLIST_BUILD_COMMIT: ${{ github.sha }}
           PULL_REQUEST: "false"
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
@@ -98,21 +104,22 @@ jobs:
   build_debug:
     name: Build Debug (${{ matrix.variant }})
     if: github.actor != 'dependabot[bot]' && github.actor != 'renovate[bot]'
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    timeout-minutes: 15
 
     strategy:
       matrix:
         include:
-          - variant: foss
-            variantName: Foss
+          # FOSS and Izzy differ from GMS only by ~80 lines of Cast stubs,
+          # plus the updater flag for Izzy (GMS and FOSS enable the updater,
+          # Izzy disables it). Both are still built by the release workflow,
+          # so building them nightly too doubled this workflow for almost no
+          # extra coverage.
           - variant: gms
             variantName: Gms
 
     steps:
       - uses: actions/checkout@v6
-
-      - name: Init metroproto submodule
-        run: git submodule update --init metroproto
 
       - name: Set up JDK 21
         uses: actions/setup-java@v5
@@ -126,9 +133,6 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_CACHE_KEY }}
           cache-cleanup: on-success
 
-      - name: Setup and Generate Protobuf
-        uses: ./.github/actions/setup-protobuf
-
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
@@ -136,11 +140,14 @@ jobs:
         run: |
           echo "${{ secrets.DEBUG_KEYSTORE }}" | base64 -d > ./app/persistent-debug.keystore
 
-      - name: Build Debug APK and Run Lint
-        run: ./gradlew --console=plain assemble${{ matrix.variantName }}Debug :app:lint${{ matrix.variantName }}Debug --warning-mode summary
+      # Lint is intentionally not run in CI: it never gated a merge and added
+      # several minutes to every build. Run :app:lintGmsRelease locally.
+      - name: Build Debug APK
+        run: ./gradlew --console=plain assemble${{ matrix.variantName }}Debug --warning-mode summary
         env:
           METROLIST_APPLICATION_ID: com.meld.app
           METROLIST_APP_NAME: Meld Nightly
+          METROLIST_BUILD_COMMIT: ${{ github.sha }}
           PULL_REQUEST: "false"
           GITHUB_EVENT_NAME: ${{ github.event_name }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
@@ -155,3 +162,50 @@ jobs:
         with:
           name: ${{ matrix.variant == 'gms' && 'app-debug-gms' || 'app-debug' }}
           path: app/build/outputs/apk/${{ matrix.variant }}/debug/*.apk
+
+  publish_nightly:
+    name: Publish Nightly Release
+    if: github.event_name == 'push'
+    needs: [build_release, build_debug]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Download Signed APK
+        uses: actions/download-artifact@v7
+        with:
+          name: app-with-Google-Cast
+          path: nightly
+
+      - name: Publish Nightly Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          mv nightly/app-universal-with-Google-Cast.apk nightly/Metrolist-with-Google-Cast.apk
+
+          PREVIOUS_NIGHTLY_SHA=$(gh release view nightly --json targetCommitish --jq .targetCommitish 2>/dev/null || true)
+          {
+            echo "Automated prerelease built from main at commit $GITHUB_SHA. It may be unstable."
+            if [ -n "$PREVIOUS_NIGHTLY_SHA" ] && [ "$PREVIOUS_NIGHTLY_SHA" != "$GITHUB_SHA" ]; then
+              echo
+              echo "## Changes since previous nightly"
+              gh api "repos/$GITHUB_REPOSITORY/compare/$PREVIOUS_NIGHTLY_SHA...$GITHUB_SHA" \
+                --jq '.commits[] | "* \(.commit.message | split("\n")[0]) (\(.sha[0:7]))"'
+            fi
+          } > nightly-notes.md
+
+          if gh release view nightly > /dev/null 2>&1; then
+            gh release delete nightly --yes --cleanup-tag
+          elif gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/nightly" > /dev/null 2>&1; then
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/git/refs/tags/nightly"
+          fi
+
+          gh release create nightly \
+            nightly/Metrolist-with-Google-Cast.apk \
+            --target "$GITHUB_SHA" \
+            --title "Metrolist Nightly" \
+            --notes-file nightly-notes.md \
+            --generate-notes \
+            --prerelease \
+            --latest=false

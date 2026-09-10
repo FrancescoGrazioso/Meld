@@ -15,7 +15,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,15 +30,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.metrolist.innertube.YouTube
 import com.metrolist.innertube.utils.parseCookieString
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.R
+import com.metrolist.music.constants.AddToPlaylistPosition
+import com.metrolist.music.constants.AddToPlaylistPositionKey
 import com.metrolist.music.constants.AddToPlaylistSortDescendingKey
 import com.metrolist.music.constants.AddToPlaylistSortTypeKey
 import com.metrolist.music.constants.InnerTubeCookieKey
 import com.metrolist.music.constants.ListThumbnailSize
 import com.metrolist.music.constants.PlaylistSortType
+import com.metrolist.music.db.DatabaseDao
 import com.metrolist.music.db.entities.Playlist
 import com.metrolist.music.ui.component.CreatePlaylistDialog
 import com.metrolist.music.ui.component.DefaultDialog
@@ -58,7 +60,6 @@ import kotlinx.coroutines.withContext
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -75,13 +76,14 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.material3.FilterChipDefaults
 import com.metrolist.music.LocalSyncUtils
+import androidx.compose.animation.core.spring
 
 @Composable
 fun AddToPlaylistDialog(
     isVisible: Boolean,
     allowSyncing: Boolean = true,
     initialTextFieldValue: String? = null,
-    onGetSong: suspend (Playlist) -> List<String>, // list of song ids. Songs should be inserted to database in this function.
+    onGetSong: suspend () -> List<String>, // list of song ids. Songs should be inserted to database in this function.
     onGetSongIds: (suspend () -> List<String>)? = null,
     onDismiss: () -> Unit,
     viewModel: PlaylistsViewModel = hiltViewModel()
@@ -89,6 +91,10 @@ fun AddToPlaylistDialog(
     val database = LocalDatabase.current
     val syncUtils = LocalSyncUtils.current
     val coroutineScope = rememberCoroutineScope()
+    val (addToPlaylistPosition) = rememberEnumPreference(
+        AddToPlaylistPositionKey,
+        AddToPlaylistPosition.BEGINNING,
+    )
     val (sortType, onSortTypeChange) = rememberEnumPreference(
         AddToPlaylistSortTypeKey,
         PlaylistSortType.NAME
@@ -97,7 +103,7 @@ fun AddToPlaylistDialog(
         AddToPlaylistSortDescendingKey,
         false
     )
-    val playlists by viewModel.allPlaylists.collectAsState()
+    val playlists by viewModel.allPlaylists.collectAsStateWithLifecycle()
     val (innerTubeCookie) = rememberPreference(InnerTubeCookieKey, "")
     val isLoggedIn = remember(innerTubeCookie) {
         "SAPISID" in parseCookieString(innerTubeCookie)
@@ -123,16 +129,13 @@ fun AddToPlaylistDialog(
     }
 
     suspend fun addSongsAndSync(targetPlaylist: Playlist, ids: List<String>) {
-        database.addSongToPlaylist(targetPlaylist, ids)
-        targetPlaylist.playlist.browseId?.let { plist ->
-            ids.forEach { songId ->
-                syncUtils.registerPendingAdd(plist, songId)
-                try {
-                    YouTube.addToPlaylist(plist, songId)
-                } finally {
-                    syncUtils.unregisterPendingAdd(plist, songId)
-                }
-            }
+        database.addSongsToPlaylist(
+            targetPlaylist,
+            ids.map { it to null },
+            prepend = addToPlaylistPosition.prepend,
+        )
+        targetPlaylist.playlist.browseId?.let { browseId ->
+            syncUtils.scheduleAddToPlaylist(browseId, targetPlaylist.id, ids)
         }
     }
 
@@ -140,18 +143,19 @@ fun AddToPlaylistDialog(
         if (!isVisible || playlists.isEmpty()) return@LaunchedEffect
         if (songIds != null) return@LaunchedEffect
         withContext(Dispatchers.IO) {
-            songIds = onGetSongIds?.invoke() ?: onGetSong(playlists.first())
+            songIds = onGetSongIds?.invoke() ?: onGetSong()
         }
     }
     LaunchedEffect(isVisible, songIds, playlists) {
         if (!isVisible) {
+            songIds = null
             playlistsContainingSong = emptySet()
             return@LaunchedEffect
         }
         val ids = songIds ?: return@LaunchedEffect
         withContext(Dispatchers.IO) {
             playlistsContainingSong = playlists
-                .filter { database.playlistDuplicates(it.id, ids).isNotEmpty() }
+                .filter { database.playlistDuplicatesBatched(it.id, ids).isNotEmpty() }
                 .map { it.id }
                 .toSet()
         }
@@ -300,15 +304,13 @@ fun AddToPlaylistDialog(
                     .clickable {
                         selectedPlaylist = playlist
                         coroutineScope.launch(Dispatchers.IO) {
-                            if (songIds == null) {
-                                songIds = onGetSong(playlist)
-                            }
-                            duplicates = database.playlistDuplicates(playlist.id, songIds!!)
+                            songIds = onGetSong()
+                            duplicates = database.playlistDuplicatesBatched(playlist.id, songIds!!)
                             if (duplicates.isNotEmpty()) {
                                 showDuplicateDialog = true
                             } else {
-                                onDismiss()
                                 addSongsAndSync(playlist, songIds!!)
+                                withContext(Dispatchers.Main) { onDismiss() }
                             }
                         }
                     }
@@ -333,12 +335,12 @@ fun AddToPlaylistDialog(
                     TextButton(
                         onClick = {
                             showDuplicateDialog = false
-                            onDismiss()
                             coroutineScope.launch(Dispatchers.IO) {
                                 addSongsAndSync(
                                     selectedPlaylist!!,
                                     songIds!!.filter { !duplicates.contains(it) }
                                 )
+                                withContext(Dispatchers.Main) { onDismiss() }
                             }
                         }
                     ) {
@@ -348,9 +350,9 @@ fun AddToPlaylistDialog(
                     TextButton(
                         onClick = {
                             showDuplicateDialog = false
-                            onDismiss()
                             coroutineScope.launch(Dispatchers.IO) {
                                 addSongsAndSync(selectedPlaylist!!, songIds!!)
+                                withContext(Dispatchers.Main) { onDismiss() }
                             }
                         }
                     ) {
@@ -381,3 +383,18 @@ fun AddToPlaylistDialog(
             }
         }
 }
+
+internal const val MAX_PLAYLIST_DUPLICATES_BATCH_SIZE = 500
+
+internal suspend fun DatabaseDao.playlistDuplicatesBatched(
+    playlistId: String,
+    songIds: List<String>,
+): List<String> =
+    if (songIds.size <= MAX_PLAYLIST_DUPLICATES_BATCH_SIZE) {
+        playlistDuplicates(playlistId, songIds)
+    } else {
+        songIds
+            .distinct()
+            .chunked(MAX_PLAYLIST_DUPLICATES_BATCH_SIZE)
+            .flatMap { playlistDuplicates(playlistId, it) }
+    }

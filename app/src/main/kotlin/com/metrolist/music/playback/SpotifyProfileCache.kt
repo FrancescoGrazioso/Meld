@@ -21,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 import kotlinx.coroutines.flow.first
@@ -35,6 +34,7 @@ import kotlinx.serialization.json.Json
 import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import kotlinx.coroutines.coroutineScope
 
 /**
  * Hybrid cache for Spotify user profile data (top tracks/artists).

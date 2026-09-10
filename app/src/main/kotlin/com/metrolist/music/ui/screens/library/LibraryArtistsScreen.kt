@@ -32,7 +32,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -136,14 +136,14 @@ fun LibraryArtistsScreen(
     }
 
     var isSearchActive by rememberSaveable { mutableStateOf(false) }
-    val searchQuery by viewModel.searchQuery.collectAsState()
-    val filteredArtists by viewModel.filteredArtists.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val filteredArtists by viewModel.filteredArtists.collectAsStateWithLifecycle()
 
     val lazyListState = rememberLazyListState()
     val lazyGridState = rememberLazyGridState()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
-        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsStateWithLifecycle()
 
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {
@@ -277,7 +277,6 @@ fun LibraryArtistsScreen(
                             contentType = { CONTENT_TYPE_ARTIST },
                         ) { artist ->
                             LibraryArtistListItem(
-                                navController = navController,
                                 menuState = menuState,
                                 coroutineScope = coroutineScope,
                                 modifier = Modifier.animateItem(),
@@ -337,7 +336,6 @@ fun LibraryArtistsScreen(
                             contentType = { CONTENT_TYPE_ARTIST },
                         ) { artist ->
                             LibraryArtistGridItem(
-                                navController = navController,
                                 menuState = menuState,
                                 coroutineScope = coroutineScope,
                                 modifier = Modifier.animateItem(),

@@ -35,7 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -60,13 +60,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.media3.exoplayer.offline.Download
-import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
-import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.metrolist.music.LocalNavController
 import com.metrolist.innertube.YouTube
 import com.metrolist.music.LocalDatabase
 import com.metrolist.music.LocalDownloadUtil
@@ -102,30 +100,33 @@ import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.viewmodels.CachePlaylistViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.time.LocalDateTime
+import androidx.navigation.NavController
 
 @Composable
 fun SongMenu(
     originalSong: Song,
     event: Event? = null,
-    navController: NavController,
     playlistSong: PlaylistSong? = null,
     playlistBrowseId: String? = null,
     onDismiss: () -> Unit,
     isFromCache: Boolean = false,
     spotifyId: String? = null,
 ) {
+    val navController = LocalNavController.current
     val context = LocalContext.current
     val database = LocalDatabase.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val songState = database.song(originalSong.id).collectAsState(initial = originalSong)
+    val songState = database.song(originalSong.id).collectAsStateWithLifecycle(initialValue = originalSong)
     val song = songState.value ?: originalSong
-    val download by LocalDownloadUtil.current
+    val downloadUtil = LocalDownloadUtil.current
+    val download by downloadUtil
         .getDownload(originalSong.id)
-        .collectAsState(initial = null)
+        .collectAsStateWithLifecycle(initialValue = null)
     val coroutineScope = rememberCoroutineScope()
     val syncUtils = LocalSyncUtils.current
     val listenTogetherManager = LocalListenTogetherManager.current
@@ -140,7 +141,7 @@ fun SongMenu(
         label = "",
     )
 
-    val isPinned by database.speedDialDao.isPinned(song.id).collectAsState(initial = false)
+    val isPinned by database.speedDialDao.isPinned(song.id).collectAsStateWithLifecycle(initialValue = false)
 
     // Podcast subscription state for episodes
     val podcastEntity by produceState<PodcastEntity?>(initialValue = null, song) {
@@ -150,17 +151,6 @@ fun SongMenu(
         }
     }
     val isPodcastSubscribed = podcastEntity?.bookmarkedAt != null
-
-    val orderedArtists by produceState(initialValue = emptyList<ArtistEntity>(), song) {
-        withContext(Dispatchers.IO) {
-            val artistMaps = database.songArtistMap(song.id).sortedBy { it.position }
-            val sorted =
-                artistMaps.mapNotNull { map ->
-                    song.artists.firstOrNull { it.id == map.artistId }
-                }
-            value = sorted
-        }
-    }
 
     var showEditDialog by rememberSaveable {
         mutableStateOf(false)
@@ -198,10 +188,7 @@ fun SongMenu(
     var artistField by rememberSaveable(stateSaver = TextFieldValueSaver) {
         mutableStateOf(
             TextFieldValue(
-                song.artists
-                    .firstOrNull()
-                    ?.name
-                    .orEmpty(),
+                song.orderedArtists.joinToString(", ") { it.name },
             ),
         )
     }
@@ -250,16 +237,31 @@ fun SongMenu(
             },
             onDoneMultiple = { values ->
                 val newTitle = values[0]
-                val newArtist = values[1]
+                val newArtistNames =
+                    values[1]
+                        .split(',')
+                        .map(String::trim)
+                        .filter(String::isNotEmpty)
+                        .distinct()
+                val artistsChanged = newArtistNames != song.orderedArtists.map { it.name }
 
                 coroutineScope.launch {
-                    database.query {
+                    database.withTransaction {
                         update(song.song.copy(title = newTitle))
-                        val artist = song.artists.firstOrNull()
-                        if (artist != null) {
-                            update(artist.copy(name = newArtist))
+                        if (artistsChanged) {
+                            val replacementArtists =
+                                newArtistNames.map { name ->
+                                    artistByName(name)
+                                        ?: ArtistEntity(
+                                            id = ArtistEntity.generateArtistId(),
+                                            name = name,
+                                            isLocal = true,
+                                        )
+                                }
+                            replaceSongArtists(song.id, replacementArtists)
                         }
                     }
+                    database.song(song.id).first()?.let(playerConnection::refreshSongMetadata)
 
                     showEditDialog = false
                     onDismiss()
@@ -293,14 +295,7 @@ fun SongMenu(
 
     AddToPlaylistDialog(
         isVisible = showChoosePlaylistDialog,
-        onGetSong = { playlist ->
-            coroutineScope.launch(Dispatchers.IO) {
-                playlist.playlist.browseId?.let { browseId ->
-                    YouTube.addToPlaylist(browseId, song.id)
-                }
-            }
-            listOf(song.id)
-        },
+        onGetSong = { listOf(song.id) },
         onGetSongIds = { listOf(song.id) },
         onDismiss = {
             showChoosePlaylistDialog = false
@@ -316,7 +311,7 @@ fun SongMenu(
         ) {
             item {
                 ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.already_in_playlist)) },
+                    content = { Text(text = stringResource(R.string.already_in_playlist)) },
                     leadingContent = {
                         Image(
                             painter = painterResource(R.drawable.close),
@@ -436,7 +431,7 @@ fun SongMenu(
             onDismiss = { showSelectArtistDialog = false },
         ) {
             items(
-                items = song.artists.distinctBy { it.id },
+                items = song.orderedArtists.distinctBy { it.id },
                 key = { "menu_song_artist_${it.id}" },
             ) { artist ->
                 Row(
@@ -580,7 +575,14 @@ fun SongMenu(
                                 )
                             },
                             text = stringResource(R.string.edit),
-                            onClick = { showEditDialog = true },
+                            onClick = {
+                                titleField = TextFieldValue(song.song.title)
+                                artistField =
+                                    TextFieldValue(
+                                        song.orderedArtists.joinToString(", ") { it.name },
+                                    )
+                                showEditDialog = true
+                            },
                         ),
                         NewAction(
                             icon = {
@@ -634,6 +636,7 @@ fun SongMenu(
                         emptyList()
                     },
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp),
+                columns = if (isGuest) 2 else 3,
             )
         }
         item {
@@ -655,7 +658,7 @@ fun SongMenu(
                                         com.metrolist.music.listentogether.TrackInfo(
                                             id = song.id,
                                             title = song.song.title,
-                                            artist = orderedArtists.joinToString(", ") { it.name },
+                                            artist = song.orderedArtists.joinToString(", ") { it.name },
                                             album = song.song.albumName,
                                             duration = durationMs,
                                             thumbnail = song.thumbnailUrl,
@@ -735,7 +738,7 @@ fun SongMenu(
                             Material3MenuItemData(
                                 title = {
                                     Text(
-                                        text = if (isPinned) "Unpin from Speed dial" else "Pin to Speed dial",
+                                        text = if (isPinned) stringResource(R.string.unpin_from_speed_dial) else stringResource(R.string.pin_to_speed_dial),
                                     )
                                 },
                                 icon = {
@@ -754,9 +757,12 @@ fun SongMenu(
                                                     id = song.id,
                                                     title = song.song.title,
                                                     subtitle = song.artists.joinToString(", ") { it.name },
+                                                    subtitleIds = song.artists.joinToString(", ") { it.id },
                                                     thumbnailUrl = song.song.thumbnailUrl,
                                                     type = "SONG",
                                                     explicit = song.song.explicit,
+                                                    albumId = song.album?.id,
+                                                    albumName = song.album?.title
                                                 ),
                                             )
                                         }
@@ -897,7 +903,7 @@ fun SongMenu(
                                         )
                                     },
                                     onClick = {
-                                        playlistSong?.let { ps ->
+                                        playlistSong.let { ps ->
                                             val capturedSetVideoId = ps.map.setVideoId
                                             database.transaction {
                                                 move(
@@ -1022,18 +1028,7 @@ fun SongMenu(
                                         )
                                     },
                                     onClick = {
-                                        val downloadRequest =
-                                            DownloadRequest
-                                                .Builder(song.id, song.id.toUri())
-                                                .setCustomCacheKey(song.id)
-                                                .setData(song.song.title.toByteArray())
-                                                .build()
-                                        DownloadService.sendAddDownload(
-                                            context,
-                                            ExoDownloadService::class.java,
-                                            downloadRequest,
-                                            false,
-                                        )
+                                        downloadUtil.download(song)
                                     },
                                 )
                             }
@@ -1053,7 +1048,7 @@ fun SongMenu(
                             add(
                                 Material3MenuItemData(
                                     title = { Text(text = stringResource(R.string.view_artist)) },
-                                    description = { Text(text = song.artists.joinToString { it.name }) },
+                                    description = { Text(text = song.orderedArtists.joinToString { it.name }) },
                                     icon = {
                                         Icon(
                                             painter = painterResource(R.drawable.artist),
@@ -1061,8 +1056,8 @@ fun SongMenu(
                                         )
                                     },
                                     onClick = {
-                                        if (song.artists.size == 1) {
-                                            navController.navigate("artist/${song.artists[0].id}")
+                                        if (song.orderedArtists.size == 1) {
+                                            navController.navigate("artist/${song.orderedArtists[0].id}")
                                             onDismiss()
                                         } else {
                                             showSelectArtistDialog = true

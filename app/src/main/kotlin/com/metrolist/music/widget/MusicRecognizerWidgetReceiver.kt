@@ -19,6 +19,22 @@ import android.widget.RemoteViews
 import com.metrolist.music.MainActivity
 import com.metrolist.music.R
 import com.metrolist.music.recognition.MusicRecognitionService
+import com.metrolist.music.recognition.RecognitionForegroundService
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.ALBUM_ART_CACHE_FILE
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.PREF_ARTIST_NAME
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.PREF_COVER_ART_PATH
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.PREF_ERROR_MESSAGE
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.PREF_PULSE_FRAME
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.PREF_SONG_TITLE
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.PREF_STATE
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.PREFS_NAME
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.STATE_ERROR
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.STATE_IDLE
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.STATE_LISTENING
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.STATE_NO_MATCH
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.STATE_PROCESSING
+import com.metrolist.music.recognition.RecognitionForegroundService.Companion.STATE_SUCCESS
+import java.io.File
 import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.ALBUM_ART_CACHE_FILE
 import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.PREF_ARTIST_NAME
 import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.PREF_COVER_ART_PATH
@@ -33,7 +49,6 @@ import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.STATE_L
 import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.STATE_NO_MATCH
 import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.STATE_PROCESSING
 import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.STATE_SUCCESS
-import java.io.File
 
 /**
  * AppWidgetProvider for the Music Recognizer Widget.
@@ -74,7 +89,8 @@ class MusicRecognizerWidgetReceiver : AppWidgetProvider() {
             ACTION_START_RECOGNITION -> handleStartRecognition(context)
             ACTION_UPDATE_WIDGET -> updateAllWidgets(context, AppWidgetManager.getInstance(context))
             ACTION_RESET_STATE -> {
-                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+                context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+                    .edit()
                     .putInt(PREF_STATE, STATE_IDLE)
                     .putString(PREF_SONG_TITLE, "")
                     .putString(PREF_ARTIST_NAME, "")
@@ -97,8 +113,8 @@ class MusicRecognizerWidgetReceiver : AppWidgetProvider() {
         // If active → stop
         if (currentState == STATE_LISTENING || currentState == STATE_PROCESSING) {
             context.startService(
-                Intent(context, MusicRecognizerWidgetService::class.java).apply {
-                    action = MusicRecognizerWidgetService.ACTION_STOP_RECOGNITION
+                Intent(context, RecognitionForegroundService::class.java).apply {
+                    action = RecognitionForegroundService.ACTION_STOP_WIDGET_RECOGNITION
                 }
             )
             return
@@ -121,8 +137,8 @@ class MusicRecognizerWidgetReceiver : AppWidgetProvider() {
         }
 
         // Start recognition foreground service
-        val serviceIntent = Intent(context, MusicRecognizerWidgetService::class.java).apply {
-            action = MusicRecognizerWidgetService.ACTION_START_RECOGNITION
+        val serviceIntent = Intent(context, RecognitionForegroundService::class.java).apply {
+            action = RecognitionForegroundService.ACTION_START_WIDGET_RECOGNITION
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(serviceIntent)

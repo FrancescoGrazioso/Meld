@@ -13,20 +13,12 @@
 # Since Metrolist is fully open-source, obfuscation provides no meaningful security benefit.
 -dontobfuscate
 
-# WEB_REMIX Streaming - WebView JavaScript interfaces
--keepclassmembers class com.metrolist.music.utils.sabr.EjsNTransformSolver$SolverWebView {
-    @android.webkit.JavascriptInterface public *;
-}
--keepclassmembers class com.metrolist.music.utils.cipher.CipherWebView {
-    @android.webkit.JavascriptInterface public *;
-}
+# WebView JavaScript interfaces
 -keepclassmembers class com.metrolist.music.utils.potoken.PoTokenWebView {
     @android.webkit.JavascriptInterface public *;
 }
 
-# Keep streaming utility classes
--keep class com.metrolist.music.utils.cipher.** { *; }
--keep class com.metrolist.music.utils.sabr.** { *; }
+# Keep PO-token utility classes
 -keep class com.metrolist.music.utils.potoken.** { *; }
 
 # Keep coroutine continuation for WebView callbacks
@@ -115,18 +107,6 @@
 -dontwarn org.openjsse.net.ssl.OpenJSSE
 -dontwarn org.slf4j.impl.StaticLoggerBinder
 
-## Rules for NewPipeExtractor
--keep class org.schabi.newpipe.extractor.services.youtube.protos.** { *; }
--keep class org.schabi.newpipe.extractor.timeago.patterns.** { *; }
--keep class org.mozilla.javascript.** { *; }
--keep class org.mozilla.javascript.engine.** { *; }
--dontwarn org.mozilla.javascript.JavaToJSONConverters
--dontwarn org.mozilla.javascript.tools.**
--keep class javax.script.** { *; }
--dontwarn javax.script.**
--keep class jdk.dynalink.** { *; }
--dontwarn jdk.dynalink.**
-
 ## Logging (does not affect Timber)
 -assumenosideeffects class android.util.Log {
     public static boolean isLoggable(java.lang.String, int);
@@ -203,6 +183,12 @@
 -keep class com.metrolist.shazamkit.models.** { *; }
 -keepclassmembers class com.metrolist.shazamkit.models.** {
     *;
+}
+
+## Discord RPC JNI
+-keep class com.metrolist.music.discord.DiscordRpcManager { *; }
+-keepclassmembers class com.metrolist.music.discord.DiscordRpcManager {
+    native <methods>;
 }
 
 ## Kotlinx Serialization

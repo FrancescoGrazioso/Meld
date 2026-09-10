@@ -4,10 +4,12 @@
     <string name="remote_history">Remote</string>
 
     <string name="charts">Charts</string>
+    <string name="mixes">Mixes</string>
     <string name="back_button_desc">Back</string>
     <string name="album_cover_desc">Album cover</string>
     <string name="top_music_videos">Top music videos</string>
     <string name="trending">Trending</string>
+    <string name="parsed_from_link">Parsed from link</string>
 
     <string name="weeks">Weeks</string>
     <string name="months">Months</string>
@@ -25,6 +27,8 @@
     <string name="sync_playlist">Sync playlist</string>
     <string name="sync_disabled">Sync disabled</string>
     <string name="allows_for_sync_witch_youtube">NOTE: This option enables syncing with YouTube Music and CANNOT be changed later</string>
+
+    <string name="and">and</string>
     <string name="generating_image">Generating image…</string>
     <string name="please_wait">Please wait</string>
     <string name="cancel">Cancel</string>
@@ -129,6 +133,8 @@
     <string name="enable_lrclib_desc">Community-driven synchronized lyrics database</string>
     <string name="enable_kugou_desc">Pulls lyrics from KuGou, a popular Chinese music platform</string>
     <string name="youtube_music_lyrics_note">NOTE: YouTube Music lyrics will be shown automatically when no other source is available. They are usually not synchronized</string>
+    <string name="enable_zemer">Enable Zemer</string>
+    <string name="enable_zemer_desc">Lyrics for Jewish music</string>
     <string name="enable_better_lyrics">Enable Better Lyrics</string>
     <string name="enable_better_lyrics_desc">Syllable-synced lyrics for any song, perfect for karaoke</string>
     <string name="enable_paxsenix">Enable Paxsenix</string>
@@ -148,10 +154,17 @@
     <string name="enable_song_cache">Enable song cache</string>
     <string name="enable_song_cache_desc">Automatically cache songs for faster future playback</string>
     <string name="show_uploaded_playlist">Show Uploaded playlist</string>
+    <string name="show_most_stats_playlists">Show Weekly and Monthly Most playlists</string>
+    <string name="show_most_stats_playlists_desc">Create and show stats-based Most playlists in Stats and Library</string>
     <string name="shuffle_playlist_first">Shuffle playlist or album first</string>
     <string name="shuffle_playlist_first_desc">When shuffling, play all songs from the current playlist or album before moving to similar content</string>
     <string name="prevent_duplicate_tracks_in_queue">Prevent duplicate tracks in queue</string>
     <string name="prevent_duplicate_tracks_in_queue_desc">When adding a track that\'s already in the queue, it will be moved from its previous position rather than added again</string>
+    <string name="add_to_playlist_position">Add to playlist position</string>
+    <string name="playlist_position_beginning">Beginning of playlist</string>
+    <string name="playlist_position_beginning_desc">Newly added songs appear before existing songs</string>
+    <string name="playlist_position_end">End of playlist</string>
+    <string name="playlist_position_end_desc">Newly added songs appear after existing songs</string>
     <string name="show_wrapped_card">Show Wrapped card</string>
     <string name="skip_silence_desc">Fast-forward through silent parts of songs</string>
     <string name="skip_silence_instant">Instantly skip silence</string>
@@ -191,9 +204,9 @@
     <string name="proxy_username">Proxy username</string>
     <string name="proxy_password">Proxy password</string>
     <string name="enable_authentication">Enable authentication</string>
-    <string name="discord_use_details">Use details instead of state</string>
-    <string name="discord_use_details_description">Show the song title prominently instead of the artist name</string>
 
+    <string name="auto_radio_queue">Auto radio queue</string>
+    <string name="auto_radio_queue_desc">Automatically create a radio queue when playing a song from search or home</string>
     <string name="enable_similar_content">Enable similar content</string>
     <string name="similar_content_desc">Automatically adds more similar songs when the end of the queue is reached</string>
     <string name="persistent_shuffle_title">Persistent shuffle</string>
@@ -204,6 +217,8 @@
 
     <string name="import_online">Import an M3U playlist</string>
     <string name="import_csv">Import a CSV playlist</string>
+    <string name="playlist_unavailable">Playlist unavailable</string>
+    <string name="playlist_created_locally">YouTube sync failed. Playlist created locally.</string>
     <string name="playlist_add_local_to_synced_note">NOTE: Adding local songs to synced or remote playlists is not supported. Any other combination is valid</string>
     <string name="export_playlist">Export playlist</string>
     <string name="export_as_csv">Export as CSV</string>
@@ -233,7 +248,7 @@
     <string name="release_notes">Release notes</string>
     <string name="changelog">Changelog</string>
     <string name="changelog_empty">No changelogs available</string>
-    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
+    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">View on GitHub</string>
     <string name="current_version">Current version</string>
@@ -258,6 +273,7 @@
     <string name="description">Description</string>
     <string name="views">Views</string>
     <string name="likes">Likes</string>
+
     <string name="dislikes">Dislikes</string>
     <string name="subscribe">Subscribe</string>
     <string name="subscribed">Subscribed</string>
@@ -304,7 +320,6 @@
         <item quantity="other">%d songs</item>
     </plurals>
     <string name="alarm_selected">Selected</string>
-    <string name="alarm_playlist_helper">Choose which playlist the alarm will play</string>
     <string name="alarm_add">Add alarm</string>
     <string name="alarm_empty">No alarms yet. Add one to start scheduled playback</string>
     <string name="alarm_disabled">Disabled</string>
@@ -318,7 +333,6 @@
     <string name="alarm_delete">Delete alarm</string>
     <string name="alarm_duplicate_time_warning">Another alarm already exists at this time. If both trigger simultaneously, only one may play</string>
     <string name="alarm_random_song">Play a random song from the playlist</string>
-    <string name="alarm_next_trigger">Next trigger</string>
     <string name="alarm_not_scheduled">Not scheduled</string>
     <string name="alarm_exact_permission_title">Allow exact alarms</string>
     <string name="alarm_exact_permission_desc">Grants permission for precise alarm timing, improving reliability when the app is in the background</string>
@@ -337,28 +351,11 @@
     <string name="crossfade_duration">Crossfade duration</string>
     <string name="crossfade_gapless">Disable for gapless albums</string>
     <string name="crossfade_gapless_desc">Skip crossfade for albums designed to play without gaps</string>
-    <string name="crossfade_beta_title">Beta feature!</string>
-    <string name="crossfade_beta_message">Crossfade is a new feature and may have bugs. If you experience any issues, please report them.\n\nNOTE: This feature disables audio offload due to technical limitations</string>
 
     <!-- Romanization Settings -->
-    <string name="lyrics_romanization_cyrillic">Cyrillic</string>
     <string name="lyrics_romanize_title">Romanization</string>
     <string name="lyrics_romanization">Lyrics romanization</string>
-    <string name="lyrics_romanize_japanese">Romanize Japanese lyrics</string>
-    <string name="lyrics_romanize_korean">Romanize Korean lyrics</string>
-    <string name="lyrics_romanize_chinese">Romanize Chinese lyrics</string>
-    <string name="lyrics_romanize_hindi">Romanize Hindi lyrics</string>
-    <string name="lyrics_romanize_punjabi">Romanize Punjabi lyrics</string>
-    <string name="lyrics_romanize_russian">Romanize Russian lyrics</string>
-    <string name="lyrics_romanize_ukrainian">Romanize Ukrainian lyrics</string>
-    <string name="lyrics_romanize_belarusian">Romanize Belarusian lyrics</string>
-    <string name="lyrics_romanize_kyrgyz">Romanize Kyrgyz lyrics</string>
-    <string name="lyrics_romanize_serbian">Romanize Serbian lyrics</string>
-    <string name="lyrics_romanize_bulgarian">Romanize Bulgarian lyrics</string>
     <string name="line_by_line_option_title">Detect language line-by-line</string>
-    <string name="line_by_line_option_desc">Cyrillic script will be detected line-by-line rather than across the entire song</string>
-    <string name="line_by_line_dialog_title">Are you sure?</string>
-    <string name="line_by_line_dialog_desc">This is a hit-or-miss experimental feature.\n\nBy default, the language is detected from the entire song. With this option on, it will be detected line-by-line instead. This allows multi-language songs to work, BUT the detected language may not always be correct. For example, a Ukrainian line without any Ukrainian-specific characters might be romanized as Russian.\n\nIf you are not experiencing any issues, it is recommended to keep this option off</string>
     <string name="romanize_current_track">Romanize current track</string>
 
     <!-- Lyrics Offset Settings -->
@@ -375,20 +372,34 @@
     <string name="updater">Updater</string>
     <string name="check_for_updates">Automatically check for updates</string>
     <string name="update_notifications">Enable update notifications</string>
-    <string name="update_available_title">Update available</string>
+    <string name="update_available_title">New update available</string>
+    <string name="update_available_message">Metrolist %s is ready to download.</string>
+    <string name="update_action">Update</string>
     <string name="update_channel_name">App updates</string>
     <string name="update_channel_desc">Notifications about new app versions</string>
+    <string name="kmp_upgrade_title">Metrolist KMP %s is available</string>
+    <string name="kmp_upgrade_warning">Metrolist KMP is still in development. You may encounter bugs or incomplete features.</string>
+    <string name="kmp_upgrade_action">Try KMP</string>
+    <string name="kmp_upgrade_later">Not now</string>
 
     <!-- Offload -->
     <string name="audio_offload">Enable audio offload</string>
     <string name="audio_offload_description">Uses the hardware audio offload path for playback. Disabling this may increase battery usage, but can help if you experience issues with playback or audio post-processing</string>
     <string name="audio_offload_disabled_by_crossfade">Disabled because crossfade is active</string>
 
+    <!-- Varispeed -->
+    <string name="speed">Playback Speed</string>
+    <string name="varispeed">Enable varispeed</string>
+    <string name="varispeed_description">Link pitch to playback speed, resulting in tape-style speedup and slowdown effects</string>
+
+    <!-- AudioTrack Playback Parameters -->
+    <string name="audio_track_playback_params">Use hardware audio processing</string>
+    <string name="audio_track_playback_params_description">Use Android\'s AudioTrack for speed/pitch changes instead of software processing. More reliable for extreme pitch values</string>
+
     <!-- Google Cast -->
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Cast audio to Chromecast and other Cast-enabled devices</string>
 
-    <string name="lyrics_romanize_macedonian">Romanize Macedonian lyrics</string>
     <string name="lyrics_romanize_as_main">Show romanized lyrics as main</string>
 
     <string name="integrations">Integrations</string>
@@ -400,7 +411,7 @@
     <string name="enable_scrobbling">Enable scrobbling</string>
     <string name="lastfm_now_playing">Send Now Playing status</string>
     <string name="last_fm_send_likes">Sync Loved and Unloved</string>
-    <string name="last_fm_send_likes_description">Love or unlove songs in Last.fm when you like or unlike them in Meld</string>
+    <string name="last_fm_send_likes_description">Love or unlove songs in Last.fm when you like or unlike them in Metrolist</string>
     <string name="logging_in">Logging in…</string>
 
     <string name="scrobbling_configuration">Scrobbling configuration</string>
@@ -423,9 +434,7 @@
     <string name="delete_desc">Permanently remove this item</string>
     <string name="advanced_desc">Adjust the song\'s tempo and pitch</string>
     <string name="equalizer_desc">Open the audio equalizer</string>
-    <string name="enable_dynamic_icon">Enable dynamic icon</string>
     <string name="mini_player">Mini-player</string>
-    <string name="pure_black_mini_player">Pure black mini-player</string>
     <string name="mini_player_background_style">Mini-player background style</string>
     <string name="transparent">Transparent</string>
     <string name="mini_player_background_not_available">Unavailable when the new mini-player design is disabled</string>
@@ -435,11 +444,6 @@
 
     <string name="lyrics_animation_style_title">Word-by-word animation style</string>
     <string name="none">None</string>
-    <string name="fade">Fade</string>
-    <string name="glow">Glow</string>
-    <string name="slide">Slide</string>
-    <string name="karaoke">Karaoke</string>
-    <string name="apple_music_style">Apple Music</string>
     <string name="album_art_for">Album art for %s</string>
     <string name="wrapped_total_albums_title">You\'ve listened to</string>
     <string name="wrapped_total_albums_subtitle">unique albums!</string>
@@ -462,30 +466,31 @@
     <string name="wrapped_total_artists_subtitle">unique artists!</string>
     <string name="wrapped_total_songs_title">You\'ve listened to</string>
     <string name="wrapped_total_songs_subtitle">unique songs!</string>
-    <string name="wrapped_intro_title">MELD</string>
+    <string name="wrapped_intro_title">METROLIST</string>
     <string name="wrapped_intro_subtitle">it\'s time to see what you\'ve been listening to all this year…</string>
     <string name="wrapped_intro_button">let\'s go!</string>
-    <string name="wrapped_logo_content_description">Meld Logo</string>
+    <string name="wrapped_logo_content_description">Metrolist Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">YOUR WRAPPED IS READY!</string>
     <string name="wrapped_ready_subtitle">Time to see what you loved all this year…</string>
     <string name="wrapped_thank_you">Thank you for listening!</string>
-    <string name="wrapped_special_thanks">Special thanks to MO Agamy for creating Metrolist, the foundation of Meld</string>
+    <string name="wrapped_special_thanks">Special thanks to MO Agamy for creating Metrolist</string>
     <string name="wrapped_close">Close Wrapped</string>
     <string name="wrapped_playlist_title">Your %s Wrapped</string>
     <string name="wrapped_create_playlist">Create playlist</string>
     <string name="wrapped_playlist_saved">Playlist saved</string>
 
     <!-- Equalizer UI -->
-    <plurals name="profiles_count">
-        <item quantity="one">%d profile</item>
-        <item quantity="other">%d profiles</item>
-    </plurals>
     <string name="equalizer_header">Equalizer</string>
     <string name="no_profiles">No equalizer profiles</string>
     <string name="import_profile">Import profile</string>
     <string name="system_equalizer">System equalizer</string>
+    <string name="system_equalizer_desc">Open Android\'s built-in equalizer</string>
     <string name="eq_disabled">Disabled</string>
+    <string name="eq_wizard">AutoEQ Wizard</string>
+    <string name="eq_download_db">Download AutoEQ database (17 MB)</string>
+    <string name="eq_downloading">Downloading…</string>
+    <string name="import_from_file">Import from file</string>
     <plurals name="band_count">
         <item quantity="one">%d band</item>
         <item quantity="other">%d bands</item>
@@ -498,13 +503,23 @@
     <string name="error_title">Error</string>
     <string name="error_eq_apply_failed">Failed to apply equalizer profile: %1$s</string>
 
+    <!-- EQ Wizard -->
+    <string name="wizard_select_model">Select Model</string>
+    <string name="wizard_select_profiles">Select Profiles</string>
+    <string name="wizard_search_model_hint">Search for your headphone or earphone model</string>
+    <string name="wizard_model_name">Model Name</string>
+    <string name="wizard_model_placeholder">e.g., Sony WH-1000XM4, Bose QuietComfort 45</string>
+    <string name="wizard_no_models">No models found</string>
+    <string name="wizard_multiple_variants">Multiple variants available</string>
+    <string name="wizard_select_eq_profiles">Select EQ profiles for %s</string>
+    <string name="wizard_save_profiles">Save Profiles</string>
+
     <!-- Hardcoded strings -->
     <string name="found_in_settings_content">Found in Settings &gt; Content</string>
     <string name="your_daily_discover">Your daily discover</string>
     <string name="plays">plays</string>
     <string name="casting_to">Casting to %s</string>
     <string name="progress_percent">Progress %s%%</string>
-    <string name="listening_to_metrolist">Listening to Meld</string>
     <string name="open">Open</string>
     <string name="failed_to_create_image">Failed to create image: %s</string>
     <string name="copied_title">Title copied</string>
@@ -514,6 +529,10 @@
 
     <!-- Playback errors -->
     <string name="error_playback_failed">Playback failed</string>
+    <string name="error_no_internet_connection">No internet connection</string>
+    <string name="error_offline_playback">You’re offline. Connect to the internet, or play a track downloaded for offline use.</string>
+    <string name="error_explicit_login_recommended">Explicit playback works better with a logged-in account.</string>
+    <string name="error_job_cancelled">The video is not available for playback. Try again or skip to the next song.</string>
     <string name="error_episode_save">Failed to save episode</string>
     <string name="error_episode_remove">Failed to remove episode</string>
     <string name="error_podcast_subscribe">Failed to subscribe to podcast</string>
@@ -523,13 +542,13 @@
     <!-- Widget strings -->
     <string name="album_art">Album art</string>
     <string name="no_song_playing">No song playing</string>
-    <string name="tap_to_open">Tap to open Meld</string>
+    <string name="tap_to_open">Tap to open Metrolist</string>
     <string name="previous">Previous</string>
     <string name="play_pause">Play/Pause</string>
     <string name="next">Next</string>
     <string name="like">Like</string>
     <string name="not_playing">No song playing</string>
-    <string name="tap_to_play">Tap to open Meld</string>
+    <string name="tap_to_play">Tap to open Metrolist</string>
     <string name="widget_description">Music player widget with playback controls</string>
     <string name="turntable_widget_description">Circular music widget with play and like controls</string>
     <string name="widget_music_player">Music Player</string>
@@ -590,7 +609,7 @@
     <string name="listen_together_in_top_bar">Listen Together in top bar</string>
     <string name="listen_together_in_top_bar_desc">Show Listen Together in the top app bar instead of the navigation bar</string>
     <string name="listen_together_description">Listen to music with your friends in real time. Create a room to host, or join an existing room with a code</string>
-    <string name="listen_together_background_disconnect_note">NOTE: You may get disconnected if you create a room while no music is playing and then switch to another app</string>
+    <string name="listen_together_background_disconnect_note">NOTE: When you are connected but not in a room, Listen Together disconnects after 30 minutes in the background to save battery</string>
     <string name="listen_together_not_configured">Listen Together is not set up. Please configure the server URL in: Listen Together &gt; Settings &gt; Server URL</string>
     <string name="listen_together_suggestion_received">%1$s suggested %2$s</string>
     <string name="listen_together_suggestion_sent">Suggestion sent to host!</string>
@@ -617,7 +636,6 @@
     <string name="reject">Reject</string>
     <string name="clear">Clear</string>
     <string name="copy">Copy</string>
-    <string name="copy_all_lyrics">Copy all lyrics</string>
     <string name="change">Change</string>
     <string name="copied_to_clipboard">Copied to clipboard</string>
     <string name="not_set">Not set</string>
@@ -668,7 +686,6 @@
     <string name="ai_error_no_lyrics">No lyrics to translate</string>
     <string name="ai_error_lyrics_empty">Lyrics are empty</string>
     <string name="ai_error_language_required">A target language is required</string>
-    <string name="ai_error_unexpected">Unexpected translation result</string>
     <string name="ai_error_unknown">An unknown error occurred</string>
     <string name="ai_error_translation_failed">Translation failed</string>
     <string name="ai_provider_help">Get API keys</string>
@@ -680,13 +697,12 @@
     <string name="ai_provider_xai_help">Visit https://console.x.ai</string>
     <string name="ai_provider_deepl_help">Visit https://deepl.com/pro-api for free and paid keys</string>
     <string name="ai_provider_mistral_help">Visit https://console.mistral.ai/api-keys</string>
+    <string name="ai_provider_inception_help">Visit https://platform.inceptionlabs.ai for API keys</string>
     <string name="ai_deepl_formality">Formality</string>
     <string name="ai_deepl_formality_default">Default</string>
     <string name="ai_deepl_formality_more">More formal</string>
     <string name="ai_deepl_formality_less">Less formal</string>
     <string name="ai_system_prompt">System prompt</string>
-    <string name="ai_system_prompt_desc">Custom instructions sent to the AI model. Leave empty to use the default prompt</string>
-    <string name="ai_system_prompt_placeholder">Use {lineCount} as a placeholder for the number of lines to translate</string>
     <string name="ai_system_prompt_default">Default</string>
     <string name="ai_system_prompt_reset">Reset to default</string>
 
@@ -695,7 +711,7 @@
     <string name="crash_description">An unexpected error occurred. Please share the crash report to help us fix the issue</string>
     <string name="crash_share_logs">Share logs</string>
     <string name="crash_share_title">Share crash report</string>
-    <string name="crash_report_subject">Meld Crash Report</string>
+    <string name="crash_report_subject">Metrolist crash report</string>
     <string name="crash_close">Close</string>
     <string name="crash_no_log">No crash log available</string>
 
@@ -731,6 +747,8 @@
     <string name="play_all">Play all</string>
     <string name="enable_high_refresh_rate">Enable high refresh rate</string>
     <string name="enable_high_refresh_rate_desc">Forces the display to run at its highest supported refresh rate (e.g. 120Hz)</string>
+    <string name="enable_landscape_scaling">Landscape Scaling</string>
+    <string name="enable_landscape_scaling_desc">Scale UI in landscape mode for larger screens</string>
 
     <!-- Music Recognition -->
     <string name="recognize_music">Recognize music</string>
@@ -745,7 +763,7 @@
     <string name="clear_recognition_history_confirm">Are you sure you want to clear all recognition history?</string>
     <string name="delete_from_history">Delete from history</string>
     <string name="re_listen">Re-listen</string>
-    <string name="play_on_app">Play on Meld</string>
+    <string name="play_on_app">Play on Metrolist</string>
     <string name="qs_tile_music_recognizer">Recognize music</string>
     <string name="recognition_notification_channel_name">Music recognition</string>
     <string name="recognition_notification_channel_desc">Shows a notification while identifying a song from quick settings</string>
@@ -768,35 +786,48 @@
     <string name="recently_converted">Recently converted</string>
     <string name="column_label">Column %d</string>
 
-    <!-- Discord Integration -->
-    <string name="discord_status">Status</string>
-    <string name="discord_status_online">Online</string>
-    <string name="discord_status_idle">Idle</string>
-    <string name="discord_status_dnd">Do Not Disturb</string>
-    <string name="discord_buttons">Buttons</string>
-    <string name="discord_button_1">Button 1</string>
-    <string name="discord_button_2">Button 2</string>
-    <string name="login_successful">Login successful!</string>
-    <string name="discord_information_warning">This feature uses the KizzyRPC library to connect to Discord\'s Gateway and update your Rich Presence status. While no account suspensions from similar usage have been reported, this method is not officially supported by Discord and may be considered a Terms of Service violation. Your token is handled locally and never sent to third-party servers. Proceed at your own discretion!</string>
+    <string name="discord_connect_description">Sign in with Discord to share what you\'re listening to</string>
+    <string name="discord_information_warning">Metrolist uses Discord\'s public OAuth2 and Gateway APIs to share what you\'re listening to. Authorization happens through a local browser session that closes itself after capturing the code — nothing is sent to third-party servers. Your token is stored on this device in encrypted preferences and is never shared. Metrolist connects directly to wss://gateway.discord.gg to publish your activity, and only requests the minimum scope required (sdk.social_layer_presence).</string>
+    <string name="discord_status_connected">Connected</string>
+    <string name="discord_status_authorizing">Authorizing…</string>
+    <string name="discord_status_authorized">Authorized</string>
+    <string name="discord_status_not_initialized">Not initialized</string>
+    <string name="discord_error_loopback_timeout">Discord didn\'t respond in time. Please try again.</string>
+    <string name="discord_error_loopback_unbound">Couldn\'t open a local callback port. Please free one and try again.</string>
+    <string name="discord_error_no_browser">No browser was found to complete Discord authorization.</string>
+    <string name="discord_error_token_refresh_failed">Discord session expired. Please reconnect.</string>
+    <string name="discord_error_invalid_scope">Discord rejected the connection. Please reconnect and grant the required permission.</string>
+    <string name="discord_error_banner_title">Discord error</string>
+    <string name="discord_rpc_preview">Rich Presence preview</string>
+    <string name="discord_integration">Discord Integration</string>
+    <string name="enable_discord_rpc">Enable Rich Presence</string>
+    <string name="discord_advanced_mode">Advanced mode</string>
+    <string name="discord_advanced_mode_description">Customize every field of your Rich Presence with placeholders</string>
+    <string name="discord_presence">Presence</string>
     <string name="discord_activity_type">Activity type</string>
     <string name="discord_activity_playing">Playing</string>
     <string name="discord_activity_listening">Listening</string>
     <string name="discord_activity_watching">Watching</string>
     <string name="discord_activity_competing">Competing</string>
-    <string name="discord_button_text_variables">Variables: {song_name}, {artist_name}, {album_name}</string>
-    <string name="discord_rpc_preview">Rich Presence preview</string>
-    <string name="discord_presence">Presence</string>
-    <string name="discord_connect_description">Sign in with Discord to share what you\'re listening to</string>
-    <string name="discord_playing_metrolist">Playing Meld</string>
-    <string name="discord_watching_metrolist">Watching Meld</string>
-    <string name="discord_competing_metrolist">Competing in Meld</string>
     <string name="discord_activity_name">Activity name</string>
-    <string name="discord_activity_name_description">Custom name for the activity. Leave empty to use the default</string>
-    <string name="discord_advanced_mode">Advanced mode</string>
-    <string name="discord_advanced_mode_description">Show additional Rich Presence customization options</string>
+    <string name="discord_state">State</string>
+    <string name="discord_details">Details</string>
+    <string name="discord_buttons">Buttons</string>
+    <string name="discord_button_1">Button 1</string>
+    <string name="discord_button_2">Button 2</string>
+    <string name="discord_enable_button_1">Show button 1</string>
+    <string name="discord_enable_button_2">Show button 2</string>
+    <string name="discord_button_label">Label</string>
+    <string name="discord_button_url">URL</string>
+    <string name="discord_status">Status</string>
+    <string name="discord_status_online">Online</string>
+    <string name="discord_status_idle">Idle</string>
+    <string name="discord_status_dnd">Do Not Disturb</string>
     <string name="speed_dial">Speed dial</string>
     <string name="pin_to_speed_dial">Pin to speed dial</string>
     <string name="unpin_from_speed_dial">Unpin from speed dial</string>
+    <string name="pin">Pin</string>
+    <string name="unpin">Unpin</string>
     <string name="randomize_home_order">Randomize home screen order</string>
     <string name="randomize_home_order_desc">Randomly reorder home screen sections using weighted priorities</string>
 
@@ -822,15 +853,10 @@
     <string name="credits_license_desc">Free, open-source software. You may use, study, share, and improve it</string>
     <string name="credits_discord">Discord server</string>
     <string name="credits_telegram">Telegram channel</string>
-    <string name="credits_website">Website</string>
-    <string name="credits_instagram">Instagram</string>
-    <string name="credits_github">GitHub</string>
     <string name="credits_view_repo">View repository</string>
-    <string name="app_version_info">%1$s • %2$s</string>
-    <string name="like_what_i_do">Like what I do?</string>
     <string name="buy_mo_a_coffee">Buy me a coffee!</string>
     <string name="community_and_info">Community &amp; Info</string>
-    <string name="metrolist">MELD</string>
+    <string name="metrolist">METROLIST</string>
     <string name="wanna_play_favorite_song">Want to play their favorite song?</string>
     <string name="yeah">Yeah!</string>
     <string name="stands_with_palestine">This project stands with Palestine 🇵🇸</string>
@@ -866,8 +892,9 @@
     <!-- Restore confirmation dialog -->
     <string name="restore_confirm_title">Restore backup?</string>
     <string name="restore_confirm_message">This will restore your app data from the selected backup</string>
-    <string name="restore_account_warning">You will need to log in again after restoring. The following account will be signed out:</string>
+    <string name="restore_account_warning">The following account information will be restored and preserved:</string>
     <string name="restore">Restore</string>
+    <string name="restore_database_incompatible">Cannot restore backup: database version incompatible. Your current data has been preserved.</string>
     <string name="checking_previous_account">Checking for previous account…</string>
     <string name="no_account_found">No account found</string>
 
@@ -897,10 +924,11 @@
     <string name="android_auto_youtube_playlists">Show YouTube suggested playlists</string>
     <string name="android_auto_youtube_playlists_desc">Show YouTube Music recommended playlists in the playlists section while browsing with Android Auto</string>
     <string name="android_auto_target_playlist">Quick-add destination</string>
-    <string name="android_auto_target_playlist_desc">Choose the playlist where songs are saved when using the quick-add button in Android Auto</string>
     <string name="android_auto_target_playlist_auto">Not set</string>
-    <string name="added_to_playlist">Added to playlist</string>
     <string name="android_auto_target_playlist_not_set">No playlist selected. Choose one in Android Auto settings</string>
+    <string name="android_auto_search_options">Search options</string>
+    <string name="android_auto_search_local_songs_limit">Songs search limit</string>
+    <string name="android_auto_search_local_songs_limit_desc">Limit the number of local songs shown in the search results. It is recommended to not set unlimited to prevent memory crashes</string>
 
     <!-- Stats time transfer -->
     <string name="time_transfer_title">Time transfer</string>
@@ -910,17 +938,114 @@
     <string name="time_transfer_listen_time_label">Listen time: </string>
     <string name="time_transfer_convert">Convert</string>
     <string name="song_dropdown_more_results">Keep typing to narrow results (%d more)</string>
+
+    <!-- Player and Audio Settings -->
+    <string name="autoplay">Autoplay</string>
+    <string name="autoplay_desc">Automatically play the next song when the current one ends</string>
+
+    <!-- Accessibility -->
+    <string name="back">Back</string>
+    <string name="clear_search">Clear search</string>
+    <string name="close_chip">Close</string>
+    <string name="switch_to_list_view">Switch to list view</string>
+    <string name="switch_to_grid_view">Switch to grid view</string>
+    <string name="more_options">More options</string>
+
+    <!-- Loudness Level -->
+    <string name="loudness_level">Loudness level</string>
+    <string name="loudness_level_aggressive">Aggressive (-7 dB)</string>
+    <string name="loudness_level_loud">Loud (-11 dB)</string>
+    <string name="loudness_level_balanced">Balanced (-14 dB)</string>
+    <string name="loudness_level_quiet">Quiet (-19 dB)</string>
+    <string name="widget_playlists">Playlists</string>
+    <string name="widget_playlists_description">Playlist shortcuts with mini-player controls</string>
+    <string name="choose_something_below">Choose something below</string>
+    <string name="choose_youtube_channel">Choose a YouTube channel</string>
+    <string name="choose_youtube_channel_description">This Google account has multiple channels. Pick the one you want to use.</string>
+    <string name="switch_youtube_channel">Switch YouTube channel</string>
+    <string name="youtube_channels_failed">Couldn\'t retrieve the YouTube channels for this account. Please try again.</string>
+    <string name="authentication_data_extraction_failed">Couldn\'t read the YouTube Music session. Please try again.</string>
+    <string name="login_failed_with_error">Login failed: %1$s</string>
+    <string name="stream_client">Stream client</string>
+    <string name="format_player_hash">Player hash</string>
+    <string name="format_cipher_support_added">Cipher support added</string>
+    <string name="not_applicable">N/A</string>
+
+    <!-- Stream sources -->
+    <string name="enable_dynamic_icon">Dynamic icon colors</string>
+    <string name="enable_dynamic_icon_desc">Use dynamic theme colors for the app icon. When disabled, the icon uses solid colors.</string>
+    <string name="stream_sources">Stream sources</string>
+    <string name="stream_source_order">Stream order</string>
+    <string name="stream_source_web_clients">Web clients</string>
+    <string name="stream_source_native_clients">Native clients</string>
+    <string name="stream_source_creator_clients">Creator clients</string>
+    <string name="stream_source_web_remix">WEB_REMIX</string>
+    <string name="stream_source_web_remix_desc">Primary client. Authenticated; covers most tracks.</string>
+    <string name="stream_source_tvhtml5">TVHTML5</string>
+    <string name="stream_source_tvhtml5_desc">TV client. Reliable fallback.</string>
+    <string name="stream_source_visionos">visionOS</string>
+    <string name="stream_source_visionos_desc">Apple Vision. No throttle gate; very reliable.</string>
+    <string name="stream_source_android_vr">Android VR</string>
+    <string name="stream_source_android_vr_desc">Android VR clients (all versions).</string>
+    <string name="stream_source_web_creator">WEB_CREATOR</string>
+    <string name="stream_source_web_creator_desc">Creator web client.</string>
+    <string name="discord_use_details">Use details instead of state</string>
+    <string name="discord_use_details_description">Show the song title prominently instead of the artist name</string>
+    <string name="alarm_playlist_helper">Choose which playlist the alarm will play</string>
+    <string name="alarm_next_trigger">Next trigger</string>
+    <string name="crossfade_beta_title">Beta feature!</string>
+    <string name="crossfade_beta_message">Crossfade is a new feature and may have bugs. If you experience any issues, please report them.\n\nNOTE: This feature disables audio offload due to technical limitations</string>
+    <string name="lyrics_romanization_cyrillic">Cyrillic</string>
+    <string name="lyrics_romanize_japanese">Romanize Japanese lyrics</string>
+    <string name="lyrics_romanize_korean">Romanize Korean lyrics</string>
+    <string name="lyrics_romanize_chinese">Romanize Chinese lyrics</string>
+    <string name="lyrics_romanize_hindi">Romanize Hindi lyrics</string>
+    <string name="lyrics_romanize_punjabi">Romanize Punjabi lyrics</string>
+    <string name="lyrics_romanize_russian">Romanize Russian lyrics</string>
+    <string name="lyrics_romanize_ukrainian">Romanize Ukrainian lyrics</string>
+    <string name="lyrics_romanize_belarusian">Romanize Belarusian lyrics</string>
+    <string name="lyrics_romanize_kyrgyz">Romanize Kyrgyz lyrics</string>
+    <string name="lyrics_romanize_serbian">Romanize Serbian lyrics</string>
+    <string name="lyrics_romanize_bulgarian">Romanize Bulgarian lyrics</string>
+    <string name="line_by_line_option_desc">Cyrillic script will be detected line-by-line rather than across the entire song</string>
+    <string name="line_by_line_dialog_title">Are you sure?</string>
+    <string name="line_by_line_dialog_desc">This is a hit-or-miss experimental feature.\n\nBy default, the language is detected from the entire song. With this option on, it will be detected line-by-line instead. This allows multi-language songs to work, BUT the detected language may not always be correct. For example, a Ukrainian line without any Ukrainian-specific characters might be romanized as Russian.\n\nIf you are not experiencing any issues, it is recommended to keep this option off</string>
+    <string name="lyrics_romanize_macedonian">Romanize Macedonian lyrics</string>
+    <string name="pure_black_mini_player">Pure black mini-player</string>
+    <string name="fade">Fade</string>
+    <string name="glow">Glow</string>
+    <string name="slide">Slide</string>
+    <string name="karaoke">Karaoke</string>
+    <string name="apple_music_style">Apple Music</string>
+    <plurals name="profiles_count">
+        <item quantity="one">%d profile</item>
+        <item quantity="other">%d profiles</item>
+    </plurals>
+    <string name="listening_to_metrolist">Listening to Meld</string>
+    <string name="copy_all_lyrics">Copy all lyrics</string>
+    <string name="ai_error_unexpected">Unexpected translation result</string>
+    <string name="ai_system_prompt_desc">Custom instructions sent to the AI model. Leave empty to use the default prompt</string>
+    <string name="ai_system_prompt_placeholder">Use {lineCount} as a placeholder for the number of lines to translate</string>
+    <string name="login_successful">Login successful!</string>
+    <string name="discord_button_text_variables">Variables: {song_name}, {artist_name}, {album_name}</string>
+    <string name="discord_playing_metrolist">Playing Meld</string>
+    <string name="discord_watching_metrolist">Watching Meld</string>
+    <string name="discord_competing_metrolist">Competing in Meld</string>
+    <string name="discord_activity_name_description">Custom name for the activity. Leave empty to use the default</string>
+    <string name="credits_website">Website</string>
+    <string name="credits_instagram">Instagram</string>
+    <string name="credits_github">GitHub</string>
+    <string name="app_version_info">%1$s • %2$s</string>
+    <string name="like_what_i_do">Like what I do?</string>
+    <string name="android_auto_target_playlist_desc">Choose the playlist where songs are saved when using the quick-add button in Android Auto</string>
+    <string name="added_to_playlist">Added to playlist</string>
     <string name="recently_played">Recently Played</string>
     <string name="retry_button">Retry</string>
-    <string name="library_playlist_empty">Your playlists will appear here</string>
-    <string name="parsed_from_link">Parsed from link</string>
+
     <string name="sort_by_original">Original order</string>
     <string name="sort_by_duration">Duration</string>
     <string name="enable_musixmatch">Enable Musixmatch</string>
     <string name="enable_musixmatch_desc">Time-synced lyrics from Musixmatch (unofficial API, may be rate-limited)</string>
-    <string name="speed">Playback Speed</string>
-    <string name="varispeed">Enable varispeed</string>
-    <string name="varispeed_description">Link pitch to playback speed, resulting in tape-style speedup and slowdown effects</string>
     <string name="lastfm_api_credentials_missing">Last.fm API credentials are missing from this build.</string>
     <string name="spotify_integration">Spotify Integration</string>
     <string name="spotify_login">Log in with Spotify</string>
@@ -1041,7 +1166,7 @@
     <string name="qobuz_endpoint_hint">https://example.com (blank = default)</string>
     <string name="added_to_play_next">Added to play next</string>
     <string name="added_to_queue">Added to the queue</string>
-    <string name="pure_black">Pure black</string>
+
     <string name="wrapped_end_thanks">Thanks for listening with Meld!</string>
     <string name="wrapped_end_create_playlist">Create Your Wrapped Playlist</string>
     <string name="wrapped_end_creating_playlist">Creating...</string>
@@ -1075,10 +1200,4 @@
         <item quantity="one">%d file</item>
         <item quantity="other">%d files</item>
     </plurals>
-    <string name="back">Back</string>
-    <string name="clear_search">Clear search</string>
-    <string name="close_chip">Close</string>
-    <string name="switch_to_list_view">Switch to list view</string>
-    <string name="switch_to_grid_view">Switch to grid view</string>
-    <string name="more_options">More options</string>
 </resources>

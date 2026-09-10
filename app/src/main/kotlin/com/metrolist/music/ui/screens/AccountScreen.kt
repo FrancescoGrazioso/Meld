@@ -31,7 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -79,14 +79,14 @@ fun AccountScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    val playlists by viewModel.playlists.collectAsState()
-    val albums by viewModel.albums.collectAsState()
-    val artists by viewModel.artists.collectAsState()
-    val sePlaylist by viewModel.sePlaylist.collectAsState()
-    val rdpnPlaylist by viewModel.rdpnPlaylist.collectAsState()
-    val podcastPlaylists by viewModel.podcastPlaylists.collectAsState()
-    val podcastChannels by viewModel.podcastChannels.collectAsState()
-    val selectedContentType by viewModel.selectedContentType.collectAsState()
+    val playlists by viewModel.playlists.collectAsStateWithLifecycle()
+    val albums by viewModel.albums.collectAsStateWithLifecycle()
+    val artists by viewModel.artists.collectAsStateWithLifecycle()
+    val sePlaylist by viewModel.sePlaylist.collectAsStateWithLifecycle()
+    val rdpnPlaylist by viewModel.rdpnPlaylist.collectAsStateWithLifecycle()
+    val podcastPlaylists by viewModel.podcastPlaylists.collectAsStateWithLifecycle()
+    val podcastChannels by viewModel.podcastChannels.collectAsStateWithLifecycle()
+    val selectedContentType by viewModel.selectedContentType.collectAsStateWithLifecycle()
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
 
     LazyVerticalGrid(
@@ -164,7 +164,6 @@ fun AccountScreen(
                                         menuState.show {
                                             YouTubeAlbumMenu(
                                                 albumItem = item,
-                                                navController = navController,
                                                 onDismiss = menuState::dismiss,
                                             )
                                         }

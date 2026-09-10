@@ -52,7 +52,7 @@ import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -68,7 +68,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -84,10 +83,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachReversed
 import androidx.compose.ui.util.fastSumBy
-import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import timber.log.Timber
 import androidx.media3.exoplayer.offline.Download
-import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
@@ -102,6 +100,7 @@ import com.metrolist.music.constants.SongSortType
 import com.metrolist.music.constants.SongSortTypeKey
 import com.metrolist.music.constants.YtmSyncKey
 import com.metrolist.music.db.entities.Song
+import com.metrolist.music.extensions.fileNameAndSize
 import com.metrolist.music.extensions.toMediaItem
 import com.metrolist.music.playback.ExoDownloadService
 import com.metrolist.music.playback.queues.ListQueue
@@ -122,9 +121,11 @@ import com.metrolist.music.utils.makeTimeString
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.viewmodels.AutoPlaylistViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import androidx.compose.ui.focus.focusRequester
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -141,8 +142,8 @@ fun AutoPlaylistScreen(
     val uploadCompleteStr = stringResource(R.string.upload_complete)
     val focusManager = LocalFocusManager.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
     val playlist =
         when (viewModel.playlist) {
             "liked" -> stringResource(R.string.liked)
@@ -150,7 +151,7 @@ fun AutoPlaylistScreen(
             else -> stringResource(R.string.offline)
         }
 
-    val songs by viewModel.likedSongs.collectAsState(null)
+    val songs by viewModel.likedSongs.collectAsStateWithLifecycle(null)
     val mutableSongs =
         remember {
             mutableStateListOf<Song>()
@@ -235,6 +236,14 @@ fun AutoPlaylistScreen(
             contract = ActivityResultContracts.OpenMultipleDocuments(),
         ) { uris: List<Uri> ->
             if (uris.isNotEmpty()) {
+                uris.forEach { uri ->
+                    try {
+                        val takeFlags = android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        context.contentResolver.takePersistableUriPermission(uri, takeFlags)
+                    } catch (e: SecurityException) {
+                        Timber.w(e, "Could not take persistable permission")
+                    }
+                }
                 uploadJob =
                     scope.launch {
                         isUploading = true
@@ -247,61 +256,43 @@ fun AutoPlaylistScreen(
                             uploadProgress = 0f
 
                             try {
-                                val fileName = uri.lastPathSegment?.substringAfterLast('/') ?: "unknown"
-                                currentFileName = fileName
-                                val extension = fileName.substringAfterLast('.', "").lowercase()
-
-                                if (extension !in YouTube.SUPPORTED_UPLOAD_TYPES) {
-                                    withContext(Dispatchers.Main) {
-                                        Toast
-                                            .makeText(
-                                                context,
-                                                uploadUnsupportedFormatStr,
-                                                Toast.LENGTH_SHORT,
-                                            ).show()
+                                val (fileName, contentLength) =
+                                    withContext(Dispatchers.IO) {
+                                        context.contentResolver.fileNameAndSize(uri)
                                     }
+                                currentFileName = fileName
+
+                                if (fileName.substringAfterLast('.', "").lowercase() !in YouTube.SUPPORTED_UPLOAD_TYPES) {
+                                    Toast.makeText(context, uploadUnsupportedFormatStr, Toast.LENGTH_SHORT).show()
                                     return@forEachIndexed
                                 }
-
-                                val inputStream = context.contentResolver.openInputStream(uri)
-                                val data = inputStream?.readBytes()
-                                inputStream?.close()
-
-                                if (data == null) return@forEachIndexed
-
-                                if (data.size > YouTube.MAX_UPLOAD_SIZE) {
-                                    withContext(Dispatchers.Main) {
-                                        Toast
-                                            .makeText(
-                                                context,
-                                                uploadFileTooLargeStr,
-                                                Toast.LENGTH_SHORT,
-                                            ).show()
-                                    }
+                                if (contentLength >= YouTube.MAX_UPLOAD_SIZE) {
+                                    Toast.makeText(context, uploadFileTooLargeStr, Toast.LENGTH_SHORT).show()
+                                    return@forEachIndexed
+                                }
+                                if (contentLength <= 0) {
+                                    Toast.makeText(context, uploadFailedStr, Toast.LENGTH_SHORT).show()
                                     return@forEachIndexed
                                 }
 
                                 val result =
                                     YouTube.uploadSong(
                                         filename = fileName,
-                                        data = data,
-                                        onProgress = { progress ->
-                                            uploadProgress = progress
-                                        },
+                                        contentLength = contentLength,
+                                        content = { checkNotNull(context.contentResolver.openInputStream(uri)) },
+                                        onProgress = { progress -> uploadProgress = progress },
                                     )
 
-                                if (result.isSuccess && result.getOrDefault(false)) {
-                                    successCount++
-                                }
+                                if (result.getOrThrow()) successCount++
+                            } catch (e: CancellationException) {
+                                throw e
                             } catch (e: Exception) {
-                                withContext(Dispatchers.Main) {
-                                    Toast
-                                        .makeText(
-                                            context,
-                                            uploadFailedStr + ": ${e.message}",
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
-                                }
+                                Toast
+                                    .makeText(
+                                        context,
+                                        uploadFailedStr + ": ${e.message}",
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
                             }
                         }
 
@@ -486,7 +477,7 @@ fun AutoPlaylistScreen(
 
     val state = rememberLazyListState()
 
-    val isRefreshing by viewModel.isRefreshing.collectAsState()
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val pullRefreshState = rememberPullToRefreshState()
     val canRefresh = playlistType == PlaylistType.LIKE || playlistType == PlaylistType.UPLOADED
 
@@ -560,7 +551,7 @@ fun AutoPlaylistScreen(
                 if (filteredSongs.isNotEmpty()) {
                     itemsIndexed(
                         items = filteredSongs,
-                        key = { _, song -> song.id },
+                        key = { index, song -> "${song.id}_$index" },
                     ) { index, song ->
                         val onCheckedChange: (Boolean) -> Unit = {
                             if (it) {
@@ -587,7 +578,6 @@ fun AutoPlaylistScreen(
                                             menuState.show {
                                                 SongMenu(
                                                     originalSong = song,
-                                                    navController = navController,
                                                     onDismiss = menuState::dismiss,
                                                 )
                                             }
@@ -830,6 +820,7 @@ private fun AutoPlaylistHeader(
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
     val context = LocalContext.current
+    val downloadUtil = LocalDownloadUtil.current
 
     Column(
         modifier =
@@ -865,7 +856,7 @@ private fun AutoPlaylistHeader(
         // Playlist Name
         Text(
             text = name,
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             maxLines = 2,
@@ -881,7 +872,7 @@ private fun AutoPlaylistHeader(
                 buildString {
                     append(pluralStringResource(R.plurals.n_song, songs.size, songs.size))
                     if (likeLength > 0) {
-                        append(" • ")
+                        append(" ")
                         append(makeTimeString(likeLength * 1000L))
                     }
                 },
@@ -982,20 +973,7 @@ private fun AutoPlaylistHeader(
                                     }
 
                                     else -> {
-                                        songs.forEach { song ->
-                                            val downloadRequest =
-                                                DownloadRequest
-                                                    .Builder(song.song.id, song.song.id.toUri())
-                                                    .setCustomCacheKey(song.song.id)
-                                                    .setData(song.song.title.toByteArray())
-                                                    .build()
-                                            DownloadService.sendAddDownload(
-                                                context,
-                                                ExoDownloadService::class.java,
-                                                downloadRequest,
-                                                false,
-                                            )
-                                        }
+                                        songs.forEach { downloadUtil.download(it) }
                                     }
                                 }
                             },

@@ -13,11 +13,11 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import timber.log.Timber
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlinx.serialization.json.jsonObject
 
 /**
  * Fetches and caches Spotify GQL hashes from the remote GitHub Pages registry.

@@ -21,7 +21,10 @@ data class SearchResult(
 )
 
 object SearchPage {
-    fun toYTItem(renderer: MusicResponsiveListItemRenderer): YTItem? {
+    fun toYTItem(
+        renderer: MusicResponsiveListItemRenderer,
+        fallbackArtists: List<Artist> = emptyList(),
+    ): YTItem? {
         val secondaryLine =
             renderer.flexColumns
                 .getOrNull(1)
@@ -67,9 +70,15 @@ object SearchPage {
                 else null
 
                 EpisodeItem(
-                    // In filtered search, playlistItemData is absent; fall back to watchEndpoint.
                     id = renderer.playlistItemData?.videoId
                         ?: renderer.navigationEndpoint?.watchEndpoint?.videoId
+                        ?: renderer.overlay?.musicItemThumbnailOverlayRenderer
+                            ?.content?.musicPlayButtonRenderer
+                            ?.playNavigationEndpoint?.watchEndpoint?.videoId
+                        ?: renderer.flexColumns.firstOrNull()
+                            ?.musicResponsiveListItemFlexColumnRenderer
+                            ?.text?.runs?.firstOrNull()
+                            ?.navigationEndpoint?.watchEndpoint?.videoId
                         ?: return null,
                     title =
                         renderer.flexColumns
@@ -88,7 +97,7 @@ object SearchPage {
                             ?.text
                             ?.parseTime(),
                     publishDateText = publishDateText,
-                    thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
+                    thumbnail = renderer.thumbnail?.getThumbnailUrl() ?: return null,
                     explicit =
                         renderer.badges?.find {
                             it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
@@ -108,9 +117,23 @@ object SearchPage {
             }
             renderer.isSong -> {
                 val libraryTokens = PageHelper.extractLibraryTokensFromMenuItems(renderer.menu?.menuRenderer?.items)
+                val metadataRuns = renderer.flexColumns
+                    .drop(1)
+                    .flatMap { it.musicResponsiveListItemFlexColumnRenderer.text?.runs.orEmpty() }
+                val artists = PageHelper.extractArtists(metadataRuns).ifEmpty { fallbackArtists }
+                val albumRun = PageHelper.extractRuns(renderer.flexColumns, "MUSIC_PAGE_TYPE_ALBUM").firstOrNull()
 
                 SongItem(
-                    id = renderer.playlistItemData?.videoId ?: return null,
+                    id = renderer.playlistItemData?.videoId
+                        ?: renderer.navigationEndpoint?.watchEndpoint?.videoId
+                        ?: renderer.overlay?.musicItemThumbnailOverlayRenderer
+                            ?.content?.musicPlayButtonRenderer
+                            ?.playNavigationEndpoint?.watchEndpoint?.videoId
+                        ?: renderer.flexColumns.firstOrNull()
+                            ?.musicResponsiveListItemFlexColumnRenderer
+                            ?.text?.runs?.firstOrNull()
+                            ?.navigationEndpoint?.watchEndpoint?.videoId
+                        ?: return null,
                     title =
                         renderer.flexColumns
                             .firstOrNull()
@@ -119,28 +142,16 @@ object SearchPage {
                             ?.runs
                             ?.firstOrNull()
                             ?.text ?: return null,
-                    artists =
-                        secondaryLine.firstOrNull()?.oddElements()?.map {
-                            Artist(
-                                name = it.text,
-                                id = it.navigationEndpoint?.browseEndpoint?.browseId,
-                            )
-                        } ?: return null,
-                    album =
-                        secondaryLine.getOrNull(1)?.firstOrNull()?.takeIf { it.navigationEndpoint?.browseEndpoint != null }?.let {
-                            Album(
-                                name = it.text,
-                                id = it.navigationEndpoint?.browseEndpoint?.browseId!!,
-                            )
-                        },
-                    duration =
-                        secondaryLine
-                            .lastOrNull()
-                            ?.firstOrNull()
-                            ?.text
-                            ?.parseTime(),
+                    artists = artists.ifEmpty { return null },
+                    album = albumRun?.let {
+                        Album(
+                            name = it.text,
+                            id = it.navigationEndpoint?.browseEndpoint?.browseId ?: return@let null,
+                        )
+                    },
+                    duration = PageHelper.extractDuration(metadataRuns),
                     musicVideoType = renderer.musicVideoType,
-                    thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
+                    thumbnail = renderer.thumbnail?.getThumbnailUrl() ?: return null,
                     explicit =
                         renderer.badges?.find {
                             it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
@@ -162,7 +173,7 @@ object SearchPage {
                             ?.firstOrNull()
                             ?.text
                             ?: return null,
-                    thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
+                    thumbnail = renderer.thumbnail?.getThumbnailUrl() ?: return null,
                     shuffleEndpoint =
                         renderer.menu
                             ?.menuRenderer
@@ -191,7 +202,7 @@ object SearchPage {
                             ?.firstOrNull()
                             ?.text
                             ?: return null,
-                    thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
+                    thumbnail = renderer.thumbnail?.getThumbnailUrl() ?: return null,
                     shuffleEndpoint = renderer.menu
                         ?.menuRenderer
                         ?.items
@@ -242,7 +253,7 @@ object SearchPage {
                             ?.firstOrNull()
                             ?.text
                             ?.toIntOrNull(),
-                    thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
+                    thumbnail = renderer.thumbnail?.getThumbnailUrl() ?: return null,
                     explicit =
                         renderer.badges?.find {
                             it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
@@ -265,12 +276,11 @@ object SearchPage {
                             ?.firstOrNull()
                             ?.text ?: return null,
                     author =
-                        secondaryLine.firstOrNull()?.firstOrNull()?.let {
-                            Artist(
-                                name = it.text,
-                                id = it.navigationEndpoint?.browseEndpoint?.browseId,
-                            )
-                        } ?: return null,
+                        PageHelper.extractArtists(
+                            renderer.flexColumns
+                                .drop(1)
+                                .flatMap { it.musicResponsiveListItemFlexColumnRenderer.text?.runs.orEmpty() },
+                        ).firstOrNull() ?: return null,
                     songCountText =
                         renderer.flexColumns
                             .getOrNull(1)
@@ -279,7 +289,7 @@ object SearchPage {
                             ?.runs
                             ?.lastOrNull()
                             ?.text ?: return null,
-                    thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
+                    thumbnail = renderer.thumbnail?.getThumbnailUrl() ?: return null,
                     playEndpoint =
                         renderer.overlay
                             ?.musicItemThumbnailOverlayRenderer
@@ -319,12 +329,11 @@ object SearchPage {
                             ?.firstOrNull()
                             ?.text ?: return null,
                     author =
-                        secondaryLine.firstOrNull()?.firstOrNull()?.let {
-                            Artist(
-                                name = it.text,
-                                id = it.navigationEndpoint?.browseEndpoint?.browseId,
-                            )
-                        },
+                        PageHelper.extractArtists(
+                            renderer.flexColumns
+                                .drop(1)
+                                .flatMap { it.musicResponsiveListItemFlexColumnRenderer.text?.runs.orEmpty() },
+                        ).firstOrNull(),
                     episodeCountText =
                         renderer.flexColumns
                             .getOrNull(1)
@@ -333,7 +342,7 @@ object SearchPage {
                             ?.runs
                             ?.lastOrNull()
                             ?.text,
-                    thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
+                    thumbnail = renderer.thumbnail?.getThumbnailUrl() ?: return null,
                     playEndpoint =
                         renderer.overlay
                             ?.musicItemThumbnailOverlayRenderer
