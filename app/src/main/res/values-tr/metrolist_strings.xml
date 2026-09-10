@@ -178,7 +178,7 @@
     <string name="scrobble_delay_minutes">Scrobble gecikme dakikaları</string>
     <string name="swipe_song_to_remove">Şarkıyı oynatma listesinden kaldırmak için kaydırın</string>
     <string name="last_fm_send_likes">Beğenilenler/Beğenilmeyenleri Gönder</string>
-    <string name="last_fm_send_likes_description">Metrolist\'te Beğenilen/Beğenilmeyen şarkıları Last.fm\'de de Beğen/Beğenme</string>
+    <string name="last_fm_send_likes_description">Meld\'te Beğenilen/Beğenilmeyen şarkıları Last.fm\'de de Beğen/Beğenme</string>
     <string name="primary_color_style">Ana renk</string>
     <string name="auto_scroll">Yeniden senkronize et</string>
     <string name="lyrics_romanize_chinese">Çince şarkı sözlerini Latinleştir</string>
@@ -251,7 +251,7 @@
     <string name="wrapped_intro_title">METROLIST</string>
     <string name="wrapped_intro_subtitle">Dinlediklerinize göz atmanın zamanı geldi</string>
     <string name="wrapped_intro_button">hadi başlayalım!</string>
-    <string name="wrapped_logo_content_description">Metrolist Logosu</string>
+    <string name="wrapped_logo_content_description">Meld Logosu</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">ÖZETİNİZ HAZIR!</string>
     <string name="wrapped_ready_subtitle">Bu yıl neleri sevdiğini görme zamanı.</string>
@@ -263,7 +263,7 @@
     <string name="wrapped_playlist_saved">Oynatma listesi kaydedildi</string>
     <string name="casting_to">%s cihazına yansıtılıyor</string>
     <string name="progress_percent">İlerleme %s%%</string>
-    <string name="listening_to_metrolist">Metrolist dinleniyor</string>
+    <string name="listening_to_metrolist">Meld dinleniyor</string>
     <string name="open">Aç</string>
     <string name="failed_to_create_image">Görsel oluşturulamadı: %s</string>
     <string name="copied_title">Başlık kopyalandı</string>
@@ -296,7 +296,7 @@
     <string name="system_equalizer">Sistem Ekolayzeri</string>
     <string name="album_art">Albüm kapağı</string>
     <string name="no_song_playing">Oynatılan şarkı yok</string>
-    <string name="tap_to_open">Metrolist\'i açmak için bas</string>
+    <string name="tap_to_open">Meld\'i açmak için bas</string>
     <string name="previous">Bir önceki</string>
     <string name="play_pause">Devam Et/Duraklat</string>
     <string name="next">Bir sonraki</string>
@@ -389,7 +389,7 @@
     <string name="crash_description">Beklenmedik bir hata oluştu. Sorunu çözebilmemiz için lütfen bize oluşan hatayı raporlayın.</string>
     <string name="crash_share_logs">Logları paylaş</string>
     <string name="crash_share_title">Hata raporlarını paylaş</string>
-    <string name="crash_report_subject">Metrolist Hata Bildirimi</string>
+    <string name="crash_report_subject">Meld Hata Bildirimi</string>
     <string name="crash_close">Kapat</string>
     <string name="crash_no_log">Hata logları bulunmamakta</string>
     <string name="palette_dynamic">Dinamik</string>
@@ -438,7 +438,7 @@
     <string name="user_blocked_by_host">Kullanıcı sunucu sahibi tarafından engellendi</string>
     <string name="transfer_ownership">Sahipliği Aktar</string>
     <string name="not_playing">Herhangi bir şarkı oynatılmıyor</string>
-    <string name="tap_to_play">Metrolist\'i açmak için tıkla</string>
+    <string name="tap_to_play">Meld\'i açmak için tıkla</string>
     <string name="widget_music_player">Müzik oynatıcı</string>
     <string name="widget_turntable">Dönen plak</string>
     <string name="together">Beraber dinle</string>
@@ -486,7 +486,7 @@
     <string name="song_title_column">Şarkı adı sütunu</string>
     <string name="recently_converted">Son Dönüştürülenler</string>
     <string name="importing_csv">CSV içe aktarılıyor</string>
-    <string name="play_on_app">Metrolist\'te Oynat</string>
+    <string name="play_on_app">Meld\'te Oynat</string>
     <string name="listening">Dinleniliyor…</string>
     <string name="continue_action">Devam et</string>
     <string name="enable">Etkinleştir</string>
@@ -535,9 +535,9 @@
     <string name="discord_rpc_preview">Rich Presence Önizlemesi</string>
     <string name="discord_presence">Durum</string>
     <string name="discord_connect_description">Ne dinlediğini paylaşmak için Discord\'a giriş yap</string>
-    <string name="discord_playing_metrolist">Metrolist oynuyor</string>
-    <string name="discord_watching_metrolist">Metrolist izliyor</string>
-    <string name="discord_competing_metrolist">Metrolist\'te yarışıyor</string>
+    <string name="discord_playing_metrolist">Meld oynuyor</string>
+    <string name="discord_watching_metrolist">Meld izliyor</string>
+    <string name="discord_competing_metrolist">Meld\'te yarışıyor</string>
     <string name="discord_activity_name">Etkinlik adı</string>
     <string name="discord_activity_name_description">Etkinlik için özel ad (varsayılan için boş bırakın)</string>
     <string name="discord_advanced_mode">Gelişmiş mod</string>
@@ -562,7 +562,7 @@
     <string name="lyrics_provider_priority_desc">Tercihinize göre sağlayıcıları yeniden sıralamak için sürükleyin. Bu ise daha üst sıra, daha yüksek öncelik anlamına gelir</string>
     <string name="changelog">Değişiklik Günlüğü</string>
     <string name="changelog_empty">Değişiklik günlüğü mevcut değil</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">GitHub\'da görüntüle</string>
     <string name="current_version">Mevcut sürüm</string>

@@ -205,7 +205,7 @@
     <string name="wrapped_intro_title">METROLIST</string>
     <string name="wrapped_intro_subtitle">laikas pamatyti, ką jūs klausėtės</string>
     <string name="wrapped_intro_button">pirmyn!</string>
-    <string name="wrapped_logo_content_description">„Metrolist” logotipas</string>
+    <string name="wrapped_logo_content_description">„Meld” logotipas</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">JŪSŲ WRAPPED YRA PARUOŠTAS!</string>
     <string name="wrapped_ready_subtitle">Metas pamatyti, kas jums patiko šiais metais.</string>
@@ -239,7 +239,7 @@
     <string name="error_title">Klaida</string>
     <string name="error_eq_apply_failed">Klaida, įkeliant ekvalaizerio profilį %1$s</string>
     <string name="progress_percent">Progresas %s%%</string>
-    <string name="listening_to_metrolist">Klausomasi „Metrolist”</string>
+    <string name="listening_to_metrolist">Klausomasi „Meld”</string>
     <string name="open">Atidaryti</string>
     <string name="failed_to_create_image">Klaida, kuriant nuotrauką %s</string>
     <string name="copied_title">Nukopijuotas pavadinimas</string>
@@ -249,7 +249,7 @@
     <string name="error_playback_failed">Atkūrimo klaida</string>
     <string name="album_art">Albumo viršelis</string>
     <string name="no_song_playing">Nėra grojančios dainos</string>
-    <string name="tap_to_open">Spauskite, kad atidarytumėte „Metrolist”</string>
+    <string name="tap_to_open">Spauskite, kad atidarytumėte „Meld”</string>
     <string name="previous">Ankstesnis</string>
     <string name="play_pause">Leisti / pristabdyti</string>
     <string name="next">Kitas</string>
@@ -325,7 +325,7 @@
     <string name="release_notes">Leidimo pastabos</string>
     <string name="changelog">Pakeitimų sąrašas</string>
     <string name="changelog_empty">Nėra galimų pakeitimų sąrašų</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Peržiūrėti GitHub</string>
     <string name="current_version">Dabartinė versija</string>
@@ -394,7 +394,7 @@
     <string name="lyrics_romanize_as_main">Rodyti romanizuotus dainų žodžius kaip pagrindinius</string>
     <string name="lastfm_now_playing">Siųsti dabar grojančią dainą</string>
     <string name="last_fm_send_likes">Siųsti Mėgiamus/Nemėgiamus</string>
-    <string name="last_fm_send_likes_description">Mylėti/Nemylėti dainas Last.fm kai jos yra susietos su Mėgiamomis/Nemėgiamomis Metrolist</string>
+    <string name="last_fm_send_likes_description">Mylėti/Nemylėti dainas Last.fm kai jos yra susietos su Mėgiamomis/Nemėgiamomis Meld</string>
     <string name="logging_in">Prisijungiama…</string>
     <string name="scrobbling_configuration">Skroblavimo konfigūracija</string>
     <string name="scrobble_min_track_duration">Skrobluoti dainas ilgesnes nei</string>

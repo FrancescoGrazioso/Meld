@@ -184,7 +184,7 @@
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Активиране на предаване на звук към Chromecast и други устройства поддържащи Cast</string>
     <string name="last_fm_send_likes">Изпращане на харесвания/нехаресвания</string>
-    <string name="last_fm_send_likes_description">Добавяне/премахване на любимо в Last.fm, когато харесате/премахнете песен в Metrolist</string>
+    <string name="last_fm_send_likes_description">Добавяне/премахване на любимо в Last.fm, когато харесате/премахнете песен в Meld</string>
     <string name="logging_in">Влизане…</string>
     <string name="hide_video_songs">Скриване на видео</string>
     <string name="details_desc">Преглед на информацията за песента</string>
@@ -254,7 +254,7 @@
     <string name="export_option_save">Запазване в «Документи»</string>
     <string name="changelog">Списък с промените</string>
     <string name="changelog_empty">Списъкът с промените е недостъпен</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Покажи на GitHub</string>
     <string name="current_version">Текуща версия</string>

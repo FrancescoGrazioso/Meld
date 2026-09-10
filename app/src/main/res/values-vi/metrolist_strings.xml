@@ -195,7 +195,7 @@
     <string name="show_artist_description">Hiển thị mô tả nghệ sĩ</string>
     <string name="show_artist_subscriber_count">Hiện số lượng người đăng ký</string>
     <string name="show_artist_monthly_listeners">Hiển thị số lượt nghe hằng tháng</string>
-    <string name="wrapped_logo_content_description">Metrolist Logo</string>
+    <string name="wrapped_logo_content_description">Meld Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="listen_together_join_room">Tham gia phòng</string>
     <string name="listen_together_create_room_desc">Tạo phòng và chia sẽ mã cho bạn bè</string>
@@ -219,7 +219,7 @@
     <string name="listen_together_use_custom_server">Sử dụng máy chủ tùy chỉnh</string>
     <string name="album_art">Cài đặt widget</string>
     <string name="no_song_playing">Không có bài hát đang phát</string>
-    <string name="tap_to_open">Chạm để mở Metrolist</string>
+    <string name="tap_to_open">Chạm để mở Meld</string>
     <string name="previous">Bài trước</string>
     <string name="play_pause">Phát/Tạm dừng</string>
     <string name="next">Bài tiếp</string>
@@ -291,7 +291,7 @@
     <string name="crash_description">Đã xảy ra lỗi không mong muốn. Vui lòng chia sẻ báo cáo sự cố để giúp chúng tôi khắc phục lỗi.</string>
     <string name="crash_share_logs">Chia sẻ nhật ký</string>
     <string name="crash_share_title">Chia sẻ báo cáo sự cố</string>
-    <string name="crash_report_subject">Báo cáo sự cố Metrolist</string>
+    <string name="crash_report_subject">Báo cáo sự cố Meld</string>
     <string name="crash_close">Đóng</string>
     <string name="crash_no_log">Không có nhật ký sự cố</string>
     <string name="palette_crimson">Đỏ thẫm</string>
@@ -328,7 +328,7 @@
     <string name="remember_shuffle_and_repeat_desc">Nhớ chế độ ngẫu nhiên &amp; lặp khi mở lại ứng dụng</string>
     <string name="pause_music_when_media_is_muted">Tạm dừng nhạc khi tắt tiếng media</string>
     <string name="keep_screen_on_when_player_is_expanded">Giữ màn hình bật khi mở trình phát</string>
-    <string name="last_fm_send_likes_description">Đánh dấu yêu thích/bỏ yêu thích bài hát trên Last.fm khi chúng được thích/bỏ thích trong Metrolist</string>
+    <string name="last_fm_send_likes_description">Đánh dấu yêu thích/bỏ yêu thích bài hát trên Last.fm khi chúng được thích/bỏ thích trong Meld</string>
     <string name="logging_in">Đang đăng nhập…</string>
     <string name="hide_video_songs">Ẩn bài hát video</string>
     <string name="details_desc">Xem thông tin bài hát</string>
@@ -390,7 +390,7 @@
     <string name="lyrics_provider_priority_desc">Kéo để xắp xếp lại nhà cung cấp theo ý muốn. Vị trí càng cao -&gt; Uư tiên càng cao.</string>
     <string name="changelog">Lịch sử cập nhật</string>
     <string name="changelog_empty">Không có lịch sử cập nhật có sẵn</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Xem trong GitHub</string>
     <string name="current_version">Phiên bản hiện tại</string>
@@ -584,7 +584,7 @@
     <string name="found_in_settings_content">Chuỗi cứng</string>
     <string name="your_daily_discover">Khám Phá Hàng Ngày của Bạn</string>
     <string name="casting_to">Lựa chọn %s</string>
-    <string name="listening_to_metrolist">Đang nghe Metrolist</string>
+    <string name="listening_to_metrolist">Đang nghe Meld</string>
     <string name="open">Mở</string>
     <string name="failed_to_create_image">Không thể tạo ảnh: %s</string>
     <string name="copied_title">Tiêu Đề Đã Sao Chép</string>
@@ -596,7 +596,7 @@
     <string name="error_podcast_unsubscribe">Không thể hủy đăng ký podcast</string>
     <string name="view_channel">Quan sát Kênh</string>
     <string name="not_playing">Không có bài hát đang phát</string>
-    <string name="tap_to_play">Ấn để mở Metrolist</string>
+    <string name="tap_to_play">Ấn để mở Meld</string>
     <string name="widget_music_player">Máy phát Nhạc</string>
     <string name="widget_turntable">Bàn xoay</string>
     <string name="widget_recognizer_name">Nhận dạng âm nhạc</string>

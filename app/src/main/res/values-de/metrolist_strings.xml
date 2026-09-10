@@ -195,7 +195,7 @@
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Audioübertragung auf Chromecast und andere Cast-fähige Geräte aktivieren</string>
     <string name="last_fm_send_likes">Likes/Dislikes synchronisieren</string>
-    <string name="last_fm_send_likes_description">Lieder bei Last.fm als „Gefällt mir“/„Gefällt mir nicht“ markieren, wenn sie in Metrolist als „Gefällt mir“/„Gefällt mir nicht“ markiert werden</string>
+    <string name="last_fm_send_likes_description">Lieder bei Last.fm als „Gefällt mir“/„Gefällt mir nicht“ markieren, wenn sie in Meld als „Gefällt mir“/„Gefällt mir nicht“ markiert werden</string>
     <string name="logging_in">Anmelden…</string>
     <string name="hide_video_songs">Videosongs ausblenden</string>
     <string name="details_desc">Details zum Song anzeigen</string>
@@ -261,7 +261,7 @@
     <string name="wrapped_playlist_saved">Playlist gespeichert</string>
     <string name="casting_to">Übertragung auf %s</string>
     <string name="progress_percent">Fortschritt %s%%</string>
-    <string name="listening_to_metrolist">Metrolist hören</string>
+    <string name="listening_to_metrolist">Meld hören</string>
     <string name="open">Öffnen</string>
     <string name="failed_to_create_image">Bild konnte nicht erstellt werden: %s</string>
     <string name="copied_title">Kopierter Titel</string>
@@ -269,7 +269,7 @@
     <string name="error_playing">Fehler beim Abspielen</string>
     <string name="failed_to_parse_proxy">Die Proxy-URL konnte nicht analysiert werden.</string>
     <string name="wrapped_top_song_album_art_content_description">Albumcover</string>
-    <string name="wrapped_logo_content_description">Metrolist Logo</string>
+    <string name="wrapped_logo_content_description">Meld Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_top_artist_image_content_description">Bild des Top-Künstlers</string>
     <string name="wavy">Wellig</string>
@@ -289,7 +289,7 @@
     </plurals>
     <string name="system_equalizer">System-Equalizer</string>
     <string name="no_song_playing">Es wird kein Song abgespielt</string>
-    <string name="tap_to_open">Tippen, um Metrolist zu öffnen</string>
+    <string name="tap_to_open">Tippen, um Meld zu öffnen</string>
     <string name="previous">Vorherige</string>
     <string name="play_pause">Wiedergabe/Pause</string>
     <string name="next">Weiter</string>
@@ -411,7 +411,7 @@
     <string name="crash_description">Ein unerwarteter Fehler ist aufgetreten. Bitte teile uns den Absturzbericht mit, damit wir das Problem beheben können.</string>
     <string name="crash_share_logs">Protokolle teilen</string>
     <string name="crash_share_title">Absturzbericht teilen</string>
-    <string name="crash_report_subject">Metrolist Absturzbericht</string>
+    <string name="crash_report_subject">Meld Absturzbericht</string>
     <string name="crash_close">Schließen</string>
     <string name="crash_no_log">Kein Absturzprotokoll verfügbar</string>
     <string name="palette_dynamic">Dynamisch</string>
@@ -436,7 +436,7 @@
     <string name="cd_pure_black_mode">Reines Schwarz Modus</string>
     <string name="cd_palette_item">%1$s Palette</string>
     <string name="not_playing">Es wird kein Lied abgespielt</string>
-    <string name="tap_to_play">Tippen Sie hier, um Metrolist zu öffnen</string>
+    <string name="tap_to_play">Tippen Sie hier, um Meld zu öffnen</string>
     <string name="widget_music_player">Musik-Player</string>
     <string name="widget_turntable">Drehscheibe</string>
     <string name="together">Gemeinsam</string>
@@ -486,7 +486,7 @@
     <string name="song_title_column">Spalte für Songtitel</string>
     <string name="recently_converted">Kürzlich konvertiert</string>
     <string name="importing_csv">CSV importieren</string>
-    <string name="play_on_app">Auf Metrolist abspielen</string>
+    <string name="play_on_app">Auf Meld abspielen</string>
     <string name="listening">Hören…</string>
     <string name="continue_action">Weitermachen</string>
     <string name="enable">Aktivieren</string>
@@ -565,7 +565,7 @@
     <string name="lyrics_provider_priority_desc">Ziehen, um die Anbieter neu anzuordnen. Höhere Position bedeutet höhere Priorität</string>
     <string name="changelog">Änderungsprotokoll</string>
     <string name="changelog_empty">Kein Änderungsprotokoll verfügbar</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Auf GitHub anzeigen</string>
     <string name="current_version">Version in Nutzung</string>
@@ -646,9 +646,9 @@
     <string name="sleep_timer_default_set">Einschlaf-Timer standardmäßig auf %d Minuten eingestellt</string>
     <string name="error_podcast_unsubscribe">Podcast-Abo kündigen fehlgeschlagen</string>
     <string name="discord_rpc_preview">Rich Presence Vorschau</string>
-    <string name="discord_playing_metrolist">Spielt Metrolist</string>
-    <string name="discord_watching_metrolist">Schaut Metrolist an</string>
-    <string name="discord_competing_metrolist">Im Wettkampf in Metrolist</string>
+    <string name="discord_playing_metrolist">Spielt Meld</string>
+    <string name="discord_watching_metrolist">Schaut Meld an</string>
+    <string name="discord_competing_metrolist">Im Wettkampf in Meld</string>
     <string name="remove_episode_from_saved">Von gespeicherten Episoden entfernen</string>
     <string name="filter_episodes">Episoden</string>
     <string name="filter_channels">Kanäle</string>

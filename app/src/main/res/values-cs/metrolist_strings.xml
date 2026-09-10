@@ -182,7 +182,7 @@
     <string name="scrobble_delay_minutes">Minuty zpoždění scrobblování</string>
     <string name="swipe_song_to_remove">Posuňte skladbu pro odstranění z playlistu</string>
     <string name="last_fm_send_likes">Odesílat stav oblíbení</string>
-    <string name="last_fm_send_likes_description">Přidat/odebrat srdíčko u skladby v Last.fm, když ji přidáte/odeberete z oblíbených v Metrolistu</string>
+    <string name="last_fm_send_likes_description">Přidat/odebrat srdíčko u skladby v Last.fm, když ji přidáte/odeberete z oblíbených v Meldu</string>
     <string name="lyrics_romanize_chinese">Přepsat čínské texty do latinky</string>
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Povolit streamování zvuku do Chromecastu a dalších zařízení kompatibilních s protokolem Cast</string>
@@ -257,7 +257,7 @@
     <string name="wrapped_intro_title">METROLIST</string>
     <string name="wrapped_intro_subtitle">je čas podívat se, co jste poslouchali</string>
     <string name="wrapped_intro_button">jdeme na to!</string>
-    <string name="wrapped_logo_content_description">Logo Metrolist</string>
+    <string name="wrapped_logo_content_description">Logo Meld</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">TVŮJ WRAPPED JE READY!</string>
     <string name="wrapped_ready_subtitle">Je čas podívat se, co se ti tento rok líbilo.</string>
@@ -269,7 +269,7 @@
     <string name="wrapped_playlist_saved">Playlist uložen</string>
     <string name="casting_to">Přehrávání přes %s</string>
     <string name="progress_percent">Postup %s%%</string>
-    <string name="listening_to_metrolist">Poslouchá Metrolist</string>
+    <string name="listening_to_metrolist">Poslouchá Meld</string>
     <string name="open">Otevřít</string>
     <string name="failed_to_create_image">Nepodařilo se vytvořit obrázek: %s</string>
     <string name="copied_title">Název zkopírován</string>
@@ -302,7 +302,7 @@
     <string name="system_equalizer">Systémový ekvalizér</string>
     <string name="album_art">Obal alba</string>
     <string name="no_song_playing">Nehraje žádná skladba</string>
-    <string name="tap_to_open">Klepnutím otevřete Metrolist</string>
+    <string name="tap_to_open">Klepnutím otevřete Meld</string>
     <string name="previous">Předchozí</string>
     <string name="play_pause">Přehrát/pozastavit</string>
     <string name="next">Další</string>
@@ -397,7 +397,7 @@
     <string name="crash_description">Došlo k neočekávané chybě. Pošlete nám hlášení o chybě, abyste nám pomohli problém opravit.</string>
     <string name="crash_share_logs">Sdílet logy</string>
     <string name="crash_share_title">Sdílet hlášení o chybě</string>
-    <string name="crash_report_subject">Metrolist hlášení o chybě</string>
+    <string name="crash_report_subject">Meld hlášení o chybě</string>
     <string name="crash_close">Zavřít</string>
     <string name="crash_no_log">Není k dispozici žádný záznam o chybě</string>
     <string name="palette_dynamic">Dynamická</string>
@@ -446,7 +446,7 @@
     <string name="unblock">Odblokovat</string>
     <string name="user_blocked_by_host">Uživatel zablokován hostitelem</string>
     <string name="not_playing">Nehraje žádná skladba</string>
-    <string name="tap_to_play">Klepněte pro otevření Metrolistu</string>
+    <string name="tap_to_play">Klepněte pro otevření Meldu</string>
     <string name="widget_music_player">Hudební přehrávač</string>
     <string name="widget_turntable">Gramofon</string>
     <string name="enter_room_code">Vložte kód místnosti</string>
@@ -490,7 +490,7 @@
     <string name="song_title_column">Sloupec názvu skladby</string>
     <string name="recently_converted">Nedávno převedeno</string>
     <string name="importing_csv">Import CSV</string>
-    <string name="play_on_app">Přehrát v Metrolistu</string>
+    <string name="play_on_app">Přehrát v Meldu</string>
     <string name="listening">Poslouchám…</string>
     <string name="ai_api_key_required">Vyžadován klíč API</string>
     <string name="ai_error_unexpected">Neočekávaný výsledek překladu</string>
@@ -548,9 +548,9 @@
     <string name="discord_rpc_preview">Náhled stavu na Discordu</string>
     <string name="discord_presence">Stav</string>
     <string name="discord_connect_description">Přihlaste se k Discordu pro sdílení hudby, kterou posloucháte</string>
-    <string name="discord_playing_metrolist">Hraje Metrolist</string>
-    <string name="discord_watching_metrolist">Sleduje Metrolist</string>
-    <string name="discord_competing_metrolist">Soupeří v Metrolist</string>
+    <string name="discord_playing_metrolist">Hraje Meld</string>
+    <string name="discord_watching_metrolist">Sleduje Meld</string>
+    <string name="discord_competing_metrolist">Soupeří v Meld</string>
     <string name="discord_activity_name">Název aktivity</string>
     <string name="discord_activity_name_description">Vlastní název aktivity (ponechte prázdné pro výchozí)</string>
     <string name="discord_advanced_mode">Pokročilý režim</string>
@@ -578,7 +578,7 @@
     <string name="listen_together_auto_approval_suggestions_desc">Automaticky schvalovat a zařazovat do fronty návrhy skladeb od hostů</string>
     <string name="changelog">Seznam změn</string>
     <string name="changelog_empty">Seznam změn není k dispozici</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Zobrazit na GitHubu</string>
     <string name="current_version">Aktuální verze</string>

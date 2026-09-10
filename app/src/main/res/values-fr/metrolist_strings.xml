@@ -180,7 +180,7 @@
     <string name="scrobble_delay_minutes">Délai de scrobble (en minutes)</string>
     <string name="swipe_song_to_remove">Faites glisser pour supprimer le titre de la playlist</string>
     <string name="last_fm_send_likes">Synchroniser les favoris et les éléments non favoris</string>
-    <string name="last_fm_send_likes_description">Ajoutez ou retirez des titres de vos favoris sur Last.fm lorsque vous les ajoutez ou les retirez de vos favoris dans Metrolist</string>
+    <string name="last_fm_send_likes_description">Ajoutez ou retirez des titres de vos favoris sur Last.fm lorsque vous les ajoutez ou les retirez de vos favoris dans Meld</string>
     <string name="lyrics_romanize_chinese">Paroles chinoises romanisées</string>
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Diffusez du contenu audio sur Chromecast et d\'autres appareils compatibles avec Cast</string>
@@ -253,7 +253,7 @@
     <string name="wrapped_intro_title">METROLIST</string>
     <string name="wrapped_intro_subtitle">Il est temps de découvrir ce que vous avez écouté tout au long de cette année…</string>
     <string name="wrapped_intro_button">allons-y !</string>
-    <string name="wrapped_logo_content_description">Logo Metrolist</string>
+    <string name="wrapped_logo_content_description">Logo Meld</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">VOTRE CADEAU EST PRÊT À ÊTRE DÉVOILÉ !</string>
     <string name="wrapped_ready_subtitle">C\'est le moment de découvrir ce que vous avez aimé tout au long de cette année…</string>
@@ -265,7 +265,7 @@
     <string name="wrapped_playlist_saved">Playlist enregistrée</string>
     <string name="casting_to">Conversion en %s</string>
     <string name="progress_percent">Progression %s%%</string>
-    <string name="listening_to_metrolist">Écouter Metrolist</string>
+    <string name="listening_to_metrolist">Écouter Meld</string>
     <string name="open">Ouvrir</string>
     <string name="failed_to_create_image">Échec de la création de l\'image : %s</string>
     <string name="copied_title">Titre copié</string>
@@ -298,7 +298,7 @@
     <string name="system_equalizer">Égaliseur système</string>
     <string name="album_art">Pochette d\'album</string>
     <string name="no_song_playing">Aucun titre en cours de lecture</string>
-    <string name="tap_to_open">Appuyez pour ouvrir Metrolist</string>
+    <string name="tap_to_open">Appuyez pour ouvrir Meld</string>
     <string name="previous">Précédent</string>
     <string name="play_pause">Lecture/Pause</string>
     <string name="next">Suivant</string>
@@ -393,7 +393,7 @@
     <string name="crash_description">Une erreur inattendue s\'est produite. Veuillez partager le rapport d\'erreur afin de nous aider à résoudre le problème.</string>
     <string name="crash_share_logs">Partager les journaux</string>
     <string name="crash_share_title">Partager le rapport d\'incident</string>
-    <string name="crash_report_subject">Rapport d\'incident Metrolist</string>
+    <string name="crash_report_subject">Rapport d\'incident Meld</string>
     <string name="crash_close">Fermer</string>
     <string name="crash_no_log">Aucun rapport d\'incident disponible</string>
     <string name="palette_dynamic">Dynamique</string>
@@ -442,7 +442,7 @@
     <string name="unblock">Débloquer</string>
     <string name="user_blocked_by_host">Bloqué par l\'hôte</string>
     <string name="not_playing">Aucun titre en cours de lecture</string>
-    <string name="tap_to_play">Appuyez pour ouvrir Metrolist</string>
+    <string name="tap_to_play">Appuyez pour ouvrir Meld</string>
     <string name="widget_music_player">Lecteur de Musique</string>
     <string name="widget_turntable">Platine vinyle</string>
     <string name="together">Ensemble</string>
@@ -490,7 +490,7 @@
     <string name="song_title_column">Colonne « Titre de la chanson »</string>
     <string name="recently_converted">Récemment converti</string>
     <string name="importing_csv">Importation du fichier CSV…</string>
-    <string name="play_on_app">Jouer sur Metrolist</string>
+    <string name="play_on_app">Jouer sur Meld</string>
     <string name="listening">Écoute…</string>
     <string name="continue_action">Continuer</string>
     <string name="enable">Activer</string>
@@ -539,9 +539,9 @@
     <string name="discord_rpc_preview">Aperçu de Rich Presence</string>
     <string name="discord_presence">Présence</string>
     <string name="discord_connect_description">Connectez-vous avec Discord pour partager ce que vous écoutez</string>
-    <string name="discord_playing_metrolist">Lire sur Metrolist</string>
-    <string name="discord_watching_metrolist">Regarder sur Metrolist</string>
-    <string name="discord_competing_metrolist">En compétition dans Metrolist</string>
+    <string name="discord_playing_metrolist">Lire sur Meld</string>
+    <string name="discord_watching_metrolist">Regarder sur Meld</string>
+    <string name="discord_competing_metrolist">En compétition dans Meld</string>
     <string name="discord_activity_name">Nom de l\'activité</string>
     <string name="discord_activity_name_description">Nom personnalisé pour l\'activité. Laisser vide pour utiliser le nom par défaut</string>
     <string name="discord_advanced_mode">Mode avancé</string>
@@ -587,7 +587,7 @@
     <string name="lyrics_provider_priority_desc">Faites glisser pour réorganiser les fournisseurs selon vos préférences. Plus la position est élevée, plus la priorité est grande</string>
     <string name="changelog">Journal des modifications</string>
     <string name="changelog_empty">Aucun journal des modifications disponible</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Voir sur GitHub</string>
     <string name="current_version">Version actuelle</string>

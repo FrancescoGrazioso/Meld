@@ -193,7 +193,7 @@
     <string name="enable_scrobbling">Scrobbling engedélyezése</string>
     <string name="lastfm_now_playing">\"Épp hallgatott\" állapot küldése</string>
     <string name="last_fm_send_likes">Kedvelések küldése</string>
-    <string name="last_fm_send_likes_description">Dalok kedvencnek jelölése/törlése a Last.fm-en, ha a Metrolist-ben kedveled/nem kedveled őket</string>
+    <string name="last_fm_send_likes_description">Dalok kedvencnek jelölése/törlése a Last.fm-en, ha a Meld-ben kedveled/nem kedveled őket</string>
     <string name="logging_in">Bejelentkezés…</string>
     <string name="scrobbling_configuration">Scrobbling beállítása</string>
     <string name="scrobble_min_track_duration">Ennél hosszabb számok scrobble-olása</string>
@@ -261,7 +261,7 @@
     <string name="export_option_save">Mentés a Dokumentumokba</string>
     <string name="changelog">Változtatások listája</string>
     <string name="changelog_empty">Változtatások listája nem elérhető</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Megnyitás GitHub-on</string>
     <string name="current_version">Jelenlegi verzió</string>
@@ -353,7 +353,7 @@
     <string name="wrapped_intro_title">METROLIST</string>
     <string name="wrapped_intro_subtitle">itt az ideje megnézni, hogy mit hallgattál</string>
     <string name="wrapped_intro_button">gyerünk!</string>
-    <string name="wrapped_logo_content_description">Metrolist Logo</string>
+    <string name="wrapped_logo_content_description">Meld Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">AZ ÖSSZEFOGLALÓD KÉSZEN ÁLL!</string>
     <string name="wrapped_ready_subtitle">Ideje megnézni, hogy mit imádtál ebben az évben.</string>
@@ -417,7 +417,7 @@
     <string name="crash_description">Váratlan hiba történt. Kérjük, ossza meg az összeomlási jelentést, hogy megoldahassuk a problémát.</string>
     <string name="crash_share_logs">Logok megosztása</string>
     <string name="crash_share_title">Összeomlási jelentés megosztása</string>
-    <string name="crash_report_subject">Metrolist összeomlási jelentés</string>
+    <string name="crash_report_subject">Meld összeomlási jelentés</string>
     <string name="crash_close">Bezárás</string>
     <string name="crash_no_log">Nincs elérhető összeomlási jelentés</string>
     <string name="palette_dynamic">Dinamikus</string>
@@ -461,7 +461,7 @@
     <string name="clear_recognition_history_confirm">Biztosan törölni akarod a felismerési előzményeket?</string>
     <string name="delete_from_history">Törlés az előzményekből</string>
     <string name="re_listen">Újrahallgatás</string>
-    <string name="play_on_app">Lejátszás Metrolist-en</string>
+    <string name="play_on_app">Lejátszás Meld-en</string>
     <string name="qs_tile_music_recognizer">Zenefelismerés</string>
     <string name="map_csv_columns">CSV oszlopok hozzárendelése</string>
     <string name="first_row_is_header">Az első sor a fejléc</string>
@@ -491,9 +491,9 @@
     <string name="discord_rpc_preview">Rich Presence Előnézet</string>
     <string name="discord_presence">Jelenlét</string>
     <string name="discord_connect_description">Jelentkezz be Discord-dal, hogy megoszd, hogy mit hallgatsz</string>
-    <string name="discord_playing_metrolist">Metrolist-ezik</string>
-    <string name="discord_watching_metrolist">Metrolist megnézése</string>
-    <string name="discord_competing_metrolist">Metrolist-ben versenyez</string>
+    <string name="discord_playing_metrolist">Meld-ezik</string>
+    <string name="discord_watching_metrolist">Meld megnézése</string>
+    <string name="discord_competing_metrolist">Meld-ben versenyez</string>
     <string name="discord_activity_name">Tevékenység neve</string>
     <string name="discord_activity_name_description">Egyedi név a tevékenységnek (hagy üresen az alapértelmezett névnek)</string>
     <string name="discord_advanced_mode">Fejlett mód</string>
@@ -604,7 +604,7 @@
     <string name="plays">játszik</string>
     <string name="casting_to">Átküldés ide: %s</string>
     <string name="progress_percent">Haladás %s%%</string>
-    <string name="listening_to_metrolist">Metrolist-et hallgat</string>
+    <string name="listening_to_metrolist">Meld-et hallgat</string>
     <string name="open">Megnyitás</string>
     <string name="failed_to_create_image">Kép létrehozása sikertelen: %s</string>
     <string name="copied_title">Másolt cím</string>
@@ -619,13 +619,13 @@
     <string name="view_channel">Csatorna megtekintése</string>
     <string name="album_art">Lemezborító</string>
     <string name="no_song_playing">Nincs lejátszott dal</string>
-    <string name="tap_to_open">Érints a Metrolist megnyitásához</string>
+    <string name="tap_to_open">Érints a Meld megnyitásához</string>
     <string name="previous">Előző</string>
     <string name="play_pause">Lejátszás/Szünet</string>
     <string name="next">Következő</string>
     <string name="like">Tetszik</string>
     <string name="not_playing">Nincs lejátszott dal</string>
-    <string name="tap_to_play">Érints a Metrolist megnyitásához</string>
+    <string name="tap_to_play">Érints a Meld megnyitásához</string>
     <string name="widget_description">Lejátszó widget vezérlőkkel</string>
     <string name="turntable_widget_description">Kerek lejátszó widget vezérlőkkel és lájk gombbal</string>
     <string name="widget_music_player">Lejátszó</string>

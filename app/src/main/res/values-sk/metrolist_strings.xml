@@ -182,7 +182,7 @@
     <string name="scrobble_delay_percent">Percentuálne oneskorenie Scrobble</string>
     <string name="scrobble_delay_minutes">Minúty oneskorenia Scrobble</string>
     <string name="last_fm_send_likes">Odoslať označenia Páči sa mi to/Nepáči sa mi to</string>
-    <string name="last_fm_send_likes_description">Piesne, ktoré sa mi páčia/nepáčia, sa mi páčia na Last.fm, keď sa mi páčia/nepáčia na Metroliste</string>
+    <string name="last_fm_send_likes_description">Piesne, ktoré sa mi páčia/nepáčia, sa mi páčia na Last.fm, keď sa mi páčia/nepáčia na Melde</string>
     <string name="download_playlist_desc">Stiahnuť všetky skladby na počúvanie offline</string>
     <string name="remove_download_playlist_desc">Odstrániť všetky stiahnuté skladby z tohto playlistu</string>
     <string name="download_in_progress_desc">Prebieha sťahovanie</string>
@@ -256,7 +256,7 @@
     <string name="wrapped_intro_title">METROLIST</string>
     <string name="wrapped_intro_subtitle">Je čas zistiť, čo ste počúvali</string>
     <string name="wrapped_intro_button">poďme!</string>
-    <string name="wrapped_logo_content_description">Metrolist Logo</string>
+    <string name="wrapped_logo_content_description">Meld Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">VAŠE WRAPPED JE HOTOVÉ!</string>
     <string name="wrapped_ready_subtitle">Je čas pozrieť sa, čo sa vám tento rok páčilo.</string>

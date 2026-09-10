@@ -2,16 +2,12 @@
 <resources>
     <string name="local_history">Local</string>
     <string name="remote_history">Remote</string>
-    <string name="recently_played">Recently Played</string>
 
     <string name="charts">Charts</string>
     <string name="back_button_desc">Back</string>
-    <string name="retry_button">Retry</string>
-    <string name="library_playlist_empty">Your playlists will appear here</string>
     <string name="album_cover_desc">Album cover</string>
     <string name="top_music_videos">Top music videos</string>
     <string name="trending">Trending</string>
-    <string name="parsed_from_link">Parsed from link</string>
 
     <string name="weeks">Weeks</string>
     <string name="months">Months</string>
@@ -66,8 +62,6 @@
     <string name="like_all">Like all</string>
     <string name="dislike_all">Dislike all</string>
     <string name="sort_by_last_updated">Date updated</string>
-    <string name="sort_by_original">Original order</string>
-    <string name="sort_by_duration">Duration</string>
     <string name="link_copied">Link copied to clipboard</string>
     <string name="starting_radio">Starting radio…</string>
     <string name="now_playing">Now Playing</string>
@@ -141,8 +135,6 @@
     <string name="enable_paxsenix_desc">High-quality synchronized lyrics from Paxsenix API</string>
     <string name="enable_lyricsplus">Enable LyricsPlus</string>
     <string name="enable_lyricsplus_desc">Synchronized lyrics from multiple sources</string>
-    <string name="enable_musixmatch">Enable Musixmatch</string>
-    <string name="enable_musixmatch_desc">Time-synced lyrics from Musixmatch (unofficial API, may be rate-limited)</string>
     <string name="lyrics_provider_selection">Provider selection</string>
     <string name="lyrics_provider_selection_desc">Choose which lyrics providers are enabled</string>
     <string name="auto_scroll">Re-sync</string>
@@ -392,11 +384,6 @@
     <string name="audio_offload_description">Uses the hardware audio offload path for playback. Disabling this may increase battery usage, but can help if you experience issues with playback or audio post-processing</string>
     <string name="audio_offload_disabled_by_crossfade">Disabled because crossfade is active</string>
 
-    <!-- Varispeed -->
-    <string name="speed">Playback Speed</string>
-    <string name="varispeed">Enable varispeed</string>
-    <string name="varispeed_description">Link pitch to playback speed, resulting in tape-style speedup and slowdown effects</string>
-
     <!-- Google Cast -->
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Cast audio to Chromecast and other Cast-enabled devices</string>
@@ -412,7 +399,6 @@
     <string name="lastfm_integration">Last.fm integration</string>
     <string name="enable_scrobbling">Enable scrobbling</string>
     <string name="lastfm_now_playing">Send Now Playing status</string>
-    <string name="lastfm_api_credentials_missing">Last.fm API credentials are missing from this build.</string>
     <string name="last_fm_send_likes">Sync Loved and Unloved</string>
     <string name="last_fm_send_likes_description">Love or unlove songs in Last.fm when you like or unlike them in Meld</string>
     <string name="logging_in">Logging in…</string>
@@ -424,151 +410,21 @@
     <string name="hide_video_songs">Hide video songs</string>
     <string name="hide_youtube_shorts">Hide YouTube Shorts</string>
 
-<!-- Spotify -->
-    <string name="spotify_integration">Spotify Integration</string>
-    <string name="spotify_login">Log in with Spotify</string>
-    <string name="spotify_login_description">Sign in with your Spotify account to load playlists, liked songs and recommendations. No developer account required.</string>
-    <string name="spotify_not_logged_in">Not logged in</string>
-    <string name="spotify_enable">Use Spotify as source</string>
-    <string name="spotify_enable_description">Load playlists, liked songs and recommendations from your Spotify account</string>
-    <string name="spotify_liked_songs">Spotify Liked Songs</string>
-    <string name="spotify_playlists">Spotify Playlists</string>
-    <string name="spotify_session_expired">Spotify session expired. Please log in again.</string>
-    <string name="spotify_relogin">Log in again</string>
-    <string name="spotify_playlists_load_error">Failed to load Spotify playlists. This may be a temporary issue.</string>
-    <string name="spotify_music_source">Music Source</string>
-    <string name="spotify_music_source_description">Choose where to load your library from</string>
-    <string name="spotify_source_youtube">YouTube Music</string>
-    <string name="spotify_source_spotify">Spotify</string>
-    <string name="spotify_logging_in">Connecting to Spotify…</string>
-    <string name="spotify_status_verifying">Verifying credentials…</string>
-    <string name="spotify_status_connecting">Obtaining access token…</string>
-    <string name="spotify_status_loading_profile">Loading your profile…</string>
-    <string name="spotify_login_error">Login failed. Please try again.</string>
-    <string name="spotify_login_error_no_cookie">Could not retrieve session cookie. Please try logging in again.</string>
-    <string name="spotify_login_error_expired">Session expired or invalid. Please log in with your credentials again.</string>
-    <string name="spotify_login_error_rejected">Spotify rejected the request. Please try again later.</string>
-    <string name="spotify_login_error_network">Network error. Please check your connection and try again.</string>
-    <string name="spotify_login_success">Connected to Spotify</string>
-    <string name="spotify_token_expired">Spotify session expired, please log in again</string>
-    <string name="spotify_no_tracks">No tracks found</string>
-    <string name="spotify_mapping_info">The first time you play a song from Spotify, there may be a short delay while the app matches it to a YouTube Music equivalent. Subsequent plays will be instant thanks to local caching.</string>
-    <string name="spotify_preload_songs">Preload Spotify songs</string>
-    <string name="spotify_preload_songs_description">Fetch your playlists and liked songs, then convert and cache each track locally. Future playback will be faster.</string>
-    <string name="spotify_preload_start">Start preload</string>
-    <string name="spotify_preload_fetching_playlists">Fetching playlists…</string>
-    <string name="spotify_preload_counting">Calculating: %d songs to convert</string>
-    <string name="spotify_preload_converting">Converting song %1$d of %2$d</string>
-    <string name="spotify_preload_completed">Preload completed</string>
-    <string name="spotify_preload_cancelled">Preload cancelled</string>
-    <string name="spotify_use_for_search">Use Spotify for search</string>
-    <string name="spotify_use_for_search_description">Search results will come from Spotify instead of YouTube Music</string>
-    <string name="spotify_use_for_home">Use Spotify for home</string>
-    <string name="spotify_use_for_home_description">Home screen will show personalized content from Spotify</string>
-    <string name="spotify_home_only">Spotify-only home</string>
-    <string name="spotify_home_only_description">Show only Spotify content on the home screen. When disabled, local content like Speed Dial and Quick Picks will also appear.</string>
-    <string name="spotify_top_tracks">Your Top Tracks</string>
-    <string name="spotify_top_artists">Your Top Artists</string>
-    <string name="spotify_made_for_you">All-Time Favorites</string>
-    <string name="spotify_discover">More Artists You Love</string>
-    <string name="spotify_your_playlists">Your Playlists</string>
-    <string name="spotify_new_releases">New Releases</string>
-    <string name="new_releases_for_you">For You</string>
-    <string name="new_releases_following">Following</string>
-    <string name="new_releases_discover">Discover</string>
-    <string name="spotify_because_you_like">Because you like %s</string>
-
-    <!-- Spotify playlist editing -->
-    <string name="spotify_remove_from_playlist">Remove from playlist</string>
-    <string name="spotify_remove_from_playlist_desc">Remove this track from the Spotify playlist</string>
-    <string name="spotify_track_removed">Track removed from playlist</string>
-    <string name="spotify_rename_playlist">Rename playlist</string>
-    <string name="spotify_playlist_name_label">Playlist name</string>
-    <string name="spotify_add_to_playlist">Add to Spotify playlist</string>
-    <string name="spotify_add_to_playlist_desc">Add this track to one of your Spotify playlists</string>
-    <string name="spotify_track_added_to_playlist">Added to %s</string>
-    <string name="spotify_add_to_playlist_failed">Failed to add track to playlist</string>
-    <string name="spotify_no_playlists">No playlists found</string>
-    <string name="spotify_track_not_found_on_spotify">Could not find this track on Spotify</string>
-    <string name="spotify_searching">Searching on Spotify…</string>
-    <string name="change_youtube_version">Change YouTube version</string>
-    <string name="change_youtube_version_desc">Pick a different YouTube match for this Spotify track</string>
-    <string name="current_match">Current match</string>
-    <string name="new_match">New match</string>
-    <string name="paste_youtube_url">Paste here the new YouTube URL</string>
-    <string name="searching">Searching…</string>
-    <string name="spotify_sync_likes">Sync likes with Spotify</string>
-    <string name="spotify_sync_likes_description">Replace liked songs with Spotify likes. New likes will be synced to Spotify.</string>
-    <string name="spotify_sync_likes_syncing">Syncing liked songs from Spotify… (%1$d/%2$d)</string>
-    <string name="spotify_sync_likes_complete">Synced %1$d songs from Spotify</string>
-    <string name="spotify_sync_likes_failed">Failed to sync liked songs from Spotify</string>
-    <string name="hide_ytm_liked_songs">Hide YouTube Music liked songs</string>
-    <string name="hide_ytm_liked_songs_description">When syncing with Spotify, hide the local liked songs playlist to avoid duplicates. Disable to show both.</string>
-
-    <string name="qobuz_audio_quality_section">Audio quality (experimental)</string>
-    <string name="qobuz_enable">Use Qobuz for lossless playback</string>
-    <string name="qobuz_enable_description">Experimental. Uses third-party services (not run by us) to fetch FLAC or Hi-Res streams when the song exists on Qobuz. May stop working at any time without warning — when it does, playback falls back automatically to the standard YouTube source. Lossless streams use 3–10× more data and storage than the standard AAC.\n\nChanging this setting (or quality / backend / country) reloads the currently playing track to apply the new source immediately. No app restart required.</string>
-    <string name="qobuz_quality">Stream quality</string>
-    <string name="qobuz_quality_aac_320">AAC 320 kbps</string>
-    <string name="qobuz_quality_aac_320_desc">Lossy, smallest size. Good for mobile data.</string>
-    <string name="qobuz_quality_cd">CD quality (FLAC 16-bit / 44.1 kHz)</string>
-    <string name="qobuz_quality_cd_desc">Lossless. Recommended default.</string>
-    <string name="qobuz_quality_hires">Hi-Res (FLAC up to 24-bit / 192 kHz)</string>
-    <string name="qobuz_quality_hires_desc">Lossless at the highest bit depth and sample rate available.</string>
-    <string name="qobuz_backend">Resolver backend</string>
-    <string name="qobuz_backend_monokenny">Monokenny</string>
-    <string name="qobuz_backend_jumo">Jumo</string>
-    <string name="qobuz_backend_squid">Squid</string>
-    <string name="qobuz_backend_trypt">TrypT HiFi</string>
-    <string name="qobuz_country">Country code</string>
-
-    <!-- Manual Qobuz match override -->
-    <string name="qobuz_match_override">Override Qobuz match</string>
-    <string name="qobuz_match_override_description">Manually pick the right Qobuz track when the automatic matcher gets it wrong.</string>
-    <string name="qobuz_match_override_clear">Clear override</string>
-    <string name="qobuz_match_override_searching">Searching Qobuz…</string>
-    <string name="qobuz_match_override_empty">No Qobuz candidates found</string>
-    <string name="qobuz_match_override_current">Current: %1$s</string>
-    <string name="qobuz_match_override_auto">Auto-match</string>
-
-    <!-- Provider health -->
-    <string name="qobuz_provider_health">Backend status</string>
-    <string name="qobuz_provider_health_description">Live reachability of every Qobuz resolver.</string>
-    <string name="qobuz_provider_health_refresh">Refresh</string>
-    <string name="qobuz_provider_health_online">Online</string>
-    <string name="qobuz_provider_health_reachable">Reachable</string>
-    <string name="qobuz_provider_health_offline">Offline</string>
-    <string name="qobuz_provider_health_checking">Checking…</string>
-    <string name="qobuz_provider_health_latency">%1$d ms</string>
-
-    <string name="qobuz_country_description">Two-letter ISO code (e.g. US, IT, FR). Affects catalog and availability.</string>
-
-    <string name="qobuz_endpoints">Custom endpoints (advanced)</string>
-    <string name="qobuz_endpoints_description">Override the resolver base URLs, e.g. to point at a self-hosted instance. Leave blank to use the built-in default.</string>
-    <string name="qobuz_endpoint_squid">Squid endpoint</string>
-    <string name="qobuz_endpoint_kenny">Monokenny endpoint</string>
-    <string name="qobuz_endpoint_trypt">TrypT endpoint</string>
-    <string name="qobuz_endpoint_jumo">Jumo endpoint</string>
-    <string name="qobuz_endpoint_default">Default</string>
-    <string name="qobuz_endpoint_hint">https://example.com (blank = default)</string>
-
     <string name="details_desc">View the song\'s details</string>
     <string name="edit_desc">Edit the title or artist</string>
     <string name="start_radio_desc">Start a radio based on this item</string>
     <string name="play_next_desc">Play next in the queue</string>
     <string name="add_to_queue_desc">Add to the end of the queue</string>
-    <string name="added_to_play_next">Added to play next</string>
-    <string name="added_to_queue">Added to the queue</string>
     <string name="add_to_library_desc">Save to your library</string>
     <string name="download_desc">Download for offline playback</string>
     <string name="add_to_playlist_desc">Add to a playlist</string>
-    <string name="refetch_desc">Refresh metadata from YouTube Music</string>    <string name="share_desc">Share a link to this item</string>
+    <string name="refetch_desc">Refresh metadata from YouTube Music</string>
+    <string name="share_desc">Share a link to this item</string>
     <string name="delete_desc">Permanently remove this item</string>
     <string name="advanced_desc">Adjust the song\'s tempo and pitch</string>
     <string name="equalizer_desc">Open the audio equalizer</string>
     <string name="enable_dynamic_icon">Enable dynamic icon</string>
     <string name="mini_player">Mini-player</string>
-    <string name="pure_black">Pure black</string>
     <string name="pure_black_mini_player">Pure black mini-player</string>
     <string name="mini_player_background_style">Mini-player background style</string>
     <string name="transparent">Transparent</string>
@@ -609,10 +465,6 @@
     <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">it\'s time to see what you\'ve been listening to all this year…</string>
     <string name="wrapped_intro_button">let\'s go!</string>
-    <string name="wrapped_end_thanks">Thanks for listening with Meld!</string>
-    <string name="wrapped_end_create_playlist">Create Your Wrapped Playlist</string>
-    <string name="wrapped_end_creating_playlist">Creating...</string>
-    <string name="wrapped_end_playlist_saved">Playlist Saved</string>
     <string name="wrapped_logo_content_description">Meld Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">YOUR WRAPPED IS READY!</string>
@@ -653,8 +505,6 @@
     <string name="casting_to">Casting to %s</string>
     <string name="progress_percent">Progress %s%%</string>
     <string name="listening_to_metrolist">Listening to Meld</string>
-    <string name="listen_on_youtube_music">Listen on YouTube Music</string>
-    <string name="visit_metrolist">Visit Meld</string>
     <string name="open">Open</string>
     <string name="failed_to_create_image">Failed to create image: %s</string>
     <string name="copied_title">Title copied</string>
@@ -668,11 +518,6 @@
     <string name="error_episode_remove">Failed to remove episode</string>
     <string name="error_podcast_subscribe">Failed to subscribe to podcast</string>
     <string name="error_podcast_unsubscribe">Failed to unsubscribe from podcast</string>
-    <string name="error_restricted_not_logged_in">Some tracks may not play due to age or country restrictions. Try logging into YouTube in Settings to resolve this issue.</string>
-    <string name="error_restricted_logged_in">This track is restricted (age or country) and cannot be played at this time.</string>
-    <string name="subscribed_to_channel">Subscribed to channel</string>
-    <string name="unsubscribed_from_channel">Unsubscribed from channel</string>
-    <string name="error_subscribe_channel">Failed to update channel subscription</string>
     <string name="view_channel">View channel</string>
 
     <!-- Widget strings -->
@@ -900,9 +745,7 @@
     <string name="clear_recognition_history_confirm">Are you sure you want to clear all recognition history?</string>
     <string name="delete_from_history">Delete from history</string>
     <string name="re_listen">Re-listen</string>
-    <string name="hold_to_recognize">Hold search icon to recognize music</string>
     <string name="play_on_app">Play on Meld</string>
-    <string name="recognized_track">Recognized Track</string>
     <string name="qs_tile_music_recognizer">Recognize music</string>
     <string name="recognition_notification_channel_name">Music recognition</string>
     <string name="recognition_notification_channel_desc">Shows a notification while identifying a song from quick settings</string>
@@ -932,12 +775,7 @@
     <string name="discord_status_dnd">Do Not Disturb</string>
     <string name="discord_buttons">Buttons</string>
     <string name="discord_button_1">Button 1</string>
-    <string name="discord_button_1_url">Button 1 URL</string>
-    <string name="discord_button_1_url_default">Default: current song on YouTube Music</string>
     <string name="discord_button_2">Button 2</string>
-    <string name="discord_button_2_url">Button 2 URL</string>
-    <string name="discord_button_2_url_default">Default: Meld on GitHub</string>
-    <string name="discord_button_url_description">Destination link opened when someone clicks the button. Must start with http:// or https://. Supports {song_name}, {artist_name}, {album_name}.</string>
     <string name="login_successful">Login successful!</string>
     <string name="discord_information_warning">This feature uses the KizzyRPC library to connect to Discord\'s Gateway and update your Rich Presence status. While no account suspensions from similar usage have been reported, this method is not officially supported by Discord and may be considered a Terms of Service violation. Your token is handled locally and never sent to third-party servers. Proceed at your own discretion!</string>
     <string name="discord_activity_type">Activity type</string>
@@ -977,12 +815,9 @@
     <string name="logout_clear">Clear</string>
 
     <!-- Credits / About Screen -->
-    <string name="credits_developer">Developer</string>
     <string name="credits_lead_developer">Lead developer</string>
     <string name="credits_collaborator">Collaborator</string>
     <string name="credits_collaborators_section">Collaborators</string>
-    <string name="credits_original_project">Original Project</string>
-    <string name="credits_based_on_metrolist">Meld is based on Metrolist, an open-source YouTube Music client.</string>
     <string name="credits_license_name">GNU General Public License v3.0</string>
     <string name="credits_license_desc">Free, open-source software. You may use, study, share, and improve it</string>
     <string name="credits_discord">Discord server</string>
@@ -1036,20 +871,6 @@
     <string name="checking_previous_account">Checking for previous account…</string>
     <string name="no_account_found">No account found</string>
 
-    <!-- Local Files -->
-    <string name="filter_local_files">Local files</string>
-    <string name="local_files">Local files</string>
-    <string name="scan_local_files">Scan for local files</string>
-    <string name="scanning_local_files">Scanning…</string>
-    <string name="local_files_permission_required">Storage permission required to scan local audio files</string>
-    <string name="local_files_empty">No local audio files found. Tap the scan button to search your device.</string>
-    <string name="local_files_found">%d files found</string>
-    <string name="grant_permission">Grant permission</string>
-    <plurals name="n_local_file">
-        <item quantity="one">%d file</item>
-        <item quantity="other">%d files</item>
-    </plurals>
-
     <!-- Cache settings -->
 
     <!-- Upload songs -->
@@ -1089,8 +910,171 @@
     <string name="time_transfer_listen_time_label">Listen time: </string>
     <string name="time_transfer_convert">Convert</string>
     <string name="song_dropdown_more_results">Keep typing to narrow results (%d more)</string>
-
-    <!-- Accessibility -->
+    <string name="recently_played">Recently Played</string>
+    <string name="retry_button">Retry</string>
+    <string name="library_playlist_empty">Your playlists will appear here</string>
+    <string name="parsed_from_link">Parsed from link</string>
+    <string name="sort_by_original">Original order</string>
+    <string name="sort_by_duration">Duration</string>
+    <string name="enable_musixmatch">Enable Musixmatch</string>
+    <string name="enable_musixmatch_desc">Time-synced lyrics from Musixmatch (unofficial API, may be rate-limited)</string>
+    <string name="speed">Playback Speed</string>
+    <string name="varispeed">Enable varispeed</string>
+    <string name="varispeed_description">Link pitch to playback speed, resulting in tape-style speedup and slowdown effects</string>
+    <string name="lastfm_api_credentials_missing">Last.fm API credentials are missing from this build.</string>
+    <string name="spotify_integration">Spotify Integration</string>
+    <string name="spotify_login">Log in with Spotify</string>
+    <string name="spotify_login_description">Sign in with your Spotify account to load playlists, liked songs and recommendations. No developer account required.</string>
+    <string name="spotify_not_logged_in">Not logged in</string>
+    <string name="spotify_enable">Use Spotify as source</string>
+    <string name="spotify_enable_description">Load playlists, liked songs and recommendations from your Spotify account</string>
+    <string name="spotify_liked_songs">Spotify Liked Songs</string>
+    <string name="spotify_playlists">Spotify Playlists</string>
+    <string name="spotify_session_expired">Spotify session expired. Please log in again.</string>
+    <string name="spotify_relogin">Log in again</string>
+    <string name="spotify_playlists_load_error">Failed to load Spotify playlists. This may be a temporary issue.</string>
+    <string name="spotify_music_source">Music Source</string>
+    <string name="spotify_music_source_description">Choose where to load your library from</string>
+    <string name="spotify_source_youtube">YouTube Music</string>
+    <string name="spotify_source_spotify">Spotify</string>
+    <string name="spotify_logging_in">Connecting to Spotify…</string>
+    <string name="spotify_status_verifying">Verifying credentials…</string>
+    <string name="spotify_status_connecting">Obtaining access token…</string>
+    <string name="spotify_status_loading_profile">Loading your profile…</string>
+    <string name="spotify_login_error">Login failed. Please try again.</string>
+    <string name="spotify_login_error_no_cookie">Could not retrieve session cookie. Please try logging in again.</string>
+    <string name="spotify_login_error_expired">Session expired or invalid. Please log in with your credentials again.</string>
+    <string name="spotify_login_error_rejected">Spotify rejected the request. Please try again later.</string>
+    <string name="spotify_login_error_network">Network error. Please check your connection and try again.</string>
+    <string name="spotify_login_success">Connected to Spotify</string>
+    <string name="spotify_token_expired">Spotify session expired, please log in again</string>
+    <string name="spotify_no_tracks">No tracks found</string>
+    <string name="spotify_mapping_info">The first time you play a song from Spotify, there may be a short delay while the app matches it to a YouTube Music equivalent. Subsequent plays will be instant thanks to local caching.</string>
+    <string name="spotify_preload_songs">Preload Spotify songs</string>
+    <string name="spotify_preload_songs_description">Fetch your playlists and liked songs, then convert and cache each track locally. Future playback will be faster.</string>
+    <string name="spotify_preload_start">Start preload</string>
+    <string name="spotify_preload_fetching_playlists">Fetching playlists…</string>
+    <string name="spotify_preload_counting">Calculating: %d songs to convert</string>
+    <string name="spotify_preload_converting">Converting song %1$d of %2$d</string>
+    <string name="spotify_preload_completed">Preload completed</string>
+    <string name="spotify_preload_cancelled">Preload cancelled</string>
+    <string name="spotify_use_for_search">Use Spotify for search</string>
+    <string name="spotify_use_for_search_description">Search results will come from Spotify instead of YouTube Music</string>
+    <string name="spotify_use_for_home">Use Spotify for home</string>
+    <string name="spotify_use_for_home_description">Home screen will show personalized content from Spotify</string>
+    <string name="spotify_home_only">Spotify-only home</string>
+    <string name="spotify_home_only_description">Show only Spotify content on the home screen. When disabled, local content like Speed Dial and Quick Picks will also appear.</string>
+    <string name="spotify_top_tracks">Your Top Tracks</string>
+    <string name="spotify_top_artists">Your Top Artists</string>
+    <string name="spotify_made_for_you">All-Time Favorites</string>
+    <string name="spotify_discover">More Artists You Love</string>
+    <string name="spotify_your_playlists">Your Playlists</string>
+    <string name="spotify_new_releases">New Releases</string>
+    <string name="new_releases_for_you">For You</string>
+    <string name="new_releases_following">Following</string>
+    <string name="new_releases_discover">Discover</string>
+    <string name="spotify_because_you_like">Because you like %s</string>
+    <string name="spotify_remove_from_playlist">Remove from playlist</string>
+    <string name="spotify_remove_from_playlist_desc">Remove this track from the Spotify playlist</string>
+    <string name="spotify_track_removed">Track removed from playlist</string>
+    <string name="spotify_rename_playlist">Rename playlist</string>
+    <string name="spotify_playlist_name_label">Playlist name</string>
+    <string name="spotify_add_to_playlist">Add to Spotify playlist</string>
+    <string name="spotify_add_to_playlist_desc">Add this track to one of your Spotify playlists</string>
+    <string name="spotify_track_added_to_playlist">Added to %s</string>
+    <string name="spotify_add_to_playlist_failed">Failed to add track to playlist</string>
+    <string name="spotify_no_playlists">No playlists found</string>
+    <string name="spotify_track_not_found_on_spotify">Could not find this track on Spotify</string>
+    <string name="spotify_searching">Searching on Spotify…</string>
+    <string name="change_youtube_version">Change YouTube version</string>
+    <string name="change_youtube_version_desc">Pick a different YouTube match for this Spotify track</string>
+    <string name="current_match">Current match</string>
+    <string name="new_match">New match</string>
+    <string name="paste_youtube_url">Paste here the new YouTube URL</string>
+    <string name="searching">Searching…</string>
+    <string name="spotify_sync_likes">Sync likes with Spotify</string>
+    <string name="spotify_sync_likes_description">Replace liked songs with Spotify likes. New likes will be synced to Spotify.</string>
+    <string name="spotify_sync_likes_syncing">Syncing liked songs from Spotify… (%1$d/%2$d)</string>
+    <string name="spotify_sync_likes_complete">Synced %1$d songs from Spotify</string>
+    <string name="spotify_sync_likes_failed">Failed to sync liked songs from Spotify</string>
+    <string name="hide_ytm_liked_songs">Hide YouTube Music liked songs</string>
+    <string name="hide_ytm_liked_songs_description">When syncing with Spotify, hide the local liked songs playlist to avoid duplicates. Disable to show both.</string>
+    <string name="qobuz_audio_quality_section">Audio quality (experimental)</string>
+    <string name="qobuz_enable">Use Qobuz for lossless playback</string>
+    <string name="qobuz_enable_description">Experimental. Uses third-party services (not run by us) to fetch FLAC or Hi-Res streams when the song exists on Qobuz. May stop working at any time without warning — when it does, playback falls back automatically to the standard YouTube source. Lossless streams use 3–10× more data and storage than the standard AAC.\n\nChanging this setting (or quality / backend / country) reloads the currently playing track to apply the new source immediately. No app restart required.</string>
+    <string name="qobuz_quality">Stream quality</string>
+    <string name="qobuz_quality_aac_320">AAC 320 kbps</string>
+    <string name="qobuz_quality_aac_320_desc">Lossy, smallest size. Good for mobile data.</string>
+    <string name="qobuz_quality_cd">CD quality (FLAC 16-bit / 44.1 kHz)</string>
+    <string name="qobuz_quality_cd_desc">Lossless. Recommended default.</string>
+    <string name="qobuz_quality_hires">Hi-Res (FLAC up to 24-bit / 192 kHz)</string>
+    <string name="qobuz_quality_hires_desc">Lossless at the highest bit depth and sample rate available.</string>
+    <string name="qobuz_backend">Resolver backend</string>
+    <string name="qobuz_backend_monokenny">Monokenny</string>
+    <string name="qobuz_backend_jumo">Jumo</string>
+    <string name="qobuz_backend_squid">Squid</string>
+    <string name="qobuz_backend_trypt">TrypT HiFi</string>
+    <string name="qobuz_country">Country code</string>
+    <string name="qobuz_match_override">Override Qobuz match</string>
+    <string name="qobuz_match_override_description">Manually pick the right Qobuz track when the automatic matcher gets it wrong.</string>
+    <string name="qobuz_match_override_clear">Clear override</string>
+    <string name="qobuz_match_override_searching">Searching Qobuz…</string>
+    <string name="qobuz_match_override_empty">No Qobuz candidates found</string>
+    <string name="qobuz_match_override_current">Current: %1$s</string>
+    <string name="qobuz_match_override_auto">Auto-match</string>
+    <string name="qobuz_provider_health">Backend status</string>
+    <string name="qobuz_provider_health_description">Live reachability of every Qobuz resolver.</string>
+    <string name="qobuz_provider_health_refresh">Refresh</string>
+    <string name="qobuz_provider_health_online">Online</string>
+    <string name="qobuz_provider_health_reachable">Reachable</string>
+    <string name="qobuz_provider_health_offline">Offline</string>
+    <string name="qobuz_provider_health_checking">Checking…</string>
+    <string name="qobuz_provider_health_latency">%1$d ms</string>
+    <string name="qobuz_country_description">Two-letter ISO code (e.g. US, IT, FR). Affects catalog and availability.</string>
+    <string name="qobuz_endpoints">Custom endpoints (advanced)</string>
+    <string name="qobuz_endpoints_description">Override the resolver base URLs, e.g. to point at a self-hosted instance. Leave blank to use the built-in default.</string>
+    <string name="qobuz_endpoint_squid">Squid endpoint</string>
+    <string name="qobuz_endpoint_kenny">Monokenny endpoint</string>
+    <string name="qobuz_endpoint_trypt">TrypT endpoint</string>
+    <string name="qobuz_endpoint_jumo">Jumo endpoint</string>
+    <string name="qobuz_endpoint_default">Default</string>
+    <string name="qobuz_endpoint_hint">https://example.com (blank = default)</string>
+    <string name="added_to_play_next">Added to play next</string>
+    <string name="added_to_queue">Added to the queue</string>
+    <string name="pure_black">Pure black</string>
+    <string name="wrapped_end_thanks">Thanks for listening with Meld!</string>
+    <string name="wrapped_end_create_playlist">Create Your Wrapped Playlist</string>
+    <string name="wrapped_end_creating_playlist">Creating...</string>
+    <string name="wrapped_end_playlist_saved">Playlist Saved</string>
+    <string name="listen_on_youtube_music">Listen on YouTube Music</string>
+    <string name="visit_metrolist">Visit Meld</string>
+    <string name="error_restricted_not_logged_in">Some tracks may not play due to age or country restrictions. Try logging into YouTube in Settings to resolve this issue.</string>
+    <string name="error_restricted_logged_in">This track is restricted (age or country) and cannot be played at this time.</string>
+    <string name="subscribed_to_channel">Subscribed to channel</string>
+    <string name="unsubscribed_from_channel">Unsubscribed from channel</string>
+    <string name="error_subscribe_channel">Failed to update channel subscription</string>
+    <string name="hold_to_recognize">Hold search icon to recognize music</string>
+    <string name="recognized_track">Recognized Track</string>
+    <string name="discord_button_1_url">Button 1 URL</string>
+    <string name="discord_button_1_url_default">Default: current song on YouTube Music</string>
+    <string name="discord_button_2_url">Button 2 URL</string>
+    <string name="discord_button_2_url_default">Default: Meld on GitHub</string>
+    <string name="discord_button_url_description">Destination link opened when someone clicks the button. Must start with http:// or https://. Supports {song_name}, {artist_name}, {album_name}.</string>
+    <string name="credits_developer">Developer</string>
+    <string name="credits_original_project">Original Project</string>
+    <string name="credits_based_on_metrolist">Meld is based on Metrolist, an open-source YouTube Music client.</string>
+    <string name="filter_local_files">Local files</string>
+    <string name="local_files">Local files</string>
+    <string name="scan_local_files">Scan for local files</string>
+    <string name="scanning_local_files">Scanning…</string>
+    <string name="local_files_permission_required">Storage permission required to scan local audio files</string>
+    <string name="local_files_empty">No local audio files found. Tap the scan button to search your device.</string>
+    <string name="local_files_found">%d files found</string>
+    <string name="grant_permission">Grant permission</string>
+    <plurals name="n_local_file">
+        <item quantity="one">%d file</item>
+        <item quantity="other">%d files</item>
+    </plurals>
     <string name="back">Back</string>
     <string name="clear_search">Clear search</string>
     <string name="close_chip">Close</string>

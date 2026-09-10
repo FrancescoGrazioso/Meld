@@ -185,7 +185,7 @@
     <string name="scrobble_delay_percent">نسبة تأخير سكرابل</string>
     <string name="scrobble_delay_minutes">دقائق تأخير سكرابل</string>
     <string name="swipe_song_to_remove">مرر الأغنية لإزالتها من قائمة التشغيل</string>
-    <string name="last_fm_send_likes_description">عندما تعجبك أغنية أو تلغي إعجابك بها في Metrolist سيتم تلقائيًا وضع علامة (أحببت) أو (غير محبوب) على نفس الأغنية في Last.fm</string>
+    <string name="last_fm_send_likes_description">عندما تعجبك أغنية أو تلغي إعجابك بها في Meld سيتم تلقائيًا وضع علامة (أحببت) أو (غير محبوب) على نفس الأغنية في Last.fm</string>
     <string name="last_fm_send_likes">إرسال الإعجابات/إلغاء الإعجابات</string>
     <string name="lyrics_romanize_chinese">كلمات الأغاني الصينية بالحروف اللاتينية</string>
     <string name="hide_video_songs">إخفاء أغاني الفيديو</string>
@@ -405,7 +405,7 @@
     <string name="crash_description">حدث خطأ غير متوقع يرجى مشاركة تقرير العطل لمساعدتنا في حل المشكلة.</string>
     <string name="crash_share_logs">مشاركة السجلات</string>
     <string name="crash_share_title">مشاركة تقرير التعطل</string>
-    <string name="crash_report_subject">تقرير تعطل تطبيق Metrolist</string>
+    <string name="crash_report_subject">تقرير تعطل تطبيق Meld</string>
     <string name="crash_close">إغلاق</string>
     <string name="crash_no_log">لا يوجد سجل أعطال متاح</string>
     <string name="palette_dynamic">ديناميكي</string>
@@ -435,7 +435,7 @@
     <string name="cd_system_mode">وضع النظام</string>
     <string name="cd_palette_item">لوحة ألوان %1$s</string>
     <string name="not_playing">لا يتم تشغيل أي أغنية</string>
-    <string name="tap_to_play">اضغط لفتح Metrolist</string>
+    <string name="tap_to_play">اضغط لفتح Meld</string>
     <string name="widget_music_player">مشغل موسيقى</string>
     <string name="widget_turntable">القرص الدوار</string>
     <string name="listen_together_choose_server">اختر خادمًا</string>
@@ -497,7 +497,7 @@
     <string name="song_title_column">خانة عنوان الأغنية</string>
     <string name="recently_converted">تم تحويله مؤخرًا</string>
     <string name="importing_csv">استيراد ملف CSV</string>
-    <string name="play_on_app">تشغيل على Metrolist</string>
+    <string name="play_on_app">تشغيل على Meld</string>
     <string name="listening">الاستماع…</string>
     <string name="ai_api_key_required">مفتاح API مطلوب</string>
     <string name="ai_error_unexpected">نتيجة ترجمة غير متوقعة</string>
@@ -556,9 +556,9 @@
     <string name="discord_rpc_preview">معاينة الحالة الغنية</string>
     <string name="discord_presence">التواجد</string>
     <string name="discord_connect_description">سجّل الدخول باستخدام Discord للمشاركة ما تستمع إليه</string>
-    <string name="discord_playing_metrolist">تشغيل Metrolist</string>
-    <string name="discord_watching_metrolist">مشاهدة Metrolist</string>
-    <string name="discord_competing_metrolist">التنافس في Metrolist</string>
+    <string name="discord_playing_metrolist">تشغيل Meld</string>
+    <string name="discord_watching_metrolist">مشاهدة Meld</string>
+    <string name="discord_competing_metrolist">التنافس في Meld</string>
     <string name="discord_activity_name">اسم النشاط</string>
     <string name="discord_activity_name_description">اسم مخصص للنشاط (اتركه فارغًا للافتراضي)</string>
     <string name="discord_advanced_mode">الوضع المتقدم</string>
@@ -591,7 +591,7 @@
     <string name="lyrics_provider_priority_desc">اسحب لإعادة ترتيب المزوّدين حسب التفضيل. كلما كان المزوّد في موضع أعلى كانت له أولوية أعلى.</string>
     <string name="changelog">سجل التغييرات</string>
     <string name="changelog_empty">لا توجد سجلات تغييرات متاحة</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">‌•</string>
     <string name="view_on_github">عرض على GitHub</string>
     <string name="current_version">الإصدار الحالي</string>

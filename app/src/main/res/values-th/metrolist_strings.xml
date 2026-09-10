@@ -220,7 +220,7 @@
     <string name="enable_scrobbling">เปิดใช้งาน Scrobbling</string>
     <string name="lastfm_now_playing">ส่งสถานะ “กำลังเล่น”</string>
     <string name="last_fm_send_likes">ส่งสถานะถูกใจ/ยกเลิกถูกใจ</string>
-    <string name="last_fm_send_likes_description">กด Love/Unlove เพลงใน Last.fm เมื่อมีการกดถูกใจ/ยกเลิกถูกใจใน Metrolist</string>
+    <string name="last_fm_send_likes_description">กด Love/Unlove เพลงใน Last.fm เมื่อมีการกดถูกใจ/ยกเลิกถูกใจใน Meld</string>
     <string name="logging_in">กำลังเข้าสู่ระบบ…</string>
     <string name="scrobbling_configuration">การตั้งค่า Scrobbling</string>
     <string name="scrobble_min_track_duration">Scrobble เพลงที่ยาวกว่า</string>
@@ -281,7 +281,7 @@
     <string name="wrapped_intro_title">METROLIST</string>
     <string name="wrapped_intro_subtitle">ได้เวลามาดูสิ่งที่คุณฟังไปตลอดปี</string>
     <string name="wrapped_intro_button">ไปดูกันเลย!</string>
-    <string name="wrapped_logo_content_description">โลโก้ Metrolist</string>
+    <string name="wrapped_logo_content_description">โลโก้ Meld</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">WRAPPED ของคุณพร้อมแล้ว!</string>
     <string name="wrapped_ready_subtitle">มาดูสิ่งที่คุณชื่นชอบในปีนี้กัน</string>
@@ -311,7 +311,7 @@
     <string name="error_eq_apply_failed">ไม่สามารถใช้โปรไฟล์ EQ : %1$s</string>
     <string name="casting_to">กำลังแคสต์ไปยัง %s</string>
     <string name="progress_percent">ความคืบหน้า %s%%</string>
-    <string name="listening_to_metrolist">กำลังฟังผ่าน Metrolist</string>
+    <string name="listening_to_metrolist">กำลังฟังผ่าน Meld</string>
     <string name="open">เปิด</string>
     <string name="failed_to_create_image">ไม่สามารถสร้างรูปภาพ: %s</string>
     <string name="copied_title">คัดลอกชื่อเพลงแล้ว</string>
@@ -321,13 +321,13 @@
     <string name="error_playback_failed">การเล่นล้มเหลว</string>
     <string name="album_art">ปกอัลบั้ม</string>
     <string name="no_song_playing">ไม่มีเพลงกำลังเล่น</string>
-    <string name="tap_to_open">แตะเพื่อเปิด Metrolist</string>
+    <string name="tap_to_open">แตะเพื่อเปิด Meld</string>
     <string name="previous">ก่อนหน้า</string>
     <string name="play_pause">เล่น/หยุด</string>
     <string name="next">ถัดไป</string>
     <string name="like">ถูกใจ</string>
     <string name="not_playing">ไม่มีเพลงกำลังเล่น</string>
-    <string name="tap_to_play">แตะเพื่อเปิด Metrolist</string>
+    <string name="tap_to_play">แตะเพื่อเปิด Meld</string>
     <string name="widget_description">วิดเจ็ตเครื่องเล่นเพลงพร้อมปุ่มควบคุมการเล่น</string>
     <string name="turntable_widget_description">วิดเจ็ตเพลงแบบวงกลม พร้อมปุ่มเล่นและถูกใจ</string>
     <string name="widget_music_player">เครื่องเล่นเพลง</string>
@@ -443,7 +443,7 @@
     <string name="crash_description">เกิดข้อผิดพลาดที่ไม่คาดคิด โปรดแชร์รายงานข้อขัดข้องเพื่อช่วยให้เราแก้ไขปัญหา</string>
     <string name="crash_share_logs">แชร์บันทึกข้อขัดข้อง</string>
     <string name="crash_share_title">แชร์รายงานข้อขัดข้อง</string>
-    <string name="crash_report_subject">รายงานข้อขัดข้องของ Metrolist</string>
+    <string name="crash_report_subject">รายงานข้อขัดข้องของ Meld</string>
     <string name="crash_close">ปิด</string>
     <string name="crash_no_log">ไม่มีบันทึกข้อขัดข้อง</string>
     <string name="palette_dynamic">ไดนามิก</string>
@@ -487,7 +487,7 @@
     <string name="clear_recognition_history_confirm">คุณแน่ใจหรือไม่ว่าต้องการล้างประวัติการค้นหาเพลงทั้งหมด?</string>
     <string name="delete_from_history">ออก</string>
     <string name="re_listen">ฟังอีกครั้ง</string>
-    <string name="play_on_app">เล่นบน Metrolist</string>
+    <string name="play_on_app">เล่นบน Meld</string>
     <string name="map_csv_columns">จับคู่คอลัมน์ CSV</string>
     <string name="first_row_is_header">แถวแรกเป็นหัวตาราง</string>
     <string name="artist_name_column">คอลัมน์ชื่อศิลปิน</string>
@@ -531,9 +531,9 @@
     <string name="discord_rpc_preview">ตัวอย่าง Rich Presence</string>
     <string name="discord_presence">สถานะการแสดงตัว</string>
     <string name="discord_connect_description">เข้าสู่ระบบด้วย Discord เพื่อแชร์สิ่งที่คุณกำลังฟัง</string>
-    <string name="discord_playing_metrolist">กำลังเล่น Metrolist</string>
-    <string name="discord_watching_metrolist">กำลังรับชม Metrolist</string>
-    <string name="discord_competing_metrolist">กำลังแข่งขันใน Metrolist</string>
+    <string name="discord_playing_metrolist">กำลังเล่น Meld</string>
+    <string name="discord_watching_metrolist">กำลังรับชม Meld</string>
+    <string name="discord_competing_metrolist">กำลังแข่งขันใน Meld</string>
     <string name="discord_activity_name">ชื่อกิจกรรม</string>
     <string name="discord_activity_name_description">กำหนดชื่อกิจกรรมเอง (เว้นว่างเพื่อใช้ค่าเริ่มต้น)</string>
     <string name="discord_advanced_mode">โหมดขั้นสูง</string>
@@ -558,7 +558,7 @@
     <string name="lyrics_provider_priority_desc">ลากเพื่อจัดเรียงลำดับผู้ให้บริการตามความต้องการ ตำแหน่งที่อยู่สูงกว่าจะมีลำดับความสำคัญมากกว่า</string>
     <string name="changelog">บันทึกการเปลี่ยนแปลง</string>
     <string name="changelog_empty">ยังไม่มีบันทึกการเปลี่ยนแปลง</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">ดูบน GitHub</string>
     <string name="current_version">เวอร์ชันปัจจุบัน</string>
