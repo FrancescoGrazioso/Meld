@@ -2153,3 +2153,29 @@ class SyncUtils @Inject constructor(
         updateState { SyncState() }
     }
 }
+
+// Ported from upstream v13.7.0 (Meld keeps its own SyncUtils body). Pure helpers, covered by
+// PlaylistSyncTest.
+
+internal fun hasCompleteLikedSongsResponse(
+    fetchedCount: Int,
+    advertisedCount: Int?,
+) = advertisedCount == null || fetchedCount >= advertisedCount
+
+internal fun localSongIndexesAbsentFromRemote(
+    localSongIds: List<String>,
+    remoteSongIds: List<String>,
+): List<Int> {
+    // Consume occurrences individually because playlists can deliberately contain duplicates.
+    val remainingRemote = remoteSongIds.groupingBy { it }.eachCount().toMutableMap()
+    return localSongIds.indices.filter { index ->
+        val songId = localSongIds[index]
+        val remaining = remainingRemote[songId] ?: 0
+        if (remaining == 0) {
+            true
+        } else {
+            remainingRemote[songId] = remaining - 1
+            false
+        }
+    }
+}

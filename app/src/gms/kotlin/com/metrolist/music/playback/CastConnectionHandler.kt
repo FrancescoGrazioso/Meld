@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.math.roundToInt
 import com.metrolist.music.models.MediaMetadata as AppMediaMetadata
-import com.google.android.gms.cast.MediaMetadata
 
 @UnstableApi
 class CastConnectionHandler(
