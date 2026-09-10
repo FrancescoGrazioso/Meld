@@ -545,8 +545,8 @@ class HomeViewModel @Inject constructor(
             keepListening.value = (keepListeningSongs + keepListeningAlbums + keepListeningArtists).shuffled()
 
             if (YouTube.cookie != null) {
-                launch(Dispatchers.IO) { loadAccountInfo() }
-                launch(Dispatchers.IO) { loadAccountPlaylists() }
+                viewModelScope.launch(Dispatchers.IO) { loadAccountInfo() }
+                viewModelScope.launch(Dispatchers.IO) { loadAccountPlaylists() }
             }
 
             viewModelScope.launch(Dispatchers.IO) {

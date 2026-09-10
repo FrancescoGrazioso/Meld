@@ -35,20 +35,6 @@ import com.metrolist.music.recognition.RecognitionForegroundService.Companion.ST
 import com.metrolist.music.recognition.RecognitionForegroundService.Companion.STATE_PROCESSING
 import com.metrolist.music.recognition.RecognitionForegroundService.Companion.STATE_SUCCESS
 import java.io.File
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.ALBUM_ART_CACHE_FILE
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.PREF_ARTIST_NAME
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.PREF_COVER_ART_PATH
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.PREF_ERROR_MESSAGE
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.PREF_PULSE_FRAME
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.PREF_SONG_TITLE
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.PREF_STATE
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.PREFS_NAME
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.STATE_ERROR
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.STATE_IDLE
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.STATE_LISTENING
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.STATE_NO_MATCH
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.STATE_PROCESSING
-import com.metrolist.music.widget.MusicRecognizerWidgetService.Companion.STATE_SUCCESS
 
 /**
  * AppWidgetProvider for the Music Recognizer Widget.

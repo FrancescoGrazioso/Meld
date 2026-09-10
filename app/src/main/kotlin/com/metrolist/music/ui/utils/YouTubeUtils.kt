@@ -9,6 +9,10 @@ package com.metrolist.music.ui.utils
 
 import kotlin.math.roundToInt
 
+private val YT_VIDEO_THUMB_PATTERN =
+    "https?://i\\.ytimg\\.com/(vi|vi_webp)/([^/]+)/([a-z0-9_]+)\\.(jpg|webp)(\\?.*)?"
+        .toRegex(RegexOption.IGNORE_CASE)
+
 private val GOOGLEUSERCONTENT_SIZE_PATTERN =
     Regex("^(https://(?:lh3|yt3)\\.googleusercontent\\.com/[^?]*?)=w(\\d+)-h(\\d+)[^?]*(\\?.*)?$")
 private val GGPHT_SIZE_PATTERN =

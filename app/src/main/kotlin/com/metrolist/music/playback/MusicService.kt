@@ -285,7 +285,6 @@ import java.util.Collections
 import androidx.media3.datasource.cache.CacheWriter
 import com.metrolist.music.constants.AudioTrackPlaybackParamsKey
 import com.metrolist.music.utils.Fix403
-import com.metrolist.music.utils.tryOrNull
 import androidx.datastore.preferences.core.edit
 import com.metrolist.music.extensions.tryOrNull
 
@@ -934,7 +933,7 @@ class MusicService :
                         "QOBUZ SETTING CHANGED, reloading current stream for $mediaId",
                     )
 
-                    songUrlCache.remove(mediaId)
+                    songUrlCache.invalidate(mediaId)
                     // Toggling Qobuz settings is an explicit user retry signal —
                     // wipe the negative cache so previously-missed tracks get a
                     // fresh resolve attempt instead of silently falling through
@@ -4472,6 +4471,7 @@ class MusicService :
     ): DataSource.Factory {
         return ResolvingDataSource.Factory(createCacheDataSource()) { dataSpec ->
             val mediaId = stripQobuzCacheKeyPrefix(dataSpec.key ?: error("No media id"))
+            val storedFormat = runBlocking(Dispatchers.IO) { database.format(mediaId).first() }
 
             // Handle local audio files — resolve to content URI and bypass YouTube fetch
             if (mediaId.startsWith("local:")) {
@@ -5199,7 +5199,7 @@ class MusicService :
         fadingPlayer = null
         isCrossfading = false
         player.removeListener(this)
-        player.removeListener(sleepTimer)
+        sleepTimer?.let { player.removeListener(it) }
         playerSilenceProcessors.remove(player)
         // Note: equalizerService audio processors are cleared in equalizerService.release() if needed,
         // or we can't easily reference the specific processor created in createExoPlayer here without storing it.
@@ -5676,7 +5676,7 @@ class MusicService :
             }
             QobuzAudioProvider.invalidate(mediaId)
             qobuzMissUntilMs.remove(mediaId)
-            songUrlCache.remove(mediaId)
+            songUrlCache.invalidate(mediaId)
             try {
                 playerCache.removeResource(mediaId)
                 downloadCache.removeResource(mediaId)

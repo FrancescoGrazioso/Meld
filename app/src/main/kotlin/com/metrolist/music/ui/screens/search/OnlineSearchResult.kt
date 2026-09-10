@@ -146,7 +146,7 @@ fun OnlineSearchResult(
 
     var lastHandledCount by rememberSaveable { mutableIntStateOf(0) }
     var isSearchFocused by remember { mutableStateOf(false) }
-    val isSpotifySearch by viewModel.isSpotifySearch.collectAsState()
+    val isSpotifySearch by viewModel.isSpotifySearch.collectAsStateWithLifecycle()
     val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(scrollToTopCount) {

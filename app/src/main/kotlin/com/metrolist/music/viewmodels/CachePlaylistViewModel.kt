@@ -68,15 +68,6 @@ class CachePlaylistViewModel
                             update(song.song.copy(dateDownload = null))
                         }
                     }
-
-                    _cachedSongs.value =
-                        completeSongs
-                            .filter { it.song.dateDownload != null }
-                            .sortedByDescending { it.song.dateDownload }
-                            .filterExplicit(hideExplicit)
-                            .filterVideoSongs(hideVideoSongs)
-
-                    delay(1000)
                 }
 
                 partition.stillCached

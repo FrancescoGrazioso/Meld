@@ -82,8 +82,6 @@ import java.io.FilterInputStream
 import java.io.InputStream
 import java.net.Proxy
 import kotlin.random.Random
-import com.metrolist.innertube.models.YouTubeClient.Companion.WEB
-import com.metrolist.innertube.models.YouTubeClient.Companion.WEB_REMIX
 
 /**
  * Parse useful data with [InnerTube] sending requests.

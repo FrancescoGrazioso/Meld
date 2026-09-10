@@ -1595,6 +1595,12 @@ interface DatabaseDao {
         lastMondayStart: LocalDateTime,
     ): Flow<List<EventWithSong>>
 
+    // Flat most-recent-first event list. Upstream replaced this with the day-bucketed
+    // historyEvents(...), but Meld's Recently Played home section just wants the tail.
+    @Transaction
+    @Query("SELECT * FROM event ORDER BY rowId DESC")
+    fun events(): Flow<List<EventWithSong>>
+
     @Transaction
     @Query("SELECT * FROM event ORDER BY rowId ASC LIMIT 1")
     fun firstEvent(): Flow<EventWithSong?>
