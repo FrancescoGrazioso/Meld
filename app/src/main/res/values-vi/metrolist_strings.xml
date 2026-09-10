@@ -179,7 +179,7 @@
     <string name="show_artist_description">Hiển thị mô tả nghệ sĩ</string>
     <string name="show_artist_subscriber_count">Hiện số lượng người đăng ký</string>
     <string name="show_artist_monthly_listeners">Hiển thị số lượt nghe hằng tháng</string>
-    <string name="wrapped_logo_content_description">Metrolist Logo</string>
+    <string name="wrapped_logo_content_description">Meld Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="listen_together_join_room">Tham gia phòng</string>
     <string name="listen_together_create_room_desc">Tạo phòng và chia sẻ mã với bạn bè của bạn</string>
@@ -203,7 +203,7 @@
     <string name="listen_together_use_custom_server">Sử dụng máy chủ tùy chỉnh</string>
     <string name="album_art">Cài đặt widget</string>
     <string name="no_song_playing">Không có bài hát đang phát</string>
-    <string name="tap_to_open">Chạm để mở Metrolist</string>
+    <string name="tap_to_open">Chạm để mở Meld</string>
     <string name="previous">Bài trước</string>
     <string name="play_pause">Phát/Tạm dừng</string>
     <string name="next">Bài tiếp</string>
@@ -275,7 +275,7 @@
     <string name="crash_description">Đã xảy ra lỗi không mong muốn. Vui lòng chia sẻ báo cáo sự cố để giúp chúng tôi khắc phục lỗi</string>
     <string name="crash_share_logs">Chia sẻ nhật ký</string>
     <string name="crash_share_title">Chia sẻ báo cáo sự cố</string>
-    <string name="crash_report_subject">Báo cáo sự cố Metrolist</string>
+    <string name="crash_report_subject">Báo cáo sự cố Meld</string>
     <string name="crash_close">Đóng</string>
     <string name="crash_no_log">Không có nhật ký sự cố</string>
     <string name="palette_crimson">Đỏ thẫm</string>
@@ -312,7 +312,7 @@
     <string name="remember_shuffle_and_repeat_desc">Ghi nhớ các cài đặt phát xáo trộn và phát lại khi khởi động lại ứng dụng</string>
     <string name="pause_music_when_media_is_muted">Tạm dừng nhạc khi tắt tiếng media</string>
     <string name="keep_screen_on_when_player_is_expanded">Giữ màn hình bật khi mở trình phát</string>
-    <string name="last_fm_send_likes_description">Tự động Yêu thích hoặc Bỏ yêu thích bài hát trên Last.fm khi bạn thích hoặc bỏ thích chúng trên Metrolist</string>
+    <string name="last_fm_send_likes_description">Tự động Yêu thích hoặc Bỏ yêu thích bài hát trên Last.fm khi bạn thích hoặc bỏ thích chúng trên Meld</string>
     <string name="logging_in">Đang đăng nhập…</string>
     <string name="hide_video_songs">Ẩn bài hát video</string>
     <string name="details_desc">Xem thông tin chi tiết của bài hát</string>
@@ -334,7 +334,7 @@
     <string name="equalizer_desc">Mở bộ cân bằng âm thanh</string>
     <string name="enable">Cho phép</string>
     <string name="save_episode_for_later">Lưu để nghe sau</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="credits_license_name">Giấy phép Công cộng GNU phiên bản 3.0 (GPLv3)</string>
     <string name="daily_discover_based_on">Dựa trên %1$s</string>
     <string name="logout_keep">Giữ lại</string>
@@ -366,7 +366,7 @@
     <string name="lyrics_provider_priority_desc">Kéo để xắp xếp lại nhà cung cấp theo ý muốn. Vị trí càng cao -&gt; Ưu tiên càng cao</string>
     <string name="changelog">Lịch sử cập nhật</string>
     <string name="changelog_empty">Không có lịch sử cập nhật có sẵn</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Xem trong GitHub</string>
     <string name="current_version">Phiên bản hiện tại</string>
@@ -482,7 +482,7 @@
     <string name="wrapped_total_artists_subtitle">nghệ sĩ độc bản!</string>
     <string name="wrapped_total_songs_title">Bạn đã được nghe</string>
     <string name="wrapped_total_songs_subtitle">các bài hát độc đáo!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">đã đến lúc xem bạn đã nghe những gì trong suốt năm qua…</string>
     <string name="wrapped_intro_button">đi nào!</string>
     <string name="wrapped_ready_title">WRAPPED CỦA BẠN ĐÃ SẴN SÀNG!</string>
@@ -558,7 +558,7 @@
     <string name="error_podcast_unsubscribe">Không thể hủy đăng ký podcast</string>
     <string name="view_channel">Xem kênh</string>
     <string name="not_playing">Không có bài hát đang phát</string>
-    <string name="tap_to_play">Ấn để mở Metrolist</string>
+    <string name="tap_to_play">Ấn để mở Meld</string>
     <string name="widget_music_player">Máy phát Nhạc</string>
     <string name="widget_turntable">Bàn xoay</string>
     <string name="widget_recognizer_name">Nhận dạng âm nhạc</string>
@@ -667,7 +667,7 @@
     <string name="clear_recognition_history_confirm">Bạn có chắc chắn muốn xóa toàn bộ lịch sử nhận dạng nhạc không?</string>
     <string name="delete_from_history">Xoá khỏi lịch sử</string>
     <string name="re_listen">Nghe lại</string>
-    <string name="play_on_app">Phát trên Metrolist</string>
+    <string name="play_on_app">Phát trên Meld</string>
     <string name="qs_tile_music_recognizer">Nhận dạng bài hát</string>
     <string name="recognition_notification_channel_name">Nhận dạng bài hát</string>
     <string name="recognition_notification_channel_desc">Hiển thị thông báo trong khi nhận dạng bài hát từ menu cài đặt nhanh</string>
@@ -675,7 +675,7 @@
     <string name="recognition_notification_processing">Đang xác định…</string>
     <string name="recognition_notification_no_match">Không tìm thấy kết quả phù hợp</string>
     <string name="recognition_notification_failed">Không nhận dạng được</string>
-    <string name="listen_on_metrolist">Nghe trên Metrolist</string>
+    <string name="listen_on_metrolist">Nghe trên Meld</string>
     <string name="map_csv_columns">Ánh xạ các cột CSV</string>
     <string name="first_row_is_header">Dòng đầu tiên là tiêu đề</string>
     <string name="artist_name_column">Cột Tên nghệ sĩ</string>
@@ -859,7 +859,7 @@
     <string name="ai_provider_inception_help">Truy cập https://platform.inceptionlabs.ai để lấy khóa API</string>
     <string name="enable_zemer">Bật nhà cung cấp lời bài hát Zemer</string>
     <string name="enable_zemer_desc">Lời bài hát cho âm nhạc Do Thái</string>
-    <string name="update_available_message">Metrolist %s đã sẵn sàng để tải xuống.</string>
+    <string name="update_available_message">Meld %s đã sẵn sàng để tải xuống.</string>
     <string name="update_action">Cập nhật</string>
     <string name="lyrics_romanize_japanese">La-tinh hóa lời bài hát tiếng Nhật</string>
     <string name="lyrics_romanize_korean">La-tinh hóa lời bài hát tiếng Hàn</string>

@@ -37,7 +37,7 @@
     <string name="wrapped_top_album_title">당신의 최애 앨범은</string>
     <string name="wrapped_top_song_album_art_content_description">앨범 아트</string>
     <string name="wrapped_top_artist_title">올해 당신의 최애 아티스트는</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_year">2025</string>
     <string name="equalizer_header">이퀄라이저</string>
     <string name="no_profiles">이퀄라이저 프로필 없음</string>
@@ -190,8 +190,8 @@
     <string name="crossfade">크로스페이드</string>
     <string name="crossfade_desc">곡의 끝과 다음 곡의 시작을 겹쳐서 자연스럽게 재생합니다</string>
     <string name="widget_recognizer_name">노래 검색기</string>
-    <string name="tap_to_play">Metrolist 열기</string>
-    <string name="tap_to_open">Metrolist 열기</string>
+    <string name="tap_to_play">Meld 열기</string>
+    <string name="tap_to_open">Meld 열기</string>
     <string name="widget_description">재생 제어가 가능한 음악 위젯</string>
     <string name="turntable_widget_description">재생 및 좋아요 제어가 가능한 원형 위젯</string>
     <string name="widget_music_player">음악 플레이어</string>
@@ -241,7 +241,7 @@
     <string name="release_notes">릴리스 노트</string>
     <string name="changelog">변경 사항</string>
     <string name="changelog_empty">표시할 변경 사항이 없습니다</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">GitHub에서 보기</string>
     <string name="current_version">현재 버전</string>
@@ -276,7 +276,7 @@
     <string name="wrapped_top_song_listening_time">당신은 총 %d분 동안 함께했습니다!</string>
     <string name="wrapped_intro_subtitle">올 한 해 어떤 음악과 함께했는지 확인해 보세요…</string>
     <string name="wrapped_intro_button">시작합니다!</string>
-    <string name="wrapped_logo_content_description">Metrolist 로고</string>
+    <string name="wrapped_logo_content_description">Meld 로고</string>
     <string name="wrapped_ready_title">연말 결산 준비 완료!</string>
     <string name="wrapped_ready_subtitle">올해 당신이 사랑한 음악들을 만나보세요…</string>
     <string name="wrapped_thank_you">함께해주셔서 감사합니다!</string>
@@ -302,7 +302,7 @@
     <string name="error_podcast_subscribe">팟캐스트를 구독하지 못했습니다</string>
     <string name="error_podcast_unsubscribe">팟캐스트 구독을 해제하지 못했습니다</string>
     <string name="view_channel">채널 보기</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="start_radio_desc">이 항목을 기반으로 라디오 시작</string>
     <string name="lyrics_romanize_title">로마자 표기</string>
     <string name="lyrics_romanization">가사 로마자 표기</string>
@@ -333,7 +333,7 @@
     <string name="enable_scrobbling">스크로블링 활성화</string>
     <string name="lastfm_now_playing">현재 재생 정보 전송</string>
     <string name="last_fm_send_likes">\'좋아요\' 및 \'싫어요\' 동기화</string>
-    <string name="last_fm_send_likes_description">Metrolist에서 곡에 좋아요 또는 싫어요를 표시하면 Last.fm에도 동일하게 반영합니다</string>
+    <string name="last_fm_send_likes_description">Meld에서 곡에 좋아요 또는 싫어요를 표시하면 Last.fm에도 동일하게 반영합니다</string>
     <string name="scrobbling_configuration">스크로블링 설정</string>
     <string name="scrobble_min_track_duration">지정된 시간(초) 이상 재생 시 스크로블링</string>
     <string name="scrobble_delay_percent">스크로블링 전송 기준(%)</string>
@@ -399,7 +399,7 @@
     <string name="crash_description">예상치 못한 오류가 발생했습니다. 문제 해결을 위해 오류 보고서를 공유해 주시면 감사하겠습니다</string>
     <string name="crash_share_logs">로그 공유</string>
     <string name="crash_share_title">오류 보고서 공유</string>
-    <string name="crash_report_subject">Metrolist 오류 보고서</string>
+    <string name="crash_report_subject">Meld 오류 보고서</string>
     <string name="crash_close">닫기</string>
     <string name="crash_no_log">사용 가능한 오류 로그가 없습니다</string>
     <string name="palette_dynamic">다이내믹</string>
@@ -443,7 +443,7 @@
     <string name="clear_recognition_history_confirm">검색 기록을 모두 삭제하시겠습니까?</string>
     <string name="delete_from_history">기록에서 삭제</string>
     <string name="re_listen">다시 검색</string>
-    <string name="play_on_app">Metrolist로 재생</string>
+    <string name="play_on_app">Meld로 재생</string>
     <string name="qs_tile_music_recognizer">노래 검색</string>
     <string name="recognition_notification_channel_name">노래 검색</string>
     <string name="recognition_notification_channel_desc">빠른 설정창에서 곡을 검색하는 동안 알림을 표시합니다</string>
@@ -451,7 +451,7 @@
     <string name="recognition_notification_processing">분석 중…</string>
     <string name="recognition_notification_no_match">일치하는 곡을 찾을 수 없습니다</string>
     <string name="recognition_notification_failed">검색 실패</string>
-    <string name="listen_on_metrolist">Metrolist로 재생</string>
+    <string name="listen_on_metrolist">Meld로 재생</string>
     <string name="speed_dial">빠른 실행</string>
     <string name="pin_to_speed_dial">빠른 실행에 고정</string>
     <string name="unpin_from_speed_dial">빠른 실행에서 고정 해제</string>

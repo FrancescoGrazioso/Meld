@@ -229,7 +229,7 @@
     <string name="connected_users">Përdorues të lidhur</string>
     <string name="enter_username">Fut një emër përdoruesi</string>
     <string name="enter_room_code">Fut një kod dhome</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="android_auto">Android Auto</string>
     <string name="sort_ascending">Rendit në rend rritës</string>
     <string name="sort_descending">Rendit në rend zbritës</string>
@@ -279,7 +279,7 @@
     <string name="release_notes">Shënimet e versionit</string>
     <string name="changelog">Regjistri i ndryshimeve</string>
     <string name="changelog_empty">Nuk ka regjistra ndryshimesh të disponueshëm</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Shiko në GitHub</string>
 </resources>

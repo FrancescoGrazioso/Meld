@@ -156,7 +156,7 @@
     <string name="enable_similar_content">একই ধরনের কন্টেন্ট চালু করুন</string>
     <string name="sensitivity_percentage">%1$d%%</string>
     <string name="disable">বন্ধ করুন</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">গিটহাবে দেখুন</string>
     <string name="current_version">বর্তমান সংস্করণ</string>

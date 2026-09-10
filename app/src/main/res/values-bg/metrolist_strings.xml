@@ -168,7 +168,7 @@
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Предаване на звук към Chromecast и други устройства поддържащи Cast</string>
     <string name="last_fm_send_likes">Синхронизирай Харесвани и Нехаресвани</string>
-    <string name="last_fm_send_likes_description">Добавяне/премахване на любими в Last.fm, когато харесате/премахнете песен в Metrolist</string>
+    <string name="last_fm_send_likes_description">Добавяне/премахване на любими в Last.fm, когато харесате/премахнете песен в Meld</string>
     <string name="logging_in">Влизане…</string>
     <string name="hide_video_songs">Скриване на видео</string>
     <string name="details_desc">Преглед на информацията за песента</string>
@@ -238,7 +238,7 @@
     <string name="export_option_save">Запазване в «Документи»</string>
     <string name="changelog">Списък с промените</string>
     <string name="changelog_empty">Списъкът с промените е недостъпен</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Покажи на GitHub</string>
     <string name="current_version">Текуща версия</string>
@@ -395,13 +395,13 @@
     <string name="view_channel">Виж канала</string>
     <string name="album_art">Обложка на албума</string>
     <string name="no_song_playing">Няма пусната песен</string>
-    <string name="tap_to_open">Натисни да отвориш Metrolist</string>
+    <string name="tap_to_open">Натисни да отвориш Meld</string>
     <string name="previous">Предишен</string>
     <string name="play_pause">Пусни/Пауза</string>
     <string name="next">Следващ</string>
     <string name="like">Харесай</string>
     <string name="not_playing">Няма пусната песен</string>
-    <string name="tap_to_play">Натисни да отвориш Metrolist</string>
+    <string name="tap_to_play">Натисни да отвориш Meld</string>
     <string name="widget_description">Уиджет за музикален плейър с бутони за управление</string>
     <string name="turntable_widget_description">Кръгъл музикален уиджет с контроли за пускане и харесване</string>
     <string name="widget_music_player">Музикален плейър</string>
@@ -496,7 +496,7 @@
     <string name="wrapped_total_artists_subtitle">различни изпълнителя!</string>
     <string name="wrapped_total_songs_title">Слушали сте</string>
     <string name="wrapped_total_songs_subtitle">различни песни!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">време е да видим какво сте слушали тази година…</string>
     <string name="listen_together_choose_server">Избери сървър</string>
     <string name="listen_together_custom_server">Друг сървър</string>
@@ -574,7 +574,7 @@
     <string name="crash_description">Възникна неочаквана грешка. Моля, споделете доклада за срива, за да ни помогнете да отстраним проблема</string>
     <string name="crash_share_logs">Сподели логове</string>
     <string name="crash_share_title">Сподели доклада за срива</string>
-    <string name="crash_report_subject">Доклад за срив на Metrolist</string>
+    <string name="crash_report_subject">Доклад за срив на Meld</string>
     <string name="crash_close">Затвори</string>
     <string name="crash_no_log">Няма наличен доклад за срив</string>
     <string name="palette_dynamic">Динамична</string>
@@ -618,7 +618,7 @@
     <string name="clear_recognition_history_confirm">Сигурен ли сте че искате да изтриете всичката история на разпознаване?</string>
     <string name="delete_from_history">Изтрий от историята</string>
     <string name="re_listen">Слушане отново</string>
-    <string name="play_on_app">Пусни в Metrolist</string>
+    <string name="play_on_app">Пусни в Meld</string>
     <string name="qs_tile_music_recognizer">Разпознай песен</string>
     <string name="recognition_notification_channel_name">Разпознаване на песен</string>
     <string name="recognition_notification_channel_desc">Покажи известие при разпознаване на песен от бързите настройки</string>
@@ -626,7 +626,7 @@
     <string name="recognition_notification_processing">Разпознаване…</string>
     <string name="recognition_notification_no_match">Няма резултати</string>
     <string name="recognition_notification_failed">Разпознаването бе неуспешно</string>
-    <string name="listen_on_metrolist">Слушай в Metrolist</string>
+    <string name="listen_on_metrolist">Слушай в Meld</string>
     <string name="map_csv_columns">Настройване на CSV колони</string>
     <string name="first_row_is_header">Първия ред е заглавен</string>
     <string name="artist_name_column">Колона с името на изпълнителя</string>
@@ -673,7 +673,7 @@
     <string name="discord_status_idle">Отсъстващ</string>
     <string name="discord_status_dnd">Не ме безпокойте</string>
     <string name="crossfade_gapless_desc">Изключване на кръстосаното преливане за албуми без паузи</string>
-    <string name="wrapped_logo_content_description">Metrolist Лого</string>
+    <string name="wrapped_logo_content_description">Meld Лого</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_close">Затвори Wrapped</string>
     <string name="wrapped_playlist_title">Вашият %s Wrapped</string>
@@ -739,7 +739,7 @@
     <string name="credits_view_repo">Преглед на хранилището</string>
     <string name="buy_mo_a_coffee">Почерпете ме с кафе!</string>
     <string name="community_and_info">Общност и информация</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">Искате ли да пуснете любимата им песен?</string>
     <string name="yeah">Да!</string>
     <string name="stands_with_palestine">Този проект подкрепя Палестина 🇵🇸</string>

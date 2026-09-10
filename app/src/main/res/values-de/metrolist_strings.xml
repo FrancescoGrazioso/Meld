@@ -179,7 +179,7 @@
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Audioübertragung auf Chromecast und andere Cast-fähige Geräte aktivieren</string>
     <string name="last_fm_send_likes">Likes/Dislikes synchronisieren</string>
-    <string name="last_fm_send_likes_description">Lieder bei Last.fm als „Gefällt mir“/„Gefällt mir nicht“ markieren, wenn sie in Metrolist als „Gefällt mir“/„Gefällt mir nicht“ markiert werden</string>
+    <string name="last_fm_send_likes_description">Lieder bei Last.fm als „Gefällt mir“/„Gefällt mir nicht“ markieren, wenn sie in Meld als „Gefällt mir“/„Gefällt mir nicht“ markiert werden</string>
     <string name="logging_in">Anmelden…</string>
     <string name="hide_video_songs">Videosongs ausblenden</string>
     <string name="details_desc">Details zum Song anzeigen</string>
@@ -225,7 +225,7 @@
     <string name="wrapped_total_artists_title">Du hast dir angehört</string>
     <string name="wrapped_total_songs_title">Du hast dir angehört</string>
     <string name="wrapped_total_songs_subtitle">einzigartige Lieder!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">Es ist an der Zeit, mal zu schauen, was du das ganze Jahr über gehört hast…</string>
     <string name="wrapped_intro_button">Auf geht\'s!</string>
     <string name="wrapped_ready_title">Dein Wrapped ist bereit!</string>
@@ -245,7 +245,7 @@
     <string name="error_playing">Wiedergabefehler</string>
     <string name="failed_to_parse_proxy">Die Proxy-URL konnte nicht analysiert werden.</string>
     <string name="wrapped_top_song_album_art_content_description">Albumcover</string>
-    <string name="wrapped_logo_content_description">Metrolist Logo</string>
+    <string name="wrapped_logo_content_description">Meld Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_top_artist_image_content_description">Bild des Top-Künstlers</string>
     <string name="wavy">Wellig</string>
@@ -261,7 +261,7 @@
     <string name="import_error_title">Importfehler</string>
     <string name="system_equalizer">System-Equalizer</string>
     <string name="no_song_playing">Es wird kein Song abgespielt</string>
-    <string name="tap_to_open">Tippen, um Metrolist zu öffnen</string>
+    <string name="tap_to_open">Tippen, um Meld zu öffnen</string>
     <string name="previous">Vorherige</string>
     <string name="play_pause">Wiedergabe/Pause</string>
     <string name="next">Weiter</string>
@@ -383,7 +383,7 @@
     <string name="crash_description">Ein unerwarteter Fehler ist aufgetreten. Bitte teile uns den Absturzbericht mit, damit wir das Problem beheben können.</string>
     <string name="crash_share_logs">Protokolle teilen</string>
     <string name="crash_share_title">Absturzbericht teilen</string>
-    <string name="crash_report_subject">Metrolist Absturzbericht</string>
+    <string name="crash_report_subject">Meld Absturzbericht</string>
     <string name="crash_close">Schließen</string>
     <string name="crash_no_log">Kein Absturzprotokoll verfügbar</string>
     <string name="palette_dynamic">Dynamisch</string>
@@ -408,7 +408,7 @@
     <string name="cd_pure_black_mode">Reiner Schwarz-Modus</string>
     <string name="cd_palette_item">%1$s Palette</string>
     <string name="not_playing">Es wird kein Lied abgespielt</string>
-    <string name="tap_to_play">Tippen Sie hier, um Metrolist zu öffnen</string>
+    <string name="tap_to_play">Tippen Sie hier, um Meld zu öffnen</string>
     <string name="widget_music_player">Musik-Player</string>
     <string name="widget_turntable">Drehscheibe</string>
     <string name="together">Gemeinsam</string>
@@ -457,7 +457,7 @@
     <string name="song_title_column">Spalte „Songtitel“</string>
     <string name="recently_converted">Kürzlich konvertiert</string>
     <string name="importing_csv">CSV importieren…</string>
-    <string name="play_on_app">Auf Metrolist abspielen</string>
+    <string name="play_on_app">Auf Meld abspielen</string>
     <string name="listening">Hören…</string>
     <string name="continue_action">Weitermachen</string>
     <string name="enable">Aktivieren</string>
@@ -529,7 +529,7 @@
     <string name="lyrics_provider_priority_desc">Ziehen, um die Anbieter neu anzuordnen. Höhere Position bedeutet höhere Priorität</string>
     <string name="changelog">Änderungsprotokoll</string>
     <string name="changelog_empty">Kein Änderungsprotokoll verfügbar</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Auf GitHub anzeigen</string>
     <string name="current_version">Version in Nutzung</string>
@@ -578,7 +578,7 @@
     <string name="credits_telegram">Telegram-Kanal</string>
     <string name="credits_view_repo">Repository anzeigen</string>
     <string name="community_and_info">Community &amp; Info</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">Möchten Sie ihr Lieblingslied spielen?</string>
     <string name="yeah">Ja!</string>
     <string name="stands_with_palestine">Dieses Projekt steht hinter Palästina 🇵🇸</string>
@@ -719,7 +719,7 @@
     <string name="recognition_notification_processing">Identifizierung…</string>
     <string name="recognition_notification_no_match">Keine Ergbnisse gefunden</string>
     <string name="recognition_notification_failed">Erkennung fehlgeschlagen</string>
-    <string name="listen_on_metrolist">Auf Metrolist hören</string>
+    <string name="listen_on_metrolist">Auf Meld hören</string>
     <string name="android_auto">Android Auto</string>
     <string name="android_auto_visible_sections">Sichtbare Sektionen</string>
     <string name="android_auto_reorder_hint">Tippen Sie auf einen Abschnitt, um ihn zu aktivieren oder zu deaktivieren.\nHalten Sie den Ziehgriff gedrückt, um die Reihenfolge zu ändern. Der erste Abschnitt wird standardmäßig angezeigt.</string>
@@ -863,7 +863,7 @@
     <string name="error_offline_playback">Du bist offline. Verbinde dich mit dem Internet oder spiele ein heruntergelades Lied ab.</string>
     <string name="enable_zemer_desc">Songtexte für jüdische Musik</string>
     <string name="playlist_created_locally">YouTube-Synchronisierung fehlgeschlagen. Playlist lokal erstellt.</string>
-    <string name="update_available_message">Metrolist %s steht zum Download bereit.</string>
+    <string name="update_available_message">Meld %s steht zum Download bereit.</string>
     <string name="update_action">Update</string>
     <string name="ai_provider_inception_help">Für API-Schlüssel, besuche: https://platform.inceptionlabs.ai</string>
     <string name="lyrics_romanize_japanese">Japanische Liedtexte romanisieren</string>

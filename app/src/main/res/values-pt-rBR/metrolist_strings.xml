@@ -170,7 +170,7 @@
     <string name="google_cast">Transmitir via Google Cast</string>
     <string name="google_cast_description">Transmitir áudio para o Chromecast e outros dispositivos compatíveis</string>
     <string name="last_fm_send_likes">Sincronizar Amado e Desamado</string>
-    <string name="last_fm_send_likes_description">Amar ou desamar músicas no Last.fm quanto você as curte ou descurte no Metrolist</string>
+    <string name="last_fm_send_likes_description">Amar ou desamar músicas no Last.fm quanto você as curte ou descurte no Meld</string>
     <string name="logging_in">Fazendo login…</string>
     <string name="hide_video_songs">Ocultar videoclipes</string>
     <string name="details_desc">Ver os detalhes da música</string>
@@ -228,10 +228,10 @@
     <string name="wrapped_total_artists_subtitle">Artistas únicos!</string>
     <string name="wrapped_total_songs_title">Você escutou a</string>
     <string name="wrapped_total_songs_subtitle">Músicas únicas!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">É hora de checar o que você tem ouvido por todo esse ano…</string>
     <string name="wrapped_intro_button">vamos lá!</string>
-    <string name="wrapped_logo_content_description">Metrolist Logo</string>
+    <string name="wrapped_logo_content_description">Meld Logo</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">SUA RETROSPECTIVA ESTÁ PRONTA!</string>
     <string name="wrapped_ready_subtitle">Hora de checar o que você adorou em todo esse ano…</string>
@@ -271,7 +271,7 @@
     <string name="system_equalizer">Equalizador do Sistema</string>
     <string name="album_art">Capa do Álbum</string>
     <string name="no_song_playing">Nenhuma música tocando</string>
-    <string name="tap_to_open">Clique para abrir o Metrolist</string>
+    <string name="tap_to_open">Clique para abrir o Meld</string>
     <string name="previous">Anterior</string>
     <string name="play_pause">Tocar/Pausar</string>
     <string name="next">Próximo</string>
@@ -305,7 +305,7 @@
     <string name="error_eq_apply_failed">Falhou a aplicar o perfil do equalizador: %1$s</string>
     <string name="error_playback_failed">Falha na reprodução</string>
     <string name="not_playing">Nenhuma música tocando</string>
-    <string name="tap_to_play">Clique para abrir o Metrolist</string>
+    <string name="tap_to_play">Clique para abrir o Meld</string>
     <string name="widget_music_player">Reprodutor de música</string>
     <string name="widget_turntable">Toca-discos</string>
     <string name="together">Juntos</string>
@@ -343,7 +343,7 @@
     <string name="clear_recognition_history_confirm">Tem certeza que quer limpar todo o histórico de reconhecimento?</string>
     <string name="delete_from_history">Apagar do histórico</string>
     <string name="re_listen">Ouvir novamente</string>
-    <string name="play_on_app">Tocar no Metrolist</string>
+    <string name="play_on_app">Tocar no Meld</string>
     <string name="listen_together_auto_approval_joins_desc">Aprovar pedidos de entrada automaticamente sem analisá-los manualmente</string>
     <string name="listen_together_sync_volume">Sincronizar volume do anfitrião</string>
     <string name="listen_together_sync_volume_desc">Os Participantes irão combinar o nível de volume ao do anfitrião</string>
@@ -430,7 +430,7 @@
     <string name="crash_description">Ocorreu um erro inesperado. Por favor, compartilhe o relatório de falha para nos ajudar a corrigir o problema</string>
     <string name="crash_share_logs">Compartilhar registros</string>
     <string name="crash_share_title">Compartilhar relatório de falha</string>
-    <string name="crash_report_subject">Relatório de acidente da Metrolist</string>
+    <string name="crash_report_subject">Relatório de acidente da Meld</string>
     <string name="crash_close">Fechar</string>
     <string name="crash_no_log">Nenhum registro de falha disponível</string>
     <string name="palette_dynamic">Dinâmico</string>
@@ -522,7 +522,7 @@
     <string name="lyrics_provider_priority_desc">Arraste para reordenar provedores por sua preferência. Mais ao topo significa maior prioridade</string>
     <string name="changelog">Novidades</string>
     <string name="changelog_empty">Sem novidades no momento</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Ver no GitHub</string>
     <string name="current_version">Versão atual</string>
@@ -574,7 +574,7 @@
     <string name="credits_view_repo">Ver repositório</string>
     <string name="buy_mo_a_coffee">Me compre um café!</string>
     <string name="community_and_info">Comunidade e Informações</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">Quer tocar sua música favorita?</string>
     <string name="yeah">Sim!</string>
     <string name="stands_with_palestine">Esse projeto apoia a Palestina 🇵🇸</string>
@@ -872,7 +872,7 @@
     <string name="ai_provider_inception_help">Visite https://platform.inceptionlabs.ai para chave API</string>
     <string name="enable_zemer">Ativar Zemer</string>
     <string name="enable_zemer_desc">Letras por Jewish music</string>
-    <string name="update_available_message">Metrolist %s está pronto para download.</string>
+    <string name="update_available_message">Meld %s está pronto para download.</string>
     <string name="lyrics_romanize_japanese">Romanizar letras em Japonês</string>
     <string name="lyrics_romanize_korean">Romanizar letras em Coreano</string>
     <string name="lyrics_romanization_cyrillic">Alfabeto cirílico</string>

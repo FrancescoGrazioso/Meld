@@ -220,7 +220,7 @@
     <string name="release_notes">Заўвагі да выпуску</string>
     <string name="changelog">Спіс змен</string>
     <string name="changelog_empty">Спіс змен недаступны</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Адкрыць на GitHub</string>
     <string name="current_version">Бягучая версія</string>
@@ -359,6 +359,6 @@
     <string name="enable_scrobbling">Уключыць скробблінг</string>
     <string name="lastfm_now_playing">Адпраўляць статус \"Зараз іграе\"</string>
     <string name="last_fm_send_likes">Сінхранізаваць адзнакі «Падабаецца»</string>
-    <string name="last_fm_send_likes_description">Дадаваць ці прыбіраць адзнаку «Любімае» на Last.fm, калі ставіцца ці здымаецца адзнака «Падабаецца» ў Metrolist</string>
+    <string name="last_fm_send_likes_description">Дадаваць ці прыбіраць адзнаку «Любімае» на Last.fm, калі ставіцца ці здымаецца адзнака «Падабаецца» ў Meld</string>
     <string name="logging_in">Выконваецца ўваход…</string>
 </resources>

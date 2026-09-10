@@ -176,7 +176,7 @@
     <string name="enable_scrobbling">Habilitar scrobbling</string>
     <string name="lastfm_now_playing">Enviar Reproducció Actual</string>
     <string name="last_fm_send_likes">Enviar Agrada/No m\'agrada</string>
-    <string name="last_fm_send_likes_description">Indicar que M\'agrada/No m\'agrada a Last.fm en indicar M\'agrada/No m\'agrada a Metrolist</string>
+    <string name="last_fm_send_likes_description">Indicar que M\'agrada/No m\'agrada a Last.fm en indicar M\'agrada/No m\'agrada a Meld</string>
     <string name="logging_in">Iniciant sessió…</string>
     <string name="scrobbling_configuration">Configuració de scrobbling</string>
     <string name="scrobble_min_track_duration">Fer scrobble a cançons més llargues de</string>
@@ -225,10 +225,10 @@
     <string name="wrapped_total_artists_subtitle">artistes únics</string>
     <string name="wrapped_total_songs_title">Has escoltat</string>
     <string name="wrapped_total_songs_subtitle">cançons diferents</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">És hora de veure què has estat escoltant</string>
     <string name="wrapped_intro_button">anem!</string>
-    <string name="wrapped_logo_content_description">Logo de Metrolist</string>
+    <string name="wrapped_logo_content_description">Logo de Meld</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">EL TEU RECOPILATORI ESTÀ PREPARAT!</string>
     <string name="wrapped_ready_subtitle">És hora de veure què t\'ha encantat enguany.</string>
@@ -285,7 +285,7 @@
     <string name="show_artist_subscriber_count">Mostra el nombre de subscriptors</string>
     <string name="show_artist_monthly_listeners">Mostra els oients mensuals</string>
     <string name="crop_album_art">Retalla la coberta de l\'àlbum</string>
-    <string name="tap_to_open">Toqueu per obrir el Metrolist</string>
+    <string name="tap_to_open">Toqueu per obrir el Meld</string>
     <string name="remember_shuffle_and_repeat">Recorda l\'aleatori i la repetició</string>
     <string name="pause_music_when_media_is_muted">Pausa la música en silenciar la multimèdia</string>
     <string name="widget_description">Giny reproductor de música amb controls integrats</string>
@@ -364,11 +364,11 @@
     <string name="crash_description">S\'ha produït un error inesperat. Per favor, enviï\'ns l\'informe de fallida per a ajudar-nos a solucionar el problema.</string>
     <string name="crash_share_logs">Compartir Registres</string>
     <string name="crash_share_title">Enviar l\'informe de fallida</string>
-    <string name="crash_report_subject">Informe de Fallida de Metrolist</string>
+    <string name="crash_report_subject">Informe de Fallida de Meld</string>
     <string name="crash_close">Tancar</string>
     <string name="crash_no_log">No hi ha registres de fallida disponibles</string>
     <string name="not_playing">Cap cançó sonant</string>
-    <string name="tap_to_play">Prem per obrir Metrolist</string>
+    <string name="tap_to_play">Prem per obrir Meld</string>
     <string name="widget_music_player">Reproductor de música</string>
     <string name="widget_turntable">Tocadiscs</string>
     <string name="together">Junts</string>
@@ -479,7 +479,7 @@
     <string name="clear_recognition_history_confirm">Està segur de que vol buidar tot l\'historial de reconeixements?</string>
     <string name="delete_from_history">Elimina de l\'historial</string>
     <string name="re_listen">Escoltar de nou</string>
-    <string name="play_on_app">Reprodueix amb Metrolist</string>
+    <string name="play_on_app">Reprodueix amb Meld</string>
     <string name="map_csv_columns">Mapatge de Columnes CSV</string>
     <string name="first_row_is_header">La primera fila son les capçaleres</string>
     <string name="artist_name_column">Columna del nom de l\'Artista</string>
@@ -539,7 +539,7 @@
     <string name="lyrics_provider_priority_desc">Arrastra per ordenar els proveïdors per preferència. Posició elevada -&gt; proritat elevada.</string>
     <string name="changelog">Registre de canvis</string>
     <string name="changelog_empty">Registre de canvis no disponible</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Mostra a GitHub</string>
     <string name="current_version">Versió actual</string>
@@ -608,7 +608,7 @@
     <string name="credits_view_repo">Veure Repositori</string>
     <string name="buy_mo_a_coffee">Compra\'m un cafè</string>
     <string name="community_and_info">Comunitat &amp; informació</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">Vols escoltar la teua cançó preferida?</string>
     <string name="yeah">Sí</string>
     <string name="stands_with_palestine">Aquest projecte dona suport a Palestina 🇵🇸</string>

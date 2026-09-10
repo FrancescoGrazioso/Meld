@@ -157,7 +157,7 @@
     <string name="enable_scrobbling">開啟紀錄播放歌曲</string>
     <string name="lastfm_now_playing">傳送正在播放歌曲</string>
     <string name="last_fm_send_likes">同步喜歡和不喜歡歌曲</string>
-    <string name="last_fm_send_likes_description">同步 Metrolist 喜歡/不喜歡歌曲到 Last.fm</string>
+    <string name="last_fm_send_likes_description">同步 Meld 喜歡/不喜歡歌曲到 Last.fm</string>
     <string name="scrobbling_configuration">歌曲紀錄設定</string>
     <string name="scrobble_min_track_duration">紀錄播放長度超過以下時間的歌曲</string>
     <string name="scrobble_delay_percent">紀錄延遲比例</string>
@@ -222,7 +222,7 @@
     <string name="error_file_read">無法閱讀檔案</string>
     <string name="pause_music_when_media_is_muted">靜音時暫停音樂播放</string>
     <string name="turntable_widget_description">快速存取最近播放的曲目</string>
-    <string name="tap_to_open">點擊開啟 Metrolist</string>
+    <string name="tap_to_open">點擊開啟 Meld</string>
     <string name="persistent_shuffle_desc">在開始播放新歌曲或播放清單時，仍維持隨機播放狀態</string>
     <string name="persistent_shuffle_title">固定隨機播放</string>
     <string name="enable">啟用</string>
@@ -326,7 +326,7 @@
     <string name="stands_with_palestine">這個計畫支持巴勒斯坦🇵🇸</string>
     <string name="yeah">是的！</string>
     <string name="wanna_play_favorite_song">想播放他們最喜歡的歌曲嗎？</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="community_and_info">社區與資訊</string>
     <string name="buy_mo_a_coffee">請我喝杯咖啡吧！</string>
     <string name="credits_view_repo">查看儲存庫</string>
@@ -375,7 +375,7 @@
     <string name="artist_name_column">藝術家姓名列</string>
     <string name="map_csv_columns">映射 CSV 列</string>
     <string name="qs_tile_music_recognizer">辨識音樂</string>
-    <string name="play_on_app">在 Metrolist 上播放</string>
+    <string name="play_on_app">在 Meld 上播放</string>
     <string name="re_listen">再聽一遍</string>
     <string name="delete_from_history">從歷史記錄中刪除</string>
     <string name="clear_recognition_history_confirm">您確定要清除所有識別記錄嗎？</string>
@@ -418,7 +418,7 @@
     <string name="palette_dynamic">動態</string>
     <string name="crash_no_log">沒有可用的崩潰日誌</string>
     <string name="crash_close">關閉</string>
-    <string name="crash_report_subject">Metrolist 崩潰報告</string>
+    <string name="crash_report_subject">Meld 崩潰報告</string>
     <string name="crash_share_title">分享崩潰報告</string>
     <string name="crash_share_logs">分享日誌</string>
     <string name="crash_description">發生意外錯誤。請提供崩潰報告，以便我們修復問題</string>
@@ -462,7 +462,7 @@
     <string name="listen_together_blocked_users_count">%d 用戶已被阻止</string>
     <string name="listen_together_blocked_users">已封鎖用戶</string>
     <string name="prevent_duplicate_tracks_in_queue">防止佇列中出現重複曲目</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="version_format">版本：%s</string>
     <string name="latest_version_format">最新：%s</string>
     <string name="failed_to_check_updates">檢查更新失敗：%s</string>
@@ -512,10 +512,10 @@
     <string name="wrapped_total_artists_subtitle">獨特的藝術家!</string>
     <string name="wrapped_total_songs_title">你聽了</string>
     <string name="wrapped_total_songs_subtitle">獨特的歌曲!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">是時候看看你這一整年都在聽些什麼了…</string>
     <string name="wrapped_intro_button">我們開始吧！</string>
-    <string name="wrapped_logo_content_description">Metrolist 標誌</string>
+    <string name="wrapped_logo_content_description">Meld 標誌</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">你的年度總結已準備好！</string>
     <string name="wrapped_ready_subtitle">是時候看看你今年最喜歡什麼了…</string>
@@ -539,7 +539,7 @@
     <string name="play_pause">播放/暫停</string>
     <string name="next">下一首</string>
     <string name="not_playing">沒有歌曲播放</string>
-    <string name="tap_to_play">點擊開啟 Metrolist</string>
+    <string name="tap_to_play">點擊開啟 Meld</string>
     <string name="widget_description">帶有播放控制的小部件</string>
     <string name="widget_music_player">音樂播放器</string>
     <string name="widget_recognizer_name">音樂辨識器</string>
@@ -680,7 +680,7 @@
     <string name="recognition_notification_listening">正在識別歌曲…</string>
     <string name="recognition_notification_processing">識別中…</string>
     <string name="recognition_notification_failed">識別失敗</string>
-    <string name="listen_on_metrolist">在 Metrolist 收聽</string>
+    <string name="listen_on_metrolist">在 Meld 收聽</string>
     <string name="android_auto">Android Auto</string>
     <string name="android_auto_visible_sections">部分可見</string>
     <string name="android_auto_reorder_hint">點擊某個版塊即可啟用或停用它…\n長按拖曳手把可重新排序。預設會顯示第一部分</string>

@@ -149,7 +149,7 @@
     <string name="release_notes">Notas da versión</string>
     <string name="changelog">Rexistro de cambios</string>
     <string name="changelog_empty">Rexistro de cambios non dispoñible</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Ver no GitHub</string>
     <string name="current_version">Versión actual</string>
@@ -193,7 +193,7 @@
     <string name="enable_scrobbling">Activar rexistro de reproducións</string>
     <string name="lastfm_now_playing">Enviar a reprodución actual</string>
     <string name="last_fm_send_likes">Sincronizar o que me gusta e non me gusta</string>
-    <string name="last_fm_send_likes_description">Marcar cancións que me gustan ou non en Last.fm cando as marque en Metrolist</string>
+    <string name="last_fm_send_likes_description">Marcar cancións que me gustan ou non en Last.fm cando as marque en Meld</string>
     <string name="logging_in">Iniciando sesión…</string>
     <string name="scrobbling_configuration">Configuración do rexistro de reproducións</string>
     <string name="scrobble_min_track_duration">Rexistrar reprodución de cancións máis longas que (segundos)</string>
@@ -245,10 +245,10 @@
     <string name="wrapped_total_artists_subtitle">artistas únicos!</string>
     <string name="wrapped_total_songs_title">Escoitaches a</string>
     <string name="wrapped_total_songs_subtitle">cancións únicas!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">é hora de ver que escoitaches durante este ano…</string>
     <string name="wrapped_intro_button">imos!</string>
-    <string name="wrapped_logo_content_description">Logotipo de Metrolist</string>
+    <string name="wrapped_logo_content_description">Logotipo de Meld</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">O TEU RESUMO ESTÁ LISTO!</string>
     <string name="wrapped_ready_subtitle">Hora de ver o que che gustou todo este ano…</string>
@@ -307,13 +307,13 @@
     <string name="view_channel">Ver canle</string>
     <string name="album_art">Portada do álbum</string>
     <string name="no_song_playing">Ningunha canción soando</string>
-    <string name="tap_to_open">Preme para abrir Metrolist</string>
+    <string name="tap_to_open">Preme para abrir Meld</string>
     <string name="previous">Anterior</string>
     <string name="play_pause">Reproducir/Pausar</string>
     <string name="next">Seguinte</string>
     <string name="like">Gústame</string>
     <string name="not_playing">Ningunha canción soando</string>
-    <string name="tap_to_play">Preme para abrir Metrolist</string>
+    <string name="tap_to_play">Preme para abrir Meld</string>
     <string name="widget_description">Widget do reprodutor de música con controis de reprodución</string>
     <string name="ai_provider_gemini_help">Visita https://aistudio.google.com/apikey</string>
     <string name="ai_provider_perplexity_help">Visita https://perplexity.ai/settings/api</string>
@@ -331,7 +331,7 @@
     <string name="crash_description">Aconteceu un erro inesperado. Por favor, comparte o informe do erro para axudar a solucionar o problema</string>
     <string name="crash_share_logs">Compartir rexistros</string>
     <string name="crash_share_title">Compartir informe do erro</string>
-    <string name="crash_report_subject">Informe de erros de Metrolist</string>
+    <string name="crash_report_subject">Informe de erros de Meld</string>
     <string name="crash_close">Pechar</string>
     <string name="crash_no_log">Informe de erros non dispoñible</string>
     <string name="palette_dynamic">Dinámica</string>
@@ -375,7 +375,7 @@
     <string name="clear_recognition_history_confirm">Estás seguro de querer borrar todo o historial de recoñecemento?</string>
     <string name="delete_from_history">Eliminar do historial</string>
     <string name="re_listen">Escoitar de novo</string>
-    <string name="play_on_app">Reproducir en Metrolist</string>
+    <string name="play_on_app">Reproducir en Meld</string>
     <string name="qs_tile_music_recognizer">Recoñecer música</string>
     <string name="recognition_notification_channel_name">Recoñecemento de música</string>
     <string name="recognition_notification_channel_desc">Amosar unha notificación mentres se identifica unha canción desde os axustes rápidos</string>
@@ -383,7 +383,7 @@
     <string name="recognition_notification_processing">Identificando…</string>
     <string name="recognition_notification_no_match">Non se atoparon coincidencias</string>
     <string name="recognition_notification_failed">Fallou o recoñecemento</string>
-    <string name="listen_on_metrolist">Escoitar en Metrolist</string>
+    <string name="listen_on_metrolist">Escoitar en Meld</string>
     <string name="map_csv_columns">Asociar columnas do CSV</string>
     <string name="first_row_is_header">A primeira fila é o encabezado</string>
     <string name="artist_name_column">Columna do nome do artista</string>
@@ -499,7 +499,7 @@
     <string name="credits_view_repo">Ver repositorio</string>
     <string name="buy_mo_a_coffee">Convídame a un café!</string>
     <string name="community_and_info">Comunidade e información</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">Queres reproducir a súa canción favorita?</string>
     <string name="yeah">Si!</string>
     <string name="stands_with_palestine">Este proxecto apoia a Palestina 🇵🇸</string>

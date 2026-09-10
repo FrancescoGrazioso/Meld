@@ -163,7 +163,7 @@
     <string name="scrobble_delay_minutes">Scrobble gecikmesi (dakika)</string>
     <string name="swipe_song_to_remove">Şarkıyı oynatma listesinden kaldırmak için kaydırın</string>
     <string name="last_fm_send_likes">Beğenilenleri ve beğenilmeyenleri eşitle</string>
-    <string name="last_fm_send_likes_description">Metrolist\'te bir şarkıyı beğendiğinizde veya beğenmediğinizde bu Last.fm\'de güncellenir</string>
+    <string name="last_fm_send_likes_description">Meld\'te bir şarkıyı beğendiğinizde veya beğenmediğinizde bu Last.fm\'de güncellenir</string>
     <string name="primary_color_style">Ana renk</string>
     <string name="auto_scroll">Yeniden eşitle</string>
     <string name="google_cast">Google Cast</string>
@@ -225,10 +225,10 @@
     <string name="wrapped_total_artists_subtitle">farklı sanatçı!</string>
     <string name="wrapped_total_songs_title">Şunları dinledin</string>
     <string name="wrapped_total_songs_subtitle">farklı şarkı!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">bu yıl neler dinlediğine bakma zamanı…</string>
     <string name="wrapped_intro_button">hadi başlayalım!</string>
-    <string name="wrapped_logo_content_description">Metrolist Logosu</string>
+    <string name="wrapped_logo_content_description">Meld Logosu</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">ÖZETİN HAZIR!</string>
     <string name="wrapped_ready_subtitle">Bu yıl neleri sevdiğini görme zamanı…</string>
@@ -268,7 +268,7 @@
     <string name="system_equalizer">Sistem ekolayzırı</string>
     <string name="album_art">Albüm görseli</string>
     <string name="no_song_playing">Oynatılan şarkı yok</string>
-    <string name="tap_to_open">Metrolist\'i açmak için dokun</string>
+    <string name="tap_to_open">Meld\'i açmak için dokun</string>
     <string name="previous">Önceki</string>
     <string name="play_pause">Oynat/Duraklat</string>
     <string name="next">Sonraki</string>
@@ -361,7 +361,7 @@
     <string name="crash_description">Beklenmedik bir hata oluştu. Sorunu düzeltmemize yardımcı olmak için lütfen hata raporunu paylaşın</string>
     <string name="crash_share_logs">Kayıtları paylaş</string>
     <string name="crash_share_title">Hata raporlarını paylaş</string>
-    <string name="crash_report_subject">Metrolist hata raporu</string>
+    <string name="crash_report_subject">Meld hata raporu</string>
     <string name="crash_close">Kapat</string>
     <string name="crash_no_log">Çökme kayıtları mevcut değil</string>
     <string name="palette_dynamic">Dinamik</string>
@@ -410,7 +410,7 @@
     <string name="user_blocked_by_host">Oda sahibi tarafından engellendi</string>
     <string name="transfer_ownership">Sahipliği devret</string>
     <string name="not_playing">Şarkı oynatılmıyor</string>
-    <string name="tap_to_play">Metrolist\'i açmak için dokun</string>
+    <string name="tap_to_play">Meld\'i açmak için dokun</string>
     <string name="widget_music_player">Müzik Çalar</string>
     <string name="widget_turntable">Dönen plak</string>
     <string name="together">Birlikte</string>
@@ -457,7 +457,7 @@
     <string name="song_title_column">Şarkı adı sütunu</string>
     <string name="recently_converted">Son dönüştürülenler</string>
     <string name="importing_csv">CSV içe aktarılıyor…</string>
-    <string name="play_on_app">Metrolist\'te Oynat</string>
+    <string name="play_on_app">Meld\'te Oynat</string>
     <string name="listening">Dinleniliyor…</string>
     <string name="continue_action">Devam et</string>
     <string name="enable">Etkinleştir</string>
@@ -523,7 +523,7 @@
     <string name="lyrics_provider_priority_desc">Sağlayıcıları sürükleyerek sıralayın. Üst konum daha yüksek öncelik demektir</string>
     <string name="changelog">Değişiklik günlüğü</string>
     <string name="changelog_empty">Değişiklik günlüğü mevcut değil</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">GitHub\'da görüntüle</string>
     <string name="current_version">Mevcut sürüm</string>
@@ -571,7 +571,7 @@
     <string name="credits_view_repo">Depoyu görüntüle</string>
     <string name="buy_mo_a_coffee">Bana bir kahve ısmarla!</string>
     <string name="community_and_info">Topluluk ve Bilgi</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">Onların en sevdiği şarkıyı çalmak ister misin?</string>
     <string name="yeah">Evet!</string>
     <string name="stands_with_palestine">Bu proje Filistin\'in yanındadır 🇵🇸</string>
@@ -690,7 +690,7 @@
     <string name="android_auto_reorder_hint">Bir bölümü etkinleştirmek veya devre dışı bırakmak için o bölüme dokunun.\nSıralamayı değiştirmek için sürükleme tutamacına uzun süre basın. Varsayılan olarak ilk bölüm gösterilecektir</string>
     <string name="android_auto_visible_sections">Görünür bölümler</string>
     <string name="android_auto">Android Auto</string>
-    <string name="listen_on_metrolist">Metrolist\'te dinle</string>
+    <string name="listen_on_metrolist">Meld\'te dinle</string>
     <string name="recognition_notification_failed">Tanıma başarısız oldu</string>
     <string name="recognition_notification_no_match">Eşleşme bulunamadı</string>
     <string name="recognition_notification_processing">Tanımlanıyor…</string>

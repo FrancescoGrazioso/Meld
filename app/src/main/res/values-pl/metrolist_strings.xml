@@ -169,7 +169,7 @@
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Włącz przesyłanie dźwięku do Chromecasta i innych urządzeń obsługujących Cast</string>
     <string name="last_fm_send_likes">Wyślij polubienia/niepolubienia</string>
-    <string name="last_fm_send_likes_description">Polub/niepolub piosenki w Last.fm, gdy są polubione/niepolubione w Metrolist</string>
+    <string name="last_fm_send_likes_description">Polub/niepolub piosenki w Last.fm, gdy są polubione/niepolubione w Meld</string>
     <string name="logging_in">Logowanie…</string>
     <string name="hide_video_songs">Ukryj utwory wideo</string>
     <string name="details_desc">Wyświetl informacje o utworze</string>
@@ -232,10 +232,10 @@
     <string name="wrapped_total_artists_subtitle">unikalni artyści!</string>
     <string name="wrapped_total_songs_title">Słuchałeś/aś</string>
     <string name="wrapped_total_songs_subtitle">unikalnie piosenki!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">Czas sprawdzić, czego słuchałeś/aś w tym roku…</string>
     <string name="wrapped_intro_button">Zaczynamy!</string>
-    <string name="wrapped_logo_content_description">Logo Metrolist</string>
+    <string name="wrapped_logo_content_description">Logo Meld</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">­TWOJE WRAPPED JEST GOTOWE!</string>
     <string name="wrapped_ready_subtitle">Czas sprawdzić, co pokochałeś/aś w tym roku…</string>
@@ -295,7 +295,7 @@
     <string name="error_playback_failed">Nie udało się odtworzyć utworu</string>
     <string name="album_art">Okładka albumu</string>
     <string name="no_song_playing">Nic nie jest odtwarzane</string>
-    <string name="tap_to_open">Dotknij, aby otworzyć Metrolist</string>
+    <string name="tap_to_open">Dotknij, aby otworzyć Meld</string>
     <string name="previous">Poprzedni</string>
     <string name="play_pause">Odtwórz/Wstrzymaj</string>
     <string name="next">Następny</string>
@@ -359,7 +359,7 @@
     <string name="listen_together_notification_channel_name">Słuchaj Razem</string>
     <string name="changelog">Lista zmian</string>
     <string name="changelog_empty">Brak dostępnych dzienników zmian</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="view_on_github">Zobacz na GitHubie</string>
     <string name="current_version">Obecna wersja</string>
     <string name="version_format">Wersja: %s</string>
@@ -416,7 +416,7 @@
     <string name="error_podcast_unsubscribe">Nie udało się odsubskrybować od podcastu</string>
     <string name="view_channel">Pokaż Kanał</string>
     <string name="not_playing">Brak odtwarzanego utworu</string>
-    <string name="tap_to_play">Dotknij, aby otworzyć Metrolist</string>
+    <string name="tap_to_play">Dotknij, aby otworzyć Meld</string>
     <string name="widget_music_player">Odtwarzacz muzyki</string>
     <string name="widget_turntable">Obrotnica</string>
     <string name="widget_recognizer_name">Rozpoznawanie Muzyki</string>
@@ -534,7 +534,7 @@
     <string name="crash_description">Wystąpił nieoczekiwany błąd. Udostępnij raport o awarii, aby pomóc nam rozwiązać problem</string>
     <string name="crash_share_logs">Udostępnij dzienniki</string>
     <string name="crash_share_title">Udostępnij raport o awarii</string>
-    <string name="crash_report_subject">Raport o awarii Metrolist</string>
+    <string name="crash_report_subject">Raport o awarii Meld</string>
     <string name="crash_close">Zamknij</string>
     <string name="crash_no_log">Brak dostępnego dziennika awarii</string>
     <string name="palette_dynamic">Dynamiczna</string>
@@ -578,7 +578,7 @@
     <string name="clear_recognition_history_confirm">Czy na pewno chcesz wyczyścić całą historię rozpoznawania?</string>
     <string name="delete_from_history">Usuń z historii</string>
     <string name="re_listen">Posłuchaj ponownie</string>
-    <string name="play_on_app">Odtwórz w Metrolist</string>
+    <string name="play_on_app">Odtwórz w Meld</string>
     <string name="qs_tile_music_recognizer">Rozpoznawaj muzykę</string>
     <string name="map_csv_columns">Mapuj kolumny CSV</string>
     <string name="first_row_is_header">Pierwszy wiersz to nagłówek</string>
@@ -634,7 +634,7 @@
     <string name="credits_view_repo">Pokaż Repozytorium</string>
     <string name="buy_mo_a_coffee">Kup mi kawę!</string>
     <string name="community_and_info">Społeczność i informacje</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">Chcesz zagrać ich ulubioną piosenkę?</string>
     <string name="yeah">Spoko!</string>
     <string name="stands_with_palestine">Ten projekt wspiera Palestynę 🇵🇸</string>
@@ -730,7 +730,7 @@
     <string name="recognition_notification_processing">Rozpoznawanie…</string>
     <string name="recognition_notification_no_match">Nie znaleziono dopasowania</string>
     <string name="recognition_notification_failed">Rozpoznawanie nie powiodło się</string>
-    <string name="listen_on_metrolist">Słuchaj na Metrolist</string>
+    <string name="listen_on_metrolist">Słuchaj na Meld</string>
     <string name="android_auto">Android Auto</string>
     <string name="android_auto_visible_sections">Widoczne sekcje</string>
     <string name="android_auto_reorder_hint">Dotknij sekcji aby ją włączyć lub wyłączyć\nPrzytrzymaj ikonę przeciągania aby zmienić kolejność. Domyślnie wyświetlana będzie pierwsza sekcja</string>

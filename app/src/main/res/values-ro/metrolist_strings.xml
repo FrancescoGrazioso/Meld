@@ -165,7 +165,7 @@
     <string name="scrobble_delay_minutes">Întârziere pentru scrobble (minute)</string>
     <string name="swipe_song_to_remove">Glisează pentru a elimina melodia din playlist</string>
     <string name="last_fm_send_likes">Sincronizează aprecierile</string>
-    <string name="last_fm_send_likes_description">Apreciază sau dezapreciază melodiile în Last.fm atunci când le apreciezi sau dezapreciezi în Metrolist</string>
+    <string name="last_fm_send_likes_description">Apreciază sau dezapreciază melodiile în Last.fm atunci când le apreciezi sau dezapreciezi în Meld</string>
     <string name="primary_color_style">Culoare principală</string>
     <string name="tertiary_color_style">Culoare terțiară</string>
     <string name="auto_scroll">Resincronizare</string>
@@ -229,10 +229,10 @@
     <string name="wrapped_total_artists_subtitle">artiști unici!</string>
     <string name="wrapped_total_songs_title">Ai ascultat</string>
     <string name="wrapped_total_songs_subtitle">(de) melodii unice!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">este timpul să vedem ce ai ascultat în tot acest an…</string>
     <string name="wrapped_intro_button">să mergem!</string>
-    <string name="wrapped_logo_content_description">Logo-ul Metrolist</string>
+    <string name="wrapped_logo_content_description">Logo-ul Meld</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">WRAPPED-UL TĂU ESTE GATA!</string>
     <string name="wrapped_ready_subtitle">Este timpul să vedem ce ai apreciat în tot acest an…</string>
@@ -282,7 +282,7 @@
     <string name="system_equalizer">Egalizator de sistem</string>
     <string name="album_art">Coperta albumului</string>
     <string name="no_song_playing">Nu se redă nicio melodie</string>
-    <string name="tap_to_open">Atinge pentru a deschide Metrolist</string>
+    <string name="tap_to_open">Atinge pentru a deschide Meld</string>
     <string name="previous">Anterioara</string>
     <string name="play_pause">Redă/Pauză</string>
     <string name="next">Următoarea</string>
@@ -362,7 +362,7 @@
     <string name="crash_description">A apărut o eroare neașteptată. Te rugăm să ne trimiți raportul de eroare pentru a ne ajuta să remediem problema</string>
     <string name="crash_share_logs">Partajează jurnalele</string>
     <string name="crash_share_title">Partajează raportul de eroare</string>
-    <string name="crash_report_subject">Raport de eroare Metrolist</string>
+    <string name="crash_report_subject">Raport de eroare Meld</string>
     <string name="crash_close">Închide</string>
     <string name="crash_no_log">Niciun jurnal de eroare disponibil</string>
     <string name="palette_dynamic">Dinamic</string>
@@ -382,7 +382,7 @@
     <string name="palette_grey">Gri</string>
     <string name="cd_back">Înapoi</string>
     <string name="not_playing">Nu se redă nicio melodie</string>
-    <string name="tap_to_play">Atinge pentru a deschide Metrolist</string>
+    <string name="tap_to_play">Atinge pentru a deschide Meld</string>
     <string name="widget_music_player">Player de muzică</string>
     <string name="widget_turntable">Platan</string>
     <string name="listen_together_choose_server">Alege serverul</string>
@@ -460,7 +460,7 @@
     <string name="song_title_column">Coloana cu numele melodiei</string>
     <string name="recently_converted">Convertite recent</string>
     <string name="importing_csv">Se importă CSV-ul…</string>
-    <string name="play_on_app">Redă pe Metrolist</string>
+    <string name="play_on_app">Redă pe Meld</string>
     <string name="listening">Se ascultă…</string>
     <string name="continue_action">Continuă</string>
     <string name="enable">Activează</string>
@@ -526,7 +526,7 @@
     <string name="lyrics_provider_priority_desc">Trage pentru a reordona furnizorii după preferințe. O poziție mai înaltă înseamnă prioritate mai mare</string>
     <string name="changelog">Jurnal de modificări</string>
     <string name="changelog_empty">Niciun jurnal de modificări disponibil</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Vezi pe GitHub</string>
     <string name="current_version">Versiunea curentă</string>
@@ -584,7 +584,7 @@
     <string name="credits_view_repo">Vezi depozitul</string>
     <string name="buy_mo_a_coffee">Cumpără-mi o cafea!</string>
     <string name="community_and_info">Comunitate și informații</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">Vrei să redai melodia lui/ei preferată?</string>
     <string name="yeah">Da!</string>
     <string name="stands_with_palestine">Acest proiect ține cu Palestina 🇵🇸</string>
@@ -727,7 +727,7 @@
     <string name="recognition_notification_processing">Se identifică…</string>
     <string name="recognition_notification_no_match">Nicio potrivire găsită</string>
     <string name="recognition_notification_failed">Recunoaștere eșuată</string>
-    <string name="listen_on_metrolist">Ascultă pe Metrolist</string>
+    <string name="listen_on_metrolist">Ascultă pe Meld</string>
     <string name="android_auto">Android Auto</string>
     <string name="android_auto_visible_sections">Secțiuni vizibile</string>
     <string name="android_auto_reorder_hint">Atinge o secțiune pentru a o activa sau dezactiva.\nȚine apăsat glisorul pentru a reordona. Prima secțiune va fi afișată în mod prestabilit</string>

@@ -210,7 +210,7 @@
     <string name="release_notes">Buraxılış qeydləri</string>
     <string name="changelog">Dəyişikliklər siyahısı</string>
     <string name="changelog_empty">Dəyişikliklər siyahısı mövcud deyil</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">GitHub-da baxın</string>
     <string name="current_version">Cari versiya</string>
@@ -342,7 +342,7 @@
     <string name="enable_scrobbling">Skrobblinqi aktivləşdirin</string>
     <string name="lastfm_now_playing">\"Hazırda səslənir\" statusunu göndər</string>
     <string name="last_fm_send_likes">Sevilən və sevilməyənləri sinxronlaşdırın</string>
-    <string name="last_fm_send_likes_description">Metrolist-də mahnıları bəyəndikdə və ya bəyənməkdən imtina etdikdə, Last.fm-də həmin mahnıları bəyənin və ya bəyənmədiyizi ləğv edin</string>
+    <string name="last_fm_send_likes_description">Meld-də mahnıları bəyəndikdə və ya bəyənməkdən imtina etdikdə, Last.fm-də həmin mahnıları bəyənin və ya bəyənmədiyizi ləğv edin</string>
     <string name="logging_in">Daxil olunur…</string>
     <string name="scrobbling_configuration">Skroblinq konfiqurasiyası</string>
     <string name="scrobble_min_track_duration">Müddəti ... saniyədən çox olan mahnıları skrobl et</string>
@@ -394,10 +394,10 @@
     <string name="wrapped_total_artists_subtitle">ünikal sənətkarlar!</string>
     <string name="wrapped_total_songs_title">Siz ... dinlədiniz</string>
     <string name="wrapped_total_songs_subtitle">özünəməxsus mahnılar!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">İndi bütün il boyu nələrə qulaq asdığınıza baxmağın vaxtıdır…</string>
     <string name="wrapped_intro_button">Başlayaq!</string>
-    <string name="wrapped_logo_content_description">Metrolist loqosu</string>
+    <string name="wrapped_logo_content_description">Meld loqosu</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">Bağlamanız hazırdır!</string>
     <string name="wrapped_ready_subtitle">İl boyu nələri bəyəndiyinizə baxmağın vaxtıdır…</string>
@@ -457,13 +457,13 @@
     <string name="view_channel">Kanala bax</string>
     <string name="album_art">Albomun tərtibatı</string>
     <string name="no_song_playing">Heç bir mahnı səslənmir</string>
-    <string name="tap_to_open">Metrolist açmaq üçün toxunun</string>
+    <string name="tap_to_open">Meld açmaq üçün toxunun</string>
     <string name="previous">Əvvəlki</string>
     <string name="play_pause">Oynat/Dayandır</string>
     <string name="next">Növbəti</string>
     <string name="like">Bəyən</string>
     <string name="not_playing">Heç bir mahnı səslənmir</string>
-    <string name="tap_to_play">Metrolist açmaq üçün toxunun</string>
+    <string name="tap_to_play">Meld açmaq üçün toxunun</string>
     <string name="widget_description">Oxutma idarəetmələri olan musiqi pleyeri vidjeti</string>
     <string name="turntable_widget_description">Oxutma və bəyənmə idarəetmələri olan dairəvi musiqi vidceti</string>
     <string name="widget_music_player">Musiqi pleyeri</string>
@@ -613,7 +613,7 @@
     <string name="crash_description">Gözlənilməz xəta baş verdi. Problemi düzəltməyimizə kömək etmək üçün qəza hesabatını paylaşın</string>
     <string name="crash_share_logs">Jurnalları paylaşın</string>
     <string name="crash_share_title">Qəza hesabatını paylaşın</string>
-    <string name="crash_report_subject">Metrolist qəza hesabatı</string>
+    <string name="crash_report_subject">Meld qəza hesabatı</string>
     <string name="crash_close">Bağla</string>
     <string name="crash_no_log">Qəza qeydi mövcud deyil</string>
     <string name="palette_dynamic">Dinamik</string>
@@ -659,7 +659,7 @@
     <string name="clear_recognition_history_confirm">Bütün tanıma tarixçəsini silmək istədiyinizə əminsinizmi?</string>
     <string name="delete_from_history">Tarixçədən sil</string>
     <string name="re_listen">Yenidən dinləyin</string>
-    <string name="play_on_app">Metrolist oynayın</string>
+    <string name="play_on_app">Meld oynayın</string>
     <string name="qs_tile_music_recognizer">Musiqini tanı</string>
     <string name="recognition_notification_channel_name">Musiqinin tanınması</string>
     <string name="recognition_notification_channel_desc">Sürətli parametrlərdən mahnı müəyyən edilərkən bildiriş göstərir</string>
@@ -667,7 +667,7 @@
     <string name="recognition_notification_processing">Müəyyən edilir…</string>
     <string name="recognition_notification_no_match">Uyğunluq tapılmadı</string>
     <string name="recognition_notification_failed">Tanınma uğursuz oldu</string>
-    <string name="listen_on_metrolist">Metrolist dinləyin</string>
+    <string name="listen_on_metrolist">Meld dinləyin</string>
     <string name="map_csv_columns">CSV sütunlarını uyğunlaşdırın</string>
     <string name="first_row_is_header">Birinci sətir başlıqdı</string>
     <string name="artist_name_column">İfaçı adı sütunu</string>
@@ -742,7 +742,7 @@
     <string name="credits_view_repo">Repozitoriyaya baxın</string>
     <string name="buy_mo_a_coffee">Mənə bir qəhvə al!</string>
     <string name="community_and_info">İcma və Məlumat</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">Onların sevimli mahnısını çalmaq istəyirsiniz?</string>
     <string name="yeah">Bəli!</string>
     <string name="stands_with_palestine">Bu layihə Fələstinin yanındadır 🇵🇸</string>

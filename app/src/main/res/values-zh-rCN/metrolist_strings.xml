@@ -179,7 +179,7 @@
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">向 Chromecast 和其他支持投屏功能的设备投屏音频</string>
     <string name="last_fm_send_likes">同步喜欢和取消喜欢</string>
-    <string name="last_fm_send_likes_description">在 Metrolist 中对歌曲点赞或取消点赞时，Last.fm 中的喜欢或取消喜欢歌曲会同步更新</string>
+    <string name="last_fm_send_likes_description">在 Meld 中对歌曲点赞或取消点赞时，Last.fm 中的喜欢或取消喜欢歌曲会同步更新</string>
     <string name="logging_in">正在登录…</string>
     <string name="hide_video_songs">隐藏带视频歌曲</string>
     <string name="details_desc">查看歌曲详情</string>
@@ -225,10 +225,10 @@
     <string name="wrapped_total_artists_subtitle">独特的音乐人！</string>
     <string name="wrapped_total_songs_title">您已听了</string>
     <string name="wrapped_total_songs_subtitle">独特的歌曲！</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">是时候回顾这一年都在听什么了…</string>
     <string name="wrapped_intro_button">让我们开始吧！</string>
-    <string name="wrapped_logo_content_description">Metrolist 徽标</string>
+    <string name="wrapped_logo_content_description">Meld 徽标</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">您的年度总结已准备好！</string>
     <string name="wrapped_ready_subtitle">是时候回顾这一年最喜欢什么了…</string>
@@ -263,7 +263,7 @@
     <string name="system_equalizer">系统均衡器</string>
     <string name="album_art">专辑封面</string>
     <string name="no_song_playing">没有音乐正在播放</string>
-    <string name="tap_to_open">点击打开 Metrolist</string>
+    <string name="tap_to_open">点击打开 Meld</string>
     <string name="previous">上一曲</string>
     <string name="play_pause">播放/暂停</string>
     <string name="next">下一曲</string>
@@ -358,7 +358,7 @@
     <string name="crash_share_logs">分享日志</string>
     <string name="crash_description">发生意外错误，请分享崩溃报告以帮助我们解决问题</string>
     <string name="crash_share_title">分享崩溃报告</string>
-    <string name="crash_report_subject">Metrolist 崩溃报告</string>
+    <string name="crash_report_subject">Meld 崩溃报告</string>
     <string name="crash_close">关闭</string>
     <string name="crash_no_log">没有可用的崩溃日志</string>
     <string name="palette_dynamic">灵动</string>
@@ -401,7 +401,7 @@
     <string name="listen_together_no_blocked_users">无已屏蔽的用户</string>
     <string name="unblock">取消屏蔽</string>
     <string name="not_playing">未在播放歌曲</string>
-    <string name="tap_to_play">点击打开 Metrolist</string>
+    <string name="tap_to_play">点击打开 Meld</string>
     <string name="widget_music_player">播放器</string>
     <string name="listen_together_sync_volume">与房主音量保持一致</string>
     <string name="listen_together_sync_volume_desc">访客音量与房主音量保持一致</string>
@@ -454,7 +454,7 @@
     <string name="song_title_column">歌曲标题列</string>
     <string name="recently_converted">最近转换</string>
     <string name="importing_csv">正在导入 CSV…</string>
-    <string name="play_on_app">在 Metrolist 上播放</string>
+    <string name="play_on_app">在 Meld 上播放</string>
     <string name="listening">正在听…</string>
     <string name="continue_action">继续</string>
     <string name="enable">启用</string>
@@ -520,7 +520,7 @@
     <string name="lyrics_provider_priority_desc">拖动即可按偏好重新排序提供商。位置越高，优先级越高</string>
     <string name="changelog">更新日志</string>
     <string name="changelog_empty">暂无更新日志</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">在 GitHub 上查看</string>
     <string name="current_version">当前版本</string>
@@ -569,7 +569,7 @@
     <string name="credits_telegram">Telegram 频道</string>
     <string name="buy_mo_a_coffee">请我喝杯咖啡！</string>
     <string name="community_and_info">社区与信息</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">想播放他们最喜欢的歌曲吗？</string>
     <string name="yeah">是的！</string>
     <string name="stands_with_palestine">本项目声援巴勒斯坦 🇵🇸</string>
@@ -712,7 +712,7 @@
     <string name="recognition_notification_processing">正在识别…</string>
     <string name="recognition_notification_no_match">未找到匹配</string>
     <string name="recognition_notification_failed">识别失败</string>
-    <string name="listen_on_metrolist">在 Metrolist 上听</string>
+    <string name="listen_on_metrolist">在 Meld 上听</string>
     <string name="android_auto">Android Auto</string>
     <string name="android_auto_visible_sections">可见板块</string>
     <string name="android_auto_reorder_hint">点击某个板块即可启用或禁用。\n长按拖动手柄可重新排序。默认情况下将显示第一个板块</string>

@@ -167,7 +167,7 @@
     <string name="scrobble_delay_minutes">Задержка скробблинга (в минутах)</string>
     <string name="swipe_song_to_remove">Свайп - удалить трек из плейлиста</string>
     <string name="last_fm_send_likes">Синхронизировать отметки «Нравится»</string>
-    <string name="last_fm_send_likes_description">Добавлять или убирать отметку «Любимое» на Last.fm, когда ставится или снимается отметка «Нравится» в Metrolist</string>
+    <string name="last_fm_send_likes_description">Добавлять или убирать отметку «Любимое» на Last.fm, когда ставится или снимается отметка «Нравится» в Meld</string>
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Трансляция звука на Chromecast и другие устройства с поддержкой Cast</string>
     <string name="hide_video_songs">Скрыть видео</string>
@@ -231,10 +231,10 @@
     <string name="wrapped_total_artists_subtitle">уникальных исполнителей!</string>
     <string name="wrapped_total_songs_title">Вы послушали</string>
     <string name="wrapped_total_songs_subtitle">уникальных треков!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">пришло время узнать, что вы слушали весь этот год…</string>
     <string name="wrapped_intro_button">поехали!</string>
-    <string name="wrapped_logo_content_description">Логотип Metrolist</string>
+    <string name="wrapped_logo_content_description">Логотип Meld</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">ВАШ WRAPPED ГОТОВ!</string>
     <string name="wrapped_ready_subtitle">Время узнать, что вам понравилось за весь этот год…</string>
@@ -271,7 +271,7 @@
     <string name="pause_music_when_media_is_muted">Останавливать воспроизведение при отключении звука</string>
     <string name="no_song_playing">Сейчас ничего не играет</string>
     <string name="album_art">Обложка альбома</string>
-    <string name="tap_to_open">Нажмите, чтобы открыть Metrolist</string>
+    <string name="tap_to_open">Нажмите, чтобы открыть Meld</string>
     <string name="previous">Предыдущий</string>
     <string name="play_pause">Играть/Пауза</string>
     <string name="next">Следующий</string>
@@ -367,7 +367,7 @@
     <string name="crash_description">Произошла непредвиденная ошибка. Пожалуйста, отправьте отчет о сбое, чтобы помочь нам устранить проблему</string>
     <string name="crash_share_logs">Поделиться журналом</string>
     <string name="crash_share_title">Поделиться отчетом о сбое</string>
-    <string name="crash_report_subject">Отчет о сбое Metrolist</string>
+    <string name="crash_report_subject">Отчет о сбое Meld</string>
     <string name="crash_close">Закрыть</string>
     <string name="crash_no_log">Информация о сбоях отсутствует</string>
     <string name="palette_dynamic">Динамическая</string>
@@ -416,7 +416,7 @@
     <string name="unblock">Разблокировать</string>
     <string name="user_blocked_by_host">Заблокирован хостом</string>
     <string name="not_playing">Ничего не играет</string>
-    <string name="tap_to_play">Нажмите, чтобы открыть Metrolist</string>
+    <string name="tap_to_play">Нажмите, чтобы открыть Meld</string>
     <string name="widget_music_player">Музыкальный плеер</string>
     <string name="widget_turntable">Виниловый проигрыватель</string>
     <string name="together">Together</string>
@@ -463,7 +463,7 @@
     <string name="song_title_column">Столбец названия трека</string>
     <string name="recently_converted">Недавно конвертированные</string>
     <string name="importing_csv">Импорт CSV…</string>
-    <string name="play_on_app">Играть в Metrolist</string>
+    <string name="play_on_app">Играть в Meld</string>
     <string name="listening">Слушаем…</string>
     <string name="continue_action">Продолжить</string>
     <string name="enable">Включить</string>
@@ -529,7 +529,7 @@
     <string name="lyrics_provider_priority_desc">Перетащите для изменения порядка. Чем выше источник в списке, тем выше его приоритет</string>
     <string name="changelog">Список изменений</string>
     <string name="changelog_empty">Список изменений недоступен</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Открыть на GitHub</string>
     <string name="current_version">Текущая версия</string>
@@ -577,7 +577,7 @@
     <string name="credits_view_repo">Открыть репозиторий</string>
     <string name="buy_mo_a_coffee">Угостить меня кофе!</string>
     <string name="community_and_info">Сообщество и информация</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">Включить его любимую песню?</string>
     <string name="yeah">Да!</string>
     <string name="stands_with_palestine">Этот проект поддерживает Палестину 🇵🇸</string>
@@ -733,7 +733,7 @@
     <string name="recognition_notification_processing">Определяем…</string>
     <string name="recognition_notification_no_match">Совпадений не найдено</string>
     <string name="recognition_notification_failed">Не удалось распознать</string>
-    <string name="listen_on_metrolist">Слушать в Metrolist</string>
+    <string name="listen_on_metrolist">Слушать в Meld</string>
     <string name="android_auto">Android Auto</string>
     <string name="android_auto_visible_sections">Видимые разделы</string>
     <string name="android_auto_reorder_hint">Нажмите на раздел, чтобы включить или отключить его.\nУдерживайте значок перетаскивания, чтобы изменить порядок. Первый раздел будет отображаться по умолчанию</string>
@@ -877,7 +877,7 @@
     <string name="ai_provider_inception_help">Откройте https://platform.inceptionlabs.ai для получения ключей API</string>
     <string name="enable_zemer">Включить Zemer</string>
     <string name="enable_zemer_desc">Тексты еврейских песен</string>
-    <string name="update_available_message">Metrolist %s готов к загрузке.</string>
+    <string name="update_available_message">Meld %s готов к загрузке.</string>
     <string name="update_action">Обновить</string>
     <string name="lyrics_romanize_japanese">Романизировать тексты на японском</string>
     <string name="lyrics_romanize_korean">Романизировать тексты на корейском</string>

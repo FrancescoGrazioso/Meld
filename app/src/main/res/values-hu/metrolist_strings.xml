@@ -177,7 +177,7 @@
     <string name="enable_scrobbling">Scrobbling engedélyezése</string>
     <string name="lastfm_now_playing">Jelenleg játszott státusz megosztása</string>
     <string name="last_fm_send_likes">Kedveltek és nem kedveltek szinkronizálása</string>
-    <string name="last_fm_send_likes_description">A Metrolist-ben kedvelt és nem kedvelt dalok hasonlóan jelennek meg Last-fm-en is</string>
+    <string name="last_fm_send_likes_description">A Meld-ben kedvelt és nem kedvelt dalok hasonlóan jelennek meg Last-fm-en is</string>
     <string name="logging_in">Bejelentkezés…</string>
     <string name="scrobbling_configuration">Scrobbling konfigurálása</string>
     <string name="scrobble_min_track_duration">Bizonyos mp-nél hosszabb számok scrobble-olása</string>
@@ -245,7 +245,7 @@
     <string name="export_option_save">Mentés a Dokumentumokba</string>
     <string name="changelog">Változásnapló</string>
     <string name="changelog_empty">Változtatásnapló nem elérhető</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Megtekintés GitHub-on</string>
     <string name="current_version">Jelenlegi verzió</string>
@@ -323,10 +323,10 @@
     <string name="wrapped_total_artists_subtitle">egyedi előadók!</string>
     <string name="wrapped_total_songs_title">Ezeket hallgatta</string>
     <string name="wrapped_total_songs_subtitle">egyedi dalok!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">itt az ideje áttekinteni, mit hallgatott az év során…</string>
     <string name="wrapped_intro_button">gyerünk!</string>
-    <string name="wrapped_logo_content_description">Metrolist Logó</string>
+    <string name="wrapped_logo_content_description">Meld Logó</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">AZ ÖSSZEFOGLALÓD KÉSZ!</string>
     <string name="wrapped_ready_subtitle">Ideje megnézni, melyik számot imádta a legjobban…</string>
@@ -389,7 +389,7 @@
     <string name="crash_description">Váratlan hiba történt. Kérjük, ossza meg az összeomlási jelentést, hogy megoldahassuk a problémát</string>
     <string name="crash_share_logs">Naplók megosztása</string>
     <string name="crash_share_title">Összeomlási jelentés megosztása</string>
-    <string name="crash_report_subject">Metrolist összeomlási jelentés</string>
+    <string name="crash_report_subject">Meld összeomlási jelentés</string>
     <string name="crash_close">Bezárás</string>
     <string name="crash_no_log">Nincs elérhető összeomlási jelentés</string>
     <string name="palette_dynamic">Dinamikus</string>
@@ -433,7 +433,7 @@
     <string name="clear_recognition_history_confirm">Biztosan törölni akarja a felismerési előzményeket?</string>
     <string name="delete_from_history">Törlés az előzményekből</string>
     <string name="re_listen">Újrahallgatás</string>
-    <string name="play_on_app">Lejátszás Metrolist-en</string>
+    <string name="play_on_app">Lejátszás Meld-en</string>
     <string name="qs_tile_music_recognizer">Zenefelismerés</string>
     <string name="map_csv_columns">CSV oszlopok kiosztása</string>
     <string name="first_row_is_header">Az első sor a fejléc</string>
@@ -489,7 +489,7 @@
     <string name="credits_view_repo">Repository megnyitása</string>
     <string name="buy_mo_a_coffee">Hívjon meg egy kávéra!</string>
     <string name="community_and_info">Közösség &amp; információ</string>
-    <string name="metrolist">METROLIST</string>
+    <string name="metrolist">MELD</string>
     <string name="wanna_play_favorite_song">Játszuk a kedvenc dalukat?</string>
     <string name="yeah">Naná!</string>
     <string name="stands_with_palestine">Ez a projekt Palesztina mellett áll 🇵🇸</string>
@@ -575,13 +575,13 @@
     <string name="view_channel">Csatorna megtekintése</string>
     <string name="album_art">Lemezborító</string>
     <string name="no_song_playing">Nincs lejátszott dal</string>
-    <string name="tap_to_open">Koppintson a Metrolist megnyitásához</string>
+    <string name="tap_to_open">Koppintson a Meld megnyitásához</string>
     <string name="previous">Előző</string>
     <string name="play_pause">Lejátszás/Szünet</string>
     <string name="next">Következő</string>
     <string name="like">Kedvel</string>
     <string name="not_playing">Nincs lejátszott dal</string>
-    <string name="tap_to_play">Koppintson a Metrolist megnyitásához</string>
+    <string name="tap_to_play">Koppintson a Meld megnyitásához</string>
     <string name="widget_description">Zene widget lejátszási vezérlőkkel</string>
     <string name="turntable_widget_description">Kerek lejátszó widget lejátszás vezérlőkkel és kedveléssel</string>
     <string name="widget_music_player">Zene Lejátszó</string>
@@ -724,7 +724,7 @@
     <string name="recognition_notification_processing">Azonosítás…</string>
     <string name="recognition_notification_no_match">Nincs találat</string>
     <string name="recognition_notification_failed">Felismerés sikertelen</string>
-    <string name="listen_on_metrolist">Meghallgatás Metrolist-en</string>
+    <string name="listen_on_metrolist">Meghallgatás Meld-en</string>
     <string name="android_auto">Android Auto</string>
     <string name="android_auto_visible_sections">Látható részek</string>
     <string name="android_auto_reorder_hint">Koppintson egy szakaszra az engedélyezéséhez vagy letiltásához.\nNyomja meg hosszan a fogót az átrendezéshez. Alapértelmezés szerint az első szakasz jelenik meg</string>

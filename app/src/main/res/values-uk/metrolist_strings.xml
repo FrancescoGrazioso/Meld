@@ -167,7 +167,7 @@
     <string name="scrobble_delay_minutes">Затримка Scrobble у хвилинах</string>
     <string name="swipe_song_to_remove">Проведіть пальцем по пісні, щоб вилучити її зі списку відтворення</string>
     <string name="last_fm_send_likes">Надіслати вподобання/не вподобання</string>
-    <string name="last_fm_send_likes_description">Пісні, які подобається/не подобається, на Last.fm, коли вони вподобані/зняті з Metrolist</string>
+    <string name="last_fm_send_likes_description">Пісні, які подобається/не подобається, на Last.fm, коли вони вподобані/зняті з Meld</string>
     <string name="google_cast">Google Cast</string>
     <string name="google_cast_description">Увімкнути трансляцію аудіо на Chromecast та інші пристрої з підтримкою Cast</string>
     <string name="hide_video_songs">Приховати відеопісні</string>
@@ -231,10 +231,10 @@
     <string name="wrapped_total_artists_subtitle">унікальні артисти!</string>
     <string name="wrapped_total_songs_title">Ти слухав/слухала</string>
     <string name="wrapped_total_songs_subtitle">унікальні пісні!</string>
-    <string name="wrapped_intro_title">METROLIST</string>
+    <string name="wrapped_intro_title">MELD</string>
     <string name="wrapped_intro_subtitle">настав час подивитися, що ви слухали протягом усього цього року…</string>
     <string name="wrapped_intro_button">Ходімо!</string>
-    <string name="wrapped_logo_content_description">Логотип Metrolist</string>
+    <string name="wrapped_logo_content_description">Логотип Meld</string>
     <string name="wrapped_year">2025</string>
     <string name="wrapped_ready_title">ВАШ АУДІОПІДСУМОК ЗА РІК ГОТОВИЙ!</string>
     <string name="wrapped_ready_subtitle">Час подивитися, що вам сподобалося цього року…</string>
@@ -272,7 +272,7 @@
     <string name="system_equalizer">Системний еквалайзер</string>
     <string name="album_art">Обкладинка альбому</string>
     <string name="no_song_playing">Пісня не відтворюється</string>
-    <string name="tap_to_open">Натисніть, щоб відкрити Metrolist</string>
+    <string name="tap_to_open">Натисніть, щоб відкрити Meld</string>
     <string name="previous">Попередній</string>
     <string name="play_pause">Відтворення/Пауза</string>
     <string name="next">Далі</string>
@@ -337,7 +337,7 @@
     <string name="lyrics_provider_priority">Пріоритет постачальників текстів</string>
     <string name="lyrics_provider_priority_desc">Перетягуйте постачальників, щоб змінити їхній порядок. Чим вища позиція у списку, тим вищий пріоритет</string>
     <string name="choose_something_below">Виберіть щось із наведеного нижче</string>
-    <string name="github_releases_url">https://github.com/MetrolistGroup/Metrolist/releases</string>
+    <string name="github_releases_url">https://github.com/FrancescoGrazioso/Meld/releases</string>
     <string name="list_bullet">•</string>
     <string name="view_on_github">Переглянути на GitHub</string>
     <string name="current_version">Поточна версія</string>
@@ -433,7 +433,7 @@
     <string name="your_daily_discover">Ваші відкриття дня</string>
     <string name="view_channel">Переглянути канал</string>
     <string name="not_playing">Нічого не відтворюється</string>
-    <string name="tap_to_play">Натисніть, щоб відкрити Metrolist</string>
+    <string name="tap_to_play">Натисніть, щоб відкрити Meld</string>
     <string name="widget_music_player">Музичний плеєр</string>
     <string name="widget_turntable">Вініловий програвач</string>
     <string name="widget_recognizer_name">Розпізнавач музики</string>
@@ -532,7 +532,7 @@
     <string name="clear_recognition_history_confirm">Ви впевнені, що хочете очистити всю історію розпізнавання?</string>
     <string name="delete_from_history">Видалити з історії</string>
     <string name="re_listen">Переслухати</string>
-    <string name="play_on_app">Відтворити в Metrolist</string>
+    <string name="play_on_app">Відтворити в Meld</string>
     <string name="importing_playlist">Імпорт списку відтворення…</string>
     <string name="android_auto_target_playlist_not_set">Список відтворення не вибрано. Виберіть його в налаштуваннях Android Auto</string>
     <string name="widget_playlists">Списки відтворення</string>
