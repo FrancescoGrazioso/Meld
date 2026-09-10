@@ -2799,6 +2799,9 @@ class MusicService :
 
         setupAudioNormalization()
 
+        // Pre-cache upcoming tracks for offline playback
+        triggerPreCache()
+
         // Restart SponsorBlock for the new track (no-op when disabled).
         startSponsorBlockForCurrentTrack()
 
