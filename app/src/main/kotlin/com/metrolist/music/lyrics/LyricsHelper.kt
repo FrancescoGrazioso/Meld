@@ -72,6 +72,10 @@ constructor(
             return LyricsWithProvider(LYRICS_NOT_FOUND, PROVIDER_NONE)
         }
 
+        // Held outside the timeout so an unsynced hit still gets returned if the extra providers
+        // we now consult push us past the overall budget.
+        var unsyncedFallback: LyricsWithProvider? = null
+
         val result = withTimeoutOrNull(MAX_LYRICS_FETCH_MS) {
             val cleanedTitle = LyricsUtils.cleanTitleForSearch(mediaMetadata.title)
             val enabledProviders = orderedProviders.filter { it.isEnabled(context) }
@@ -100,20 +104,34 @@ constructor(
                 }
 
                 if (providerResult != null && providerResult.isSuccess) {
-                    Timber.tag("LyricsHelper").i("Got lyrics from ${provider.name}")
                     val filtered = LyricsUtils.filterLyricsCreditLines(providerResult.getOrNull()!!)
-                    return@withTimeoutOrNull LyricsWithProvider(filtered, provider.name)
+                    // Plain text from an earlier provider used to win outright, so a song whose
+                    // lyrics are time-synced further down the list (YouTube's own subtitles, say)
+                    // was shown as a static block. Keep the first plain hit as a fallback but carry
+                    // on looking for a synced one, which is what the lyrics view can actually scroll.
+                    if (lyricsTextLooksSynced(filtered)) {
+                        Timber.tag("LyricsHelper").i("Got synced lyrics from ${provider.name}")
+                        return@withTimeoutOrNull LyricsWithProvider(filtered, provider.name)
+                    }
+                    if (unsyncedFallback == null) {
+                        Timber.tag("LyricsHelper").i("Got unsynced lyrics from ${provider.name}, still looking for synced")
+                        unsyncedFallback = LyricsWithProvider(filtered, provider.name)
+                    }
                 } else {
                     val errorMsg = providerResult?.exceptionOrNull()?.message ?: "timeout or exception"
                     Timber.tag("LyricsHelper").w("${provider.name} failed: $errorMsg")
                 }
             }
 
-            Timber.tag("LyricsHelper").w("No lyrics found after checking all providers")
-            LyricsWithProvider(LYRICS_NOT_FOUND, PROVIDER_NONE)
+            unsyncedFallback?.also {
+                Timber.tag("LyricsHelper").i("No synced lyrics anywhere, falling back to ${it.provider}")
+            } ?: run {
+                Timber.tag("LyricsHelper").w("No lyrics found after checking all providers")
+                LyricsWithProvider(LYRICS_NOT_FOUND, PROVIDER_NONE)
+            }
         }
 
-        return result ?: LyricsWithProvider(LYRICS_NOT_FOUND, PROVIDER_NONE)
+        return result ?: unsyncedFallback ?: LyricsWithProvider(LYRICS_NOT_FOUND, PROVIDER_NONE)
     }
 
     suspend fun getAllLyrics(
