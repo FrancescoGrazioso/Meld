@@ -3028,7 +3028,6 @@ class MusicService :
         }
 
         if (events.containsAny(Player.EVENT_IS_PLAYING_CHANGED)) {
-            updateWidgetUI(player.isPlaying)
             if (player.isPlaying) {
                 discordIntentionalDisconnect = false
                 screenOffHandler.removeCallbacks(screenOffTimeout)
@@ -3050,6 +3049,11 @@ class MusicService :
                 Player.EVENT_IS_PLAYING_CHANGED,
             )
         ) {
+            // The widget had no track-change signal at all: it was refreshed on play/pause and
+            // then only by startWidgetUpdates(), which runs *while playing*. Change track while
+            // paused — or lose one render to the race below — and it sat on the previous song
+            // for good, which is the "stuck on Grenade" report.
+            updateWidgetUI(player.isPlaying)
             syncDiscordState()
         }
 
@@ -5560,6 +5564,7 @@ class MusicService :
     /**
      * Updates all app widgets with current playback state
      */
+    private val widgetUpdateLock = Any()
     private var widgetUpdateInFlight = false
     private var pendingWidgetUpdate: Pair<Boolean, Boolean?>? = null
 
@@ -5567,15 +5572,25 @@ class MusicService :
         isPlaying: Boolean,
         isLiked: Boolean? = currentSong.value?.song?.let { if (it.isEpisode) it.inLibrary != null else it.liked }
     ) {
-        pendingWidgetUpdate = isPlaying to isLiked
-        if (widgetUpdateInFlight) return
-        widgetUpdateInFlight = true
+        synchronized(widgetUpdateLock) {
+            pendingWidgetUpdate = isPlaying to isLiked
+            if (widgetUpdateInFlight) return
+            widgetUpdateInFlight = true
+        }
 
         scope.launch {
             try {
                 while (true) {
-                    val (playing, isLikedRequested) = pendingWidgetUpdate ?: break
-                    pendingWidgetUpdate = null
+                    // Claiming the queued update and releasing the in-flight slot have to happen in
+                    // the same critical section. Previously the consumer saw an empty queue, left
+                    // the loop, and only then cleared the flag: a caller landing in that window set
+                    // pendingWidgetUpdate, saw the flag still set, and returned without scheduling
+                    // anyone — so its render was dropped and the widget kept the old song.
+                    val (playing, isLikedRequested) = synchronized(widgetUpdateLock) {
+                        val queued = pendingWidgetUpdate
+                        if (queued == null) widgetUpdateInFlight = false else pendingWidgetUpdate = null
+                        queued
+                    } ?: break
 
                     val songData = currentSong.value
                     val song = songData?.song
@@ -5594,8 +5609,10 @@ class MusicService :
                     )
                 }
             } catch (e: Exception) {
-            } finally {
-                widgetUpdateInFlight = false
+                // Normal exit already released the slot under the lock; do it here too so a failed
+                // render doesn't wedge the consumer, but never unconditionally in a `finally`,
+                // which would hand the slot away while a successor coroutine holds it.
+                synchronized(widgetUpdateLock) { widgetUpdateInFlight = false }
             }
         }
     }
@@ -5611,7 +5628,7 @@ class MusicService :
                     if (player.isPlaying) {
                         updateWidgetUI(true)
                     }
-                    delay(200)
+                    delay(WIDGET_REFRESH_MS)
                 }
             }
     }
