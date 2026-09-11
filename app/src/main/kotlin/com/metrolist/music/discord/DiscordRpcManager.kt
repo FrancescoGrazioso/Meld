@@ -317,12 +317,6 @@ object DiscordRpcManager {
             Timber.tag(TAG).v("setActivity: debounced (<2s since last, stateChanged=%s)", stateChanged)
             return
         }
-        lastActivitySentAtMs = now
-
-        currentSongId = songId
-        currentIsPlaying = isPlaying
-        currentActivityId.incrementAndGet()
-        currentActivityHadImages = !activity.largeImage.isNullOrEmpty() || !activity.smallImage.isNullOrEmpty()
 
         val buttons = buildList {
             if (!activity.button1Label.isNullOrEmpty() && !activity.button1Url.isNullOrEmpty()) {
@@ -342,9 +336,14 @@ object DiscordRpcManager {
             buttons = buttons,
         )
 
-        lastActivity = payloadNoImages
-
-        try {
+        // Publish to Discord BEFORE recording what we believe Discord is showing. The socket can
+        // be closed (or its send queue full) while _ready is still true — the gateway's
+        // Disconnected event reaches us asynchronously — and committing the dedup keys first made
+        // a dropped frame permanent: every later sync saw "already showing this song" and returned
+        // early, so the presence stayed on the previous track until something else moved the keys
+        // (a pause, a settings change, the next song). That is the "skipping doesn't update, but
+        // touching the seekbar does" report — seeking flips isPlaying, which changes the keys.
+        val sent = try {
             val presenceJson = DiscordPresence.buildPresenceUpdate(
                 status = status,
                 activities = listOf(payloadNoImages),
@@ -352,11 +351,28 @@ object DiscordRpcManager {
             Timber.tag(TAG).i("setActivity: sending (type=%d, name=%s, details=%s, state=%s, songId=%s, isPlaying=%s, buttons=%d)",
                 activity.activityType, activity.name, activity.details, activity.state, songId, isPlaying, buttons.size)
             gateway.presenceUpdate(presenceJson)
+            true
         } catch (e: IllegalStateException) {
             Timber.tag(TAG).w(e, "setActivity: gateway not open")
+            false
         } catch (e: Throwable) {
             Timber.tag(TAG).e(e, "setActivity: send failed")
+            false
         }
+
+        if (!sent) {
+            // Leave the dedup keys describing what Discord actually still shows, so the periodic
+            // sync retries this song instead of skipping it.
+            Timber.tag(TAG).w("setActivity: send failed, leaving dedup state for retry (songId=%s)", songId)
+            return
+        }
+
+        lastActivitySentAtMs = now
+        currentSongId = songId
+        currentIsPlaying = isPlaying
+        currentActivityId.incrementAndGet()
+        currentActivityHadImages = !activity.largeImage.isNullOrEmpty() || !activity.smallImage.isNullOrEmpty()
+        lastActivity = payloadNoImages
 
         imageResolutionJob?.cancel()
 
@@ -410,8 +426,6 @@ object DiscordRpcManager {
                 buttons = buttons,
             )
 
-            lastActivity = payloadWithImages
-
             try {
                 val presenceJson = DiscordPresence.buildPresenceUpdate(
                     status = status,
@@ -419,6 +433,9 @@ object DiscordRpcManager {
                 )
                 Timber.tag(TAG).i("setActivity: re-sending with images for songId=%s", songIdAtLaunch)
                 gateway.presenceUpdate(presenceJson)
+                // Recorded only once the frame is actually on the wire — isShowingSong() treats a
+                // lastActivity without images as "artwork still pending" and lets the caller retry.
+                lastActivity = payloadWithImages
             } catch (e: IllegalStateException) {
                 Timber.tag(TAG).w(e, "setActivity: image re-send gateway not open")
             } catch (e: Throwable) {
