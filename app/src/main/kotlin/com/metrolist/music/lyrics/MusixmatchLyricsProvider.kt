@@ -83,11 +83,34 @@ object MusixmatchLyricsProvider : LyricsProvider {
                 }
                 message.get("body")?.jsonObject
                     ?.get("user_token")?.jsonPrimitive?.contentOrNull
-                    ?.takeIf { it.isNotBlank() && it != "UpgradeOnlyUpgradeOnlyUpgradeOnlyUpgradeOnly" }
+                    ?.takeIf { isUsableToken(it) }
             }.getOrNull()
             userToken = fetched
             fetched
         }
+    }
+
+    /**
+     * Musixmatch hands anonymous desktop-API callers a placeholder token rather than an error:
+     * historically the literal "UpgradeOnly…" string, currently 56 zeroes. Queries made with one
+     * still answer 200, but always with the same unrelated track and nonsense lyrics — which is
+     * worse than no lyrics, because it silently displaces a provider that would have worked.
+     */
+    internal fun isUsableToken(token: String): Boolean {
+        if (token.isBlank()) return false
+        if (token.startsWith("UpgradeOnly")) return false
+        // A real token is high-entropy hex; a placeholder is one character repeated.
+        if (token.all { it == token[0] }) return false
+        return true
+    }
+
+    /** Loose match: punctuation, case and bracketed suffixes differ between YouTube and Musixmatch. */
+    internal fun looselyMatches(a: String, b: String): Boolean {
+        fun norm(s: String) = s.lowercase().filter { it.isLetterOrDigit() }
+        val x = norm(a)
+        val y = norm(b)
+        if (x.isEmpty() || y.isEmpty()) return false
+        return x.contains(y) || y.contains(x)
     }
 
     /** Reads `body.macro_calls[call].message.body` for a named sub-call, or null. */
@@ -128,6 +151,20 @@ object MusixmatchLyricsProvider : LyricsProvider {
         val body = json.parseToJsonElement(text).jsonObject["message"]
             ?.jsonObject?.get("body")?.jsonObject
             ?: throw IllegalStateException("Malformed Musixmatch response")
+
+        // The matcher answers 200 with *some* track even when it understood nothing, so confirm it
+        // found the song we asked for before trusting its lyrics. Without this a bad match shows
+        // another artist's words over the current track, which reads as a bug in Meld, not upstream.
+        val matched = body.macroBody("matcher.track.get")?.get("track")?.jsonObject
+        if (matched != null) {
+            val matchedTitle = matched["track_name"]?.jsonPrimitive?.contentOrNull.orEmpty()
+            val matchedArtist = matched["artist_name"]?.jsonPrimitive?.contentOrNull.orEmpty()
+            if (!looselyMatches(matchedTitle, title) && !looselyMatches(matchedArtist, artist)) {
+                throw IllegalStateException(
+                    "Musixmatch matched \"$matchedTitle\" by \"$matchedArtist\" for \"$title\" by \"$artist\""
+                )
+            }
+        }
 
         // Time-synced subtitle (LRC) first — this is what makes lyrics scroll.
         val subtitle = body.macroBody("track.subtitles.get")
