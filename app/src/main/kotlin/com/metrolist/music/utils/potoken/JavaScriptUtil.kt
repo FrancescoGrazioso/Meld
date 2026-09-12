@@ -5,10 +5,10 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonArray
-import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import okio.ByteString.Companion.decodeBase64
 import okio.ByteString.Companion.toByteString
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * Parses the raw challenge data obtained from the Create endpoint and returns an object that can be

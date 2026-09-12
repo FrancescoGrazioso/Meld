@@ -19,6 +19,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
+import androidx.room.withTransaction
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.metrolist.music.db.daos.SpeedDialDao
@@ -47,10 +48,13 @@ import com.metrolist.music.db.entities.SortedSongArtistMap
 import com.metrolist.music.db.entities.SpeedDialItem
 import com.metrolist.music.extensions.toSQLiteQuery
 import timber.log.Timber
+import java.io.File
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.util.Date
+import java.util.Locale
 
 class MusicDatabase(
     private val delegate: InternalDatabase,
@@ -78,14 +82,8 @@ class MusicDatabase(
         }
 
     suspend fun withTransaction(block: suspend MusicDatabase.() -> Unit) =
-        with(delegate) {
-            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                runInTransaction {
-                    kotlinx.coroutines.runBlocking {
-                        block(this@MusicDatabase)
-                    }
-                }
-            }
+        delegate.withTransaction {
+            block(this@MusicDatabase)
         }
 
     fun close() = delegate.close()
@@ -119,7 +117,11 @@ class MusicDatabase(
         SortedSongAlbumMap::class,
         PlaylistSongMapPreview::class,
     ],
-    version = 39,
+    // Meld's schema lineage is canonical: every existing install is on Meld's 39, whose
+    // 34..39 exports differ from upstream's. Upstream's own additions (artist.cachedPageJson
+    // and the three speed_dial_item columns) therefore land here as 40 rather than by
+    // adopting upstream's 37/38.
+    version = 40,
     exportSchema = true,
     autoMigrations = [
         AutoMigration(from = 2, to = 3),
@@ -155,10 +157,14 @@ class MusicDatabase(
         AutoMigration(from = 32, to = 33),
         AutoMigration(from = 33, to = 34),
         AutoMigration(from = 34, to = 35),
+        // No Migration35To36 spec on purpose: v0.6.7 (891c1b559) restored the original 36.json
+        // after it had been edited retroactively, and 36->37 is what adds isCached,
+        // playbackPosition and uploadEntityId in Meld's lineage.
         AutoMigration(from = 35, to = 36),
         AutoMigration(from = 36, to = 37),
         AutoMigration(from = 37, to = 38),
         AutoMigration(from = 38, to = 39),
+        AutoMigration(from = 39, to = 40),
     ],
 )
 @TypeConverters(Converters::class)
@@ -169,44 +175,222 @@ abstract class InternalDatabase : RoomDatabase() {
     companion object {
         const val DB_NAME = "song.db"
 
+        /**
+         * Reads the SQLite user_version pragma from a database file without
+         * involving Room. Returns -1 if the file cannot be read.
+         */
+        fun readDatabaseVersion(dbPath: String): Int {
+            return try {
+                val file = File(dbPath)
+                if (!file.exists()) return -1
+                android.database.sqlite.SQLiteDatabase.openDatabase(
+                    dbPath,
+                    null,
+                    android.database.sqlite.SQLiteDatabase.OPEN_READONLY,
+                ).use { rawDb ->
+                    rawDb.version
+                }
+            } catch (e: Exception) {
+                Timber.tag("MusicDatabase").e(e, "Failed to read database version from $dbPath")
+                -1
+            }
+        }
+
+        fun build(
+            context: Context,
+            dbName: String = DB_NAME,
+            withPragmaCallback: Boolean = true,
+        ): InternalDatabase {
+            val builder = Room
+                .databaseBuilder(context, InternalDatabase::class.java, dbName)
+                .openHelperFactory(BackupBeforeMigrationFactory(context, dbName))
+                .addMigrations(
+                    MIGRATION_1_2,
+                    MIGRATION_21_24,
+                    MIGRATION_22_24,
+                    MIGRATION_24_25,
+                ).fallbackToDestructiveMigration(false)
+                .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
+                .setTransactionExecutor(
+                    java.util.concurrent.Executors
+                        .newFixedThreadPool(4),
+                ).setQueryExecutor(
+                    java.util.concurrent.Executors
+                        .newFixedThreadPool(4),
+                )
+
+            if (withPragmaCallback) {
+                builder.addCallback(
+                    object : RoomDatabase.Callback() {
+                        override fun onCreate(db: SupportSQLiteDatabase) {
+                            super.onCreate(db)
+                            applyPragmaSettings(db)
+                        }
+
+                        override fun onOpen(db: SupportSQLiteDatabase) {
+                            super.onOpen(db)
+                            applyPragmaSettings(db)
+                        }
+
+                        override fun onDestructiveMigration(db: SupportSQLiteDatabase) {
+                            super.onDestructiveMigration(db)
+                            backupDatabase(context, dbName)
+                        }
+                    },
+                )
+            }
+
+            return builder.build()
+        }
+
         fun newInstance(context: Context): MusicDatabase =
-            MusicDatabase(
-                delegate =
-                    Room
-                        .databaseBuilder(context, InternalDatabase::class.java, DB_NAME)
-                        .addMigrations(
-                            MIGRATION_1_2,
-                            MIGRATION_21_24,
-                            MIGRATION_22_24,
-                            MIGRATION_24_25,
-                        ).fallbackToDestructiveMigration(dropAllTables = true)
-                        .setJournalMode(RoomDatabase.JournalMode.WRITE_AHEAD_LOGGING)
-                        .setTransactionExecutor(
-                            java.util.concurrent.Executors
-                                .newFixedThreadPool(4),
-                        ).setQueryExecutor(
-                            java.util.concurrent.Executors
-                                .newFixedThreadPool(4),
-                        ).addCallback(
-                            object : RoomDatabase.Callback() {
-                                override fun onOpen(db: SupportSQLiteDatabase) {
-                                    super.onOpen(db)
-                                    try {
-                                        db.query("PRAGMA busy_timeout = 60000").close()
-                                        db.query("PRAGMA cache_size = -16000").close()
-                                        db.query("PRAGMA wal_autocheckpoint = 1000").close()
-                                        db.query("PRAGMA synchronous = NORMAL").close()
-                                    } catch (e: Exception) {
-                                        Timber.tag("MusicDatabase").e(e, "Failed to set PRAGMA settings")
-                                    }
-                                }
-                            },
-                        ).build(),
-            )
+            MusicDatabase(delegate = build(context))
+
+        fun newInternalDatabaseInstance(context: Context, dbName: String = DB_NAME): InternalDatabase =
+            build(context, dbName)
+
+    }
+}
+
+private fun applyPragmaSettings(db: SupportSQLiteDatabase) {
+    try {
+        db.query("PRAGMA busy_timeout = 60000").close()
+        db.query("PRAGMA cache_size = -16000").close()
+        db.query("PRAGMA wal_autocheckpoint = 1000").close()
+        db.query("PRAGMA synchronous = NORMAL").close()
+    } catch (e: Exception) {
+        Timber.tag("MusicDatabase").e(e, "Failed to set PRAGMA settings")
+    }
+}
+
+private fun backupDatabase(
+    context: Context,
+    dbName: String,
+): File? {
+    val dbFile = context.getDatabasePath(dbName)
+    if (!dbFile.exists()) return null
+
+    val timestamp = SimpleDateFormat("yyyy-MM-dd_HH-mm-ss", Locale.US).format(Date())
+    val backupDir = File(context.filesDir, "database_backups").apply { mkdirs() }
+    val backupBase = File(backupDir, "${dbName}_backup_$timestamp")
+
+    fun copyFile(
+        src: File,
+        dst: File,
+    ): Boolean =
+        try {
+            src.inputStream().use { input ->
+                dst.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            true
+        } catch (e: Exception) {
+            Timber.tag("DatabaseBackup").e(e, "Failed to copy ${src.name}")
+            false
+        }
+
+    val success = copyFile(dbFile, File("$backupBase.db"))
+    if (success) {
+        File("${dbFile.absolutePath}-wal").takeIf { it.exists() }?.let {
+            copyFile(it, File("$backupBase.db-wal"))
+        }
+        File("${dbFile.absolutePath}-shm").takeIf { it.exists() }?.let {
+            copyFile(it, File("$backupBase.db-shm"))
+        }
+        Timber.tag("DatabaseBackup").i("Backed up database to $backupBase.db")
+    }
+    return if (success) File("$backupBase.db") else null
+}
+
+private class BackupBeforeMigrationFactory(
+    private val context: Context,
+    private val dbName: String,
+    private val delegate: SupportSQLiteOpenHelper.Factory =
+        androidx.sqlite.db.framework
+            .FrameworkSQLiteOpenHelperFactory(),
+) : SupportSQLiteOpenHelper.Factory {
+    override fun create(configuration: SupportSQLiteOpenHelper.Configuration): SupportSQLiteOpenHelper {
+        val wrappedCallback = BackupCallback(context, configuration.callback, dbName)
+        val wrappedConfig = SupportSQLiteOpenHelper.Configuration.builder(configuration.context)
+            .name(configuration.name)
+            .callback(wrappedCallback)
+            .noBackupDirectory(configuration.useNoBackupDirectory)
+            .allowDataLossOnRecovery(configuration.allowDataLossOnRecovery)
+            .build()
+        return delegate.create(wrappedConfig)
+    }
+}
+
+private class BackupCallback(
+    private val context: Context,
+    private val delegate: SupportSQLiteOpenHelper.Callback,
+    private val dbName: String,
+) : SupportSQLiteOpenHelper.Callback(delegate.version) {
+    override fun onCreate(db: SupportSQLiteDatabase) {
+        applyPragmaSettings(db)
+        delegate.onCreate(db)
+    }
+
+    override fun onUpgrade(
+        db: SupportSQLiteDatabase,
+        oldVersion: Int,
+        newVersion: Int,
+    ) {
+        Timber.tag("DatabaseBackup").i("Database upgrade $oldVersion -> $newVersion, backing up first")
+        backupDatabase(context, dbName)
+        delegate.onUpgrade(db, oldVersion, newVersion)
+    }
+
+    override fun onDowngrade(
+        db: SupportSQLiteDatabase,
+        oldVersion: Int,
+        newVersion: Int,
+    ) {
+        Timber.tag("DatabaseBackup").i("Database downgrade $oldVersion -> $newVersion, backing up first")
+        backupDatabase(context, dbName)
+        delegate.onDowngrade(db, oldVersion, newVersion)
+    }
+
+    override fun onOpen(db: SupportSQLiteDatabase) {
+        applyPragmaSettings(db)
+        delegate.onOpen(db)
     }
 }
 
 // ===== Migrations =====
+
+private fun addColumnIfMissing(
+    db: SupportSQLiteDatabase,
+    tableName: String,
+    columnName: String,
+    columnDefinition: String,
+) {
+    var columnExists = false
+    db.query("PRAGMA table_info('$tableName')").use { cursor ->
+        val nameIndex = cursor.getColumnIndex("name")
+        while (cursor.moveToNext()) {
+            if (nameIndex >= 0 && cursor.getString(nameIndex) == columnName) {
+                columnExists = true
+                break
+            }
+        }
+    }
+
+    if (!columnExists) {
+        db.execSQL("ALTER TABLE `$tableName` ADD COLUMN `$columnName` $columnDefinition")
+    }
+}
+
+private fun addVersion24ColumnsIfMissing(db: SupportSQLiteDatabase) {
+    addColumnIfMissing(db, "song", "libraryAddToken", "TEXT")
+    addColumnIfMissing(db, "song", "libraryRemoveToken", "TEXT")
+    addColumnIfMissing(db, "song", "romanizeLyrics", "INTEGER NOT NULL DEFAULT true")
+    addColumnIfMissing(db, "song", "isDownloaded", "INTEGER NOT NULL DEFAULT 0")
+    addColumnIfMissing(db, "song", "isUploaded", "INTEGER NOT NULL DEFAULT false")
+    addColumnIfMissing(db, "album", "isUploaded", "INTEGER NOT NULL DEFAULT false")
+    addColumnIfMissing(db, "playlist", "thumbnailUrl", "TEXT")
+}
 
 val MIGRATION_1_2 =
     object : Migration(1, 2) {
@@ -423,65 +607,14 @@ val MIGRATION_1_2 =
 val MIGRATION_21_24 =
     object : Migration(21, 24) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            // Combine all changes from 21→22→23→24
-
-            // From 21→22: Add columns
-            try {
-                db.execSQL("ALTER TABLE song ADD COLUMN libraryAddToken TEXT DEFAULT ''")
-            } catch (e: Exception) {
-                Timber.tag("Migration").w("Column libraryAddToken may already exist")
-            }
-            try {
-                db.execSQL("ALTER TABLE song ADD COLUMN libraryRemoveToken TEXT DEFAULT ''")
-            } catch (e: Exception) {
-                Timber.tag("Migration").w("Column libraryRemoveToken may already exist")
-            }
-            try {
-                db.execSQL("ALTER TABLE song ADD COLUMN romanizeLyrics INTEGER NOT NULL DEFAULT 1")
-            } catch (e: Exception) {
-                Timber.tag("Migration").w("Column romanizeLyrics may already exist")
-            }
-            try {
-                db.execSQL("ALTER TABLE song ADD COLUMN isDownloaded INTEGER NOT NULL DEFAULT 0")
-            } catch (e: Exception) {
-                Timber.tag("Migration").w("Column isDownloaded may already exist")
-            }
-
-            // From 21→22: Add thumbnailUrl to playlist
-            try {
-                db.execSQL("ALTER TABLE playlist ADD COLUMN thumbnailUrl TEXT DEFAULT NULL")
-            } catch (e: Exception) {
-                Timber.tag("Migration").w("Column playlist.thumbnailUrl may already exist")
-            }
-
-            // From 23→24: Add isUploaded to song and album
-            try {
-                db.execSQL("ALTER TABLE song ADD COLUMN isUploaded INTEGER NOT NULL DEFAULT 0")
-            } catch (e: Exception) {
-                Timber.tag("Migration").w("Column song.isUploaded may already exist")
-            }
-            try {
-                db.execSQL("ALTER TABLE album ADD COLUMN isUploaded INTEGER NOT NULL DEFAULT 0")
-            } catch (e: Exception) {
-                Timber.tag("Migration").w("Column album.isUploaded may already exist")
-            }
+            addVersion24ColumnsIfMissing(db)
         }
     }
 
 val MIGRATION_22_24 =
     object : Migration(22, 24) {
         override fun migrate(db: SupportSQLiteDatabase) {
-            // From 23→24: Add isUploaded to song and album
-            try {
-                db.execSQL("ALTER TABLE song ADD COLUMN isUploaded INTEGER NOT NULL DEFAULT 0")
-            } catch (e: Exception) {
-                Timber.tag("Migration").w("Column song.isUploaded may already exist")
-            }
-            try {
-                db.execSQL("ALTER TABLE album ADD COLUMN isUploaded INTEGER NOT NULL DEFAULT 0")
-            } catch (e: Exception) {
-                Timber.tag("Migration").w("Column album.isUploaded may already exist")
-            }
+            addVersion24ColumnsIfMissing(db)
         }
     }
 
@@ -657,21 +790,7 @@ class Migration22To23 : AutoMigrationSpec {
 
 class Migration23To24 : AutoMigrationSpec {
     override fun onPostMigrate(db: SupportSQLiteDatabase) {
-        var hasIsUploaded = false
-        db.query("PRAGMA table_info('song')").use { cursor ->
-            val nameIndex = cursor.getColumnIndex("name")
-            while (cursor.moveToNext()) {
-                val colName = if (nameIndex >= 0) cursor.getString(nameIndex) else null
-                if (colName == "isUploaded") {
-                    hasIsUploaded = true
-                    break
-                }
-            }
-        }
-
-        if (!hasIsUploaded) {
-            db.execSQL("ALTER TABLE `song` ADD COLUMN `isUploaded` INTEGER NOT NULL DEFAULT 0")
-        }
+        addVersion24ColumnsIfMissing(db)
     }
 }
 

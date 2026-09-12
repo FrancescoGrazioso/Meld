@@ -97,6 +97,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import androidx.compose.ui.Alignment
+import androidx.compose.foundation.layout.only
 
 private data class VisiblePlaylistItem(
     val key: String,
@@ -110,6 +111,8 @@ private data class VisiblePlaylistItem(
 fun LibraryPlaylistsScreen(
     navController: NavController,
     filterContent: @Composable () -> Unit,
+    viewType: LibraryViewType,
+    onViewTypeChange: (LibraryViewType) -> Unit,
     viewModel: LibraryPlaylistsViewModel = hiltViewModel(),
     spotifyViewModel: SpotifyViewModel = hiltViewModel(),
     initialTextFieldValue: String? = null,
@@ -121,7 +124,6 @@ fun LibraryPlaylistsScreen(
 
     val coroutineScope = rememberCoroutineScope()
 
-    var viewType by rememberEnumPreference(PlaylistViewTypeKey, LibraryViewType.GRID)
     val (sortType, onSortTypeChange) = rememberEnumPreference(
         PlaylistSortTypeKey,
         PlaylistSortType.CREATE_DATE
@@ -405,7 +407,7 @@ fun LibraryPlaylistsScreen(
 
             IconButton(
                 onClick = {
-                    viewType = viewType.toggle()
+                    onViewTypeChange(viewType.toggle())
                 },
                 modifier = Modifier.padding(end = 8.dp).size(40.dp),
             ) {
@@ -484,7 +486,6 @@ fun LibraryPlaylistsScreen(
                             )
                         } else {
                             LibraryPlaylistListItem(
-                                navController = navController,
                                 menuState = menuState,
                                 coroutineScope = coroutineScope,
                                 playlist = item.playlist,
@@ -753,7 +754,6 @@ fun LibraryPlaylistsScreen(
                             )
                         } else {
                             LibraryPlaylistGridItem(
-                                navController = navController,
                                 menuState = menuState,
                                 coroutineScope = coroutineScope,
                                 playlist = item.playlist,

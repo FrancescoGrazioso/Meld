@@ -51,7 +51,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +63,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -74,7 +75,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.fastForEach
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
@@ -87,6 +87,7 @@ import com.metrolist.innertube.models.PodcastItem
 import com.metrolist.innertube.models.SongItem
 import com.metrolist.innertube.models.WatchEndpoint
 import com.metrolist.music.LocalDatabase
+import com.metrolist.music.LocalArtistNameAliases
 import com.metrolist.music.LocalListenTogetherManager
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.LocalPlayerConnection
@@ -124,6 +125,7 @@ import com.metrolist.music.ui.utils.backToMain
 import com.metrolist.music.ui.utils.fadingEdge
 import com.metrolist.music.ui.utils.isScrollingUp
 import com.metrolist.music.ui.utils.resize
+import com.metrolist.music.utils.ArtistNameAliases
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.viewmodels.ArtistViewModel
 import com.valentinilk.shimmer.shimmer
@@ -144,13 +146,20 @@ fun ArtistScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val listenTogetherManager = LocalListenTogetherManager.current
     val isGuest = listenTogetherManager?.isInRoom == true && !listenTogetherManager.isHost
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
     val artistPage = viewModel.artistPage
-    val libraryArtist by viewModel.libraryArtist.collectAsState()
-    val librarySongs by viewModel.librarySongs.collectAsState()
-    val libraryAlbums by viewModel.libraryAlbums.collectAsState()
-    val isChannelSubscribed by viewModel.isChannelSubscribed.collectAsState()
+    val libraryArtist by viewModel.libraryArtist.collectAsStateWithLifecycle()
+    val artistNameAliases = LocalArtistNameAliases.current
+    val displayArtistName =
+        ArtistNameAliases.resolve(
+            artistNameAliases,
+            viewModel.artistId,
+            artistPage?.artist?.title ?: libraryArtist?.artist?.name.orEmpty(),
+        ).ifEmpty { null }
+    val librarySongs by viewModel.librarySongs.collectAsStateWithLifecycle()
+    val libraryAlbums by viewModel.libraryAlbums.collectAsStateWithLifecycle()
+    val isChannelSubscribed by viewModel.isChannelSubscribed.collectAsStateWithLifecycle()
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
     val showArtistDescription by rememberPreference(key = ShowArtistDescriptionKey, defaultValue = true)
     val showArtistSubscriberCount by rememberPreference(key = ShowArtistSubscriberCountKey, defaultValue = true)
@@ -174,7 +183,15 @@ fun ArtistScreen(
         }
     }
 
+    val distinctItemsBySection = remember(artistPage?.sections) {
+        artistPage?.sections?.map { section ->
+            section.items.distinctBy { it.id }
+        } ?: emptyList()
+    }
+
     LaunchedEffect(libraryArtist, artistPage) {
+        // Always the local page for local artists. Artists Meld only knows through Spotify have no
+        // YouTube page to fall back to, so they keep the remote page instead of rendering empty.
         val isYouTube = libraryArtist?.artist?.isYouTubeArtist == true
         val isLocal = libraryArtist?.artist?.isLocal == true
         val hasSpotifyId = libraryArtist?.artist?.spotifyId != null
@@ -288,7 +305,6 @@ fun ArtistScreen(
             } else {
                 item(key = "header") {
                     val thumbnail = artistPage?.artist?.thumbnail ?: libraryArtist?.artist?.thumbnailUrl
-                    val artistName = artistPage?.artist?.title ?: libraryArtist?.artist?.name
 
                     Box {
                         // Artist Image with offset
@@ -305,6 +321,7 @@ fun ArtistScreen(
                                 AsyncImage(
                                     model = thumbnail.resize(1200, 1200),
                                     contentDescription = null,
+                                    contentScale = ContentScale.Crop,
                                     modifier =
                                         Modifier
                                             .fillMaxWidth()
@@ -344,7 +361,7 @@ fun ArtistScreen(
                             ) {
                                 // Artist Name
                                 Text(
-                                    text = artistName ?: "Unknown",
+                                    text = displayArtistName ?: "Unknown",
                                     style = MaterialTheme.typography.headlineLarge,
                                     fontWeight = FontWeight.Bold,
                                     maxLines = 1,
@@ -519,6 +536,15 @@ fun ArtistScreen(
                     }
                 }
 
+                // Show loading shimmer for sections when API hasn't returned yet
+                if (artistPage == null && !showLocal) {
+                    item(key = "section_shimmer") {
+                        ShimmerHost {
+                            repeat(4) { ListItemPlaceHolder() }
+                        }
+                    }
+                }
+
                 if (showLocal) {
                     if (librarySongs.isNotEmpty()) {
                         item(key = "local_songs_title") {
@@ -552,7 +578,6 @@ fun ArtistScreen(
                                             menuState.show {
                                                 SongMenu(
                                                     originalSong = song,
-                                                    navController = navController,
                                                     onDismiss = menuState::dismiss,
                                                 )
                                             }
@@ -575,7 +600,7 @@ fun ArtistScreen(
                                                     } else {
                                                         playerConnection.playQueue(
                                                             ListQueue(
-                                                                title = libraryArtist?.artist?.name ?: "Unknown Artist",
+                                                                title = displayArtistName ?: "Unknown Artist",
                                                                 items = librarySongs.map { it.toMediaItem() },
                                                                 startIndex = index,
                                                             ),
@@ -588,7 +613,6 @@ fun ArtistScreen(
                                                 menuState.show {
                                                     SongMenu(
                                                         originalSong = song,
-                                                        navController = navController,
                                                         onDismiss = menuState::dismiss,
                                                     )
                                                 }
@@ -639,7 +663,6 @@ fun ArtistScreen(
                                                         menuState.show {
                                                             AlbumMenu(
                                                                 originalAlbum = album,
-                                                                navController = navController,
                                                                 onDismiss = menuState::dismiss,
                                                             )
                                                         }
@@ -651,7 +674,7 @@ fun ArtistScreen(
                         }
                     }
                 } else {
-                    artistPage?.sections?.fastForEach { section ->
+                    artistPage?.sections?.forEachIndexed { index, section ->
                         if (section.items.isNotEmpty()) {
                             item(key = "section_${section.title}") {
                                 NavigationTitle(
@@ -671,7 +694,7 @@ fun ArtistScreen(
 
                         if ((section.items.firstOrNull() as? SongItem)?.album != null) {
                             items(
-                                items = section.items.distinctBy { it.id },
+                                items = distinctItemsBySection.getOrNull(index) ?: section.items,
                                 key = { "youtube_song_${it.id}" },
                             ) { song ->
                                 YouTubeListItem(
@@ -684,7 +707,6 @@ fun ArtistScreen(
                                                 menuState.show {
                                                     YouTubeSongMenu(
                                                         song = song,
-                                                        navController = navController,
                                                         onDismiss = menuState::dismiss,
                                                     )
                                                 }
@@ -718,7 +740,6 @@ fun ArtistScreen(
                                                     menuState.show {
                                                         YouTubeSongMenu(
                                                             song = song,
-                                                            navController = navController,
                                                             onDismiss = menuState::dismiss,
                                                         )
                                                     }
@@ -732,7 +753,7 @@ fun ArtistScreen(
                                     contentPadding = WindowInsets.systemBars.only(WindowInsetsSides.Horizontal).asPaddingValues(),
                                 ) {
                                     items(
-                                        items = section.items.distinctBy { it.id },
+                                        items = distinctItemsBySection.getOrNull(index) ?: section.items,
                                         key = { "youtube_album_${it.id}" },
                                     ) { item ->
                                         YouTubeGridItem(
@@ -797,7 +818,6 @@ fun ArtistScreen(
                                                                     is SongItem -> {
                                                                         YouTubeSongMenu(
                                                                             song = item,
-                                                                            navController = navController,
                                                                             onDismiss = menuState::dismiss,
                                                                         )
                                                                     }
@@ -805,7 +825,6 @@ fun ArtistScreen(
                                                                     is AlbumItem -> {
                                                                         YouTubeAlbumMenu(
                                                                             albumItem = item,
-                                                                            navController = navController,
                                                                             onDismiss = menuState::dismiss,
                                                                         )
                                                                     }
@@ -836,7 +855,6 @@ fun ArtistScreen(
                                                                     is EpisodeItem -> {
                                                                         YouTubeSongMenu(
                                                                             song = item.asSongItem(),
-                                                                            navController = navController,
                                                                             onDismiss = menuState::dismiss,
                                                                         )
                                                                     }
@@ -901,7 +919,7 @@ fun ArtistScreen(
                             if (librarySongs.isNotEmpty()) {
                                 playerConnection.playQueue(
                                     ListQueue(
-                                        title = libraryArtist?.artist?.name ?: "Unknown Artist",
+                                        title = displayArtistName ?: "Unknown Artist",
                                         items = librarySongs.map { it.toMediaItem() },
                                     ),
                                 )
@@ -921,7 +939,7 @@ fun ArtistScreen(
                                             val songs = result.items.filterIsInstance<SongItem>().map { it.toMediaItem() }
                                             playerConnection.playQueue(
                                                 ListQueue(
-                                                    title = artistPage.artist.title,
+                                                    title = displayArtistName ?: artistPage.artist.title,
                                                     items = songs,
                                                 ),
                                             )
@@ -931,7 +949,7 @@ fun ArtistScreen(
                                             if (songs.isNotEmpty()) {
                                                 playerConnection.playQueue(
                                                     ListQueue(
-                                                        title = artistPage.artist.title,
+                                                        title = displayArtistName ?: artistPage.artist.title,
                                                         items = songs,
                                                     ),
                                                 )
@@ -944,7 +962,7 @@ fun ArtistScreen(
                                 val songs = songSection.items.filterIsInstance<SongItem>().map { it.toMediaItem() }
                                 playerConnection.playQueue(
                                     ListQueue(
-                                        title = artistPage.artist.title,
+                                        title = displayArtistName ?: artistPage.artist.title,
                                         items = songs,
                                     ),
                                 )
@@ -1004,7 +1022,7 @@ fun ArtistScreen(
     }
 
     TopAppBar(
-        title = { if (!transparentAppBar) Text(artistPage?.artist?.title.orEmpty()) },
+        title = { if (!transparentAppBar) Text(displayArtistName.orEmpty()) },
         navigationIcon = {
             IconButton(
                 onClick = navController::navigateUp,

@@ -234,7 +234,6 @@ fun LocalFilesScreen(
                                     menuState.show {
                                         SongMenu(
                                             originalSong = song,
-                                            navController = navController,
                                             onDismiss = menuState::dismiss,
                                         )
                                     }

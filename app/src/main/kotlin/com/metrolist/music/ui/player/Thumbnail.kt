@@ -37,8 +37,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -61,7 +62,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -93,6 +93,7 @@ import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.innertube.utils.parseCookieString
 import kotlinx.coroutines.delay
+import androidx.compose.ui.unit.dp
 
 /**
  * Pre-calculated thumbnail dimensions to avoid repeated calculations during recomposition.
@@ -217,9 +218,9 @@ fun Thumbnail(
     // Collect states
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
     val error by playerConnection.error.collectAsState()
-    val queueTitle by playerConnection.queueTitle.collectAsState()
-    val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
-    val canSkipNext by playerConnection.canSkipNext.collectAsState()
+    val queueTitle by playerConnection.queueTitle.collectAsStateWithLifecycle()
+    val canSkipPrevious by playerConnection.canSkipPrevious.collectAsStateWithLifecycle()
+    val canSkipNext by playerConnection.canSkipNext.collectAsStateWithLifecycle()
 
     // YouTube login status
     val innerTubeCookie by rememberPreference(InnerTubeCookieKey, "")
@@ -455,7 +456,7 @@ private fun ThumbnailHeader(
     modifier: Modifier = Modifier
 ) {
     val listenTogetherManager = LocalListenTogetherManager.current
-    val listenTogetherRoleState = listenTogetherManager?.role?.collectAsState(initial = RoomRole.NONE)
+    val listenTogetherRoleState = listenTogetherManager?.role?.collectAsStateWithLifecycle(initialValue = RoomRole.NONE)
     val isListenTogetherGuest = listenTogetherRoleState?.value == RoomRole.GUEST
     Box(
         modifier = modifier

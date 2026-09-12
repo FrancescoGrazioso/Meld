@@ -71,6 +71,8 @@ data class PlaylistItem(
     val radioEndpoint: WatchEndpoint?,
     val isEditable: Boolean = false,
     val isPodcast: Boolean = false,
+    val description: String? = null,
+    val authorAvatarUrl: String? = null,
 ) : YTItem() {
     override val explicit: Boolean
         get() = false

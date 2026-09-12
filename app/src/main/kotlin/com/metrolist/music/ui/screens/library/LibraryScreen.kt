@@ -13,17 +13,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.navigation.NavController
+import com.metrolist.music.LocalNavController
 import com.metrolist.music.R
+import com.metrolist.music.constants.AlbumViewTypeKey
 import com.metrolist.music.constants.ChipSortTypeKey
 import com.metrolist.music.constants.LibraryFilter
+import com.metrolist.music.constants.LibraryViewType
+import com.metrolist.music.constants.PlaylistViewTypeKey
 import com.metrolist.music.ui.component.ChipsRow
 import com.metrolist.music.ui.screens.library.local.LocalFilesScreen
 import com.metrolist.music.utils.rememberEnumPreference
+import androidx.navigation.NavController
 
 @Composable
-fun LibraryScreen(navController: NavController) {
+fun LibraryScreen() {
+    val navController = LocalNavController.current
     var filterType by rememberEnumPreference(ChipSortTypeKey, LibraryFilter.LIBRARY)
+    var libraryViewType by rememberEnumPreference(AlbumViewTypeKey, LibraryViewType.GRID)
+    var playlistViewType by rememberEnumPreference(PlaylistViewTypeKey, LibraryViewType.GRID)
 
     val filterContent = @Composable {
         Row {
@@ -47,8 +54,18 @@ fun LibraryScreen(navController: NavController) {
 
     Box(modifier = Modifier.fillMaxSize()) {
         when (filterType) {
-            LibraryFilter.LIBRARY -> LibraryMixScreen(navController, filterContent)
-            LibraryFilter.PLAYLISTS -> LibraryPlaylistsScreen(navController, filterContent)
+            LibraryFilter.LIBRARY -> LibraryMixScreen(
+                navController = navController,
+                filterContent = filterContent,
+                viewType = libraryViewType,
+                onViewTypeChange = { libraryViewType = it },
+            )
+            LibraryFilter.PLAYLISTS -> LibraryPlaylistsScreen(
+                navController = navController,
+                filterContent = filterContent,
+                viewType = playlistViewType,
+                onViewTypeChange = { playlistViewType = it },
+            )
             LibraryFilter.SONGS -> LibrarySongsScreen(
                 navController,
                 { filterType = LibraryFilter.LIBRARY },

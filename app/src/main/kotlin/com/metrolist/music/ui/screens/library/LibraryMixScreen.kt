@@ -119,6 +119,8 @@ import java.util.UUID
 fun LibraryMixScreen(
     navController: NavController,
     filterContent: @Composable () -> Unit,
+    viewType: LibraryViewType,
+    onViewTypeChange: (LibraryViewType) -> Unit,
     viewModel: LibraryMixViewModel = hiltViewModel(),
     spotifyViewModel: SpotifyViewModel = hiltViewModel(),
 ) {
@@ -141,7 +143,6 @@ fun LibraryMixScreen(
         }
     }
 
-    var viewType by rememberEnumPreference(AlbumViewTypeKey, LibraryViewType.GRID)
     val (sortType, onSortTypeChange) =
         rememberEnumPreference(
             MixSortTypeKey,
@@ -423,7 +424,7 @@ fun LibraryMixScreen(
 
             IconButton(
                 onClick = {
-                    viewType = viewType.toggle()
+                    onViewTypeChange(viewType.toggle())
                 },
                 modifier = Modifier.padding(end = 8.dp).size(40.dp),
             ) {
@@ -755,7 +756,6 @@ fun LibraryMixScreen(
                                                 menuState.show {
                                                     SongMenu(
                                                         originalSong = item,
-                                                        navController = navController,
                                                         onDismiss = menuState::dismiss,
                                                     )
                                                 }
@@ -790,7 +790,6 @@ fun LibraryMixScreen(
                                                     menuState.show {
                                                         SongMenu(
                                                             originalSong = item,
-                                                            navController = navController,
                                                             onDismiss = menuState::dismiss,
                                                         )
                                                     }
@@ -853,7 +852,6 @@ fun LibraryMixScreen(
                                                 menuState.show {
                                                     AlbumMenu(
                                                         originalAlbum = item,
-                                                        navController = navController,
                                                         onDismiss = menuState::dismiss,
                                                     )
                                                 }
@@ -877,7 +875,6 @@ fun LibraryMixScreen(
                                                     menuState.show {
                                                         AlbumMenu(
                                                             originalAlbum = item,
-                                                            navController = navController,
                                                             onDismiss = menuState::dismiss,
                                                         )
                                                     }
@@ -1226,7 +1223,6 @@ fun LibraryMixScreen(
                                                     menuState.show {
                                                         SongMenu(
                                                             originalSong = item,
-                                                            navController = navController,
                                                             onDismiss = menuState::dismiss,
                                                         )
                                                     }
@@ -1280,7 +1276,6 @@ fun LibraryMixScreen(
                                                     menuState.show {
                                                         AlbumMenu(
                                                             originalAlbum = item,
-                                                            navController = navController,
                                                             onDismiss = menuState::dismiss,
                                                         )
                                                     }

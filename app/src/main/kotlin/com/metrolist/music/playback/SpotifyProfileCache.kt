@@ -21,7 +21,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 import kotlinx.coroutines.flow.first
@@ -35,6 +34,7 @@ import kotlinx.serialization.json.Json
 import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.ZoneOffset
+import kotlinx.coroutines.coroutineScope
 
 /**
  * Hybrid cache for Spotify user profile data (top tracks/artists).
@@ -488,10 +488,8 @@ object SpotifyProfileCache {
         // When tracks are completely empty, use local data as the sole source.
         if (database != null) {
             try {
-                val fromTimestamp = LocalDateTime.now()
-                    .minusMonths(3)
-                    .toInstant(ZoneOffset.UTC)
-                    .toEpochMilli()
+                // Upstream's DAO takes a LocalDateTime here; it used to take epoch millis.
+                val fromTimestamp = LocalDateTime.now().minusMonths(3)
                 val localSongs = database.mostPlayedSongs(fromTimestamp, limit = 100).first()
 
                 if (tracks.isEmpty() && localSongs.isNotEmpty()) {

@@ -17,8 +17,8 @@
     <string name="cached_playlist">తాత్కాలిక నిల్వ</string>
     <string name="sync_playlist">జాబితాను సమకాలీకరించు</string>
     <string name="sync_disabled">సమకాలీకరణ నిలిపివేయబడింది</string>
-    <string name="allows_for_sync_witch_youtube">గమనిక: ఇది యూట్యూబ్ మ్యూజిక్‌తో సమకాలీకరించడానికి అనుమతిస్తుంది. దీనిని తర్వాత మార్చడం సాధ్యం కాదు.</string>
-    <string name="generating_image">చిత్రాన్ని సృష్టిస్తోంది</string>
+    <string name="allows_for_sync_witch_youtube">గమనిక: ఈ ఎంపిక యూట్యూబ్ మ్యూజిక్‌తో సమకాలీకరించడానికి అనుమతిస్తుంది. దీనిని తర్వాత మార్చడం సాధ్యం కాదు</string>
+    <string name="generating_image">చిత్రాన్ని సృష్టిస్తోంది…</string>
     <string name="please_wait">దయచేసి వేచి ఉండండి</string>
     <string name="cancel">రద్దు చేయి</string>
     <string name="share_lyrics">పద్యాలను పంచుకోండి</string>
@@ -37,7 +37,7 @@
     <string name="dislike_all">అన్నింటినీ నచ్చనివిగా గుర్తించు</string>
     <string name="sort_by_last_updated">నవీకరించబడిన తేదీ</string>
     <string name="link_copied">లింక్ క్లిప్‌బోర్డుకు కాపీ చేయబడింది</string>
-    <string name="starting_radio">సంగీత కేంద్రం ప్రారంభమవుతోంది</string>
+    <string name="starting_radio">సంగీత కేంద్రం ప్రారంభమవుతోంది…</string>
     <string name="now_playing">ఇప్పుడు వింటున్నది</string>
     <string name="close">మూసివేయి</string>
     <string name="hide_player_thumbnail">చిత్రపటాన్ని చిన్నచిత్రాన్ని దాచు</string>
@@ -61,4 +61,6 @@
     <string name="player_buttons_style">వాయించే తెర మీటల రంగులు</string>
     <string name="default_style">డిఫాల్ట్</string>
     <string name="seek_seconds_addup_description">సక్రియమైనట్లయితే, ప్రతి సీక్ స్కిప్‌కి 5 అదనపు సెకండ్లను క్రమంగా జోడిస్తుంది</string>
+    <string name="listen_together_room_code">రూమ్ కోడ్</string>
+    <string name="lyrics_animation_apple">ఆపిల్ మ్యూజిక్ స్టైల్</string>
 </resources>

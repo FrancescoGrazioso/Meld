@@ -56,7 +56,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,6 +85,7 @@ import com.metrolist.music.R
 import com.metrolist.music.db.entities.RecognitionHistory
 import com.metrolist.music.ui.component.IconButton
 import com.metrolist.music.ui.utils.backToMain
+import com.metrolist.music.utils.SearchRoutes
 import com.metrolist.shazamkit.models.RecognitionResult
 import com.metrolist.shazamkit.models.RecognitionStatus
 import kotlinx.coroutines.Dispatchers
@@ -122,7 +123,7 @@ fun RecognitionScreen(
 
     // Observe recognition status from service for real-time updates (Listening -> Processing -> Result)
     val recognitionStatus by com.metrolist.music.recognition.MusicRecognitionService.recognitionStatus
-        .collectAsState()
+        .collectAsStateWithLifecycle()
 
     var hasPermission by remember {
         mutableStateOf(
@@ -263,7 +264,7 @@ fun RecognitionScreen(
                             onPlayOnApp = { result ->
                                 // Search for the track on YouTube Music
                                 val searchQuery = "${result.title} ${result.artist}"
-                                navController.navigate("search/${java.net.URLEncoder.encode(searchQuery, "UTF-8")}")
+                                navController.navigate(SearchRoutes.resultRoute(searchQuery))
                             },
                             onTryAgain = {
                                 startRecognition()
