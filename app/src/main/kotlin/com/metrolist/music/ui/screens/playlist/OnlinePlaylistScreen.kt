@@ -186,6 +186,15 @@ fun OnlinePlaylistScreen(
         BackHandler(onBack = onExitSelectionMode)
     }
 
+    LaunchedEffect(lazyListState) {
+        androidx.compose.runtime.snapshotFlow { lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            .collect { lastVisibleIndex ->
+                if (lastVisibleIndex != null && lastVisibleIndex >= songs.size - 5 && !isLoadingMore && viewModel.continuation != null) {
+                    viewModel.loadMoreSongs()
+                }
+            }
+    }
+
     Box(Modifier.fillMaxSize()) {
         LazyColumn(
             state = lazyListState,
