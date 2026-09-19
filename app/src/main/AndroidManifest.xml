@@ -15,6 +15,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <!-- Microphone feature for music recognition (not required) -->
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
@@ -254,6 +255,11 @@
         <!-- Receiver for Listen Together notification actions (Approve/Reject) -->
         <receiver
             android:name=".listentogether.ListenTogetherActionReceiver"
+            android:exported="false" />
+
+        <!-- Receiver for package installer status during in-app updates -->
+        <receiver
+            android:name=".utils.UpdateInstallReceiver"
             android:exported="false" />
 
         <receiver
