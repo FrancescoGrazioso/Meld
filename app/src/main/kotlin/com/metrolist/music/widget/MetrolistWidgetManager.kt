@@ -37,7 +37,8 @@ import javax.inject.Singleton
 @Singleton
 class MetrolistWidgetManager @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val database: MusicDatabase
+    private val database: MusicDatabase,
+    private val playlistWidgetManager: PlaylistWidgetManager,
 ) {
     private val imageLoader by lazy {
         ImageLoader.Builder(context)
@@ -75,60 +76,77 @@ class MetrolistWidgetManager @Inject constructor(
         currentPosition: Long = 0
     ) {
         renderMutex.withLock {
-            val appWidgetManager = AppWidgetManager.getInstance(context) ?: return
+            // Every bail-out below must stay *local* to this block. `withLock` is inline, so a
+            // bare `return` here leaves updateWidgets entirely and silently skips the playlist
+            // widget refresh at the bottom of this function — which is why the playlist widget
+            // only ever updated while a music or turntable widget happened to share the home
+            // screen with it, and froze again the moment that one was removed.
+            val appWidgetManager = AppWidgetManager.getInstance(context)
 
             val componentName = ComponentName(context, MusicWidgetReceiver::class.java)
             val turntableComponentName = ComponentName(context, TurntableWidgetReceiver::class.java)
-            val widgetIds = runCatching { appWidgetManager.getAppWidgetIds(componentName) }
-                .getOrNull() ?: IntArray(0)
-            val turntableWidgetIds = runCatching { appWidgetManager.getAppWidgetIds(turntableComponentName) }
-                .getOrNull() ?: IntArray(0)
+            val widgetIds = appWidgetManager?.let {
+                runCatching { it.getAppWidgetIds(componentName) }.getOrNull()
+            } ?: IntArray(0)
+            val turntableWidgetIds = appWidgetManager?.let {
+                runCatching { it.getAppWidgetIds(turntableComponentName) }.getOrNull()
+            } ?: IntArray(0)
 
-            // Nothing on the home screen — skip artwork decoding and all the binder traffic
-            // below. The refresh loop runs for the whole playback session, so this is the
-            // common case for most users.
-            if (widgetIds.isEmpty() && turntableWidgetIds.isEmpty()) return
+            // Nothing of ours on the home screen — skip artwork decoding and all the binder
+            // traffic below. The refresh loop runs for the whole playback session, so this is
+            // the common case for most users.
+            if (appWidgetManager != null && (widgetIds.isNotEmpty() || turntableWidgetIds.isNotEmpty())) {
+                // Reload album art only when the track actually changed.
+                if (artworkUri != cachedArtworkUri || (artworkUri != null && cachedAlbumArt == null)) {
+                    val albumArt = artworkUri?.let { loadAlbumArt(it, ARTWORK_SIZE) }
+                    cachedArtworkUri = artworkUri
+                    cachedAlbumArt = albumArt
+                    cachedRoundedAlbumArt = albumArt?.let { getRoundedCornerBitmap(it, DEFAULT_CORNER_RADIUS) }
+                    cachedCircularAlbumArt = albumArt?.let { getCircularBitmap(it) }
+                }
 
-            // Reload album art only when the track actually changed.
-            if (artworkUri != cachedArtworkUri || (artworkUri != null && cachedAlbumArt == null)) {
-                val albumArt = artworkUri?.let { loadAlbumArt(it, ARTWORK_SIZE) }
-                cachedArtworkUri = artworkUri
-                cachedAlbumArt = albumArt
-                cachedRoundedAlbumArt = albumArt?.let { getRoundedCornerBitmap(it, DEFAULT_CORNER_RADIUS) }
-                cachedCircularAlbumArt = albumArt?.let { getCircularBitmap(it) }
-            }
+                val roundedAlbumArt = cachedRoundedAlbumArt ?: defaultRoundedIcon
+                val circularAlbumArt = cachedCircularAlbumArt ?: defaultCircularIcon
 
-            val roundedAlbumArt = cachedRoundedAlbumArt ?: defaultRoundedIcon
-            val circularAlbumArt = cachedCircularAlbumArt ?: defaultCircularIcon
+                // Update main music player widgets
+                widgetIds.forEach { widgetId ->
+                    val options = appWidgetManager.getAppWidgetOptions(widgetId)
+                    val views = createRemoteViewsForSize(
+                        options,
+                        title,
+                        artist,
+                        roundedAlbumArt,
+                        isPlaying,
+                        isLiked,
+                        duration,
+                        currentPosition
+                    )
+                    runCatching { appWidgetManager.updateAppWidget(widgetId, views) }
+                }
 
-            // Update main music player widgets
-            widgetIds.forEach { widgetId ->
-                val options = appWidgetManager.getAppWidgetOptions(widgetId)
-                val views = createRemoteViewsForSize(
-                    options,
-                    title,
-                    artist,
-                    roundedAlbumArt,
-                    isPlaying,
-                    isLiked,
-                    duration,
-                    currentPosition
-                )
-                runCatching { appWidgetManager.updateAppWidget(widgetId, views) }
-            }
-
-            // Update turntable widgets
-            if (turntableWidgetIds.isNotEmpty()) {
-                val turntableViews = createTurntableRemoteViews(
-                    circularAlbumArt,
-                    isPlaying,
-                    isLiked
-                )
-                turntableWidgetIds.forEach { widgetId ->
-                    runCatching { appWidgetManager.updateAppWidget(widgetId, turntableViews) }
+                // Update turntable widgets
+                if (turntableWidgetIds.isNotEmpty()) {
+                    val turntableViews = createTurntableRemoteViews(
+                        circularAlbumArt,
+                        isPlaying,
+                        isLiked
+                    )
+                    turntableWidgetIds.forEach { widgetId ->
+                        runCatching { appWidgetManager.updateAppWidget(widgetId, turntableViews) }
+                    }
                 }
             }
         }
+
+        playlistWidgetManager.updateWidgets(
+            title = title,
+            artist = artist,
+            artworkUri = artworkUri,
+            isPlaying = isPlaying,
+            isLiked = isLiked,
+            duration = duration,
+            currentPosition = currentPosition,
+        )
     }
 
     private fun createRemoteViewsForSize(
@@ -254,18 +272,18 @@ class MetrolistWidgetManager @Inject constructor(
         val xOffset = (bitmap.width - size) / 2
         val yOffset = (bitmap.height - size) / 2
         val squareBitmap = Bitmap.createBitmap(bitmap, xOffset, yOffset, size, size)
-        
-        // Create circular output
+
         val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(output)
-        val paint = Paint().apply {
-            isAntiAlias = true
-            isFilterBitmap = true
-            shader = BitmapShader(squareBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
-        }
+        val paint =
+            Paint().apply {
+                isAntiAlias = true
+                isFilterBitmap = true
+                shader = BitmapShader(squareBitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+            }
         val radius = size / 2f
         canvas.drawCircle(radius, radius, radius, paint)
-        
+
         if (squareBitmap != bitmap) {
             squareBitmap.recycle()
         }

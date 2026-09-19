@@ -46,7 +46,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -57,10 +56,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavController
+import com.metrolist.music.LocalNavController
 import com.metrolist.music.R
 import com.metrolist.music.ui.screens.settings.AccountSettings
 import kotlinx.coroutines.delay
+import androidx.compose.ui.focus.focusRequester
+import androidx.navigation.NavController
 
 @Composable
 fun DefaultDialog(
@@ -138,10 +139,10 @@ fun DefaultDialog(
 
 @Composable
 fun AccountSettingsDialog(
-    navController: NavController,
     onDismiss: () -> Unit,
     latestVersionName: String,
 ) {
+    val navController = LocalNavController.current
     Dialog(
         onDismissRequest = onDismiss,
         properties =
@@ -154,11 +155,10 @@ fun AccountSettingsDialog(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() },
-                    ) {
-                        onDismiss()
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onTap = { onDismiss() }
+                        )
                     },
             contentAlignment = Alignment.TopCenter,
         ) {

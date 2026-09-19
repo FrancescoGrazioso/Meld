@@ -18,8 +18,8 @@
     <string name="cached_playlist">Keširano</string>
     <string name="sync_playlist">Sinhronizuj plejlistu</string>
     <string name="sync_disabled">Sinhronizacija onemogućena</string>
-    <string name="allows_for_sync_witch_youtube">Napomena: Ovo omogućava sinhronizaciju sa YouTube Music. Ovo se NE MOŽE promeniti kasnije.</string>
-    <string name="generating_image">Generišem sliku</string>
+    <string name="allows_for_sync_witch_youtube">NAPOMENA: Ovo omogućava sinhronizaciju sa YouTube Music-om i NE MOŽE se promeniti kasnije</string>
+    <string name="generating_image">Generišem sliku…</string>
     <string name="please_wait">Molimo sačekajte</string>
     <string name="cancel">Otkaži</string>
     <string name="share_lyrics">Podeli tekst pesme</string>
@@ -55,9 +55,9 @@
         <item quantity="few">%d sekunde</item>
         <item quantity="other">%d sekundi</item>
     </plurals>
-    <string name="starting_radio">Pokretanje radija</string>
+    <string name="starting_radio">Pokretanje radija…</string>
     <string name="now_playing">Trentuno pušteno</string>
-    <string name="hide_player_thumbnail">Sakrij ikonicu plejera</string>
+    <string name="hide_player_thumbnail">Sakrij ikonu plejera</string>
     <string name="seek_forward_dynamic">+%1$d sekundi unapred</string>
     <string name="seek_backward_dynamic">-%1$d sekundi unazad</string>
     <string name="seek_seconds_addup">Napredna pretraga</string>
@@ -67,11 +67,26 @@
     <string name="remove_download_playlist_desc">Obriši sve preuzete pesme iz ove plejliste</string>
     <string name="download_in_progress_desc">Preuzimanje je u toku</string>
     <string name="share_playlist_desc">Podeli ovu plejlistu sa drugima</string>
-    <string name="sync_playlist_desc">Sinhronizuj plejlistu sa Youtube Music</string>
+    <string name="sync_playlist_desc">Sinhronizuj plejlistu sa Youtube Music-om</string>
     <string name="close">Zatvori</string>
     <string name="seek_seconds_addup_description">Kada je aktivirano, dodaje 5 sekundi za svako preskakanje traženja</string>
     <string name="new_player_design">Novi dizajn plejera</string>
     <string name="new_mini_player_design">Novi dizajn mini-plejera</string>
     <string name="primary_color_style">Primarna boja</string>
     <string name="tertiary_color_style">Tercijalna boja</string>
+    <string name="enable">Omogući</string>
+    <string name="about_artist">O</string>
+    <string name="show_more">Pokaži više</string>
+    <string name="show_less">Pokaži manje</string>
+    <string name="artist_page_settings">Stranica izvođača</string>
+    <string name="show_artist_description">Pokaži opis izvođača</string>
+    <string name="show_artist_subscriber_count">Pokaži broj pratilaca</string>
+    <string name="show_artist_monthly_listeners">Pokaži mesečne slušaoce</string>
+    <string name="delete_playlist_desc">Ukloni ovu plejlistu zauvek</string>
+    <string name="crop_album_art">Izreži omot albuma</string>
+    <plurals name="n_time">
+        <item quantity="one">%d vremena</item>
+        <item quantity="few">%d vremena</item>
+        <item quantity="other">%d vremena</item>
+    </plurals>
 </resources>

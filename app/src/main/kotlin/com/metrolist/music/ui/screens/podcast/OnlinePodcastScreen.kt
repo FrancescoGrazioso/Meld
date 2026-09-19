@@ -39,7 +39,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,7 +49,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
@@ -68,7 +67,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
-import com.metrolist.innertube.models.EpisodeItem
+import com.metrolist.music.ui.utils.resize
 import com.metrolist.innertube.models.PodcastItem
 import timber.log.Timber
 import com.metrolist.music.LocalDatabase
@@ -85,6 +84,7 @@ import com.metrolist.music.ui.component.YouTubeListItem
 import com.metrolist.music.ui.menu.YouTubeSongMenu
 import com.metrolist.music.ui.utils.backToMain
 import com.metrolist.music.viewmodels.OnlinePodcastViewModel
+import androidx.compose.ui.focus.focusRequester
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -98,14 +98,14 @@ fun OnlinePodcastScreen(
     val playerConnection = LocalPlayerConnection.current ?: return
     val database = LocalDatabase.current
 
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
-    val podcast by viewModel.podcast.collectAsState()
-    val episodes by viewModel.episodes.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val libraryPodcast by viewModel.libraryPodcast.collectAsState()
+    val podcast by viewModel.podcast.collectAsStateWithLifecycle()
+    val episodes by viewModel.episodes.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val error by viewModel.error.collectAsStateWithLifecycle()
+    val libraryPodcast by viewModel.libraryPodcast.collectAsStateWithLifecycle()
 
     val lazyListState = rememberLazyListState()
 
@@ -214,7 +214,7 @@ fun OnlinePodcastScreen(
                                     onLongClick = {
                                         haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                         menuState.show {
-                                            YouTubeSongMenu(episode.asSongItem(), navController, menuState::dismiss)
+                                            YouTubeSongMenu(episode.asSongItem(), menuState::dismiss)
                                         }
                                     }
                                 )
@@ -222,7 +222,7 @@ fun OnlinePodcastScreen(
                             trailingContent = {
                                 IconButton(onClick = {
                                     menuState.show {
-                                        YouTubeSongMenu(episode.asSongItem(), navController, menuState::dismiss)
+                                        YouTubeSongMenu(episode.asSongItem(), menuState::dismiss)
                                     }
                                 }) {
                                     Icon(painterResource(R.drawable.more_vert), null)
@@ -317,7 +317,7 @@ private fun PodcastHeader(
     ) {
         AsyncImage(
             model = ImageRequest.Builder(context)
-                .data(podcast.thumbnail)
+                .data(podcast.thumbnail?.resize(1080, 1080))
                 .build(),
             contentDescription = null,
             contentScale = ContentScale.Crop,

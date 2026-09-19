@@ -24,7 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
@@ -74,16 +74,16 @@ fun ArtistItemsScreen(
     val menuState = LocalMenuState.current
     val haptic = LocalHapticFeedback.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
     val lazyListState = rememberLazyListState()
     val lazyGridState = rememberLazyGridState()
     val coroutineScope = rememberCoroutineScope()
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
 
-    val title by viewModel.title.collectAsState()
-    val itemsPage by viewModel.itemsPage.collectAsState()
+    val title by viewModel.title.collectAsStateWithLifecycle()
+    val itemsPage by viewModel.itemsPage.collectAsStateWithLifecycle()
 
     LaunchedEffect(lazyListState) {
         snapshotFlow {
@@ -139,7 +139,6 @@ fun ArtistItemsScreen(
                                         is SongItem -> {
                                             YouTubeSongMenu(
                                                 song = item,
-                                                navController = navController,
                                                 onDismiss = menuState::dismiss,
                                             )
                                         }
@@ -147,7 +146,6 @@ fun ArtistItemsScreen(
                                         is AlbumItem -> {
                                             YouTubeAlbumMenu(
                                                 albumItem = item,
-                                                navController = navController,
                                                 onDismiss = menuState::dismiss,
                                             )
                                         }
@@ -178,7 +176,6 @@ fun ArtistItemsScreen(
                                         is EpisodeItem -> {
                                             YouTubeSongMenu(
                                                 song = item.asSongItem(),
-                                                navController = navController,
                                                 onDismiss = menuState::dismiss,
                                             )
                                         }
@@ -320,7 +317,6 @@ fun ArtistItemsScreen(
                                             is SongItem -> {
                                                 YouTubeSongMenu(
                                                     song = item,
-                                                    navController = navController,
                                                     onDismiss = menuState::dismiss,
                                                 )
                                             }
@@ -328,7 +324,6 @@ fun ArtistItemsScreen(
                                             is AlbumItem -> {
                                                 YouTubeAlbumMenu(
                                                     albumItem = item,
-                                                    navController = navController,
                                                     onDismiss = menuState::dismiss,
                                                 )
                                             }
@@ -359,7 +354,6 @@ fun ArtistItemsScreen(
                                             is EpisodeItem -> {
                                                 YouTubeSongMenu(
                                                     song = item.asSongItem(),
-                                                    navController = navController,
                                                     onDismiss = menuState::dismiss,
                                                 )
                                             }

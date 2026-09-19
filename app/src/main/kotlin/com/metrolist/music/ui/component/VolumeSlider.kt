@@ -32,8 +32,8 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
-import androidx.compose.ui.unit.dp
 import com.metrolist.music.R
+import androidx.compose.ui.unit.dp
 
 /**
  * Material 3 Expressive Volume Slider dimensions (Size M)

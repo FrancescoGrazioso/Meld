@@ -274,7 +274,7 @@
     <string name="action_backup">Rezervna kopija</string>
     <string name="action_restore">Povratak</string>
     <string name="imported_playlist">Spiska je uvezena</string>
-    <string name="discord_information">Metrolist koristi KizzyRPC biblioteku kako bi stavio tvoj Discord status. Ovo uključuje korištenje Discord Gateway spajanja, što bi se moglo smatrati prekršajem Discord-ovog TOS-a. Međutim nema poznatih slučajeva gdje su korisnički nalozi bili suspendovani zbog ovoga razloga. Korisite na svoju štetu.\n\nMetrolist će samo izvesti vaš žeton, i sve drugo je lokalno sklađeno.</string>
+    <string name="discord_information">Meld koristi KizzyRPC biblioteku kako bi stavio tvoj Discord status. Ovo uključuje korištenje Discord Gateway spajanja, što bi se moglo smatrati prekršajem Discord-ovog TOS-a. Međutim nema poznatih slučajeva gdje su korisnički nalozi bili suspendovani zbog ovoga razloga. Korisite na svoju štetu.\n\nMeld će samo izvesti vaš žeton, i sve drugo je lokalno sklađeno.</string>
     <string name="login_failed">Neuspješno upisivanje</string>
     <string name="options">Opcije</string>
     <string name="preview">Pregled</string>
@@ -287,4 +287,5 @@
     <string name="translation_models">Modeli prevođenja</string>
     <string name="use_login_for_browse_desc">Ovo može utjecati na sadržaj koji vidite i, na primjer, prikazivati albume koji su dostupni samo za Premium korisnike ako ste prijavljeni sa Premium računom ili nalogom</string>
     <string name="use_login_for_browse">Koristite prijavu za pregledavanje sadržaja</string>
+    <string name="action_login">Prijavite se</string>
 </resources>

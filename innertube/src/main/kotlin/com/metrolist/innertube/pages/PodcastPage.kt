@@ -32,7 +32,7 @@ data class PodcastPage(
                 },
                 duration = subtitleRuns?.lastOrNull()?.firstOrNull()?.text?.parseTime(),
                 publishDateText = subtitleRuns?.firstOrNull()?.firstOrNull()?.text,
-                thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
+                thumbnail = renderer.thumbnail?.getThumbnailUrl() ?: return null,
                 explicit = false,
                 endpoint = renderer.onTap.watchEndpoint,
                 libraryAddToken = libraryTokens.addToken,
@@ -53,7 +53,7 @@ data class PodcastPage(
             val libraryTokens = PageHelper.extractLibraryTokensFromMenuItems(renderer.menu?.menuRenderer?.items)
 
             return EpisodeItem(
-                id = renderer.playlistItemData?.videoId ?: return null,
+                id = renderer.videoId ?: return null,
                 title = renderer.flexColumns.firstOrNull()
                     ?.musicResponsiveListItemFlexColumnRenderer?.text
                     ?.runs?.firstOrNull()?.text ?: return null,
@@ -68,7 +68,7 @@ data class PodcastPage(
                 },
                 duration = secondaryLineRuns?.lastOrNull()?.firstOrNull()?.text?.parseTime(),
                 publishDateText = secondaryLineRuns?.getOrNull(1)?.firstOrNull()?.text,
-                thumbnail = renderer.thumbnail?.musicThumbnailRenderer?.getThumbnailUrl() ?: return null,
+                thumbnail = renderer.thumbnail?.getThumbnailUrl() ?: return null,
                 explicit = renderer.badges?.find {
                     it.musicInlineBadgeRenderer?.icon?.iconType == "MUSIC_EXPLICIT_BADGE"
                 } != null,

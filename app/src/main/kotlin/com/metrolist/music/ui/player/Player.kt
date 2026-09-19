@@ -72,8 +72,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -109,6 +110,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -116,11 +118,15 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.datastore.preferences.core.edit
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.Player.STATE_ENDED
 import androidx.navigation.NavController
 import androidx.palette.graphics.Palette
+import com.metrolist.music.LocalNavController
 import coil3.compose.AsyncImage
 import coil3.imageLoader
 import coil3.request.ImageRequest
@@ -152,6 +158,7 @@ import com.metrolist.music.constants.SquigglySliderKey
 import com.metrolist.music.constants.ThumbnailCornerRadius
 import com.metrolist.music.constants.UseNewPlayerDesignKey
 import com.metrolist.music.db.entities.LyricsEntity
+import com.metrolist.music.extensions.metadata
 import com.metrolist.music.extensions.togglePlayPause
 import com.metrolist.music.extensions.toggleRepeatMode
 import com.metrolist.music.listentogether.RoomRole
@@ -176,20 +183,18 @@ import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.makeTimeString
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
+import com.metrolist.music.utils.safeDataStoreEdit
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.max
 import kotlin.math.roundToInt
 import com.metrolist.music.ui.component.Icon as MIcon
-import com.metrolist.music.constants.SleepTimerDefaultKey
-import com.metrolist.music.utils.dataStore
-import androidx.datastore.preferences.core.edit
-import com.metrolist.music.constants.SleepTimerFadeOutKey
-import com.metrolist.music.constants.SleepTimerStopAfterCurrentSongKey
+import androidx.compose.ui.focus.focusRequester
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -311,19 +316,19 @@ fun BottomSheetPlayer(
 
     val playbackState by playerConnection.playbackState.collectAsState()
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
-    val currentSong by playerConnection.currentSong.collectAsState(initial = null)
-    val automix by playerConnection.service.automixItems.collectAsState()
-    val repeatMode by playerConnection.repeatMode.collectAsState()
-    val canSkipPrevious by playerConnection.canSkipPrevious.collectAsState()
-    val canSkipNext by playerConnection.canSkipNext.collectAsState()
-    val isMuted by playerConnection.isMuted.collectAsState()
+    val currentSong by playerConnection.currentSong.collectAsStateWithLifecycle(initialValue = null)
+    val automix by playerConnection.service.automixItems.collectAsStateWithLifecycle()
+    val repeatMode by playerConnection.repeatMode.collectAsStateWithLifecycle()
+    val canSkipPrevious by playerConnection.canSkipPrevious.collectAsStateWithLifecycle()
+    val canSkipNext by playerConnection.canSkipNext.collectAsStateWithLifecycle()
+    val isMuted by playerConnection.isMuted.collectAsStateWithLifecycle()
 
     val sliderStyle by rememberEnumPreference(SliderStyleKey, SliderStyle.DEFAULT)
     val squigglySlider by rememberPreference(SquigglySliderKey, defaultValue = false)
 
     // Listen Together state (reactive)
     val listenTogetherManager = LocalListenTogetherManager.current
-    val listenTogetherRoleState = listenTogetherManager?.role?.collectAsState(initial = RoomRole.NONE)
+    val listenTogetherRoleState = listenTogetherManager?.role?.collectAsStateWithLifecycle(initialValue = RoomRole.NONE)
     val isListenTogetherGuest = listenTogetherRoleState?.value == RoomRole.GUEST
 
     // Cast state - safely access castConnectionHandler to prevent crashes during service lifecycle changes
@@ -335,18 +340,39 @@ fun BottomSheetPlayer(
                 null
             }
         }
-    val isCasting by castHandler?.isCasting?.collectAsState() ?: remember { mutableStateOf(false) }
-    val castPosition by castHandler?.castPosition?.collectAsState() ?: remember { mutableLongStateOf(0L) }
-    val castDuration by castHandler?.castDuration?.collectAsState() ?: remember { mutableLongStateOf(0L) }
+    val isCasting by castHandler?.isCasting?.collectAsStateWithLifecycle() ?: remember { mutableStateOf(false) }
+    val castPosition by castHandler?.castPosition?.collectAsStateWithLifecycle() ?: remember { mutableLongStateOf(0L) }
+    val castDuration by castHandler?.castDuration?.collectAsStateWithLifecycle() ?: remember { mutableLongStateOf(0L) }
     val castIsPlaying by castHandler?.castIsPlaying?.collectAsState() ?: remember { mutableStateOf(false) }
+
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(state.isExpanded) {
+        if (state.isExpanded) {
+            delay(100)
+            try {
+                focusRequester.requestFocus()
+            } catch (e: Exception) {
+                // Ignore if focus request fails
+            }
+        }
+    }
 
     // Use Cast state when casting, otherwise local player
     val effectiveIsPlaying = if (isCasting) castIsPlaying else isPlaying
 
     // Use State objects for position/duration to pass to MiniPlayer without causing recomposition
-    // These states persist across playback state changes to ensure continuous progress updates
-    val positionState = remember { mutableLongStateOf(0L) }
-    val durationState = remember { mutableLongStateOf(0L) }
+    // These states persist across playback state changes to ensure continuous progress updates.
+    // Seed from the player's current values so re-entering composition on resume shows the real
+    // time immediately instead of flashing 0:00 until the first poll fires. runCatching guards the
+    // player-not-ready race; the poll loop corrects duration if it isn't known yet.
+    val positionState = remember { mutableLongStateOf(runCatching { playerConnection.player.currentPosition }.getOrDefault(0L)) }
+    val durationState = remember {
+        mutableLongStateOf(
+            (mediaMetadata?.duration?.takeIf { it > 0 }?.toLong()?.times(1000L))
+                ?: runCatching { playerConnection.player.duration }.getOrDefault(0L).coerceAtLeast(0L),
+        )
+    }
 
     // Convenience accessors for local use
     var position by positionState
@@ -562,14 +588,14 @@ fun BottomSheetPlayer(
 
     val download by LocalDownloadUtil.current
         .getDownload(mediaMetadata?.id ?: "")
-        .collectAsState(initial = null)
+        .collectAsStateWithLifecycle(initialValue = null)
 
     val sleepTimerEnabled =
         remember(
-            playerConnection.service.sleepTimer.triggerTime,
-            playerConnection.service.sleepTimer.pauseWhenSongEnd,
+            playerConnection.service.sleepTimer?.triggerTime,
+            playerConnection.service.sleepTimer?.pauseWhenSongEnd,
         ) {
-            playerConnection.service.sleepTimer.isActive
+            playerConnection.service.sleepTimer?.isActive ?: false
         }
 
     var sleepTimerTimeLeft by remember {
@@ -580,10 +606,10 @@ fun BottomSheetPlayer(
         if (sleepTimerEnabled) {
             while (isActive) {
                 sleepTimerTimeLeft =
-                    if (playerConnection.service.sleepTimer.pauseWhenSongEnd) {
+                    if (playerConnection.service.sleepTimer?.pauseWhenSongEnd == true) {
                         playerConnection.player.duration - playerConnection.player.currentPosition
                     } else {
-                        playerConnection.service.sleepTimer.triggerTime - System.currentTimeMillis()
+                        (playerConnection.service.sleepTimer?.triggerTime ?: 0L) - System.currentTimeMillis()
                     }
                 delay(1000L)
             }
@@ -596,12 +622,11 @@ fun BottomSheetPlayer(
     }
 
     val sleepTimerDefault by rememberPreference(SleepTimerDefaultKey, 30f)
-    var sleepTimerValue by remember {
-        mutableFloatStateOf(sleepTimerDefault)
-    }
+    var sleepTimerValue by remember { mutableFloatStateOf(sleepTimerDefault) }
     val isAtDefault by remember {
         derivedStateOf { sleepTimerValue.roundToInt() == sleepTimerDefault.roundToInt() }
     }
+    LaunchedEffect(sleepTimerDefault) { sleepTimerValue = sleepTimerDefault }
     val sleepTimerStopAfterCurrentSong by rememberPreference(SleepTimerStopAfterCurrentSongKey, false)
     val sleepTimerFadeOut by rememberPreference(SleepTimerFadeOutKey, false)
 
@@ -621,7 +646,7 @@ fun BottomSheetPlayer(
                 TextButton(
                     onClick = {
                         showSleepTimerDialog = false
-                        playerConnection.service.sleepTimer.start(
+                        playerConnection.service.sleepTimer?.start(
                             minute = sleepTimerValue.roundToInt(),
                             stopAfterCurrentSong = sleepTimerStopAfterCurrentSong,
                             fadeOut = sleepTimerFadeOut,
@@ -657,15 +682,15 @@ fun BottomSheetPlayer(
                         steps = (120 - 5) / 5 - 1,
                     )
 
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         if (isAtDefault) {
                             FilledIconButton(
                                 onClick = {
                                     scope.launch {
-                                        context.dataStore.edit { settings ->
+                                        context.safeDataStoreEdit { settings ->
                                             settings[SleepTimerDefaultKey] = sleepTimerValue
                                         }
                                     }
@@ -686,7 +711,7 @@ fun BottomSheetPlayer(
                             OutlinedIconButton(
                                 onClick = {
                                     scope.launch {
-                                        context.dataStore.edit { settings ->
+                                        context.safeDataStoreEdit { settings ->
                                             settings[SleepTimerDefaultKey] = sleepTimerValue
                                         }
                                     }
@@ -704,7 +729,7 @@ fun BottomSheetPlayer(
                         OutlinedIconButton(
                             onClick = {
                                 showSleepTimerDialog = false
-                                playerConnection.service.sleepTimer.start(minute = -1)
+                                playerConnection.service.sleepTimer?.start(minute = -1)
                             },
                         ) {
                             Text(stringResource(R.string.end_of_song))
@@ -728,7 +753,8 @@ fun BottomSheetPlayer(
                 delay(100) // Update more frequently for smoother progress bar
                 if (sliderPosition == null) { // Only update if user isn't dragging
                     position = playerConnection.player.currentPosition
-                    duration = playerConnection.player.duration
+                    // Don't clobber a valid (metadata-derived) duration with 0/UNSET mid-resolve.
+                    playerConnection.player.duration.takeIf { it > 0 }?.let { duration = it }
                 }
             }
         }
@@ -738,8 +764,33 @@ fun BottomSheetPlayer(
     LaunchedEffect(playbackState, mediaMetadata?.id) {
         if (!isCasting) {
             position = playerConnection.player.currentPosition
-            duration = playerConnection.player.duration
+            // Prefer the song's known duration (from metadata, available instantly from the restored
+            // queue) so the slider range is right even when restored paused / before the stream
+            // resolves; fall back to the player's duration once it is known.
+            duration = (mediaMetadata?.duration?.takeIf { it > 0 }?.toLong()?.times(1000L))
+                ?: playerConnection.player.duration
         }
+    }
+
+    // Auto-switch from repeat one to repeat all when song ends naturally
+    var previousMediaId by remember { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(playbackState, mediaMetadata?.id) {
+        val currentId = mediaMetadata?.id
+
+        // Only switch from REPEAT_ONE to REPEAT_ALL when playback naturally ended
+        // (i.e., the player transitioned to ENDED state and then moved to next track).
+        // Do NOT switch on manual skips.
+        if (currentId != null &&
+            currentId != previousMediaId &&
+            previousMediaId != null &&
+            playbackState == Player.STATE_ENDED &&
+            repeatMode == Player.REPEAT_MODE_ONE &&
+            !isListenTogetherGuest) {
+            playerConnection.player.setRepeatMode(Player.REPEAT_MODE_ALL)
+        }
+
+        previousMediaId = currentId
     }
 
     // When casting, use Cast position/duration directly
@@ -883,6 +934,7 @@ fun BottomSheetPlayer(
             MiniPlayer(
                 positionState = positionState,
                 durationState = durationState,
+                onClick = { state.expandSoft() },
             )
         },
     ) {
@@ -1146,7 +1198,7 @@ fun BottomSheetPlayer(
 
                         AnimatedContent(targetState = showInlineLyrics, label = "LikeButton") { showLyrics ->
                             if (showLyrics) {
-                                val currentLyrics by playerConnection.currentLyrics.collectAsState(initial = null)
+                                val currentLyrics by playerConnection.currentLyrics.collectAsStateWithLifecycle(initialValue = null)
                                 FilledIconButton(
                                     onClick = {
                                         menuState.show {
@@ -1267,7 +1319,7 @@ fun BottomSheetPlayer(
 
                     AnimatedContent(targetState = showInlineLyrics, label = "LikeButton") { showLyrics ->
                         if (showLyrics) {
-                            val currentLyrics by playerConnection.currentLyrics.collectAsState(initial = null)
+                            val currentLyrics by playerConnection.currentLyrics.collectAsStateWithLifecycle(initialValue = null)
                             Box(
                                 modifier =
                                     Modifier
@@ -1305,7 +1357,6 @@ fun BottomSheetPlayer(
                         } else {
                             PlayerMoreMenuButton(
                                 mediaMetadata = mediaMetadata,
-                                navController = navController,
                                 state = state,
                                 textButtonColor = textButtonColor,
                                 iconButtonColor = iconButtonColor,
@@ -1589,7 +1640,8 @@ fun BottomSheetPlayer(
                                 modifier =
                                     Modifier
                                         .height(68.dp)
-                                        .weight(playPauseWeight),
+                                        .weight(playPauseWeight)
+                                        .focusRequester(focusRequester),
                             ) {
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -1671,7 +1723,9 @@ fun BottomSheetPlayer(
                                             .size(32.dp)
                                             .padding(4.dp)
                                             .align(Alignment.Center)
-                                            .alpha(if (isListenTogetherGuest) 0.5f else 1f),
+                                            .alpha(
+                                                if (isListenTogetherGuest || repeatMode == Player.REPEAT_MODE_OFF) 0.5f else 1f,
+                                            ),
                                     enabled = !isListenTogetherGuest,
                                     onClick = {
                                         playerConnection.player.toggleRepeatMode()
@@ -1718,7 +1772,8 @@ fun BottomSheetPlayer(
                                             } else {
                                                 playerConnection.player.togglePlayPause()
                                             }
-                                        },
+                                        }
+                                        .focusRequester(focusRequester),
                             ) {
                                 Image(
                                     painter =
@@ -1914,7 +1969,6 @@ fun BottomSheetPlayer(
             Queue(
                 state = queueSheetState,
                 playerBottomSheetState = state,
-                navController = navController,
                 background =
                     if (useBlackBackground) {
                         Color.Black
@@ -1944,11 +1998,37 @@ fun InlineLyricsView(
     positionProvider: () -> Long,
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
-    val currentLyrics by playerConnection.currentLyrics.collectAsState(initial = null)
+    val currentLyrics by playerConnection.currentLyrics.collectAsStateWithLifecycle(initialValue = null)
+    val queueWindows by playerConnection.queueWindows.collectAsStateWithLifecycle(initialValue = emptyList())
+    val currentWindowIndex by playerConnection.currentWindowIndex.collectAsStateWithLifecycle(initialValue = -1)
     val lyrics = remember(currentLyrics) { currentLyrics?.lyrics?.trim() }
     val context = LocalContext.current
     val database = LocalDatabase.current
     val coroutineScope = rememberCoroutineScope()
+
+    var appInForeground by remember {
+        mutableStateOf(
+            ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED),
+        )
+    }
+    DisposableEffect(Unit) {
+        val lifecycle = ProcessLifecycleOwner.get().lifecycle
+        val observer =
+            LifecycleEventObserver { _, _ ->
+                appInForeground = lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+            }
+        lifecycle.addObserver(observer)
+        onDispose { lifecycle.removeObserver(observer) }
+    }
+
+    val nextMetadata =
+        remember(queueWindows, currentWindowIndex) {
+            if (currentWindowIndex >= 0 && currentWindowIndex + 1 < queueWindows.size) {
+                queueWindows[currentWindowIndex + 1].mediaItem.metadata
+            } else {
+                null
+            }
+        }
 
     LaunchedEffect(mediaMetadata?.id, currentLyrics) {
         if (mediaMetadata != null && currentLyrics == null) {
@@ -1968,6 +2048,44 @@ fun InlineLyricsView(
                 } catch (e: Exception) {
                     // Handle error
                 }
+            }
+        }
+    }
+
+    // Prefetch lyrics for the next queue item only while the lyrics pane is visible, the app is in the
+    // foreground, and the current track's lyrics row has finished loading (avoids competing with the
+    // active fetch).
+    LaunchedEffect(
+        nextMetadata?.id,
+        showLyrics,
+        appInForeground,
+        mediaMetadata?.id,
+        currentLyrics,
+    ) {
+        if (!showLyrics || !appInForeground || nextMetadata == null) return@LaunchedEffect
+        val loadedForCurrent =
+            currentLyrics?.let { lyrics ->
+                mediaMetadata == null || lyrics.id == mediaMetadata.id
+            } == true
+        if (mediaMetadata != null && !loadedForCurrent) return@LaunchedEffect
+        val nextId = nextMetadata.id
+        delay(400)
+        if (!showLyrics || !appInForeground || !isActive) return@LaunchedEffect
+        withContext(Dispatchers.IO) {
+            try {
+                val existing = database.lyrics(nextId).first()
+                if (existing != null) return@withContext
+                val entryPoint =
+                    EntryPointAccessors.fromApplication(
+                        context.applicationContext,
+                        com.metrolist.music.di.LyricsHelperEntryPoint::class.java,
+                    )
+                val lyricsHelper = entryPoint.lyricsHelper()
+                val fetched = lyricsHelper.getLyrics(nextMetadata)
+                database.query {
+                    upsert(LyricsEntity(nextId, fetched.lyrics, fetched.provider))
+                }
+            } catch (_: Exception) {
             }
         }
     }
@@ -2016,56 +2134,13 @@ fun InlineLyricsView(
 }
 
 @Composable
-fun MoreActionsButton(
-    mediaMetadata: MediaMetadata,
-    navController: NavController,
-    state: BottomSheetState,
-    textButtonColor: Color,
-    iconButtonColor: Color,
-) {
-    val menuState = LocalMenuState.current
-    val bottomSheetPageState = LocalBottomSheetPageState.current
-
-    Box(
-        modifier =
-            Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(textButtonColor)
-                .clickable {
-                    menuState.show {
-                        PlayerMenu(
-                            mediaMetadata = mediaMetadata,
-                            navController = navController,
-                            playerBottomSheetState = state,
-                            onShowDetailsDialog = {
-                                mediaMetadata.id.let {
-                                    bottomSheetPageState.show {
-                                        ShowMediaInfo(it)
-                                    }
-                                }
-                            },
-                            onDismiss = menuState::dismiss,
-                        )
-                    }
-                },
-    ) {
-        Image(
-            painter = painterResource(R.drawable.more_horiz),
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(iconButtonColor),
-        )
-    }
-}
-
-@Composable
 private fun PlayerMoreMenuButton(
     mediaMetadata: MediaMetadata,
-    navController: NavController,
     state: BottomSheetState,
     textButtonColor: Color,
     iconButtonColor: Color,
 ) {
+    val navController = LocalNavController.current
     val menuState = LocalMenuState.current
     val bottomSheetPageState = LocalBottomSheetPageState.current
 
@@ -2080,7 +2155,6 @@ private fun PlayerMoreMenuButton(
                     menuState.show {
                         PlayerMenu(
                             mediaMetadata = mediaMetadata,
-                            navController = navController,
                             playerBottomSheetState = state,
                             onShowDetailsDialog = {
                                 mediaMetadata.id.let {

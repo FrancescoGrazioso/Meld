@@ -31,7 +31,12 @@ data class MusicResponsiveListItemRenderer(
     val navigationEndpoint: NavigationEndpoint?,
 ) {
     val isSong: Boolean
-        get() = navigationEndpoint == null || navigationEndpoint.watchEndpoint != null || navigationEndpoint.watchPlaylistEndpoint != null
+        get() = navigationEndpoint == null
+            || navigationEndpoint.watchEndpoint != null
+            || navigationEndpoint.watchPlaylistEndpoint != null
+            || overlay?.musicItemThumbnailOverlayRenderer
+                ?.content?.musicPlayButtonRenderer
+                ?.playNavigationEndpoint?.watchEndpoint != null
     val isPlaylist: Boolean
         get() = navigationEndpoint?.browseEndpoint?.browseEndpointContextSupportedConfigs?.browseEndpointContextMusicConfig?.pageType == MUSIC_PAGE_TYPE_PLAYLIST
     val isAlbum: Boolean
@@ -75,8 +80,7 @@ data class MusicResponsiveListItemRenderer(
                         ?.browseEndpointContextMusicConfig
                         ?.pageType == MUSIC_PAGE_TYPE_PODCAST_SHOW_DETAIL_PAGE
                 } == true
-            val hasVideoId = playlistItemData?.videoId != null ||
-                navigationEndpoint?.watchEndpoint?.videoId != null
+            val hasVideoId = videoId != null
             return hasPodcastLink && hasVideoId
         }
 
@@ -89,6 +93,22 @@ data class MusicResponsiveListItemRenderer(
                 ?.playNavigationEndpoint
                 ?.musicVideoType
                 ?: navigationEndpoint?.musicVideoType
+
+    val videoId: String?
+        get() = playlistItemData?.videoId
+            ?: flexColumns.firstOrNull()
+                ?.musicResponsiveListItemFlexColumnRenderer
+                ?.text?.runs?.firstOrNull()
+                ?.navigationEndpoint?.watchEndpoint?.videoId
+            ?: overlay?.musicItemThumbnailOverlayRenderer
+                ?.content?.musicPlayButtonRenderer
+                ?.playNavigationEndpoint?.watchEndpoint?.videoId
+
+    val playlistSetVideoId: String?
+        get() = playlistItemData?.playlistSetVideoId
+            ?: overlay?.musicItemThumbnailOverlayRenderer
+                ?.content?.musicPlayButtonRenderer
+                ?.playNavigationEndpoint?.watchEndpoint?.playlistSetVideoId
 
     @Serializable
     data class FlexColumn(

@@ -39,7 +39,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -52,7 +52,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
@@ -67,13 +66,12 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachReversed
-import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.media3.exoplayer.offline.Download
-import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
+import com.metrolist.music.LocalDownloadUtil
 import com.metrolist.music.LocalPlayerAwareWindowInsets
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
@@ -83,7 +81,6 @@ import com.metrolist.music.constants.SongSortType
 import com.metrolist.music.constants.SongSortTypeKey
 import com.metrolist.music.db.entities.Song
 import com.metrolist.music.extensions.toMediaItem
-import com.metrolist.music.playback.ExoDownloadService
 import com.metrolist.music.playback.queues.ListQueue
 import com.metrolist.music.ui.component.DraggableScrollbar
 import com.metrolist.music.ui.component.EmptyPlaceholder
@@ -99,6 +96,7 @@ import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.viewmodels.CachePlaylistViewModel
 import java.time.LocalDateTime
+import androidx.compose.ui.focus.focusRequester
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -112,9 +110,9 @@ fun CachePlaylistScreen(
     val haptic = LocalHapticFeedback.current
     val focusManager = LocalFocusManager.current
 
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
-    val cachedSongs by viewModel.cachedSongs.collectAsState()
+    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
+    val cachedSongs by viewModel.cachedSongs.collectAsStateWithLifecycle()
 
     val (sortType, onSortTypeChange) = rememberEnumPreference(
         SongSortTypeKey,
@@ -253,7 +251,7 @@ fun CachePlaylistScreen(
                     }
                 }
 
-                itemsIndexed(filteredSongs, key = { _, song -> song.id }) { index, song ->
+                itemsIndexed(filteredSongs, key = { index, song -> "${song.id}_$index" }) { index, song ->
                     val onCheckedChange: (Boolean) -> Unit = {
                         if (it) {
                             selection.add(song.id)
@@ -278,7 +276,6 @@ fun CachePlaylistScreen(
                                     menuState.show {
                                         SongMenu(
                                             originalSong = song,
-                                            navController = navController,
                                             onDismiss = menuState::dismiss,
                                             isFromCache = true,
                                         )
@@ -439,11 +436,15 @@ fun CachePlaylistScreen(
                     IconButton(
                         enabled = selection.isNotEmpty(),
                         onClick = {
+                            val selectedSongs = filteredSongs.filter { it.id in selection }
                             menuState.show {
                                 SelectionSongMenu(
-                                    songSelection = filteredSongs.filter { it.id in selection },
+                                    songSelection = selectedSongs,
                                     onDismiss = menuState::dismiss,
-                                    clearAction = onExitSelectionMode
+                                    clearAction = onExitSelectionMode,
+                                    onRemoveFromCache = {
+                                        viewModel.removeSongsFromCache(selectedSongs.map { it.id })
+                                    },
                                 )
                             }
                         }
@@ -474,7 +475,8 @@ private fun CachePlaylistHeader(
     modifier: Modifier = Modifier
 ) {
     val playerConnection = LocalPlayerConnection.current ?: return
-    
+    val downloadUtil = LocalDownloadUtil.current
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -507,7 +509,7 @@ private fun CachePlaylistHeader(
         // Playlist Name
         Text(
             text = stringResource(R.string.cached_playlist),
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center,
             maxLines = 2,
@@ -600,19 +602,7 @@ private fun CachePlaylistHeader(
                             },
                             onDownload = {
                                 // Download all cached songs
-                                songs.forEach { song ->
-                                    val downloadRequest = DownloadRequest
-                                        .Builder(song.song.id, song.song.id.toUri())
-                                        .setCustomCacheKey(song.song.id)
-                                        .setData(song.song.title.toByteArray())
-                                        .build()
-                                    DownloadService.sendAddDownload(
-                                        context,
-                                        ExoDownloadService::class.java,
-                                        downloadRequest,
-                                        false,
-                                    )
-                                }
+                                songs.forEach { downloadUtil.download(it) }
                             },
                             onDismiss = { menuState.dismiss() }
                         )

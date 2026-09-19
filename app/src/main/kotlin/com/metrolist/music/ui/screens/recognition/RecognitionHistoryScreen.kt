@@ -33,7 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,6 +60,7 @@ import com.metrolist.music.ui.component.DefaultDialog
 import com.metrolist.music.ui.component.IconButton
 import com.metrolist.music.ui.component.LocalMenuState
 import com.metrolist.music.ui.utils.backToMain
+import com.metrolist.music.utils.SearchRoutes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
@@ -71,7 +72,7 @@ fun RecognitionHistoryScreen(navController: NavController) {
     val menuState = LocalMenuState.current
     val coroutineScope = rememberCoroutineScope()
 
-    val historyItems by database.recognitionHistory().collectAsState(initial = emptyList())
+    val historyItems by database.recognitionHistory().collectAsStateWithLifecycle(initialValue = emptyList())
     var showClearDialog by remember { mutableStateOf(false) }
     var itemToDelete by remember { mutableStateOf<RecognitionHistory?>(null) }
 
@@ -218,7 +219,7 @@ fun RecognitionHistoryScreen(navController: NavController) {
                         onClick = {
                             // Search for the track on YouTube Music
                             val searchQuery = "${item.title} ${item.artist}"
-                            navController.navigate("search/${java.net.URLEncoder.encode(searchQuery, "UTF-8")}")
+                            navController.navigate(SearchRoutes.resultRoute(searchQuery))
                         },
                         onDelete = {
                             itemToDelete = item

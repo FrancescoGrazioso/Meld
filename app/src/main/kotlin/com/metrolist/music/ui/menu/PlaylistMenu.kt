@@ -27,7 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -41,9 +41,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.media3.exoplayer.offline.Download
-import androidx.media3.exoplayer.offline.DownloadRequest
 import androidx.media3.exoplayer.offline.DownloadService
 import com.metrolist.innertube.YouTube
 import com.metrolist.music.LocalDatabase
@@ -91,7 +89,7 @@ fun PlaylistMenu(
     val playerConnection = LocalPlayerConnection.current ?: return
     val listenTogetherManager = LocalListenTogetherManager.current
     val isGuest = listenTogetherManager?.isInRoom == true && !listenTogetherManager.isHost
-    val dbPlaylist by database.playlist(playlist.id).collectAsState(initial = playlist)
+    val dbPlaylist by database.playlist(playlist.id).collectAsStateWithLifecycle(initialValue = playlist)
     var songs by remember {
         mutableStateOf(emptyList<Song>())
     }
@@ -114,7 +112,7 @@ fun PlaylistMenu(
 
     val editable: Boolean = playlist.playlist.isEditable == true
 
-    val isPinned by database.speedDialDao.isPinned(playlist.id).collectAsState(initial = false)
+    val isPinned by database.speedDialDao.isPinned(playlist.id).collectAsStateWithLifecycle(initialValue = false)
 
     var showExportDialog by remember { mutableStateOf(false) }
 
@@ -393,7 +391,7 @@ fun PlaylistMenu(
                         ),
                     ),
                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 16.dp),
-                columns = if (isGuest) 1 else 3,
+                columns = if (isGuest) 2 else 3,
             )
         }
 
@@ -498,7 +496,7 @@ fun PlaylistMenu(
                             Material3MenuItemData(
                                 title = {
                                     Text(
-                                        text = if (isPinned) "Unpin from Speed dial" else "Pin to Speed dial",
+                                        text = if (isPinned) stringResource(R.string.unpin_from_speed_dial) else stringResource(R.string.pin_to_speed_dial),
                                     )
                                 },
                                 icon = {
@@ -517,6 +515,7 @@ fun PlaylistMenu(
                                                     id = playlist.id,
                                                     title = playlist.playlist.name,
                                                     subtitle = null,
+                                                    subtitleIds = null,
                                                     thumbnailUrl = playlist.thumbnails.firstOrNull(),
                                                     type = "LOCAL_PLAYLIST",
                                                 ),
@@ -575,20 +574,7 @@ fun PlaylistMenu(
                                                 )
                                             },
                                             onClick = {
-                                                songs.forEach { song ->
-                                                    val downloadRequest =
-                                                        DownloadRequest
-                                                            .Builder(song.id, song.id.toUri())
-                                                            .setCustomCacheKey(song.id)
-                                                            .setData(song.song.title.toByteArray())
-                                                            .build()
-                                                    DownloadService.sendAddDownload(
-                                                        context,
-                                                        ExoDownloadService::class.java,
-                                                        downloadRequest,
-                                                        false,
-                                                    )
-                                                }
+                                                songs.forEach { downloadUtil.download(it) }
                                             },
                                         )
                                     }

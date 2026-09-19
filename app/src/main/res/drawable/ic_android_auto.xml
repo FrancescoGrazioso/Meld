@@ -1,33 +1,22 @@
-<vector xmlns:android="http://schemas.android.com/apk/res/android"
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:name="vector"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-
-    <!-- Android Auto external arrow -->
     <path
-        android:fillColor="@android:color/white"
+        android:name="android_auto_external_arrow"
+        android:pathData="M 7 18.229 L 3.26 18.229 C 2.87 18.229 2.63 17.809 2.83 17.469 L 11.57 2.939 C 11.77 2.619 12.23 2.619 12.43 2.939 L 21.235 17.508 L 21.17 17.469 C 21.37 17.469 21.13 18.229 20.74 18.229 L 17 18.229"
         android:strokeColor="@android:color/white"
         android:strokeWidth="1.5"
         android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="
-            M7.0,18.25 L3.26,18.25
-            C2.87,18.25 2.63,17.83 2.83,17.49
-            L11.57,2.96
-            C11.77,2.64 12.23,2.64 12.43,2.96
-            L21.17,17.49
-            C21.37,17.49 21.13,18.25 20.74,18.25
-            L17.0,18.25" />
-
-    <!-- Android Auto internal arrow -->
+        android:strokeLineJoin="round"/>
     <path
-        android:fillColor="@android:color/white"
-        android:pathData="
-            M5.25,21.25
-            L12.0,9.75
-            L18.75,21.25
-            L12.0,18.25
-            Z" />
-
+        android:name="android_auto_internal_arrow"
+        android:pathData="M 5.25 21.25 L 12 9.75 L 18.75 21.25 L 12 18.25 Z"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"/>
 </vector>

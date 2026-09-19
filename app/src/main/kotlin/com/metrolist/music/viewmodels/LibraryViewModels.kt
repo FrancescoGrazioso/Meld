@@ -8,8 +8,6 @@
 package com.metrolist.music.viewmodels
 
 import android.content.Context
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,7 +30,6 @@ import com.metrolist.music.constants.ArtistSortTypeKey
 import com.metrolist.music.constants.HideExplicitKey
 import com.metrolist.music.constants.HideVideoSongsKey
 import com.metrolist.music.constants.HideYoutubeShortsKey
-import com.metrolist.music.constants.LibraryFilter
 import com.metrolist.music.constants.PlaylistSortDescendingKey
 import com.metrolist.music.constants.PlaylistSortType
 import com.metrolist.music.constants.PlaylistSortTypeKey
@@ -196,7 +193,8 @@ constructor(
                                 LocalDateTime.now()
                             ) > Duration.ofDays(10)
                         )
-                    }.forEach { artist ->
+                    }.take(5)
+                    .forEach { artist ->
                         YouTube.artist(artist.id).onSuccess { artistPage ->
                             database.query {
                                 update(artist, artistPage)
@@ -257,7 +255,8 @@ constructor(
                 albums
                     .filter {
                         it.album.songCount == 0
-                    }.forEach { album ->
+                    }.take(5)
+                    .forEach { album ->
                         YouTube
                             .album(album.id)
                             .onSuccess { albumPage ->
@@ -266,11 +265,6 @@ constructor(
                                 }
                             }.onFailure {
                                 reportException(it)
-                                if (it.message?.contains("NOT_FOUND") == true) {
-                                    database.query {
-                                        delete(album.album)
-                                    }
-                                }
                             }
                     }
             }
@@ -427,7 +421,8 @@ constructor(
                 albums
                     .filter {
                         it.album.songCount == 0
-                    }.forEach { album ->
+                    }.take(5)
+                    .forEach { album ->
                         YouTube
                             .album(album.id)
                             .onSuccess { albumPage ->
@@ -436,11 +431,6 @@ constructor(
                                 }
                             }.onFailure {
                                 reportException(it)
-                                if (it.message?.contains("NOT_FOUND") == true) {
-                                    database.query {
-                                        delete(album.album)
-                                    }
-                                }
                             }
                     }
             }
@@ -455,7 +445,8 @@ constructor(
                                     it.lastUpdateTime,
                                     LocalDateTime.now(),
                                 ) > Duration.ofDays(10)
-                    }.forEach { artist ->
+                    }.take(5)
+                    .forEach { artist ->
                         YouTube.artist(artist.id).onSuccess { artistPage ->
                             database.query {
                                 update(artist, artistPage)
@@ -615,12 +606,4 @@ constructor(
             fetchPodcastChannels()
         }
     }
-}
-
-@HiltViewModel
-class LibraryViewModel
-@Inject
-constructor() : ViewModel() {
-    private val curScreen = mutableStateOf(LibraryFilter.LIBRARY)
-    val filter: MutableState<LibraryFilter> = curScreen
 }

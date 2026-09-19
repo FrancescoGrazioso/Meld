@@ -38,7 +38,7 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -106,8 +106,8 @@ fun LibraryPodcastsScreen(
     val database = LocalDatabase.current
     val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
     var podcastFilter by rememberEnumPreference(PodcastFilterKey, PodcastFilter.EPISODES)
 
@@ -118,12 +118,12 @@ fun LibraryPodcastsScreen(
         )
     val (sortDescending, onSortDescendingChange) = rememberPreference(SongSortDescendingKey, true)
 
-    val subscribedChannels by viewModel.subscribedChannels.collectAsState()
-    val downloadedEpisodes by viewModel.downloadedEpisodes.collectAsState()
-    val savedEpisodes by viewModel.savedEpisodes.collectAsState()
-    val sePlaylist by viewModel.sePlaylist.collectAsState()
-    val podcastChannels by viewModel.podcastChannels.collectAsState()
-    val rdpnPlaylist by viewModel.rdpnPlaylist.collectAsState()
+    val subscribedChannels by viewModel.subscribedChannels.collectAsStateWithLifecycle()
+    val downloadedEpisodes by viewModel.downloadedEpisodes.collectAsStateWithLifecycle()
+    val savedEpisodes by viewModel.savedEpisodes.collectAsStateWithLifecycle()
+    val sePlaylist by viewModel.sePlaylist.collectAsStateWithLifecycle()
+    val podcastChannels by viewModel.podcastChannels.collectAsStateWithLifecycle()
+    val rdpnPlaylist by viewModel.rdpnPlaylist.collectAsStateWithLifecycle()
 
     // Refresh channels when screen becomes visible (ON_RESUME)
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -144,7 +144,7 @@ fun LibraryPodcastsScreen(
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
-        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsStateWithLifecycle()
 
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {
@@ -386,7 +386,7 @@ fun LibraryPodcastsScreen(
 
                     itemsIndexed(
                         items = downloadedEpisodes,
-                        key = { _, item -> item.song.id },
+                        key = { index, item -> "${item.song.id}_$index" },
                         contentType = { _, _ -> CONTENT_TYPE_SONG },
                     ) { index, episode ->
                         // Always show channel name: use artists if available,
@@ -414,7 +414,6 @@ fun LibraryPodcastsScreen(
                                         menuState.show {
                                             SongMenu(
                                                 originalSong = episode,
-                                                navController = navController,
                                                 onDismiss = menuState::dismiss,
                                             )
                                         }
@@ -645,7 +644,7 @@ private fun PodcastEpisodePlaylistMenu(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val syncUtils = LocalSyncUtils.current
-    val isPinned by database.speedDialDao.isPinned(podcast.id).collectAsState(initial = false)
+    val isPinned by database.speedDialDao.isPinned(podcast.id).collectAsStateWithLifecycle(initialValue = false)
 
     val playlistId = podcast.id.removePrefix("MPSP")
     val shareUrl = "https://music.youtube.com/playlist?list=$playlistId"

@@ -268,7 +268,7 @@
     <string name="not_logged_in">Nejste přihlášeni</string>
     <string name="persistent_queue_desc">Obnovit poslední frontu po spuštění aplikace</string>
     <string name="auto_load_more_desc">Automaticky přidat více skladeb po dosažení konce fronty, pokud je to možné</string>
-    <string name="auto_skip_next_on_error">Automaticky přejít na další sklabdu při výskytu chyby</string>
+    <string name="auto_skip_next_on_error">Automaticky přejít na další skladbu při výskytu chyby</string>
     <string name="auto_skip_next_on_error_desc">Zajistěte si nepřetržité přehrávání</string>
     <string name="stop_music_on_task_clear">Zastavit hudbu po vymazání úlohy</string>
     <string name="listen_history">Historie poslechu</string>
@@ -282,7 +282,7 @@
     <string name="default_">Výchozí</string>
     <string name="theme">Motiv</string>
     <string name="player_text_alignment">Zarovnání textu přehrávače</string>
-    <string name="discord_information">Metrolist používá knihovnu KizzyRPC, aby mohl nastavit váš stav na Discordu. Tato funkce zahrnuje připojení k bráně Discord, což může být považováno za porušení podmínek společnosti Discord. Neexistují nicméně žádné známé případy uzamčení účtu z tohoto důvodu. Používejte na vlastní nebezpečí. \n \nMetrolist pouze extrahuje váš token, vše ostatní je uloženo lokálně.</string>
+    <string name="discord_information">Meld používá knihovnu KizzyRPC, aby mohl nastavit váš stav na Discordu. Tato funkce zahrnuje připojení k bráně Discord, což může být považováno za porušení podmínek společnosti Discord. Neexistují nicméně žádné známé případy uzamčení účtu z tohoto důvodu. Používejte na vlastní nebezpečí. \n \nMeld pouze extrahuje váš token, vše ostatní je uloženo lokálně.</string>
     <string name="enable_discord_rpc">Povolit stav na Discordu</string>
     <string name="action_logout">Odhlásit se</string>
     <string name="use_login_for_browse">Použít účet pro procházení obsahu</string>
