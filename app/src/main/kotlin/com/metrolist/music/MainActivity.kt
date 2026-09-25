@@ -221,6 +221,7 @@ class MainActivity : ComponentActivity() {
         private const val ACTION_SEARCH = "com.metrolist.music.action.SEARCH"
         private const val ACTION_LIBRARY = "com.metrolist.music.action.LIBRARY"
         const val ACTION_RECOGNITION = "com.metrolist.music.action.RECOGNITION"
+        const val ACTION_UPDATE = "com.metrolist.music.action.UPDATE"
         const val EXTRA_AUTO_START_RECOGNITION = "auto_start_recognition"
     }
 
@@ -440,7 +441,9 @@ class MainActivity : ComponentActivity() {
                                 if (hasUpdate && notifEnabled) {
                                     val downloadUrl = Updater.getDownloadUrlForCurrentVariant(releaseInfo)
                                     if (downloadUrl != null) {
-                                        val intent = Intent(Intent.ACTION_VIEW, downloadUrl.toUri())
+                                        val intent =
+                                            Intent(this@MainActivity, MainActivity::class.java)
+                                                .setAction(ACTION_UPDATE)
 
                                         val flags =
                                             PendingIntent.FLAG_UPDATE_CURRENT or
@@ -863,10 +866,12 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(Unit) {
                     if (pendingIntent != null) {
                         handleRecognitionIntent(pendingIntent!!, navController)
+                        handleUpdateIntent(pendingIntent!!, navController)
                         handleDeepLinkIntent(pendingIntent!!, navController)
                         pendingIntent = null
                     } else {
                         handleRecognitionIntent(intent, navController)
+                        handleUpdateIntent(intent, navController)
                         handleDeepLinkIntent(intent, navController)
                     }
                 }
@@ -875,6 +880,7 @@ class MainActivity : ComponentActivity() {
                     val listener =
                         Consumer<Intent> { intent ->
                             handleRecognitionIntent(intent, navController)
+                            handleUpdateIntent(intent, navController)
                             handleDeepLinkIntent(intent, navController)
                         }
 
@@ -1350,6 +1356,21 @@ class MainActivity : ComponentActivity() {
         intent.action = null
         intent.removeExtra(EXTRA_AUTO_START_RECOGNITION)
         navController.navigate(if (autoStart) "recognition?autoStart=true" else "recognition") {
+            launchSingleTop = true
+        }
+    }
+
+    /**
+     * Handles the ACTION_UPDATE intent sent from the update notification.
+     * Opens the updater screen so the update is downloaded and installed in app.
+     */
+    private fun handleUpdateIntent(
+        intent: Intent,
+        navController: NavHostController,
+    ) {
+        if (intent.action != ACTION_UPDATE) return
+        intent.action = null
+        navController.navigate("settings/updater") {
             launchSingleTop = true
         }
     }
