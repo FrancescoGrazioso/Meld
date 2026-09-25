@@ -13,7 +13,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.metrolist.innertube.YouTube
+import com.metrolist.innertube.models.AlbumItem
 import com.metrolist.innertube.models.ArtistItem
+import com.metrolist.innertube.models.EpisodeItem
+import com.metrolist.innertube.models.PlaylistItem
+import com.metrolist.innertube.models.PodcastItem
+import com.metrolist.innertube.models.SongItem
 import com.metrolist.innertube.models.filterExplicit
 import com.metrolist.innertube.models.filterVideoSongs
 import com.metrolist.innertube.models.filterYoutubeShorts
@@ -23,9 +28,13 @@ import com.metrolist.music.constants.HideVideoSongsKey
 import com.metrolist.music.constants.HideYoutubeShortsKey
 import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.db.entities.ArtistEntity
+import com.metrolist.music.db.entities.deserializeArtistPage
+import com.metrolist.music.db.entities.serializeArtistPage
+import com.metrolist.music.db.entities.toArtistPage
 import com.metrolist.music.extensions.filterExplicit
 import com.metrolist.music.extensions.filterExplicitAlbums
 import com.metrolist.music.utils.SyncUtils
+import com.metrolist.music.utils.ArtistNameAliases
 import com.metrolist.music.utils.dataStore
 import com.metrolist.music.utils.get
 import com.metrolist.music.utils.reportException
@@ -39,9 +48,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
 import com.metrolist.music.extensions.filterVideoSongs as filterVideoSongsLocal
@@ -91,6 +102,9 @@ class ArtistViewModel @Inject constructor(
         if (isYouTubeArtistId(artistId)) {
             // YouTube artist: load page directly, reload when settings change
             viewModelScope.launch {
+                // Cached page first so the screen has something to draw before the network answers.
+                loadCachedPage()
+
                 context.dataStore.data
                     .map {
                         Triple(
@@ -146,6 +160,30 @@ class ArtistViewModel @Inject constructor(
         }
     }
 
+    private suspend fun loadCachedPage() {
+        try {
+            val cachedJson = database.artist(artistId).firstOrNull()?.artist?.cachedPageJson
+            if (cachedJson != null) {
+                val cachedDto = withContext(Dispatchers.IO) { deserializeArtistPage(cachedJson) }
+                val page = cachedDto.toArtistPage()
+                val hideExplicit = context.dataStore.get(HideExplicitKey, false)
+                val hideVideoSongs = context.dataStore.get(HideVideoSongsKey, false)
+                val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
+
+                val filteredSections = page.sections
+                    .map { section ->
+                        section.copy(items = section.items.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs).filterYoutubeShorts(hideYoutubeShorts))
+                    }
+                    .filter { section -> section.items.isNotEmpty() }
+
+                artistPage = page.copy(sections = filteredSections)
+                _apiSubscribed.value = page.isSubscribed
+            }
+        } catch (e: Exception) {
+            reportException(e)
+        }
+    }
+
     private fun fetchArtistPage(ytArtistId: String) {
         viewModelScope.launch {
             val hideExplicit = context.dataStore.get(HideExplicitKey, false)
@@ -153,15 +191,114 @@ class ArtistViewModel @Inject constructor(
             val hideYoutubeShorts = context.dataStore.get(HideYoutubeShortsKey, false)
             YouTube.artist(ytArtistId)
                 .onSuccess { page ->
-                    val filteredSections = page.sections
+                    // Collect all items from all sections and resolve artist IDs once
+                    val allItems = page.sections.flatMap { it.items }
+                    val resolvedIdMap = if (allItems.isNotEmpty()) {
+                        YouTube.resolveArtistIdMap(allItems)
+                    } else {
+                        emptyMap()
+                    }
+
+                    fun com.metrolist.innertube.models.Artist.resolve() =
+                        if (id == null) resolvedIdMap[name]?.let { copy(id = it) } ?: this else this
+
+                    // Resolve artist IDs and fetch durations from more endpoint
+                    val resolvedSections = page.sections.map { section ->
+                        section.copy(items = section.items.map { item ->
+                            when (item) {
+                                is SongItem -> item.copy(artists = item.artists.map { it.resolve() })
+                                is AlbumItem -> item.copy(artists = item.artists?.map { it.resolve() })
+                                is PlaylistItem -> item.copy(author = item.author?.resolve())
+                                is EpisodeItem -> item.copy(author = item.author?.resolve())
+                                is PodcastItem -> item.copy(author = item.author?.resolve())
+                                else -> item
+                            }
+                        })
+                    }
+
+                    // Fetch song durations from the more endpoint if the first section has songs without duration
+                    var sectionsWithDurations = resolvedSections
+                    if (resolvedSections.isNotEmpty()) {
+                        val needDurations = resolvedSections.first().items.any {
+                            it is SongItem && it.duration == null
+                        }
+                        if (needDurations) {
+                            val moreEndpoint = resolvedSections.first().moreEndpoint
+                            if (moreEndpoint != null) {
+                                try {
+                                    val moreResult = withContext(Dispatchers.IO) {
+                                        YouTube.artistItems(moreEndpoint)
+                                    }
+                                    moreResult
+                                        .onSuccess { moreItems ->
+                                            val durationById = moreItems.items.filterIsInstance<SongItem>()
+                                                .associate { it.id to it.duration }
+                                            if (durationById.isNotEmpty()) {
+                                                sectionsWithDurations = listOf(resolvedSections.first().copy(
+                                                    items = resolvedSections.first().items.map { item ->
+                                                        if (item is SongItem && item.duration == null) {
+                                                            item.copy(duration = durationById[item.id] ?: item.duration)
+                                                        } else item
+                                                    }
+                                                )) + resolvedSections.drop(1)
+                                            }
+                                        }
+                                        .onFailure { e -> reportException(e) }
+                                } catch (e: Exception) {
+                                    reportException(e)
+                                }
+                            }
+                        }
+                    }
+
+                    val resolvedPage = page.copy(sections = sectionsWithDurations)
+                    val filteredSections = resolvedPage.sections
                         .map { section ->
                             section.copy(items = section.items.filterExplicit(hideExplicit).filterVideoSongs(hideVideoSongs).filterYoutubeShorts(hideYoutubeShorts))
                         }
                         .filter { section -> section.items.isNotEmpty() }
 
-                    artistPage = page.copy(sections = filteredSections)
+                    artistPage = resolvedPage.copy(sections = filteredSections)
+                    // Cache page data + persist artist metadata
+                    viewModelScope.launch(Dispatchers.IO) {
+                        try {
+                            val cachedJson = serializeArtistPage(
+                                sections = resolvedPage.sections,
+                                description = resolvedPage.description,
+                                subscriberCountText = resolvedPage.subscriberCountText,
+                                monthlyListenerCount = resolvedPage.monthlyListenerCount,
+                                isSubscribed = resolvedPage.isSubscribed,
+                                artist = resolvedPage.artist,
+                            )
+                            val existingArtist = database.artist(artistId).firstOrNull()?.artist
+                            if (existingArtist != null) {
+                                database.update(
+                                    existingArtist.copy(
+                                        name = ArtistNameAliases.resolve(existingArtist.id, resolvedPage.artist.title),
+                                        channelId = resolvedPage.artist.channelId ?: existingArtist.channelId,
+                                        thumbnailUrl = resolvedPage.artist.thumbnail ?: existingArtist.thumbnailUrl,
+                                        cachedPageJson = cachedJson,
+                                        lastUpdateTime = java.time.LocalDateTime.now(),
+                                    )
+                                )
+                            } else {
+                                val apiArtist = resolvedPage.artist
+                                database.insert(
+                                    ArtistEntity(
+                                        id = artistId,
+                                        name = ArtistNameAliases.resolve(artistId, apiArtist.title),
+                                        channelId = apiArtist.channelId,
+                                        thumbnailUrl = apiArtist.thumbnail,
+                                        cachedPageJson = cachedJson,
+                                    )
+                                )
+                            }
+                        } catch (e: Exception) {
+                            reportException(e)
+                        }
+                    }
                     // Store API subscription state
-                    _apiSubscribed.value = page.isSubscribed
+                    _apiSubscribed.value = resolvedPage.isSubscribed
                 }.onFailure {
                     reportException(it)
                 }
@@ -203,7 +340,7 @@ class ArtistViewModel @Inject constructor(
                     database.insert(
                         ArtistEntity(
                             id = artistId,
-                            name = it.title,
+                            name = ArtistNameAliases.resolve(artistId, it.title),
                             channelId = it.channelId,
                             thumbnailUrl = it.thumbnail,
                             bookmarkedAt = java.time.LocalDateTime.now(),

@@ -99,7 +99,7 @@ fun SongSelectDropdown(
                                     maxLines = 1,
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                val displayArtists = song.artists.joinToString(", ") { it.name }.ifBlank { song.artistName }
+                                val displayArtists = song.artists.joinToString(" ${stringResource(R.string.and)} ") { it.name }.ifBlank { song.artistName }
                                 displayArtists?.let {
                                     Text(
                                         text = it,

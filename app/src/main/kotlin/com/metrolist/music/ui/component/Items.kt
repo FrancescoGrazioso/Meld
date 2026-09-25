@@ -47,7 +47,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -67,15 +67,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.zIndex
 import androidx.media3.common.MediaItem
@@ -94,7 +97,9 @@ import com.metrolist.innertube.models.PodcastItem
 import com.metrolist.innertube.models.SongItem
 import com.metrolist.innertube.models.YTItem
 import com.metrolist.music.LocalDatabase
+import com.metrolist.music.LocalArtistNameAliases
 import com.metrolist.music.LocalDownloadUtil
+import com.metrolist.music.LocalNavController
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
 import com.metrolist.music.constants.CropAlbumArtKey
@@ -108,6 +113,7 @@ import com.metrolist.music.constants.SwipeToSongKey
 import com.metrolist.music.constants.ThumbnailCornerRadius
 import com.metrolist.music.db.entities.Album
 import com.metrolist.music.db.entities.Artist
+import com.metrolist.music.db.entities.ArtistEntity
 import com.metrolist.music.db.entities.Playlist
 import com.metrolist.music.db.entities.Song
 import com.metrolist.music.extensions.toMediaItem
@@ -115,7 +121,9 @@ import com.metrolist.music.models.MediaMetadata
 import com.metrolist.music.playback.queues.LocalAlbumRadio
 import com.metrolist.music.ui.utils.resize
 import com.metrolist.music.utils.joinByBullet
+import com.metrolist.music.utils.joinToArtistString
 import com.metrolist.music.utils.makeTimeString
+import com.metrolist.music.utils.ArtistNameAliases
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.utils.reportException
@@ -126,6 +134,8 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
+import kotlin.jvm.JvmName
+import androidx.compose.ui.unit.dp
 
 const val ActiveBoxAlpha = 0.6f
 
@@ -135,7 +145,109 @@ fun currentGridThumbnailHeight(): Dp {
     return if (gridItemSize == GridItemSize.BIG) GridThumbnailHeight else SmallGridThumbnailHeight
 }
 
-// Basic list item - optimized with inline to reduce recomposition
+private data class ArtistLink(
+    val id: String?,
+    val name: String,
+)
+
+@JvmName("ClickableArtistTextEntities")
+@Composable
+fun ClickableArtistText(
+    artists: List<ArtistEntity>,
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.bodySmall,
+    color: Color = LocalContentColor.current,
+    maxLines: Int = 1,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+) = ArtistLinksText(
+    artists = remember(artists) { artists.map { ArtistLink(it.id, it.name) } },
+    modifier = modifier,
+    style = style,
+    color = color,
+    maxLines = maxLines,
+    overflow = overflow,
+)
+
+@JvmName("ClickableArtistTextInnerTube")
+@Composable
+fun ClickableArtistText(
+    artists: List<com.metrolist.innertube.models.Artist>,
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.bodySmall,
+    maxLines: Int = 1,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+    color: Color = LocalContentColor.current,
+) = ArtistLinksText(
+    artists = remember(artists) { artists.map { ArtistLink(it.id, it.name) } },
+    modifier = modifier,
+    style = style,
+    color = color,
+    maxLines = maxLines,
+    overflow = overflow,
+)
+
+@JvmName("ClickableArtistTextMedia")
+@Composable
+fun ClickableArtistText(
+    artists: List<MediaMetadata.Artist>,
+    modifier: Modifier = Modifier,
+    style: TextStyle = MaterialTheme.typography.bodySmall,
+    color: Color = LocalContentColor.current,
+    maxLines: Int = 1,
+    overflow: TextOverflow = TextOverflow.Ellipsis,
+) = ArtistLinksText(
+    artists = remember(artists) { artists.map { ArtistLink(it.id, it.name) } },
+    modifier = modifier,
+    style = style,
+    color = color,
+    maxLines = maxLines,
+    overflow = overflow,
+)
+
+@Composable
+private fun ArtistLinksText(
+    artists: List<ArtistLink>,
+    modifier: Modifier,
+    style: TextStyle,
+    color: Color,
+    maxLines: Int,
+    overflow: TextOverflow,
+) {
+    val navController = LocalNavController.current
+    val andString = stringResource(R.string.and)
+    val artistNameAliases = LocalArtistNameAliases.current
+    val annotatedString = remember(artists, andString, color, artistNameAliases) {
+        buildAnnotatedString {
+            artists.forEachIndexed { index, artist ->
+                if (artist.id != null) {
+                    withLink(
+                        LinkAnnotation.Clickable(
+                            tag = artist.id,
+                            styles = TextLinkStyles(SpanStyle(color = color)),
+                        ) {
+                            navController.navigate("artist/${artist.id}")
+                        },
+                    ) {
+                        append(ArtistNameAliases.resolve(artistNameAliases, artist.id, artist.name))
+                    }
+                } else {
+                    append(ArtistNameAliases.resolve(artistNameAliases, null, artist.name))
+                }
+                if (index != artists.lastIndex) {
+                    append(if (index == artists.lastIndex - 1) " $andString " else ", ")
+                }
+            }
+        }
+    }
+    Text(
+        text = annotatedString,
+        style = style,
+        maxLines = maxLines,
+        overflow = overflow,
+        modifier = modifier,
+    )
+}
+
 @Composable
 inline fun ListItem(
     modifier: Modifier = Modifier,
@@ -253,7 +365,6 @@ fun ListItem(
     isActive = isActive
 )
 
-// merge badges and subtitle text and pass to basic list item
 @Composable
 fun ListItem(
     modifier: Modifier = Modifier,
@@ -389,7 +500,7 @@ fun SongListItem(
         }
         if (showDownloadIcon) {
             val download by LocalDownloadUtil.current.getDownload(song.id)
-                .collectAsState(initial = null)
+                .collectAsStateWithLifecycle(initialValue = null)
             Icon.Download(download?.state)
         }
     },
@@ -399,33 +510,57 @@ fun SongListItem(
     isSwipeable: Boolean = true,
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) {
+    val artistNameAliases = LocalArtistNameAliases.current
     val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = false)
 
     val content: @Composable () -> Unit = {
-        ListItem(
-            title = song.song.title,
-            subtitle = subtitleOverride ?: joinByBullet(
-                song.orderedArtists.joinToString { it.name },
-                makeTimeString(song.song.duration * 1000L)
-            ),
-            badges = badges,
-            thumbnailContent = {
-                ItemThumbnail(
-                    thumbnailUrl = song.song.thumbnailUrl,
-                    albumIndex = albumIndex,
-                    isSelected = isSelected,
-                    isActive = isActive,
-                    isPlaying = isPlaying,
-                    shape = RoundedCornerShape(ThumbnailCornerRadius),
-                    modifier = Modifier.size(ListThumbnailSize)
-                )
-            },
-            trailingContent = trailingContent,
-            modifier = modifier,
-            isSelected = isSelected,
-            isActive = isActive
-        )
-    }
+         ListItem(
+             title = song.song.title,
+             subtitle = {
+                  badges()
+                  if (subtitleOverride == null) {
+                      Text(
+                           text = joinByBullet(
+                               song.orderedArtists.joinToArtistString(" ${stringResource(R.string.and)} ") {
+                                   ArtistNameAliases.resolve(artistNameAliases, it.id, it.name)
+                               },
+                              makeTimeString(song.song.duration * 1000L)
+                          ),
+                          style = MaterialTheme.typography.bodySmall,
+                          color = MaterialTheme.colorScheme.secondary,
+                          maxLines = 1,
+                          overflow = TextOverflow.Ellipsis,
+                      )
+                  } else {
+                     Text(
+                         text = subtitleOverride,
+                         style = MaterialTheme.typography.bodySmall,
+                         color = MaterialTheme.colorScheme.secondary,
+                         maxLines = 1,
+                         overflow = TextOverflow.Ellipsis,
+                     )
+                 }
+             },
+             thumbnailContent = {
+                 ItemThumbnail(
+                     thumbnailUrl =
+                         song.song.thumbnailUrl?.let { thumbnailUrl ->
+                             if (song.isDownloaded) thumbnailUrl else thumbnailUrl.resize(200, 200)
+                         },
+                     albumIndex = albumIndex,
+                     isSelected = isSelected,
+                     isActive = isActive,
+                     isPlaying = isPlaying,
+                     shape = RoundedCornerShape(ThumbnailCornerRadius),
+                     modifier = Modifier.size(ListThumbnailSize)
+                 )
+             },
+             trailingContent = trailingContent,
+             modifier = modifier,
+             isSelected = isSelected,
+             isActive = isActive
+         )
+     }
 
     if (isSwipeable && swipeEnabled) {
         SwipeToSongBox(
@@ -454,7 +589,7 @@ fun SongGridItem(
             Icon.Library()
         }
         if (showDownloadIcon) {
-            val download by LocalDownloadUtil.current.getDownload(song.id).collectAsState(initial = null)
+            val download by LocalDownloadUtil.current.getDownload(song.id).collectAsStateWithLifecycle(initialValue = null)
             Icon.Download(download?.state)
         }
     },
@@ -473,9 +608,12 @@ fun SongGridItem(
         )
     },
     subtitle = {
+        val artistNameAliases = LocalArtistNameAliases.current
         Text(
             text = joinByBullet(
-                song.orderedArtists.joinToString { it.name },
+                song.orderedArtists.joinToArtistString(" ${stringResource(R.string.and)} ") {
+                    ArtistNameAliases.resolve(artistNameAliases, it.id, it.name)
+                },
                 makeTimeString(song.song.duration * 1000L)
             ),
             style = MaterialTheme.typography.bodyMedium,
@@ -528,7 +666,7 @@ fun ArtistListItem(
     thumbnailContent = {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(artist.artist.thumbnailUrl)
+                .data(artist.artist.thumbnailUrl?.resize(144, 144))
                 .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
                 .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
                 .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
@@ -560,7 +698,7 @@ fun ArtistGridItem(
     thumbnailContent = {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(artist.artist.thumbnailUrl)
+                .data(artist.artist.thumbnailUrl?.resize(544, 544))
                 .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
                 .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
                 .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
@@ -591,7 +729,7 @@ fun AlbumListItem(
             }
         }
 
-        val allDownloads by downloadUtil.downloads.collectAsState()
+        val allDownloads by downloadUtil.downloads.collectAsStateWithLifecycle()
 
         val downloadState by remember(songs, allDownloads) {
             androidx.compose.runtime.mutableIntStateOf(
@@ -620,12 +758,20 @@ fun AlbumListItem(
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) = ListItem(
     title = album.album.title,
-    subtitle = joinByBullet(
-        album.artists.joinToString { it.name },
-        pluralStringResource(R.plurals.n_song, album.album.songCount, album.album.songCount),
-        album.album.year?.toString()
-    ),
-    badges = badges,
+    subtitle = {
+        badges()
+        Text(
+            text = joinByBullet(
+                album.artists.joinToArtistString(" ${stringResource(R.string.and)} ") { it.name },
+                pluralStringResource(R.plurals.n_song, album.album.songCount, album.album.songCount),
+                album.album.year?.toString()
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.secondary,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+        )
+    },
     thumbnailContent = {
         ItemThumbnail(
             thumbnailUrl = album.album.thumbnailUrl,
@@ -654,7 +800,7 @@ fun AlbumGridItem(
             }
         }
 
-        val allDownloads by downloadUtil.downloads.collectAsState()
+        val allDownloads by downloadUtil.downloads.collectAsStateWithLifecycle()
 
         val downloadState by remember(songs, allDownloads) {
             androidx.compose.runtime.mutableIntStateOf(
@@ -692,10 +838,10 @@ fun AlbumGridItem(
             modifier = Modifier.basicMarquee().fillMaxWidth()
         )
     },
-    subtitle = {
-        Text(
-            text = album.artists.joinToString { it.name },
-            style = MaterialTheme.typography.bodyMedium,
+     subtitle = {
+         Text(
+             text = album.artists.joinToArtistString(" ${stringResource(R.string.and)} ") { it.name },
+             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.secondary,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -747,7 +893,7 @@ fun PlaylistListItem(
             }
         }
 
-        val allDownloads by downloadUtil.downloads.collectAsState()
+        val allDownloads by downloadUtil.downloads.collectAsStateWithLifecycle()
 
         val downloadState by remember(songs, allDownloads) {
             androidx.compose.runtime.mutableIntStateOf(
@@ -833,7 +979,7 @@ fun PlaylistGridItem(
             }
         }
 
-        val allDownloads by downloadUtil.downloads.collectAsState()
+        val allDownloads by downloadUtil.downloads.collectAsStateWithLifecycle()
 
         val downloadState by remember(songs, allDownloads) {
             mutableIntStateOf(
@@ -936,27 +1082,32 @@ fun MediaMetadataListItem(
     isPlaying: Boolean = false,
     trailingContent: @Composable RowScope.() -> Unit = {},
 ) {
+    val artistNameAliases = LocalArtistNameAliases.current
     ListItem(
         title = mediaMetadata.title,
-        subtitle = if (mediaMetadata.suggestedBy != null) {
-            buildAnnotatedString {
-                append(mediaMetadata.artists.joinToString { it.name })
-                append(" • ")
-                append(makeTimeString(mediaMetadata.duration * 1000L))
-                append(" • ")
-                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                    append(mediaMetadata.suggestedBy)
-                }
-            }
-        } else {
-            AnnotatedString(
-                joinByBullet(
-                    mediaMetadata.artists.joinToString { it.name },
-                    makeTimeString(mediaMetadata.duration * 1000L)
-                )
+        subtitle = {
+            if (mediaMetadata.explicit) Icon.Explicit()
+            Text(
+                text = buildAnnotatedString {
+                    val base = joinByBullet(
+                        mediaMetadata.artists.joinToArtistString(" ${stringResource(R.string.and)} ") {
+                            ArtistNameAliases.resolve(artistNameAliases, it.id, it.name)
+                        },
+                        makeTimeString(mediaMetadata.duration * 1000L)
+                    )
+                    append(base)
+                    if (mediaMetadata.suggestedBy != null && base.isNotEmpty()) {
+                        append(" • ")
+                        withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append(mediaMetadata.suggestedBy)
+                        }
+                    }
+                },
+                style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.secondary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
             )
         },
-        badges = { if (mediaMetadata.explicit) Icon.Explicit()},
         thumbnailContent = {
             ItemThumbnail(
                 thumbnailUrl = mediaMetadata.thumbnailUrl,
@@ -1004,23 +1155,58 @@ fun YouTubeListItem(
         //     Icon.Library()
         // }
         if (item is SongItem) {
-            val download by LocalDownloadUtil.current.getDownload(item.id).collectAsState(null)
+            val download by LocalDownloadUtil.current.getDownload(item.id).collectAsStateWithLifecycle(null)
             Icon.Download(download?.state)
         }
     },
 ) {
     val swipeEnabled by rememberPreference(SwipeToSongKey, defaultValue = false)
+    val artistNameAliases = LocalArtistNameAliases.current
+    val artistSeparator = " ${stringResource(R.string.and)} "
 
     val content: @Composable () -> Unit = {
         ListItem(
-            title = item.title,
+            title =
+                if (item is ArtistItem) {
+                    ArtistNameAliases.resolve(artistNameAliases, item.id, item.title)
+                } else {
+                    item.title
+                },
             subtitle = when (item) {
-                is SongItem -> joinByBullet(item.artists.joinToString { it.name }, makeTimeString(item.duration?.times(1000L)))
-                is AlbumItem -> joinByBullet(item.artists?.joinToString { it.name }, item.year?.toString())
+                is SongItem ->
+                    joinByBullet(
+                        item.artists.joinToArtistString(artistSeparator) {
+                            ArtistNameAliases.resolve(artistNameAliases, it.id, it.name)
+                        },
+                        makeTimeString(item.duration?.times(1000L)),
+                    )
+
+                is AlbumItem ->
+                    joinByBullet(
+                        item.artists?.joinToArtistString(artistSeparator) {
+                            ArtistNameAliases.resolve(artistNameAliases, it.id, it.name)
+                        },
+                        item.year?.toString(),
+                    )
+
                 is ArtistItem -> null
-                is PlaylistItem -> joinByBullet(item.author?.name, item.songCountText)
-                is PodcastItem -> joinByBullet(item.author?.name, item.episodeCountText)
-                is EpisodeItem -> joinByBullet(item.author?.name, item.publishDateText, makeTimeString(item.duration?.times(1000L)))
+                is PlaylistItem ->
+                    joinByBullet(
+                        item.author?.let { ArtistNameAliases.resolve(artistNameAliases, it.id, it.name) },
+                        item.songCountText,
+                    )
+
+                is PodcastItem ->
+                    joinByBullet(
+                        item.author?.let { ArtistNameAliases.resolve(artistNameAliases, it.id, it.name) },
+                        item.episodeCountText,
+                    )
+
+                is EpisodeItem ->
+                    joinByBullet(
+                        item.author?.let { ArtistNameAliases.resolve(artistNameAliases, it.id, it.name) },
+                        makeTimeString(item.duration?.times(1000L)),
+                    )
             },
             badges = badges,
             thumbnailContent = {
@@ -1042,7 +1228,7 @@ fun YouTubeListItem(
 
     if (item is SongItem && isSwipeable && swipeEnabled) {
         SwipeToSongBox(
-            mediaItem = item.copy(thumbnail = item.thumbnail.resize(544,544)).toMediaItem(),
+            mediaItem = item.copy(thumbnail = item.thumbnail.resize(1080, 1080)).toMediaItem(),
             modifier = Modifier.fillMaxWidth()
         ) {
             content()
@@ -1074,7 +1260,7 @@ fun YouTubeGridItem(
         if (item.explicit) Icon.Explicit()
         // if (item is SongItem && song?.song?.inLibrary != null) Icon.Library()
         if (item is SongItem) {
-            val download by LocalDownloadUtil.current.getDownload(item.id).collectAsState(null)
+            val download by LocalDownloadUtil.current.getDownload(item.id).collectAsStateWithLifecycle(null)
             Icon.Download(download?.state)
         }
     },
@@ -1089,7 +1275,11 @@ fun YouTubeGridItem(
 ) = GridItem(
     title = {
         Text(
-            text = item.title,
+            text = if (item is ArtistItem) {
+                ArtistNameAliases.resolve(LocalArtistNameAliases.current, item.id, item.title)
+            } else {
+                item.title
+            },
             style = MaterialTheme.typography.bodyLarge,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
@@ -1098,14 +1288,16 @@ fun YouTubeGridItem(
             modifier = Modifier.basicMarquee().fillMaxWidth()
         )
     },
-    subtitle = {
-        val subtitle = when (item) {
-            is SongItem -> joinByBullet(item.artists.joinToString { it.name }, makeTimeString(item.duration?.times(1000L)))
-            is AlbumItem -> joinByBullet(item.artists?.joinToString { it.name }, item.year?.toString())
+     subtitle = {
+         val artistNameAliases = LocalArtistNameAliases.current
+         val artistSeparator = " ${stringResource(R.string.and)} "
+         val subtitle = when (item) {
+             is SongItem -> joinByBullet(item.artists.joinToArtistString(artistSeparator) { ArtistNameAliases.resolve(artistNameAliases, it.id, it.name) }, makeTimeString(item.duration?.times(1000L)))
+             is AlbumItem -> joinByBullet(item.artists?.joinToArtistString(artistSeparator) { ArtistNameAliases.resolve(artistNameAliases, it.id, it.name) }, item.year?.toString())
             is ArtistItem -> null
-            is PlaylistItem -> joinByBullet(item.author?.name, item.songCountText)
-            is PodcastItem -> joinByBullet(item.author?.name, item.episodeCountText)
-            is EpisodeItem -> joinByBullet(item.author?.name, makeTimeString(item.duration?.times(1000L)))
+            is PlaylistItem -> joinByBullet(item.author?.let { ArtistNameAliases.resolve(artistNameAliases, it.id, it.name) }, item.songCountText)
+            is PodcastItem -> joinByBullet(item.author?.let { ArtistNameAliases.resolve(artistNameAliases, it.id, it.name) }, item.episodeCountText)
+            is EpisodeItem -> joinByBullet(item.author?.let { ArtistNameAliases.resolve(artistNameAliases, it.id, it.name) }, makeTimeString(item.duration?.times(1000L)))
         }
         if (subtitle != null) {
             Text(
@@ -1311,7 +1503,7 @@ fun ItemThumbnail(
         if (albumIndex == null) {
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(thumbnailUrl)
+                    .data(thumbnailUrl?.resize(544, 544))
                     .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
                     .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
                     .networkCachePolicy(coil3.request.CachePolicy.ENABLED)
@@ -1503,7 +1695,7 @@ fun PlaylistThumbnail(
         }
         1 -> AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(thumbnails[0])
+                .data(thumbnails[0].resize((size.value * 3).toInt()))
                 .apply { /* Removed cache key extensions due to unresolved in env */ }
                 .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
                 .diskCachePolicy(coil3.request.CachePolicy.ENABLED)
@@ -1530,7 +1722,7 @@ fun PlaylistThumbnail(
             ).fastForEachIndexed { index, alignment ->
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
-                        .data(thumbnails.getOrNull(index))
+                        .data(thumbnails.getOrNull(index)?.resize((size.value * 1.5).toInt()))
                         .apply { /* Removed cache key extensions due to unresolved in env */ }
                         .memoryCachePolicy(coil3.request.CachePolicy.ENABLED)
                         .diskCachePolicy(coil3.request.CachePolicy.ENABLED)

@@ -20,7 +20,7 @@ fun Lyrics(
     showLyrics: Boolean,
     lyricsViewModel: LyricsViewModel = hiltViewModel()
 ) {
-    val (experimentalLyrics, _) = rememberPreference(key = ExperimentalLyricsKey, defaultValue = false)
+    val (experimentalLyrics, _) = rememberPreference(key = ExperimentalLyricsKey, defaultValue = true)
 
     if (experimentalLyrics) {
         ExperimentalLyrics(

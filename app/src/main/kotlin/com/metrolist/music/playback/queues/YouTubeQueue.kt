@@ -21,6 +21,8 @@ class YouTubeQueue(
     private var retryCount = 0
     private val maxRetries = 3
 
+    private class EmptyRadioQueueException : IllegalStateException()
+
     override suspend fun getInitialStatus(): Queue.Status {
         return withContext(IO) {
             var lastException: Throwable? = null
@@ -32,19 +34,47 @@ class YouTubeQueue(
                 )
             }
 
+            val isRadioRequest =
+                endpoint.playlistId?.startsWith("RDAMVM") == true ||
+                (endpoint.videoId != null && endpoint.playlistId == null)
+
             for (attempt in 0..maxRetries) {
                 try {
                     val nextResult = YouTube.next(endpoint, continuation).getOrThrow()
+                    
+                    var items = nextResult.items
+                    val relEndpoint = nextResult.relatedEndpoint
+                    
+                    if (isRadioRequest && continuation == null && items.size <= 1) {
+                        if (endpoint.playlistId?.startsWith("RDAMVM") == true) {
+                            throw EmptyRadioQueueException()
+                        } else if (relEndpoint != null) {
+                            val relatedPage = YouTube.related(relEndpoint).getOrNull()
+                            if (relatedPage != null && relatedPage.songs.isNotEmpty()) {
+                                val relatedSongs = relatedPage.songs.filter { it.id != endpoint.videoId }
+                                items = items + relatedSongs
+                            }
+                        }
+                    }
+
                     endpoint = nextResult.endpoint
                     continuation = nextResult.continuation
                     retryCount = 0
                     return@withContext Queue.Status(
                         title = nextResult.title,
-                        items = nextResult.items.map { it.toMediaItem() },
+                        items = items.map { it.toMediaItem() },
                         mediaItemIndex = nextResult.currentIndex ?: 0,
                     )
                 } catch (e: Exception) {
                     lastException = e
+                    if (
+                        e is EmptyRadioQueueException &&
+                        endpoint.playlistId?.startsWith("RDAMVM") == true &&
+                        endpoint.videoId != null
+                    ) {
+                        endpoint = WatchEndpoint(videoId = endpoint.videoId)
+                        // It will loop again and try with just videoId
+                    }
                 }
             }
             throw lastException ?: Exception("Failed to get initial status")

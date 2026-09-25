@@ -41,7 +41,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
@@ -73,6 +73,7 @@ import com.metrolist.music.constants.SongSortDescendingKey
 import com.metrolist.music.constants.SongSortType
 import com.metrolist.music.constants.SongSortTypeKey
 import com.metrolist.music.constants.YtmSyncKey
+import com.metrolist.music.extensions.fileNameAndSize
 import com.metrolist.music.extensions.matchesNormalizedQuery
 import com.metrolist.music.extensions.normalizeForSearch
 import com.metrolist.music.extensions.toMediaItem
@@ -91,6 +92,8 @@ import com.metrolist.music.ui.utils.isScrollingUp
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.viewmodels.LibrarySongsViewModel
+import timber.log.Timber
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -112,8 +115,8 @@ fun LibrarySongsScreen(
     val uploadCompleteStr = stringResource(R.string.upload_complete)
     val queueAllSongsStr = stringResource(R.string.queue_all_songs)
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
 
     val (sortType, onSortTypeChange) =
@@ -126,10 +129,10 @@ fun LibrarySongsScreen(
     val (ytmSync) = rememberPreference(YtmSyncKey, true)
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
 
-    val songs by viewModel.allSongs.collectAsState()
+    val songs by viewModel.allSongs.collectAsStateWithLifecycle()
     var isSearchActive by rememberSaveable { mutableStateOf(false) }
-    val searchQuery by viewModel.searchQuery.collectAsState()
-    val debouncedSearchQuery by viewModel.debouncedSearchQuery.collectAsState()
+    val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
+    val debouncedSearchQuery by viewModel.debouncedSearchQuery.collectAsStateWithLifecycle()
     val normalizedQuery = remember(debouncedSearchQuery) { debouncedSearchQuery.normalizeForSearch() }
 
     var filter by rememberEnumPreference(SongFilterKey, SongFilter.LIKED)
@@ -148,6 +151,14 @@ fun LibrarySongsScreen(
             contract = ActivityResultContracts.OpenMultipleDocuments(),
         ) { uris: List<Uri> ->
             if (uris.isNotEmpty()) {
+                uris.forEach { uri ->
+                    try {
+                        val takeFlags = android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                        context.contentResolver.takePersistableUriPermission(uri, takeFlags)
+                    } catch (e: SecurityException) {
+                        Timber.w(e, "Could not take persistable permission")
+                    }
+                }
                 uploadJob =
                     scope.launch {
                         isUploading = true
@@ -160,61 +171,43 @@ fun LibrarySongsScreen(
                             uploadProgress = 0f
 
                             try {
-                                val fileName = uri.lastPathSegment?.substringAfterLast('/') ?: "unknown"
-                                currentFileName = fileName
-                                val extension = fileName.substringAfterLast('.', "").lowercase()
-
-                                if (extension !in YouTube.SUPPORTED_UPLOAD_TYPES) {
-                                    withContext(Dispatchers.Main) {
-                                        Toast
-                                            .makeText(
-                                                context,
-                                                uploadUnsupportedFormatStr,
-                                                Toast.LENGTH_SHORT,
-                                            ).show()
+                                val (fileName, contentLength) =
+                                    withContext(Dispatchers.IO) {
+                                        context.contentResolver.fileNameAndSize(uri)
                                     }
+                                currentFileName = fileName
+
+                                if (fileName.substringAfterLast('.', "").lowercase() !in YouTube.SUPPORTED_UPLOAD_TYPES) {
+                                    Toast.makeText(context, uploadUnsupportedFormatStr, Toast.LENGTH_SHORT).show()
                                     return@forEachIndexed
                                 }
-
-                                val inputStream = context.contentResolver.openInputStream(uri)
-                                val data = inputStream?.readBytes()
-                                inputStream?.close()
-
-                                if (data == null) return@forEachIndexed
-
-                                if (data.size > YouTube.MAX_UPLOAD_SIZE) {
-                                    withContext(Dispatchers.Main) {
-                                        Toast
-                                            .makeText(
-                                                context,
-                                                uploadFileTooLargeStr,
-                                                Toast.LENGTH_SHORT,
-                                            ).show()
-                                    }
+                                if (contentLength >= YouTube.MAX_UPLOAD_SIZE) {
+                                    Toast.makeText(context, uploadFileTooLargeStr, Toast.LENGTH_SHORT).show()
+                                    return@forEachIndexed
+                                }
+                                if (contentLength <= 0) {
+                                    Toast.makeText(context, uploadFailedStr, Toast.LENGTH_SHORT).show()
                                     return@forEachIndexed
                                 }
 
                                 val result =
                                     YouTube.uploadSong(
                                         filename = fileName,
-                                        data = data,
-                                        onProgress = { progress ->
-                                            uploadProgress = progress
-                                        },
+                                        contentLength = contentLength,
+                                        content = { checkNotNull(context.contentResolver.openInputStream(uri)) },
+                                        onProgress = { progress -> uploadProgress = progress },
                                     )
 
-                                if (result.isSuccess && result.getOrDefault(false)) {
-                                    successCount++
-                                }
+                                if (result.getOrThrow()) successCount++
+                            } catch (e: CancellationException) {
+                                throw e
                             } catch (e: Exception) {
-                                withContext(Dispatchers.Main) {
-                                    Toast
-                                        .makeText(
-                                            context,
-                                            uploadFailedStr + ": ${e.message}",
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
-                                }
+                                Toast
+                                    .makeText(
+                                        context,
+                                        uploadFailedStr + ": ${e.message}",
+                                        Toast.LENGTH_SHORT,
+                                    ).show()
                             }
                         }
 
@@ -262,7 +255,7 @@ fun LibrarySongsScreen(
 
     val backStackEntry by navController.currentBackStackEntryAsState()
     val scrollToTop =
-        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsState()
+        backStackEntry?.savedStateHandle?.getStateFlow("scrollToTop", false)?.collectAsStateWithLifecycle()
 
     LaunchedEffect(scrollToTop?.value) {
         if (scrollToTop?.value == true) {
@@ -439,7 +432,7 @@ fun LibrarySongsScreen(
 
             itemsIndexed(
                 items = filteredSongs,
-                key = { _, item -> item.song.id },
+                key = { index, item -> "${item.song.id}_$index" },
                 contentType = { _, _ -> CONTENT_TYPE_SONG },
             ) { index, song ->
                 SongListItem(
@@ -455,7 +448,6 @@ fun LibrarySongsScreen(
                                 menuState.show {
                                     SongMenu(
                                         originalSong = song,
-                                        navController = navController,
                                         onDismiss = menuState::dismiss,
                                     )
                                 }

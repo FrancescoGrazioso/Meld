@@ -35,7 +35,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -76,7 +76,7 @@ fun AlarmSettingsSection(showTitle: Boolean = true) {
     val locale = LocalLocale.current.platformLocale
     val database = LocalDatabase.current
     val scope = rememberCoroutineScope()
-    val playlists by database.playlistsByNameAsc().collectAsState(initial = emptyList())
+    val playlists by database.playlistsByNameAsc().collectAsStateWithLifecycle(initialValue = emptyList())
     val persistMutex = remember { Mutex() }
     val selectPlaylistText = stringResource(R.string.alarm_select_playlist)
     val randomEnabledText = stringResource(R.string.alarm_random_enabled)

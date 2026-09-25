@@ -12,26 +12,13 @@ suspend fun Result<PlaylistPage>.completed(): Result<PlaylistPage> = runCatching
     var continuation = page.songsContinuation
     val seenContinuations = mutableSetOf<String>()
     var requestCount = 0
-    val maxRequests = 50
-    var consecutiveEmptyResponses = 0
-    
-    while (continuation != null && requestCount < maxRequests) {
-        if (continuation in seenContinuations) {
-            break
-        }
-        seenContinuations.add(continuation)
-        requestCount++
-        
-        val continuationPage = YouTube.playlistContinuation(continuation).getOrNull() ?: break
-        
-        if (continuationPage.songs.isEmpty()) {
-            consecutiveEmptyResponses++
-            if (consecutiveEmptyResponses >= 2) break
-        } else {
-            consecutiveEmptyResponses = 0
-            songs += continuationPage.songs
-        }
-        
+
+    while (continuation != null) {
+        check(requestCount++ < 50) { "Playlist pagination exceeded 50 requests" }
+        check(seenContinuations.add(continuation)) { "Playlist pagination repeated a continuation" }
+
+        val continuationPage = YouTube.playlistContinuation(continuation).getOrThrow()
+        songs += continuationPage.songs
         continuation = continuationPage.continuation
     }
     PlaylistPage(
@@ -49,26 +36,13 @@ suspend fun Result<LibraryPage>.completed(): Result<LibraryPage> = runCatching {
     var continuation = page.continuation
     val seenContinuations = mutableSetOf<String>()
     var requestCount = 0
-    val maxRequests = 50
-    var consecutiveEmptyResponses = 0
-    
-    while (continuation != null && requestCount < maxRequests) {
-        if (continuation in seenContinuations) {
-            break
-        }
-        seenContinuations.add(continuation)
-        requestCount++
-        
-        val continuationPage = YouTube.libraryContinuation(continuation).getOrNull() ?: break
-        
-        if (continuationPage.items.isEmpty()) {
-            consecutiveEmptyResponses++
-            if (consecutiveEmptyResponses >= 2) break
-        } else {
-            consecutiveEmptyResponses = 0
-            items += continuationPage.items
-        }
-        
+
+    while (continuation != null) {
+        check(requestCount++ < 50) { "Library pagination exceeded 50 requests" }
+        check(seenContinuations.add(continuation)) { "Library pagination repeated a continuation" }
+
+        val continuationPage = YouTube.libraryContinuation(continuation).getOrThrow()
+        items += continuationPage.items
         continuation = continuationPage.continuation
     }
     LibraryPage(
@@ -93,7 +67,9 @@ fun parseCookieString(cookie: String): Map<String, String> =
 
 fun String.parseTime(): Int? {
     try {
-        val parts = split(":").map { it.toInt() }
+        // YouTube Music returns duration with locale-dependent separators
+        // (":" en-US, "." some locales, "," EU). Accept all.
+        val parts = split(Regex("[:.,]")).map { it.toInt() }
         if (parts.size == 2) {
             return parts[0] * 60 + parts[1]
         }
@@ -104,8 +80,4 @@ fun String.parseTime(): Int? {
         return null
     }
     return null
-}
-
-fun isPrivateId(browseId: String): Boolean {
-    return browseId.contains("privately")
 }

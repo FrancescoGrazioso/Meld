@@ -26,19 +26,28 @@ object YouTubeLyricsProvider : LyricsProvider {
         album: String?,
     ): Result<String> = withContext(Dispatchers.IO) {
         try {
-            // Prefer the timed transcript ([mm:ss.SSS] format) so lyrics scroll/highlight
-            // in sync with playback. YouTube.lyrics() only returns the plain description
-            // text (no timestamps), which the UI renders as static, unsynced lyrics (#174).
-            val synced = YouTube.transcript(id).getOrNull()?.takeIf { it.isNotBlank() }
-            if (synced != null) {
-                return@withContext Result.success(synced)
+            val lyricsEndpoint = YouTube.next(WatchEndpoint(videoId = id)).getOrNull()?.lyricsEndpoint
+
+            // YouTube Music's own line-timed lyrics, which is what makes the view scroll and
+            // highlight. Only its mobile clients are served these; YouTube.lyrics() asks as
+            // WEB_REMIX and can only ever come back with one untimed block (#174).
+            if (lyricsEndpoint != null) {
+                val timed = YouTube.timedLyrics(lyricsEndpoint).getOrNull()?.takeIf { it.isNotBlank() }
+                if (timed != null) {
+                    return@withContext Result.success(timed)
+                }
             }
 
-            val nextResult = YouTube.next(WatchEndpoint(videoId = id)).getOrThrow()
+            // Video captions: timed as well, but present for a minority of music tracks.
+            val transcript = YouTube.transcript(id).getOrNull()?.takeIf { it.isNotBlank() }
+            if (transcript != null) {
+                return@withContext Result.success(transcript)
+            }
+
             Result.success(
                 YouTube
                     .lyrics(
-                        endpoint = nextResult.lyricsEndpoint
+                        endpoint = lyricsEndpoint
                             ?: throw IllegalStateException("Lyrics endpoint not found"),
                     ).getOrThrow() ?: throw IllegalStateException("Lyrics unavailable")
             )

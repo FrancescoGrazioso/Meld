@@ -2053,6 +2053,65 @@ class SyncUtils @Inject constructor(
         }
     }
 
+    /**
+     * Creates a playlist locally, optionally mirroring it to YouTube first so the local row
+     * already carries its browseId. [onCreated] reports whether the remote half succeeded, so
+     * the caller can tell the user the playlist stayed local.
+     *
+     * Ported from upstream v13.7.0 onto Meld's sync scope; Meld has no runQueuedPlaylistEdit.
+     */
+    fun createPlaylist(
+        playlist: PlaylistEntity,
+        syncWithYouTube: Boolean,
+        onCreated: ((String, Boolean) -> Unit)? = null,
+    ) {
+        syncScope.launch {
+            val browseId = if (syncWithYouTube) {
+                runCatching { YouTube.createPlaylist(playlist.name) }
+                    .onFailure { Timber.e(it, "Failed to create playlist ${playlist.name} on YouTube") }
+                    .getOrNull()
+                    ?.takeIf { it.isNotBlank() }
+            } else {
+                null
+            }
+            val createdPlaylist = playlist.copy(
+                browseId = browseId,
+                isAutoSync = syncWithYouTube && browseId != null,
+            )
+            database.insert(createdPlaylist)
+            withContext(Dispatchers.Main) {
+                onCreated?.invoke(createdPlaylist.id, browseId != null)
+            }
+        }
+    }
+
+    fun scheduleAddToPlaylist(
+        browseId: String,
+        playlistId: String,
+        songIds: List<String>,
+    ) {
+        if (songIds.isEmpty()) return
+        markPlaylistModifying(playlistId)
+        syncScope.launch {
+            try {
+                songIds.forEach { songId ->
+                    try {
+                        YouTube.addToPlaylist(browseId, songId).getOrThrow()
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        Timber.e(e, "Failed to add song $songId to playlist $browseId")
+                    }
+                }
+            } finally {
+                unmarkPlaylistModifying(playlistId)
+            }
+        }
+    }
+
+    suspend fun syncPlaylistSuspend(browseId: String, playlistId: String) =
+        executeSyncPlaylist(browseId, playlistId)
+
     fun scheduleRemoveFromPlaylist(
         browseId: String,
         songId: String,
@@ -2092,5 +2151,31 @@ class SyncUtils @Inject constructor(
         processingJob?.cancel()
         startProcessingQueue()
         updateState { SyncState() }
+    }
+}
+
+// Ported from upstream v13.7.0 (Meld keeps its own SyncUtils body). Pure helpers, covered by
+// PlaylistSyncTest.
+
+internal fun hasCompleteLikedSongsResponse(
+    fetchedCount: Int,
+    advertisedCount: Int?,
+) = advertisedCount == null || fetchedCount >= advertisedCount
+
+internal fun localSongIndexesAbsentFromRemote(
+    localSongIds: List<String>,
+    remoteSongIds: List<String>,
+): List<Int> {
+    // Consume occurrences individually because playlists can deliberately contain duplicates.
+    val remainingRemote = remoteSongIds.groupingBy { it }.eachCount().toMutableMap()
+    return localSongIds.indices.filter { index ->
+        val songId = localSongIds[index]
+        val remaining = remainingRemote[songId] ?: 0
+        if (remaining == 0) {
+            true
+        } else {
+            remainingRemote[songId] = remaining - 1
+            false
+        }
     }
 }

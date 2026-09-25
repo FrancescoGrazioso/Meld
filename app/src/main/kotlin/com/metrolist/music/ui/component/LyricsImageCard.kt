@@ -46,7 +46,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
@@ -65,6 +64,7 @@ import coil3.request.allowHardware
 import coil3.toBitmap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun rememberAdjustedFontSize(
@@ -397,7 +397,7 @@ fun LyricsImageCard(
                 ) {
                     Box(
                         modifier = Modifier
-                            .size(22.dp)
+                            .size(44.dp)
                             .clip(RoundedCornerShape(50))
                             .background(secondaryColor),
                         contentAlignment = Alignment.Center
@@ -406,8 +406,8 @@ fun LyricsImageCard(
                             painter = painterResource(id = R.drawable.small_icon),
                             contentDescription = null,
                             modifier = Modifier
-                                .size(16.dp),
-                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(backgroundSolidColor) // Try to use a contrasting color, fallback to solid bg color
+                                .size(38.dp),
+                            colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(backgroundSolidColor)
                         )
                     }
 

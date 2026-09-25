@@ -5,6 +5,10 @@
 
 package com.metrolist.music.lyrics
 
+// MusixmatchLyricsProvider is deliberately absent: Musixmatch no longer issues working guest
+// tokens to its desktop API, so the provider can only fail. The file and its guards are kept so
+// it can be registered again in one line if that ever changes. Rows it already wrote are removed
+// by MIGRATION_40_41.
 object LyricsProviderRegistry {
     private val providerMap = mapOf(
         "BetterLyrics" to BetterLyricsProvider,
@@ -12,7 +16,7 @@ object LyricsProviderRegistry {
         "LrcLib" to LrcLibLyricsProvider,
         "KuGou" to KuGouLyricsProvider,
         "LyricsPlus" to LyricsPlusProvider,
-        "Musixmatch" to MusixmatchLyricsProvider,
+        "Zemer" to ZemerLyricsProvider,
         "YouTubeSubtitle" to YouTubeSubtitleLyricsProvider,
         "YouTube" to YouTubeLyricsProvider,
     )
@@ -28,11 +32,8 @@ object LyricsProviderRegistry {
         if (orderString.isBlank()) {
             return getDefaultProviderOrder()
         }
-        val parsed = orderString.split(",").map { it.trim() }.filter { it in providerNames }
-        // Append any providers missing from a previously-saved order (e.g. newly added
-        // ones) so they are still reachable without requiring a manual reset.
-        val missing = getDefaultProviderOrder().filter { it !in parsed }
-        return parsed + missing
+        val saved = orderString.split(",").map { it.trim() }.filter { it in providerNames }
+        return saved + getDefaultProviderOrder().filter { it !in saved }
     }
 
     fun serializeProviderOrder(providers: List<String>): String {
@@ -41,11 +42,11 @@ object LyricsProviderRegistry {
 
     fun getDefaultProviderOrder(): List<String> = listOf(
         "BetterLyrics",
-        "Paxsenix",
         "LrcLib",
         "KuGou",
+        "Paxsenix",
         "LyricsPlus",
-        "Musixmatch",
+        "Zemer",
         "YouTubeSubtitle",
         "YouTube",
     )

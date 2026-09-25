@@ -8,10 +8,10 @@ package com.metrolist.music.di
 import android.content.Context
 import androidx.media3.database.DatabaseProvider
 import androidx.media3.database.StandaloneDatabaseProvider
+import androidx.media3.datasource.cache.Cache
 import androidx.media3.datasource.cache.LeastRecentlyUsedCacheEvictor
 import androidx.media3.datasource.cache.NoOpCacheEvictor
 import androidx.media3.datasource.cache.SimpleCache
-import androidx.room.Room
 import com.metrolist.music.constants.MaxSongCacheSizeKey
 import com.metrolist.music.db.InternalDatabase
 import com.metrolist.music.db.MusicDatabase
@@ -60,9 +60,7 @@ object AppModule {
     @Provides
     fun provideInternalDatabase(
         @ApplicationContext context: Context,
-    ): InternalDatabase = Room
-        .databaseBuilder(context, InternalDatabase::class.java, InternalDatabase.DB_NAME)
-        .build()
+    ): InternalDatabase = InternalDatabase.newInternalDatabaseInstance(context)
 
     @Singleton
     @Provides
@@ -82,14 +80,15 @@ object AppModule {
     fun providePlayerCache(
         @ApplicationContext context: Context,
         databaseProvider: DatabaseProvider,
-    ): SimpleCache {
+    ): Cache {
         val cacheSize = context.dataStore[MaxSongCacheSizeKey] ?: 1024
+        val evictor = when (cacheSize) {
+            -1 -> NoOpCacheEvictor()
+            else -> LeastRecentlyUsedCacheEvictor(cacheSize * 1024 * 1024L)
+        }
         return SimpleCache(
             context.filesDir.resolve("exoplayer"),
-            when (cacheSize) {
-                -1 -> NoOpCacheEvictor()
-                else -> LeastRecentlyUsedCacheEvictor(cacheSize * 1024 * 1024L)
-            },
+            evictor,
             databaseProvider,
         )
     }
@@ -100,13 +99,11 @@ object AppModule {
     fun provideDownloadCache(
         @ApplicationContext context: Context,
         databaseProvider: DatabaseProvider,
-    ): SimpleCache {
-        return SimpleCache(
-            context.filesDir.resolve("download"),
-            NoOpCacheEvictor(),
-            databaseProvider
-        )
-    }
+    ): Cache = SimpleCache(
+        context.filesDir.resolve("download"),
+        NoOpCacheEvictor(),
+        databaseProvider,
+    )
 
     @Singleton
     @Provides

@@ -24,7 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,8 +68,8 @@ fun ArtistSongsScreen(
     val queueAllSongsStr = stringResource(R.string.queue_all_songs)
     val haptic = LocalHapticFeedback.current
     val playerConnection = LocalPlayerConnection.current ?: return
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
     val (sortType, onSortTypeChange) =
         rememberEnumPreference(
@@ -82,8 +82,8 @@ fun ArtistSongsScreen(
             true,
         )
     val hideExplicit by rememberPreference(key = HideExplicitKey, defaultValue = false)
-    val artist by viewModel.artist.collectAsState()
-    val songs by viewModel.songs.collectAsState()
+    val artist by viewModel.artist.collectAsStateWithLifecycle()
+    val songs by viewModel.songs.collectAsStateWithLifecycle()
     val lazyListState = rememberLazyListState()
 
     Box(
@@ -127,7 +127,7 @@ fun ArtistSongsScreen(
 
             itemsIndexed(
                 items = songs,
-                key = { _, item -> item.id },
+                key = { index, item -> "${item.id}_$index" },
             ) { index, song ->
                 SongListItem(
                     song = song,
@@ -140,7 +140,6 @@ fun ArtistSongsScreen(
                                 menuState.show {
                                     SongMenu(
                                         originalSong = song,
-                                        navController = navController,
                                         onDismiss = menuState::dismiss,
                                     )
                                 }
@@ -174,7 +173,6 @@ fun ArtistSongsScreen(
                                     menuState.show {
                                         SongMenu(
                                             originalSong = song,
-                                            navController = navController,
                                             onDismiss = menuState::dismiss,
                                         )
                                     }

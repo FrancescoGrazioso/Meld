@@ -21,7 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -39,7 +39,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.navigation.NavController
+import com.metrolist.music.LocalNavController
 import com.metrolist.music.R
 import com.metrolist.music.ui.screens.wrapped.pages.ConclusionPage
 import com.metrolist.music.ui.screens.wrapped.pages.PlaylistPage
@@ -57,6 +57,7 @@ import com.metrolist.music.ui.screens.wrapped.pages.WrappedTotalArtistsScreen
 import com.metrolist.music.ui.screens.wrapped.pages.WrappedTotalSongsScreen
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
+import androidx.navigation.NavController
 
 sealed class WrappedScreenType {
     object Welcome : WrappedScreenType()
@@ -89,18 +90,20 @@ sealed class WrappedScreenType {
 }
 
 @Composable
-fun WrappedScreen(navController: NavController) {
+fun WrappedScreen() {
+    val navController = LocalNavController.current
     val context = LocalContext.current
     val manager = remember { provideWrappedManager(context) }
 
     CompositionLocalProvider(LocalWrappedManager provides manager) {
-        WrappedScreenContent(navController = navController)
+        WrappedScreenContent()
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun WrappedScreenContent(navController: NavController) {
+fun WrappedScreenContent() {
+    val navController = LocalNavController.current
     val onClose: () -> Unit = {
         navController.previousBackStackEntry?.savedStateHandle?.set("wrapped_seen", true)
         navController.popBackStack()
@@ -172,8 +175,8 @@ fun WrappedScreenContent(navController: NavController) {
             )
         }
     val pagerState = rememberPagerState(pageCount = { screens.size })
-    val state by manager.state.collectAsState()
-    val isMuted by audioService.isMuted.collectAsState()
+    val state by manager.state.collectAsStateWithLifecycle()
+    val isMuted by audioService.isMuted.collectAsStateWithLifecycle()
     val messagePair =
         rememberSaveable(state.totalMinutes, saver = messagePairSaver) {
             WrappedRepository.getMessage(state.totalMinutes)

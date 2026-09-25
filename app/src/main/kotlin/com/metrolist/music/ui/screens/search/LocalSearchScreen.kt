@@ -31,7 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -45,7 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
+import com.metrolist.music.LocalNavController
 import com.metrolist.music.LocalPlayerConnection
 import com.metrolist.music.R
 import com.metrolist.music.constants.CONTENT_TYPE_LIST
@@ -67,27 +67,28 @@ import com.metrolist.music.ui.menu.SongMenu
 import com.metrolist.music.viewmodels.LocalFilter
 import com.metrolist.music.viewmodels.LocalSearchViewModel
 import kotlinx.coroutines.flow.drop
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LocalSearchScreen(
     query: String,
-    navController: NavController,
     onDismiss: () -> Unit,
     isFromCache: Boolean = false,
     pureBlack: Boolean,
     viewModel: LocalSearchViewModel = hiltViewModel(),
 ) {
+    val navController = LocalNavController.current
     val queueSearchedSongsStr = stringResource(R.string.queue_searched_songs)
     val keyboardController = LocalSoftwareKeyboardController.current
     val menuState = LocalMenuState.current
     val playerConnection = LocalPlayerConnection.current ?: return
 
-    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsState()
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val isPlaying by playerConnection.isEffectivelyPlaying.collectAsStateWithLifecycle()
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
 
-    val searchFilter by viewModel.filter.collectAsState()
-    val result by viewModel.result.collectAsState()
+    val searchFilter by viewModel.filter.collectAsStateWithLifecycle()
+    val result by viewModel.result.collectAsStateWithLifecycle()
 
     val lazyListState = rememberLazyListState()
 
@@ -196,7 +197,6 @@ fun LocalSearchScreen(
                                             menuState.show {
                                                 SongMenu(
                                                     originalSong = item,
-                                                    navController = navController,
                                                     onDismiss = {
                                                         onDismiss()
                                                         menuState.dismiss()
@@ -237,7 +237,6 @@ fun LocalSearchScreen(
                                                 menuState.show {
                                                     SongMenu(
                                                         originalSong = item,
-                                                        navController = navController,
                                                         onDismiss = {
                                                             onDismiss()
                                                             menuState.dismiss()

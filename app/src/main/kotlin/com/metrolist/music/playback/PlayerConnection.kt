@@ -24,11 +24,14 @@ import com.metrolist.music.constants.SleepTimerEndTimeKey
 import com.metrolist.music.constants.SleepTimerRepeatKey
 import com.metrolist.music.constants.SleepTimerStartTimeKey
 import com.metrolist.music.db.MusicDatabase
+import com.metrolist.music.db.entities.Song
 import com.metrolist.music.extensions.currentMetadata
 import com.metrolist.music.extensions.getCurrentQueueIndex
 import com.metrolist.music.extensions.getQueueWindows
 import com.metrolist.music.extensions.metadata
 import com.metrolist.music.extensions.togglePlayPause
+import com.metrolist.music.extensions.withUpdatedMetadata
+import com.metrolist.music.models.toMediaMetadata
 import com.metrolist.music.playback.MusicService.MusicBinder
 import com.metrolist.music.playback.queues.Queue
 import com.metrolist.music.utils.dataStore
@@ -61,25 +64,32 @@ class PlayerConnection(
     val service = binder.service
     private val playerReadinessFlow = service.isPlayerReady
 
-    /**
-     * Safe player accessor checks readiness & handles errors.
-     * Should be used by all player access within this class.
-     */
-    private fun getPlayerSafe(): ExoPlayer =
-        try {
-            if (!playerReadinessFlow.value) {
-                Timber.tag(TAG).w("Player accessed before service initialization complete; returning best-effort reference")
-            }
+    private fun getPlayerSafe(): ExoPlayer {
+        check(playerReadinessFlow.value) {
+            "Player not yet initialized in MusicService; " +
+                "service.isPlayerReady=${playerReadinessFlow.value}"
+        }
+        return try {
             service.player
         } catch (e: UninitializedPropertyAccessException) {
-            Timber.tag(TAG).e(e, "Fatal: player property accessed but not initialized")
-            throw IllegalStateException("MusicService.player not initialized; possible race condition in service startup", e)
+            throw IllegalStateException(
+                "MusicService.player field not initialized despite isPlayerReady=true; " +
+                    "possible race condition in service startup",
+                e,
+            )
+        }
+    }
+
+    private fun getPlayerOrNull(): ExoPlayer? =
+        try {
+            if (!playerReadinessFlow.value) return null
+            service.player
+        } catch (_: UninitializedPropertyAccessException) {
+            null
+        } catch (_: NullPointerException) {
+            null
         }
 
-    /**
-     * Public accessor for player. Throws if player not ready.
-     * Callers should check [isPlayerInitialized] before calling, or handle exceptions.
-     */
     val player: ExoPlayer
         get() = getPlayerSafe()
 
@@ -90,22 +100,26 @@ class PlayerConnection(
     private val playWhenReady: MutableStateFlow<Boolean>
     val isPlaying: kotlinx.coroutines.flow.StateFlow<Boolean>
 
-    init {
-        Timber.tag(TAG).d("PlayerConnection init: playerReady=${playerReadinessFlow.value}")
-
-        // Initialize with player state or safe defaults if player not ready
-        val initialState =
-            try {
-                val initialPlayer = getPlayerSafe()
+    private val initialState: Triple<Int, Boolean, Boolean> =
+        try {
+            val initialPlayer = getPlayerOrNull()
+            if (initialPlayer != null) {
                 Triple(
                     initialPlayer.playbackState,
                     initialPlayer.playWhenReady,
                     initialPlayer.playWhenReady && initialPlayer.playbackState != STATE_ENDED,
                 )
-            } catch (e: Exception) {
-                Timber.tag(TAG).e(e, "Error during PlayerConnection initialization, using defaults")
+            } else {
+                Timber.tag(TAG).w("Player not ready during construction; using safe defaults")
                 Triple(Player.STATE_IDLE, false, false)
             }
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Error during PlayerConnection initialization, using defaults")
+            Triple(Player.STATE_IDLE, false, false)
+        }
+
+    init {
+        Timber.tag(TAG).d("PlayerConnection init: playerReady=${playerReadinessFlow.value}")
 
         playbackState = MutableStateFlow(initialState.first)
         playWhenReady = MutableStateFlow(initialState.second)
@@ -131,7 +145,6 @@ class PlayerConnection(
         Timber.tag(TAG).d("PlayerConnection state flows initialized successfully")
     }
 
-    // Effective playing state, considers Cast when active
     val isEffectivelyPlaying =
         combine(
             isPlaying,
@@ -142,22 +155,26 @@ class PlayerConnection(
         }.stateIn(
             scope,
             SharingStarted.Lazily,
-            try { player.playbackState != STATE_ENDED && player.playWhenReady } catch (_: Exception) { false },
+            initialState.third,
         )
 
-    val mediaMetadata = MutableStateFlow(try { player.currentMetadata } catch (_: Exception) { null })
+    val mediaMetadata = MutableStateFlow(getPlayerOrNull()?.currentMetadata)
+    // stateIn so the latest DB result is cached and shared: on resume / re-subscription the value
+    // is available immediately instead of re-running the Room query (which delayed now-playing
+    // details, format and like-state on every foreground). Lazily keeps it hot across lifecycle
+    // pauses, matching isPlaying above. StateFlow is still a Flow, so existing collectors are unaffected.
     val currentSong =
         mediaMetadata.flatMapLatest {
             database.song(it?.id)
-        }
+        }.stateIn(scope, SharingStarted.Lazily, null)
     val currentLyrics =
         mediaMetadata.flatMapLatest { mediaMetadata ->
             database.lyrics(mediaMetadata?.id)
-        }
+        }.stateIn(scope, SharingStarted.Lazily, null)
     val currentFormat =
         mediaMetadata.flatMapLatest { mediaMetadata ->
             database.format(mediaMetadata?.id)
-        }
+        }.stateIn(scope, SharingStarted.Lazily, null)
 
     val queueTitle = MutableStateFlow<String?>(null)
     val queueWindows = MutableStateFlow<List<Timeline.Window>>(emptyList())
@@ -172,6 +189,7 @@ class PlayerConnection(
 
     val error = MutableStateFlow<PlaybackException?>(null)
     val isMuted = service.isMuted
+    val currentStreamClient = service.currentStreamClient
 
     val waitingForNetworkConnection = service.waitingForNetworkConnection
 
@@ -188,26 +206,19 @@ class PlayerConnection(
     private var attachedPlayer: Player? = null
 
     init {
-        try {
-            // Observe player changes (e.g. crossfade swap)
-            scope.launch {
-                service.playerFlow.collect { newPlayer ->
-                    if (newPlayer != null && newPlayer != attachedPlayer) {
-                        updateAttachedPlayer(newPlayer)
-                    }
+        scope.launch {
+            service.playerFlow.collect { newPlayer ->
+                if (newPlayer != null && newPlayer != attachedPlayer) {
+                    updateAttachedPlayer(newPlayer)
                 }
             }
-            // Initial setup if flow hasn't emitted yet but service is ready
-            if (attachedPlayer == null && service.isPlayerReady.value) {
-                updateAttachedPlayer(player)
-            }
-
-            Timber.tag(TAG).d("PlayerConnection flow observer registered")
-        } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "Failed to initialize PlayerConnection listener or state")
-            // Propagate the error so MainActivity can retry
-            throw e
         }
+        val readyPlayer = getPlayerOrNull()
+        if (attachedPlayer == null && readyPlayer != null) {
+            updateAttachedPlayer(readyPlayer)
+        }
+
+        Timber.tag(TAG).d("PlayerConnection flow observer registered; playerReady=${playerReadinessFlow.value}")
     }
 
     private fun updateAttachedPlayer(newPlayer: Player) {
@@ -242,6 +253,18 @@ class PlayerConnection(
             Timber.tag(TAG).e(e, "Error in playQueue")
             throw e
         }
+    }
+
+    fun refreshSongMetadata(song: Song) {
+        val player = getPlayerOrNull() ?: return
+        val updatedMetadata = song.toMediaMetadata()
+        repeat(player.mediaItemCount) { index ->
+            val mediaItem = player.getMediaItemAt(index)
+            if (mediaItem.mediaId == song.id) {
+                player.replaceMediaItem(index, mediaItem.withUpdatedMetadata(updatedMetadata))
+            }
+        }
+        mediaMetadata.value = player.currentMetadata
     }
 
     fun startRadioSeamlessly() {
@@ -467,7 +490,7 @@ class PlayerConnection(
                 return false
             }
 
-            if (service.sleepTimer.isActive) {
+            if (service.sleepTimer?.isActive == true) {
                 Timber.tag(TAG).d("✗ Sleep Timer already active - skipping")
                 return false
             }
@@ -556,7 +579,7 @@ class PlayerConnection(
 
             if (isTimeInRange) {
                 Timber.tag(TAG).i("AUTO SLEEP TIMER STARTED: $sleepTimerDefaultMinutes minutes")
-                service.sleepTimer.start(sleepTimerDefaultMinutes)
+                service.sleepTimer?.start(sleepTimerDefaultMinutes)
                 return true
             }
 
@@ -615,6 +638,7 @@ class PlayerConnection(
     }
 
     override fun onRepeatModeChanged(mode: Int) {
+        if (mode != player.repeatMode) return
         repeatMode.value = mode
         updateCanSkipPreviousAndNext()
     }

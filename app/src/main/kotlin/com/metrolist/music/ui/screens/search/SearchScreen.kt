@@ -26,7 +26,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
@@ -51,7 +50,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.SavedStateHandle
-import androidx.navigation.NavController
+import com.metrolist.music.LocalNavController
 import com.metrolist.innertube.models.WatchEndpoint
 import com.metrolist.innertube.utils.YouTubeUrlParser
 import com.metrolist.music.LocalDatabase
@@ -65,19 +64,21 @@ import com.metrolist.music.constants.SearchSourceKey
 import com.metrolist.music.db.entities.SearchHistory
 import com.metrolist.music.playback.queues.YouTubeQueue
 import com.metrolist.music.ui.component.HideOnScrollFAB
+import com.metrolist.music.utils.SearchRoutes
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.net.URLEncoder
+import androidx.compose.ui.focus.focusRequester
+import androidx.navigation.NavController
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
-    navController: NavController,
     pureBlack: Boolean,
     savedStateHandle: SavedStateHandle,
 ) {
+    val navController = LocalNavController.current
     val database = LocalDatabase.current
     val coroutineScope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
@@ -89,7 +90,7 @@ fun SearchScreen(
     val lazyListState = rememberLazyListState()
     var isHandlingScrollToTop by remember { mutableStateOf(false) }
 
-    val scrollToTopCount by savedStateHandle.getStateFlow("scrollToTopCount", 0).collectAsState(initial = 0)
+    val scrollToTopCount by savedStateHandle.getStateFlow("scrollToTopCount", 0).collectAsStateWithLifecycle(initialValue = 0)
 
     var lastHandledCount by rememberSaveable { mutableIntStateOf(0) }
     LaunchedEffect(Unit) {
@@ -159,7 +160,7 @@ fun SearchScreen(
             }
 
             null -> {
-                navController.navigate("search/${URLEncoder.encode(searchQuery, "UTF-8")}")
+                navController.navigate(SearchRoutes.resultRoute(searchQuery))
             }
         }
 
@@ -279,40 +280,29 @@ fun SearchScreen(
         },
         containerColor = if (pureBlack) Color.Black else MaterialTheme.colorScheme.background,
     ) { paddingValues ->
-        val bottomPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues().calculateBottomPadding()
-
         Box(
             modifier =
                 Modifier
-                    .padding(paddingValues)
+                    .padding(top = paddingValues.calculateTopPadding())
                     .fillMaxSize(),
         ) {
-            Box(
-                modifier =
-                    Modifier
-                        .padding(bottom = bottomPadding)
-                        .fillMaxSize(),
-            ) {
-                when (searchSource) {
-                    SearchSource.LOCAL -> {
-                        LocalSearchScreen(
-                            query = query.text,
-                            navController = navController,
-                            onDismiss = { navController.navigateUp() },
-                            pureBlack = pureBlack,
-                        )
-                    }
+            when (searchSource) {
+                SearchSource.LOCAL -> {
+                    LocalSearchScreen(
+                        query = query.text,
+                        onDismiss = { navController.navigateUp() },
+                        pureBlack = pureBlack,
+                    )
+                }
 
-                    SearchSource.ONLINE -> {
-                        OnlineSearchScreen(
-                            query = query.text,
-                            onQueryChange = { query = it },
-                            navController = navController,
-                            onSearch = onSearchFromSuggestion,
-                            onDismiss = { /* Don't dismiss when searching from suggestions */ },
-                            pureBlack = pureBlack,
-                        )
-                    }
+                SearchSource.ONLINE -> {
+                    OnlineSearchScreen(
+                        query = query.text,
+                        onQueryChange = { query = it },
+                        onSearch = onSearchFromSuggestion,
+                        onDismiss = { /* Don't dismiss when searching from suggestions */ },
+                        pureBlack = pureBlack,
+                    )
                 }
             }
 

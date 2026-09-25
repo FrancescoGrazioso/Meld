@@ -66,7 +66,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -74,6 +73,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -108,6 +108,7 @@ import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.palette.graphics.Palette
 import coil3.ImageLoader
 import coil3.request.ImageRequest
@@ -161,6 +162,7 @@ import com.metrolist.music.lyrics.LyricsUtils.romanizeCyrillic
 import com.metrolist.music.lyrics.LyricsUtils.romanizeHindi
 import com.metrolist.music.lyrics.LyricsUtils.romanizeJapanese
 import com.metrolist.music.lyrics.LyricsUtils.romanizeKorean
+import com.metrolist.music.lyrics.lyricsTextLooksSynced
 import com.metrolist.music.ui.component.shimmer.ShimmerHost
 import com.metrolist.music.ui.component.shimmer.TextPlaceholder
 import com.metrolist.music.ui.screens.settings.DarkMode
@@ -172,6 +174,7 @@ import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -226,9 +229,9 @@ fun OriginalLyrics(
 
     val scope = rememberCoroutineScope()
 
-    val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
-    val lyricsEntity by playerConnection.currentLyrics.collectAsState(initial = null)
-    val currentSong by playerConnection.currentSong.collectAsState(initial = null)
+    val mediaMetadata by playerConnection.mediaMetadata.collectAsStateWithLifecycle()
+    val lyricsEntity by playerConnection.currentLyrics.collectAsStateWithLifecycle(initialValue = null)
+    val currentSong by playerConnection.currentSong.collectAsStateWithLifecycle(initialValue = null)
     val lyrics = remember(lyricsEntity) { lyricsEntity?.lyrics?.trim() }
 
     val playerBackground by rememberEnumPreference(
@@ -290,31 +293,31 @@ fun OriginalLyrics(
                                 }
 
                                 "Ukrainian" in enabledLanguages && isUkrainian(text) -> {
-                                    value = romanizeCyrillic(entry.text)
+                                    value = romanizeCyrillic(entry.text, "Ukrainian")
                                 }
 
                                 "Russian" in enabledLanguages && isRussian(text) -> {
-                                    value = romanizeCyrillic(entry.text)
+                                    value = romanizeCyrillic(entry.text, "Russian")
                                 }
 
                                 "Serbian" in enabledLanguages && isSerbian(text) -> {
-                                    value = romanizeCyrillic(entry.text)
+                                    value = romanizeCyrillic(entry.text, "Serbian")
                                 }
 
                                 "Bulgarian" in enabledLanguages && isBulgarian(text) -> {
-                                    value = romanizeCyrillic(entry.text)
+                                    value = romanizeCyrillic(entry.text, "Bulgarian")
                                 }
 
                                 "Belarusian" in enabledLanguages && isBelarusian(text) -> {
-                                    value = romanizeCyrillic(entry.text)
+                                    value = romanizeCyrillic(entry.text, "Belarusian")
                                 }
 
                                 "Kyrgyz" in enabledLanguages && isKyrgyz(text) -> {
-                                    value = romanizeCyrillic(entry.text)
+                                    value = romanizeCyrillic(entry.text, "Kyrgyz")
                                 }
 
                                 "Macedonian" in enabledLanguages && isMacedonian(text) -> {
-                                    value = romanizeCyrillic(entry.text)
+                                    value = romanizeCyrillic(entry.text, "Macedonian")
                                 }
                             }
 
@@ -338,13 +341,13 @@ fun OriginalLyrics(
                             "Korean" in enabledLanguages && isKorean(text) -> value = romanizeKorean(line)
                             "Chinese" in enabledLanguages && isChinese(text) -> value = romanizeChinese(line)
                             "Hindi" in enabledLanguages && isHindi(text) -> value = romanizeHindi(line)
-                            "Ukrainian" in enabledLanguages && isUkrainian(text) -> value = romanizeCyrillic(line)
-                            "Russian" in enabledLanguages && isRussian(text) -> value = romanizeCyrillic(line)
-                            "Serbian" in enabledLanguages && isSerbian(text) -> value = romanizeCyrillic(line)
-                            "Bulgarian" in enabledLanguages && isBulgarian(text) -> value = romanizeCyrillic(line)
-                            "Belarusian" in enabledLanguages && isBelarusian(text) -> value = romanizeCyrillic(line)
-                            "Kyrgyz" in enabledLanguages && isKyrgyz(text) -> value = romanizeCyrillic(line)
-                            "Macedonian" in enabledLanguages && isMacedonian(text) -> value = romanizeCyrillic(line)
+                            "Ukrainian" in enabledLanguages && isUkrainian(text) -> value = romanizeCyrillic(line, "Ukrainian")
+                            "Russian" in enabledLanguages && isRussian(text) -> value = romanizeCyrillic(line, "Russian")
+                            "Serbian" in enabledLanguages && isSerbian(text) -> value = romanizeCyrillic(line, "Serbian")
+                            "Bulgarian" in enabledLanguages && isBulgarian(text) -> value = romanizeCyrillic(line, "Bulgarian")
+                            "Belarusian" in enabledLanguages && isBelarusian(text) -> value = romanizeCyrillic(line, "Belarusian")
+                            "Kyrgyz" in enabledLanguages && isKyrgyz(text) -> value = romanizeCyrillic(line, "Kyrgyz")
+                            "Macedonian" in enabledLanguages && isMacedonian(text) -> value = romanizeCyrillic(line, "Macedonian")
                         }
 
                         newEntry.romanizedTextFlow.value = value
@@ -354,13 +357,10 @@ fun OriginalLyrics(
                 }
             }
         }
-    val isSynced =
-        remember(lyrics) {
-            !lyrics.isNullOrEmpty() && lyrics.startsWith("[")
-        }
+    val isSynced = remember(lyrics) { lyricsTextLooksSynced(lyrics) }
 
     // State for translation status
-    val translationStatus by LyricsTranslationHelper.status.collectAsState()
+    val translationStatus by LyricsTranslationHelper.status.collectAsStateWithLifecycle()
 
     // Track composition lifecycle
     DisposableEffect(Unit) {
@@ -482,7 +482,9 @@ fun OriginalLyrics(
     val selectedIndices = remember { mutableStateListOf<Int>() }
     var showMaxSelectionToast by remember { mutableStateOf(false) } // State for showing max selection toast
 
-    val isLyricsProviderShown = lyricsEntity?.provider != null && lyricsEntity?.provider != "Unknown" && lyricsEntity?.provider != "Manual" && !isSelectionModeActive
+    val isLyricsProviderShown =
+        lyricsEntity?.provider != null && lyricsEntity?.provider != "Unknown" && lyricsEntity?.provider != "Manual" &&
+            !isSelectionModeActive
 
     val lazyListState = rememberLazyListState()
 
@@ -582,14 +584,17 @@ fun OriginalLyrics(
         }
     }
 
-    // Reset per-song UI state so lyrics that load late still sync to the
-    // current playback position and auto-scroll re-engages (issues #79, #90).
-    LaunchedEffect(mediaMetadata?.id) {
-        initialScrollDone = false
-        shouldScrollToFirstLine = true
-        previousLineIndex = 0
-        lastPreviewTime = 0L
-        isAutoScrollEnabled = true
+    fun resolveListScrollIndex(lineIndex: Int): Int? {
+        if (lineIndex < 0 || lines.isEmpty()) return null
+
+        val safeLineIndex = lineIndex.coerceAtMost(lines.lastIndex)
+        val listIndex = if (isLyricsProviderShown) safeLineIndex + 1 else safeLineIndex
+        val totalItems =
+            lazyListState.layoutInfo.totalItemsCount.takeIf { it > 0 }
+                ?: (lines.size + if (isLyricsProviderShown) 1 else 0)
+
+        if (totalItems <= 0) return null
+        return listIndex.coerceIn(0, totalItems - 1)
     }
 
     /**
@@ -603,10 +608,11 @@ fun OriginalLyrics(
         duration: Int = 1500,
     ) {
         if (isAnimating) return // Prevent multiple animations
+        val listTargetIndex = resolveListScrollIndex(targetIndex) ?: return
+
         isAnimating = true
         try {
-            val lookUpIndex = if (isLyricsProviderShown) targetIndex + 1 else targetIndex
-            val itemInfo = lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == lookUpIndex }
+            val itemInfo = lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == listTargetIndex }
             if (itemInfo != null) {
                 // Item is visible, animate directly to center without sudden jumps
                 val viewportHeight = lazyListState.layoutInfo.viewportEndOffset - lazyListState.layoutInfo.viewportStartOffset
@@ -621,12 +627,22 @@ fun OriginalLyrics(
                 }
             } else {
                 // Item is not visible, scroll to it first without animation, then it will be handled in next cycle
-                lazyListState.scrollToItem(targetIndex)
+                lazyListState.scrollToItem(listTargetIndex)
             }
         } finally {
             isAnimating = false
         }
     }
+
+    val latestResyncLyrics by rememberUpdatedState(
+        newValue = {
+            scope.launch {
+                performSmoothPageScroll(currentLineIndex, 1500)
+            }
+            isAutoScrollEnabled = true
+        },
+    )
+
     LaunchedEffect(currentLineIndex, lastPreviewTime, initialScrollDone, isAutoScrollEnabled) {
         if (!isSynced) return@LaunchedEffect
         if (isAutoScrollEnabled) {
@@ -906,12 +922,15 @@ fun OriginalLyrics(
                                             playerConnection.seekTo((item.time - lyricsOffset).coerceAtLeast(0))
                                             // Smooth slow scroll when clicking on lyrics (3 seconds)
                                             scope.launch {
+                                                val listTargetIndex = resolveListScrollIndex(index) ?: return@launch
                                                 // First scroll to the clicked item without animation
-                                                lazyListState.scrollToItem(index = index)
+                                                lazyListState.scrollToItem(index = listTargetIndex)
 
                                                 // Then animate it to center position slowly
                                                 val itemInfo =
-                                                    lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.index == index }
+                                                    lazyListState.layoutInfo.visibleItemsInfo.firstOrNull {
+                                                        it.index == listTargetIndex
+                                                    }
                                                 if (itemInfo != null) {
                                                     val viewportHeight =
                                                         lazyListState.layoutInfo.viewportEndOffset -
@@ -1065,7 +1084,7 @@ fun OriginalLyrics(
                                 }
                             val alignment = agentTextAlign
 
-                            val romanizedTextState by item.romanizedTextFlow.collectAsState()
+                            val romanizedTextState by item.romanizedTextFlow.collectAsStateWithLifecycle()
                             val romanizedText = romanizedTextState
                             val isRomanizedAvailable = romanizedText != null
 
@@ -1680,7 +1699,7 @@ fun OriginalLyrics(
                             }
 
                             // Show translated text if available
-                            val translatedText by item.translatedTextFlow.collectAsState()
+                            val translatedText by item.translatedTextFlow.collectAsStateWithLifecycle()
                             translatedText?.let { translated ->
                                 Text(
                                     text = translated,
@@ -1704,48 +1723,17 @@ fun OriginalLyrics(
             // Removed the more button from bottom - it's now in the top header
         }
 
-        AnimatedVisibility(
-            visible = !isAutoScrollEnabled && isSynced && !isSelectionModeActive,
-            enter = slideInVertically { it } + fadeIn(),
-            exit = slideOutVertically { it } + fadeOut(),
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 16.dp),
-        ) {
-            FilledTonalButton(onClick = {
-                scope.launch {
-                    performSmoothPageScroll(currentLineIndex, 1500)
-                }
-                isAutoScrollEnabled = true
-            }) {
-                Icon(
-                    painter = painterResource(id = R.drawable.sync),
-                    contentDescription = stringResource(R.string.auto_scroll),
-                    modifier = Modifier.size(20.dp),
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(text = stringResource(R.string.auto_scroll))
-            }
-        }
-
-        AnimatedVisibility(
-            visible = isSelectionModeActive,
-            enter = slideInVertically { it } + fadeIn(),
-            exit = slideOutVertically { it } + fadeOut(),
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 16.dp),
+            contentAlignment = Alignment.BottomCenter,
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
-                FilledTonalButton(
-                    onClick = {
-                        isSelectionModeActive = false
-                        selectedIndices.clear()
-                    },
-                ) {
+                FilledTonalButton(onClick = latestResyncLyrics) {
                     Icon(
                         painter = painterResource(id = R.drawable.close),
                         contentDescription = stringResource(R.string.cancel),

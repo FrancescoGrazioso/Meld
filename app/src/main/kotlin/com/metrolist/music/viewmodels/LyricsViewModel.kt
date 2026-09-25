@@ -22,6 +22,10 @@ import kotlinx.coroutines.withContext
 
 @HiltViewModel
 class LyricsViewModel @Inject constructor() : ViewModel() {
+    companion object {
+        private val timestampRegex = Regex("\\[\\d{1,2}:\\d{2}")
+    }
+
     private var processJob: kotlinx.coroutines.Job? = null
 
     private val _lines = MutableStateFlow<List<LyricsEntry>>(emptyList())
@@ -42,7 +46,6 @@ class LyricsViewModel @Inject constructor() : ViewModel() {
                 if (lyrics == null || lyrics == LYRICS_NOT_FOUND) {
                     emptyList()
                 } else {
-                    val timestampRegex = Regex("\\[\\d{1,2}:\\d{2}")
                     val isLrc = timestampRegex.containsMatchIn(lyrics)
                     val parsedLines = if (isLrc) LyricsUtils.parseLyrics(lyrics) else emptyList()
                     
@@ -50,7 +53,7 @@ class LyricsViewModel @Inject constructor() : ViewModel() {
                         listOf(LyricsEntry.HEAD_LYRICS_ENTRY) + parsedLines
                     } else {
                         // Fallback for unsynced or invalid LRC
-                        val baseTime = 1000000L // Start at 1000s to avoid overlap with real start
+                        val baseTime = 1000000L
                         lyrics.lines()
                             .filter { it.isNotBlank() && !timestampRegex.containsMatchIn(it) }
                             .mapIndexed { index, line ->

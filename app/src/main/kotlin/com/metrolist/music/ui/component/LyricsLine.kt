@@ -27,7 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.drawscope.withTransform
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
@@ -92,43 +93,24 @@ private fun String.containsRtl(): Boolean {
 }
 
 /**
- * Detects scripts whose visual glyphs are formed by combining multiple codepoints
- * (Bengali, Devanagari, Tamil, Thai, Arabic shaping, etc.). Per-character rendering
- * breaks these — combining marks must stay attached to their base consonant
- * (issue #141). When this returns true the line falls back to whole-string drawing.
+ * Splits a string into Unicode grapheme clusters using BreakIterator.
+ * This correctly handles Devanagari, Bengali, Arabic, Hangul, emoji, etc.
+ * where a single visible glyph is composed of multiple code points (e.g. base
+ * consonant + matra + anusvara = one cluster, not three separate chars).
  */
-private fun String.requiresShapedRendering(): Boolean {
-    for (c in this) {
-        val block = Character.UnicodeBlock.of(c) ?: continue
-        if (block == Character.UnicodeBlock.BENGALI ||
-            block == Character.UnicodeBlock.DEVANAGARI ||
-            block == Character.UnicodeBlock.TAMIL ||
-            block == Character.UnicodeBlock.GUJARATI ||
-            block == Character.UnicodeBlock.GURMUKHI ||
-            block == Character.UnicodeBlock.KANNADA ||
-            block == Character.UnicodeBlock.MALAYALAM ||
-            block == Character.UnicodeBlock.ORIYA ||
-            block == Character.UnicodeBlock.TELUGU ||
-            block == Character.UnicodeBlock.SINHALA ||
-            block == Character.UnicodeBlock.THAI ||
-            block == Character.UnicodeBlock.LAO ||
-            block == Character.UnicodeBlock.MYANMAR ||
-            block == Character.UnicodeBlock.KHMER ||
-            block == Character.UnicodeBlock.TIBETAN ||
-            block == Character.UnicodeBlock.ARABIC ||
-            block == Character.UnicodeBlock.ARABIC_PRESENTATION_FORMS_A ||
-            block == Character.UnicodeBlock.ARABIC_PRESENTATION_FORMS_B
-        ) {
-            return true
-        }
-        // Combining diacritical marks of any script signal grapheme clustering.
-        if (Character.getType(c).toByte() == Character.NON_SPACING_MARK ||
-            Character.getType(c).toByte() == Character.COMBINING_SPACING_MARK
-        ) {
-            return true
-        }
+private fun String.toGraphemeClusters(): List<String> {
+    if (isEmpty()) return emptyList()
+    val result = mutableListOf<String>()
+    val it = java.text.BreakIterator.getCharacterInstance()
+    it.setText(this)
+    var start = it.first()
+    var end = it.next()
+    while (end != java.text.BreakIterator.DONE) {
+        result.add(substring(start, end))
+        start = end
+        end = it.next()
     }
-    return false
+    return result
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -218,7 +200,7 @@ internal fun LyricsLine(
                 val inactiveAlpha = if (item.isBackground) 0.08f else 0.2f
                 val activeAlpha = 1f
                 val focusedAlpha = if (item.isBackground) 0.5f else 0.3f
-                val targetAlpha = if (item.isBackground || isActiveLine) {
+                val targetAlpha = if (!isSynced || item.isBackground || isActiveLine) {
                     activeAlpha
                 } else if (isAutoScrollEnabled && displayedCurrentLineIndex >= 0) {
                     when (abs(index - displayedCurrentLineIndex)) {
@@ -230,7 +212,7 @@ internal fun LyricsLine(
                 val animatedAlpha by animateFloatAsState(targetAlpha, tween(250), label = "lyricsLineAlpha")
                 val lineColor = expressiveAccent.copy(alpha = if (item.isBackground) focusedAlpha else animatedAlpha)
                 
-                val romanizedTextState by item.romanizedTextFlow.collectAsState()
+                val romanizedTextState by item.romanizedTextFlow.collectAsStateWithLifecycle()
                 val isRomanizedAvailable = romanizedTextState != null
                 val mainTextRaw = if (romanizeAsMain && isRomanizedAvailable) romanizedTextState else item.text
                 val subTextRaw = if (romanizeAsMain && isRomanizedAvailable) item.text else romanizedTextState
@@ -244,6 +226,7 @@ internal fun LyricsLine(
                     lineHeight = if (item.isBackground) (lyricsTextSize * 0.7f * lyricsLineSpacing).sp else (lyricsTextSize * lyricsLineSpacing).sp,
                     letterSpacing = (-0.5).sp,
                     textAlign = agentTextAlign,
+                    fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
                     platformStyle = PlatformTextStyle(includeFontPadding = false),
                     lineHeightStyle = LineHeightStyle(
                         alignment = LineHeightStyle.Alignment.Center,
@@ -306,7 +289,7 @@ internal fun LyricsLine(
                     }
                 }
                 
-                val transText by item.translatedTextFlow.collectAsState()
+                val transText by item.translatedTextFlow.collectAsStateWithLifecycle()
                 transText?.let { 
                     Text(
                         text = it,
@@ -417,13 +400,35 @@ private fun WordLevelLyrics(
         }.let { data -> data.map { it.first } to data.map { it.second } }
     }
 
-    val charToWordData = remember(mainText, effectiveWords, isBackground) {
-        val wordIdxMap = IntArray(mainText.length) { -1 }
-        val charInWordMap = IntArray(mainText.length) { 0 }
-        val wordLenMap = IntArray(mainText.length) { 1 }
+    // Break mainText into grapheme clusters so that multi-codepoint glyphs
+    // (Devanagari/Bengali matras, Arabic ligatures, emoji, etc.) are treated
+    // as single units throughout the animation pipeline.
+    val graphemeClusters = remember(mainText) { mainText.toGraphemeClusters() }
+    val clusterCount = graphemeClusters.size
+    // For each cluster index, the String offset (Char index) of its first character in mainText.
+    // Required because TextLayoutResult.getBoundingBox/getLineForOffset take
+    // String offsets (UTF-16/Char indices), not cluster indices.
+    val clusterCharOffsets = remember(mainText) {
+        IntArray(clusterCount).also { offsets ->
+            var charOffset = 0
+            graphemeClusters.forEachIndexed { i, cluster ->
+                offsets[i] = charOffset
+                charOffset += cluster.length
+            }
+        }
+    }
+
+    // wordIdxMap / charInWordMap / wordLenMap are now sized and indexed by
+    // CLUSTER INDEX (not codepoint index) so that each visual glyph unit is
+    // mapped to exactly one word slot.
+    val charToWordData = remember(mainText, effectiveWords, isBackground, graphemeClusters, clusterCharOffsets) {
+        val wordIdxMap = IntArray(clusterCount) { -1 }
+        val charInWordMap = IntArray(clusterCount)
+        val wordLenMap = IntArray(clusterCount) { 1 }
         var currentPos = 0
+        var clCursor = 0
         effectiveWords.forEachIndexed { wordIdx, word ->
-            val rawWordText = word.text.let { 
+            val rawWordText = word.text.let {
                 if (isBackground) {
                     var t = it
                     if (wordIdx == 0) t = t.removePrefix("(")
@@ -433,19 +438,34 @@ private fun WordLevelLyrics(
             }
             val indexInMain = mainText.indexOf(rawWordText, currentPos)
             if (indexInMain != -1) {
-                for (i in 0 until rawWordText.length) {
-                    val pos = indexInMain + i
-                    wordIdxMap[pos] = wordIdx
-                    charInWordMap[pos] = i
-                    wordLenMap[pos] = rawWordText.length
+                val wordEndInMain = indexInMain + rawWordText.length
+                // Advance clCursor to the first cluster at or after indexInMain
+                while (clCursor < clusterCount && clusterCharOffsets[clCursor] < indexInMain) {
+                    clCursor++
                 }
-                if (indexInMain + rawWordText.length < mainText.length && mainText[indexInMain + rawWordText.length] == ' ') {
-                    val pos = indexInMain + rawWordText.length
-                    wordIdxMap[pos] = wordIdx
-                    charInWordMap[pos] = rawWordText.length
-                    wordLenMap[pos] = rawWordText.length + 1
+                val firstClIdx = clCursor
+                // Collect all clusters in the word range [indexInMain, wordEndInMain)
+                val wordClusterIndices = mutableListOf<Int>()
+                while (clCursor < clusterCount && clusterCharOffsets[clCursor] < wordEndInMain) {
+                    wordClusterIndices.add(clCursor)
+                    clCursor++
                 }
-                currentPos = indexInMain + rawWordText.length
+                val wordClusterLen = wordClusterIndices.size
+                wordClusterIndices.forEachIndexed { posInWord, clIdx ->
+                    wordIdxMap[clIdx] = wordIdx
+                    charInWordMap[clIdx] = posInWord
+                    wordLenMap[clIdx] = wordClusterLen
+                }
+                // Check the cluster at clCursor for a trailing space
+                if (clCursor < clusterCount && clusterCharOffsets[clCursor] == wordEndInMain && 
+                    wordEndInMain < mainText.length && mainText[wordEndInMain] == ' ') {
+                    val spaceClIdx = clCursor
+                    wordIdxMap[spaceClIdx] = wordIdx
+                    charInWordMap[spaceClIdx] = wordClusterLen
+                    wordLenMap[spaceClIdx] = wordClusterLen + 1
+                    clCursor++
+                }
+                currentPos = wordEndInMain
             }
         }
         Triple(wordIdxMap, charInWordMap, wordLenMap)
@@ -482,25 +502,31 @@ private fun WordLevelLyrics(
             )
         }
         
+        // Each layout corresponds to one grapheme cluster (the visual unit),
+        // not one codepoint. Fixes Devanagari/Bengali matra fragmentation.
         val letterLayouts = remember(mainText, lyricStyle) {
-            mainText.map { textMeasurer.measure(it.toString(), lyricStyle) }
+            graphemeClusters.map { cluster -> textMeasurer.measure(cluster, lyricStyle) }
         }
         
         val isRtlText = remember(mainText) { mainText.containsRtl() }
-        // Bengali / Devanagari / etc. require the layoutResult-based rendering
-        // path used for RTL text — per-character drawing breaks combining marks.
-        val isShapedText = remember(mainText) { mainText.requiresShapedRendering() }
-        
+        // Meld used to force the layoutResult path for Bengali/Devanagari/etc. here, because
+        // per-character drawing split combining marks off their base consonant (issue #141).
+        // The animation now walks grapheme clusters rather than chars, so those scripts render
+        // correctly on the normal path and only RTL still needs the fallback.
+
         Canvas(modifier = Modifier
             .fillMaxWidth()
             .height(with(density) { layoutResult.size.height.toDp() })
-            .graphicsLayer(clip = false)
+            .graphicsLayer(
+                clip = false,
+                compositingStrategy = CompositingStrategy.Offscreen,
+            )
         ) {
             if (mainText.isEmpty()) return@Canvas
             if (!isActiveLine) {
                 drawText(layoutResult, color = lineColor)
             } else {
-                if (isRtlText || isShapedText) {
+                if (isRtlText) {
                     val (wordIdxMap, _, _) = charToWordData
                     val wordFactors = effectiveWords.map { word ->
                         val wStartMs = (word.startTime * 1000).toLong()
@@ -524,9 +550,10 @@ private fun WordLevelLyrics(
                         var bottom = Float.MIN_VALUE
                         var found = false
 
-                        for (i in mainText.indices) {
+                        for (i in 0 until clusterCount) {
                             if (wordIdxMap[i] == wIdx) {
-                                val bounds = layoutResult.getBoundingBox(i)
+                                val charOffset = clusterCharOffsets[i]
+                                val bounds = layoutResult.getBoundingBox(charOffset)
                                 left = minOf(left, bounds.left)
                                 right = maxOf(right, bounds.right)
                                 top = minOf(top, bounds.top)
@@ -576,9 +603,11 @@ private fun WordLevelLyrics(
                 val lineCurrentPushes = FloatArray(layoutResult.lineCount)
                 val lineTotalPushes = FloatArray(layoutResult.lineCount)
                 
-                // Pre-calculate total pushes per line to handle alignment correctly
-                for (i in mainText.indices) {
-                    val lineIdx = layoutResult.getLineForOffset(i)
+                // Pre-calculate total pushes per line to handle alignment correctly.
+                // Iterate over cluster indices so each visual glyph unit is one slot.
+                for (i in 0 until clusterCount) {
+                    val charOffset = clusterCharOffsets[i]
+                    val lineIdx = layoutResult.getLineForOffset(charOffset)
                     val wordIdx = wordIdxMap[i]
                     val originalWordIdx = if (wordIdx != -1) effectiveToOriginalIdx[wordIdx] else -1
                     
@@ -624,13 +653,16 @@ private fun WordLevelLyrics(
                     } else 0f
 
                     val charScaleX = 1f + (wobble * 0.025f) + crescendoDeltaX + (nudgeScale * 0.3f)
-                    val charBounds = layoutResult.getBoundingBox(i)
+                    val charBounds = layoutResult.getBoundingBox(charOffset)
                     lineTotalPushes[lineIdx] += charBounds.width * (charScaleX - 1f)
                 }
 
-                for (i in mainText.indices) {
-                    val lineIdx = layoutResult.getLineForOffset(i)
-                    val charBounds = layoutResult.getBoundingBox(i)
+                // Main drawing loop: iterate over cluster indices so each visual
+                // glyph (including multi-codepoint Devanagari clusters) is one unit.
+                for (i in 0 until clusterCount) {
+                    val charOffset = clusterCharOffsets[i]
+                    val lineIdx = layoutResult.getLineForOffset(charOffset)
+                    val charBounds = layoutResult.getBoundingBox(charOffset)
                     val wordIdx = wordIdxMap[i]
                     val originalWordIdx = if (wordIdx != -1) effectiveToOriginalIdx[wordIdx] else -1
                     

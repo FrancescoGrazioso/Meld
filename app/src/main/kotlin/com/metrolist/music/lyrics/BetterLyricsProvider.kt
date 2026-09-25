@@ -24,16 +24,4 @@ object BetterLyricsProvider : LyricsProvider {
         duration: Int,
         album: String?,
     ): Result<String> = BetterLyrics.getLyrics(title, artist, duration, album)
-
-    override suspend fun getAllLyrics(
-        context: Context,
-        id: String,
-        title: String,
-        artist: String,
-        duration: Int,
-        album: String?,
-        callback: (String) -> Unit,
-    ) {
-        BetterLyrics.getAllLyrics(title, artist, duration, album, callback)
-    }
 }

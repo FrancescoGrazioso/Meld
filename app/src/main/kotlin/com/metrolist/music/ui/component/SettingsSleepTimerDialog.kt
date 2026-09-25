@@ -48,9 +48,9 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.Spring
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.animation.core.Spring
 
 fun decodeDayTimes(raw: String): MutableMap<Int, Pair<String, String>> {
     if (raw.isBlank()) return mutableMapOf()

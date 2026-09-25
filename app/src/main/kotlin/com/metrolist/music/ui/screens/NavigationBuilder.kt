@@ -30,6 +30,7 @@ import com.metrolist.music.ui.screens.artist.ArtistItemsScreen
 import com.metrolist.music.ui.screens.artist.ArtistScreen
 import com.metrolist.music.ui.screens.artist.ArtistSongsScreen
 import com.metrolist.music.ui.screens.equalizer.EqScreen
+import com.metrolist.music.ui.screens.equalizer.wizard.WizardScreen
 import com.metrolist.music.ui.screens.library.LibraryScreen
 import com.metrolist.music.ui.screens.playlist.AutoPlaylistScreen
 import com.metrolist.music.ui.screens.playlist.CachePlaylistScreen
@@ -52,7 +53,6 @@ import com.metrolist.music.ui.screens.settings.AppearanceSettings
 import com.metrolist.music.ui.screens.settings.BackupAndRestore
 import com.metrolist.music.ui.screens.settings.ContentSettings
 import com.metrolist.music.ui.screens.settings.DarkMode
-import com.metrolist.music.ui.screens.settings.DiscordLoginScreen
 import com.metrolist.music.ui.screens.settings.PlayerSettings
 import com.metrolist.music.ui.screens.settings.SponsorBlockSettings
 import com.metrolist.music.ui.screens.settings.PrivacySettings
@@ -67,8 +67,6 @@ import com.metrolist.music.ui.screens.settings.integrations.LastFMSettings
 import com.metrolist.music.ui.screens.settings.integrations.ListenTogetherSettings
 import com.metrolist.music.ui.screens.settings.integrations.SpotifyPreloadScreen
 import com.metrolist.music.ui.screens.settings.integrations.SpotifySettings
-import com.metrolist.music.ui.screens.recognition.RecognitionScreen
-import com.metrolist.music.ui.screens.recognition.RecognitionHistoryScreen
 import com.metrolist.music.ui.screens.wrapped.WrappedScreen
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
@@ -82,7 +80,7 @@ fun NavGraphBuilder.navigationBuilder(
     snackbarHostState: SnackbarHostState,
 ) {
     composable(Screens.Home.route) {
-        HomeScreen(navController = navController, snackbarHostState = snackbarHostState)
+        HomeScreen(snackbarHostState = snackbarHostState)
     }
 
     composable(Screens.Search.route) { backStackEntry ->
@@ -98,14 +96,13 @@ fun NavGraphBuilder.navigationBuilder(
                 pureBlackEnabled && useDarkTheme
             }
         SearchScreen(
-            navController = navController,
             pureBlack = pureBlack,
             savedStateHandle = backStackEntry.savedStateHandle
         )
     }
 
     composable(Screens.Library.route) {
-        LibraryScreen(navController)
+        LibraryScreen()
     }
 
     composable(Screens.ListenTogether.route) {
@@ -187,7 +184,6 @@ fun NavGraphBuilder.navigationBuilder(
         },
     ) { backStackEntry ->
         OnlineSearchResult(
-            navController = navController,
             savedStateHandle = backStackEntry.savedStateHandle
         )
 
@@ -369,7 +365,7 @@ fun NavGraphBuilder.navigationBuilder(
     }
 
     composable("settings/appearance") {
-        AppearanceSettings(navController, activity, snackbarHostState)
+        AppearanceSettings(navController, snackbarHostState)
     }
 
     composable("settings/appearance/theme") {
@@ -413,7 +409,7 @@ fun NavGraphBuilder.navigationBuilder(
     }
 
     composable("settings/integrations/discord") {
-        DiscordSettings(navController, snackbarHostState)
+        DiscordSettings(navController)
     }
 
     composable("settings/integrations/lastfm") {
@@ -483,9 +479,7 @@ fun NavGraphBuilder.navigationBuilder(
         SpotifyFolderScreen(navController, folderUri, folderName)
     }
 
-    composable("settings/discord/login") {
-        DiscordLoginScreen(navController)
-    }
+    // Upstream replaced the in-app Discord login screen with DiscordOAuthActivity.
 
     composable("settings/updater") {
         UpdaterScreen(navController)
@@ -499,12 +493,25 @@ fun NavGraphBuilder.navigationBuilder(
         LoginScreen(navController)
     }
 
-    composable("wrapped") {
-        WrappedScreen(navController)
+    composable("switch_channel") {
+        LoginScreen(
+            navController = navController,
+            isSwitchingChannel = true,
+        )
     }
 
-    dialog("equalizer") {
+    composable("wrapped") {
+        WrappedScreen()
+    }
+
+    composable("equalizer") {
         EqScreen()
+    }
+
+    composable("eq_wizard") {
+        WizardScreen(onNavigateBack = {
+            navController.popBackStack()
+        })
     }
 
     composable(
@@ -524,6 +531,6 @@ fun NavGraphBuilder.navigationBuilder(
         RecognitionHistoryScreen(navController)
     }
     composable("settings/android_auto") {
-        AndroidAutoSettings(navController, scrollBehavior)
+        AndroidAutoSettings(navController)
     }
 }

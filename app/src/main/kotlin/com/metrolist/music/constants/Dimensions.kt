@@ -6,8 +6,8 @@
 package com.metrolist.music.constants
 
 import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.ui.unit.Dp
+import androidx.compose.animation.core.spring
 import androidx.compose.ui.unit.dp
 
 const val CONTENT_TYPE_HEADER = 0
@@ -39,7 +39,7 @@ val PlayerHorizontalPadding = 32.dp
 
 val NavigationBarAnimationSpec = spring<Dp>(
     dampingRatio = Spring.DampingRatioNoBouncy,
-    stiffness = Spring.StiffnessLow
+    stiffness = Spring.StiffnessMediumLow
 )
 
 val BottomSheetAnimationSpec = spring<Dp>(
