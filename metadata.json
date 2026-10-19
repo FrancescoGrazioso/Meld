@@ -1,0 +1,8 @@
+{
+  "name": "Meld",
+  "description": "A music client that fuses Spotify and YouTube Music into one seamless experience with rich Material 3 design, live synced lyrics, equalizer, and custom queues.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
