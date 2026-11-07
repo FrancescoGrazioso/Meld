@@ -4,8 +4,11 @@ import com.metrolist.innertube.models.Album
 import com.metrolist.innertube.models.AlbumItem
 import com.metrolist.innertube.models.Artist
 import com.metrolist.innertube.models.MusicResponsiveListItemRenderer
+import com.metrolist.innertube.models.MusicShelfRenderer
 import com.metrolist.innertube.models.SongItem
+import com.metrolist.innertube.models.getContinuation
 import com.metrolist.innertube.models.oddElements
+import com.metrolist.innertube.models.response.BrowseResponse
 import com.metrolist.innertube.models.splitBySeparator
 import com.metrolist.innertube.utils.parseTime
 
@@ -13,8 +16,70 @@ data class AlbumPage(
     val album: AlbumItem,
     val songs: List<SongItem>,
     val otherVersions: List<AlbumItem>,
+    // Only a fully parsed track list with exhausted continuations may replace cached tracks.
+    val isSongListComplete: Boolean = false,
 ) {
     companion object {
+        internal suspend fun loadSongs(
+            response: BrowseResponse,
+            album: AlbumItem?,
+            fetchContinuation: suspend (String) -> BrowseResponse,
+        ): List<SongItem> {
+            val shelf = response.contents?.twoColumnBrowseResultsRenderer?.secondaryContents
+                ?.sectionListRenderer?.contents?.firstOrNull {
+                    it.musicPlaylistShelfRenderer != null || it.musicShelfRenderer != null
+                }
+            var contents = shelf?.musicPlaylistShelfRenderer?.contents
+                ?: shelf?.musicShelfRenderer?.contents
+                ?: error("Missing album track shelf")
+            var continuations = shelf?.musicPlaylistShelfRenderer?.continuations
+                ?: shelf?.musicShelfRenderer?.continuations
+            val songs = mutableListOf<SongItem>()
+            val seenContinuations = mutableSetOf<String>()
+
+            while (true) {
+                check(contents.isNotEmpty()) { "Empty album track page" }
+                songs += parseSongs(contents, album)
+                val token = contents.getContinuation() ?: continuations?.getContinuation()
+                if (token == null) {
+                    check(contents.none { it.continuationItemRenderer != null } && continuations.isNullOrEmpty()) {
+                        "Missing album continuation token"
+                    }
+                    break
+                }
+                check(token.isNotBlank() && seenContinuations.add(token)) {
+                    "Repeated or empty album continuation token"
+                }
+                check(seenContinuations.size <= 50) { "Album continuation limit exceeded" }
+                val next = fetchContinuation(token)
+                val playlistContinuation = next.continuationContents?.musicPlaylistShelfContinuation
+                val shelfContinuation = next.continuationContents?.musicShelfContinuation
+                val appended = next.onResponseReceivedActions
+                    ?.mapNotNull { it.appendContinuationItemsAction?.continuationItems }.orEmpty()
+                check(appended.size <= 1) { "Ambiguous album continuation contents" }
+                contents = appended.singleOrNull()
+                    ?: playlistContinuation?.contents
+                    ?: shelfContinuation?.contents
+                    ?: error("Missing album continuation contents")
+                continuations = playlistContinuation?.continuations ?: shelfContinuation?.continuations
+            }
+            check(songs.map { it.id }.distinct().size == songs.size) { "Duplicate album track IDs" }
+            return songs
+        }
+
+        private fun parseSongs(
+            contents: List<MusicShelfRenderer.Content>,
+            album: AlbumItem?,
+        ): List<SongItem> = contents.mapNotNull { content ->
+            val renderer = content.musicResponsiveListItemRenderer
+            if (renderer != null) {
+                checkNotNull(getSong(renderer, album)) { "Unparseable album track" }
+            } else {
+                check(content.continuationItemRenderer != null) { "Unrecognized album track row" }
+                null
+            }
+        }
+
         fun getSong(renderer: MusicResponsiveListItemRenderer, album: AlbumItem? = null): SongItem? {
             // Extract library tokens using the new method that properly handles multiple toggle items
             val libraryTokens = PageHelper.extractLibraryTokensFromMenuItems(renderer.menu?.menuRenderer?.items)
