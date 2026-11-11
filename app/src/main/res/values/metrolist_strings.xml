@@ -553,6 +553,8 @@
     <string name="turntable_widget_description">Circular music widget with play and like controls</string>
     <string name="widget_music_player">Music Player</string>
     <string name="widget_turntable">Turntable</string>
+    <string name="widget_music_4x1">Music 4x1</string>
+    <string name="widget_music_4x1_description">Wide music player widget with album art, title and playback controls</string>
 
     <!-- Music Recognizer Widget strings -->
     <string name="widget_recognizer_name">Music Recognizer</string>

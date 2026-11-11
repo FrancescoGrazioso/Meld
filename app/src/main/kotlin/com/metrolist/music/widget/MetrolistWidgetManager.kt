@@ -85,17 +85,23 @@ class MetrolistWidgetManager @Inject constructor(
 
             val componentName = ComponentName(context, MusicWidgetReceiver::class.java)
             val turntableComponentName = ComponentName(context, TurntableWidgetReceiver::class.java)
+            val music4x1ComponentName = ComponentName(context, Music4x1WidgetReceiver::class.java)
             val widgetIds = appWidgetManager?.let {
                 runCatching { it.getAppWidgetIds(componentName) }.getOrNull()
             } ?: IntArray(0)
             val turntableWidgetIds = appWidgetManager?.let {
                 runCatching { it.getAppWidgetIds(turntableComponentName) }.getOrNull()
             } ?: IntArray(0)
+            val music4x1WidgetIds = appWidgetManager?.let {
+                runCatching { it.getAppWidgetIds(music4x1ComponentName) }.getOrNull()
+            } ?: IntArray(0)
 
             // Nothing of ours on the home screen — skip artwork decoding and all the binder
             // traffic below. The refresh loop runs for the whole playback session, so this is
             // the common case for most users.
-            if (appWidgetManager != null && (widgetIds.isNotEmpty() || turntableWidgetIds.isNotEmpty())) {
+            if (appWidgetManager != null &&
+                (widgetIds.isNotEmpty() || turntableWidgetIds.isNotEmpty() || music4x1WidgetIds.isNotEmpty())
+            ) {
                 // Reload album art only when the track actually changed.
                 if (artworkUri != cachedArtworkUri || (artworkUri != null && cachedAlbumArt == null)) {
                     val albumArt = artworkUri?.let { loadAlbumArt(it, ARTWORK_SIZE) }
@@ -133,6 +139,19 @@ class MetrolistWidgetManager @Inject constructor(
                     )
                     turntableWidgetIds.forEach { widgetId ->
                         runCatching { appWidgetManager.updateAppWidget(widgetId, turntableViews) }
+                    }
+                }
+
+                // Update YouTube Music style 4x1 widgets
+                if (music4x1WidgetIds.isNotEmpty()) {
+                    val music4x1Views = createMusic4x1RemoteViews(
+                        title,
+                        roundedAlbumArt,
+                        isPlaying,
+                        isLiked
+                    )
+                    music4x1WidgetIds.forEach { widgetId ->
+                        runCatching { appWidgetManager.updateAppWidget(widgetId, music4x1Views) }
                     }
                 }
             }
@@ -342,6 +361,36 @@ class MetrolistWidgetManager @Inject constructor(
         return views
     }
 
+    private fun createMusic4x1RemoteViews(
+        title: String,
+        albumArt: Bitmap,
+        isPlaying: Boolean,
+        isLiked: Boolean
+    ): RemoteViews {
+        val views = RemoteViews(context.packageName, R.layout.widget_music_4x1)
+
+        // Album art arrives already rounded and cached by updateWidgets
+        views.setImageViewBitmap(R.id.widget_4x1_album_art, albumArt)
+        views.setTextViewText(R.id.widget_4x1_song_title, title)
+
+        // Set play/pause icon - using low style icons
+        val playPauseIcon = if (isPlaying) R.drawable.ic_widget_pause_low else R.drawable.ic_widget_play_low
+        views.setImageViewResource(R.id.widget_4x1_play_pause, playPauseIcon)
+
+        // Set like icon - using navigation style (purple)
+        val likeIcon = if (isLiked) R.drawable.ic_widget_heart_nav else R.drawable.ic_widget_heart_outline_nav
+        views.setImageViewResource(R.id.widget_4x1_like, likeIcon)
+
+        // Set click intents
+        views.setOnClickPendingIntent(R.id.widget_4x1_album_art, openAppIntent)
+        views.setOnClickPendingIntent(R.id.widget_4x1_previous, previousIntent)
+        views.setOnClickPendingIntent(R.id.widget_4x1_play_pause, playPauseIntent)
+        views.setOnClickPendingIntent(R.id.widget_4x1_next, nextIntent)
+        views.setOnClickPendingIntent(R.id.widget_4x1_like, likeIntent)
+
+        return views
+    }
+
     private fun createTurntableRemoteViews(
         circularAlbumArt: Bitmap,
         isPlaying: Boolean,
@@ -404,6 +453,14 @@ class MetrolistWidgetManager @Inject constructor(
 
     private val likeIntent: PendingIntent by lazy {
         broadcastIntent(2, MusicWidgetReceiver::class.java, MusicWidgetReceiver.ACTION_LIKE)
+    }
+
+    private val nextIntent: PendingIntent by lazy {
+        broadcastIntent(6, MusicWidgetReceiver::class.java, MusicWidgetReceiver.ACTION_NEXT)
+    }
+
+    private val previousIntent: PendingIntent by lazy {
+        broadcastIntent(7, MusicWidgetReceiver::class.java, MusicWidgetReceiver.ACTION_PREVIOUS)
     }
 
     private val turntablePlayPauseIntent: PendingIntent by lazy {
