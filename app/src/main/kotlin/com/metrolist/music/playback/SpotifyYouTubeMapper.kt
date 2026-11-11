@@ -8,6 +8,7 @@ package com.metrolist.music.playback
 import android.util.LruCache
 import com.metrolist.innertube.YouTube
 import com.metrolist.innertube.models.SongItem
+import com.metrolist.innertube.models.WatchEndpoint.WatchEndpointMusicSupportedConfigs.WatchEndpointMusicConfig.Companion.MUSIC_VIDEO_TYPE_ATV
 import com.metrolist.innertube.pages.SearchSummaryPage
 import com.metrolist.music.db.MusicDatabase
 import com.metrolist.music.db.entities.SpotifyMatchEntity
@@ -174,7 +175,9 @@ class SpotifyYouTubeMapper(
                 candidateArtist = song.artists.firstOrNull()?.name ?: "",
                 candidateDurationSec = song.duration,
             )
-            val adjusted = score - variantPenalty(spotifyTitleLower, song.title)
+            // Bonus for official audio tracks (ATV) over music videos (OMV/UGC)
+            val atvBonus = if (song.musicVideoType == MUSIC_VIDEO_TYPE_ATV) ATV_BONUS else 0.0
+            val adjusted = score - variantPenalty(spotifyTitleLower, song.title) + atvBonus
 
             if (adjusted > bestAdjusted) {
                 bestAdjusted = adjusted
@@ -341,6 +344,9 @@ class SpotifyYouTubeMapper(
         /** Per-marker ranking penalty for non-studio variants, capped by [MAX_VARIANT_PENALTY]. */
         private const val VARIANT_PENALTY_PER_MARKER = 0.15
         private const val MAX_VARIANT_PENALTY = 0.30
+
+        /** Bonus for official audio tracks (ATV) over music videos (OMV/UGC). */
+        private const val ATV_BONUS = 0.25
 
         /** Whole-word markers that indicate a non-studio upload (live/MV/edit/etc.). */
         private val VARIANT_MARKER_REGEX = Regex(
