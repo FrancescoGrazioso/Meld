@@ -250,7 +250,10 @@ interface DatabaseDao {
     fun likedSongsCount(): Flow<Int>
 
     @Transaction
-    @Query("SELECT song.* FROM song JOIN song_album_map ON song.id = song_album_map.songId WHERE song_album_map.albumId = :albumId")
+    @Query(
+        "SELECT song.* FROM song JOIN song_album_map ON song.id = song_album_map.songId " +
+            "WHERE song_album_map.albumId = :albumId ORDER BY song_album_map.`index`, song.rowId",
+    )
     fun albumSongs(albumId: String): Flow<List<Song>>
 
     @Transaction
@@ -1970,6 +1973,9 @@ interface DatabaseDao {
         albumPage: AlbumPage,
         artists: List<ArtistEntity>? = emptyList(),
     ) {
+        // A partial response cannot replace the cached track list or its indices.
+        if (!albumPage.isSongListComplete || albumPage.songs.isEmpty()) return
+
         update(
             album.copy(
                 id = albumPage.album.browseId,
@@ -2006,6 +2012,10 @@ interface DatabaseDao {
                     index = index,
                 )
             }.forEach(::upsert)
+        deleteObsoleteAlbumSongMappings(
+            albumId = albumPage.album.browseId,
+            currentSongIds = albumPage.songs.map { it.id },
+        )
 
         albumPage.album.artists?.let { artists ->
             albumArtistMaps(album.id).forEach(::delete)
@@ -2046,6 +2056,18 @@ interface DatabaseDao {
 
     @Upsert
     fun upsert(map: SongAlbumMap)
+
+    @Query(
+        """
+        DELETE FROM song_album_map
+        WHERE albumId = :albumId
+          AND songId NOT IN (:currentSongIds)
+        """,
+    )
+    fun deleteObsoleteAlbumSongMappings(
+        albumId: String,
+        currentSongIds: List<String>,
+    )
 
     @Upsert
     fun upsert(lyrics: LyricsEntity)

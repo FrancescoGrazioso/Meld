@@ -7,6 +7,7 @@ package com.metrolist.music.db.entities
 
 import androidx.compose.runtime.Immutable
 import androidx.room.Embedded
+import androidx.room.Ignore
 import androidx.room.Junction
 import androidx.room.Relation
 
@@ -39,15 +40,23 @@ data class AlbumWithSongs(
     )
     val artists: List<ArtistEntity>,
     @Relation(
+        entity = SongAlbumMap::class,
+        entityColumn = "albumId",
+        parentColumn = "id",
+    )
+    val songEntries: List<AlbumSong>,
+) {
+    // Room's relation query does not preserve ORDER BY from a junction view.
+    @Ignore
+    val songs: List<Song> = songEntries.sortedBy { it.map.index }.map { it.song }
+}
+
+data class AlbumSong(
+    @Embedded val map: SongAlbumMap,
+    @Relation(
         entity = SongEntity::class,
         entityColumn = "id",
-        parentColumn = "id",
-        associateBy =
-        Junction(
-            value = SortedSongAlbumMap::class,
-            parentColumn = "albumId",
-            entityColumn = "songId",
-        ),
+        parentColumn = "songId",
     )
-    val songs: List<Song>,
+    val song: Song,
 )
