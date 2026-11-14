@@ -59,7 +59,12 @@ class SpotifyTracksViewModel(
     init {
         scope.launch {
             combine(store.generation, connected) { _, connected -> connected }.collect { connected ->
-                if (connected && collection.tracks.state.value.items.isEmpty()) collection.tracks.loadMore()
+                if (connected &&
+                    collection.tracks.state.value.items
+                        .isEmpty()
+                ) {
+                    collection.tracks.loadMore()
+                }
             }
         }
     }

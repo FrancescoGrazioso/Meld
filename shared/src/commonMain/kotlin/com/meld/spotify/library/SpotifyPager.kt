@@ -55,16 +55,24 @@ class SpotifyPager<T>(
     /** Loads every remaining page and returns the whole list; throws the [SpotifyError] of a failed request. */
     suspend fun loadAll(): List<T> = scope.async { loadRemaining() }.await()
 
-    /** Reloads from the first page; the current items stay visible until it arrives, and after a failure. */
-    fun refresh() {
+    /**
+     * Reloads from the first page, or every page when [all] is set. The current items stay
+     * visible until the new ones have arrived, and after a failure.
+     */
+    fun refresh(all: Boolean = false) {
         scope.launch {
             runCatching {
                 mutex.withLock {
                     mutableState.update { it.copy(refreshing = true, error = null) }
                     request {
-                        val page = fetch(0)
+                        var page = fetch(0)
+                        val items = page.items.toMutableList()
+                        while (all) {
+                            page = fetch(page.nextOffset ?: break)
+                            items += page.items
+                        }
                         nextOffset = page.nextOffset
-                        mutableState.value = SpotifyPagerState(page.items, page.total, complete = page.nextOffset == null)
+                        mutableState.value = SpotifyPagerState(items, page.total, complete = page.nextOffset == null)
                     }
                 }
             }
