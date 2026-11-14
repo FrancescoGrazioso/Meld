@@ -122,7 +122,8 @@ class SpotifyApi(
         }
         try {
             tokens()
-        } catch (error: SpotifyError.SessionExpired) {
+        } catch (error: SpotifyError) {
+            // Whatever the reason, the unsaved cookie must not linger in memory as if it were a session.
             authMutex.withLock { detach() }
             throw error
         }

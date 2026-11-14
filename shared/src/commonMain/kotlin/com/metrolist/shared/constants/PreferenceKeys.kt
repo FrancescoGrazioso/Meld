@@ -217,3 +217,6 @@ val PersistentPlaybackPositionKey = "persistentPlaybackPosition"
 val AndroidLastStorageAuditKey = "androidLastStorageAudit"
 val AndroidStorageAuditLocationKey = "androidStorageAuditLocation"
 val AndroidLastTrackedPlaylistSyncKey = "androidLastTrackedPlaylistSync"
+
+val MeldSpotifyAccountKey = "meldSpotifyAccount"
+val MeldSpotifyHashesKey = "meldSpotifyHashes"

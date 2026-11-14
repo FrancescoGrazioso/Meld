@@ -118,6 +118,8 @@ import com.metrolist.shared.constants.LyricsOpenRouterOAuthSessionKey
 import com.metrolist.shared.constants.LyricsPlusLighterKey
 import com.metrolist.shared.constants.LyricsProgressiveBlurKey
 import com.metrolist.shared.constants.LyricsShareImageStyleKey
+import com.metrolist.shared.constants.MeldSpotifyAccountKey
+import com.metrolist.shared.constants.MeldSpotifyHashesKey
 import com.metrolist.shared.constants.MinimumSongDurationSecondsKey
 import com.metrolist.shared.constants.MusicVideoCacheJsonKey
 import com.metrolist.shared.constants.MusicVideoPlaybackEnabledKey
@@ -273,6 +275,8 @@ class Settings(
     var accountChannelHandle by preference("")
     var accountThumbnail by preference("")
     var spotifySession by preference("")
+    var meldSpotifyAccount by preference(MeldSpotifyAccountKey, "")
+    var meldSpotifyHashes by preference(MeldSpotifyHashesKey, "")
 
     private var storedAppLanguage by preference(AppLanguageKey, "SYSTEM")
     var appLanguage: String
@@ -1278,6 +1282,8 @@ class Settings(
                 setOf(
                     "aiSlopBlocklistCache",
                     "aiSlopBlocklistUpdatedAt",
+                    MeldSpotifyAccountKey,
+                    MeldSpotifyHashesKey,
                     SpeedDialArtworkRefreshTimesKey,
                     "customDownloadPath",
                     "knownUploadIdsJson",
