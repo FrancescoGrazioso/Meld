@@ -17,7 +17,11 @@ val meldModule: Module =
                 play = { songs, _ -> PlayerState.playTrack(songs.first(), songs) },
                 enqueue = { PlayerState.addToQueue(it) },
                 enqueueNext = { PlayerState.playNext(it) },
-                reorder = { PlayerState.reorderQueue(PlayerState.queue.state.value.indicesOf(it), ignoreLock = true) },
+                // The queue lock is for the listener's drags, not for the order the feeder restores.
+                reorder = { keys ->
+                    val queue = PlayerState.queue.state.value
+                    PlayerState.reorderQueue(queue.indicesOf(keys), ignoreLock = true)
+                },
                 toggleShuffle = PlayerState::toggleShuffle,
             )
         },
