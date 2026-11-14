@@ -17,7 +17,7 @@ val meldModule: Module =
                 play = { songs, _ -> PlayerState.playTrack(songs.first(), songs) },
                 enqueue = { PlayerState.addToQueue(it) },
                 enqueueNext = { PlayerState.playNext(it) },
-                reorder = { PlayerState.reorderQueue(PlayerState.queue.state.value.indicesOf(it)) },
+                reorder = { PlayerState.reorderQueue(PlayerState.queue.state.value.indicesOf(it), ignoreLock = true) },
                 toggleShuffle = PlayerState::toggleShuffle,
             )
         },

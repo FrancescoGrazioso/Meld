@@ -22,7 +22,7 @@ class SpotifyQueueContractTest {
     private fun desktop(queueLocked: Boolean) =
         FakePlayer().apply {
             appendsAtEnd = true
-            refusesReorder = queueLocked
+            this.queueLocked = queueLocked
         }
 
     private fun TestScope.playback(player: FakePlayer): SpotifyQueuePlayback {
@@ -39,35 +39,41 @@ class SpotifyQueueContractTest {
     @Test
     fun desktopQueuesTheSourceInItsOrderAroundTheTappedTrack() = runTest { sourceIsQueuedInOrder(desktop(queueLocked = false)) }
 
+    /** The feeder's own reorder passes the desktop queue lock, which is on by default. */
+    @Test
+    fun lockedDesktopQueuesTheSourceInItsOrderAroundTheTappedTrack() =
+        runTest {
+            val player = desktop(queueLocked = true)
+            sourceIsQueuedInOrder(player)
+            assertFalse(player.reorderQueue(player.ids.indices.reversed().toList()), "the lock still holds for the user's drags")
+        }
+
     private fun TestScope.sourceIsQueuedInOrder(player: FakePlayer) {
         playback(player).play(tracks(0..27), startIndex = 20, title = "Mix")
         runCurrent()
         assertEquals(yt(0..27), player.ids)
         assertEquals("yt20", player.queue.currentItem()?.id)
-        assertEquals("yt19", player.queue.peekPrevious()?.id)
         assertEquals(listOf<String?>("Mix"), player.titles)
         assertFalse(spotifySourcePending())
         assertTrue(player.continuation(listOf("mix0")))
         assertEquals(yt(0..27) + "mix0", player.ids)
+        assertEquals(yt(0..19).reversed(), List(20) { player.queue.getPrevious()?.id }, "\"previous\" reaches every earlier track")
     }
 
+    /** A Listen Together guest's player takes no reorder: the earlier tracks stay where they were appended. */
     @Test
-    fun aRefusedReorderIsNotWaitedForAndLosesNoTrack() =
+    fun aRefusedReorderIsNotWaitedForAndLosesOrDuplicatesNoTrack() =
         runTest {
-            val player = desktop(queueLocked = true)
+            val player = desktop(queueLocked = false).apply { refusesReorder = true }
             playback(player).play(tracks(0..27), startIndex = 20)
             // No time passes here: the feeder goes on at once instead of waiting for an order that will not come.
             runCurrent()
-            assertEquals(yt(0..27).toSet(), player.ids.toSet())
-            assertEquals(28, player.ids.size)
+            assertEquals(yt(20..27) + yt(10..19) + yt(0..9), player.ids)
             assertEquals("yt20", player.queue.currentItem()?.id)
+            assertNull(player.queue.peekPrevious())
             assertFalse(spotifySourcePending())
             assertTrue(player.continuation(listOf("mix0")))
-
-            // known defect, see 10-DA-FARE.md §16/§17: with the desktop queue locked the earlier tracks stay after the
-            // later ones, so "previous" does not reach them.
-            assertEquals(yt(20..27) + yt(10..19) + yt(0..9) + "mix0", player.ids)
-            assertNull(player.queue.peekPrevious())
+            assertEquals("mix0", player.ids.last())
         }
 
     @Test

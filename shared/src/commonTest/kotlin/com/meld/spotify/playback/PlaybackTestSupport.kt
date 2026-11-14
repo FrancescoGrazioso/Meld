@@ -122,8 +122,8 @@ internal class FakeYouTube {
 
 /**
  * A player over upstream's real [MusicQueue], reached through the same [PlayerQueueTarget] the apps
- * use. As created it is the Android player; the desktop one differs in [appendsAtEnd] and, while
- * its queue is locked (the default), in [refusesReorder].
+ * use. As created it is the Android player; the desktop one differs in [appendsAtEnd] and in
+ * [queueLocked] (its default). A Listen Together guest's player [refusesReorder].
  */
 internal class FakePlayer {
     val queue = MusicQueue()
@@ -135,8 +135,21 @@ internal class FakePlayer {
     /** Desktop: queued songs go to the very end. Android: in front of the first upcoming recommendation. */
     var appendsAtEnd = false
 
-    /** Desktop with the queue locked: the player answers false and moves nothing. */
+    /** Desktop: the user's drags are refused, the feeder's own reorder is not. */
+    var queueLocked = false
+
+    /** A Listen Together guest: the player answers false and moves nothing, whoever asks. */
     var refusesReorder = false
+
+    /** Desktop's `PlayerState.reorderQueue`; the app's delegation passes [ignoreLock]. */
+    fun reorderQueue(
+        order: List<Int>,
+        ignoreLock: Boolean = false,
+    ): Boolean {
+        if (refusesReorder || (queueLocked && !ignoreLock)) return false
+        queue.reorder(order)
+        return true
+    }
 
     fun target(scope: CoroutineScope) =
         PlayerQueueTarget(
@@ -153,10 +166,7 @@ internal class FakePlayer {
                 queue.addToQueue(songs, insertIndex = firstRecommendation.takeUnless { appendsAtEnd })
             },
             enqueueNext = { queue.playNext(it) },
-            reorder = { keys ->
-                if (!refusesReorder) queue.reorder(queue.state.value.indicesOf(keys))
-                !refusesReorder
-            },
+            reorder = { reorderQueue(queue.state.value.indicesOf(it), ignoreLock = true) },
             toggleShuffle = ::toggleShuffle,
         )
 
