@@ -14,6 +14,7 @@ import com.metrolist.shared.playback.MusicQueue
 import com.metrolist.shared.playback.QUEUE_SOURCE_AUTO_MIX
 import com.metrolist.shared.playback.isRecommendationGeneratedQueueSource
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 
 internal fun track(
     n: Int,
@@ -119,41 +120,45 @@ internal class FakeYouTube {
     }
 }
 
-/** The queue as the Android player drives it, recommendations included. */
-internal class FakeTarget : SpotifyQueueTarget {
+/**
+ * A player over upstream's real [MusicQueue], reached through the same [PlayerQueueTarget] the apps
+ * use. As created it is the Android player; the desktop one differs in [appendsAtEnd] and, while
+ * its queue is locked (the default), in [refusesReorder].
+ */
+internal class FakePlayer {
     val queue = MusicQueue()
     val titles = mutableListOf<String?>()
 
     // The app's default.
     var legacyShuffle = true
 
-    override val queueState get() = queue.state
+    /** Desktop: queued songs go to the very end. Android: in front of the first upcoming recommendation. */
+    var appendsAtEnd = false
 
-    override val shuffleEnabled get() = queue.shuffleEnabled
+    /** Desktop with the queue locked: the player answers false and moves nothing. */
+    var refusesReorder = false
 
-    override fun start(
-        songs: List<SongItem>,
-        title: String?,
-        shuffle: Boolean,
-    ) {
-        titles += title
-        queue.setQueue(songs)
-        if (shuffle) queue.toggleShuffle(preserveHistory = false, legacyShuffle = legacyShuffle)
-    }
-
-    // As the player's enqueueSongs: in front of the first upcoming recommendation.
-    override fun addToQueue(songs: List<SongItem>) {
-        val items = queue.items.value
-        val firstRecommendation = items.indices.firstOrNull { it > queue.currentIndex.value && items[it].isRecommendation }
-        queue.addToQueue(songs, insertIndex = firstRecommendation)
-    }
-
-    override fun playNext(songs: List<SongItem>) = queue.playNext(songs)
-
-    override fun reorder(entryKeys: List<Long>): Boolean {
-        queue.reorder(queue.state.value.indicesOf(entryKeys))
-        return true
-    }
+    fun target(scope: CoroutineScope) =
+        PlayerQueueTarget(
+            scope = scope,
+            queueState = queue.state,
+            shuffleEnabled = queue.shuffleEnabled,
+            play = { songs, title ->
+                titles += title
+                queue.setQueue(songs)
+            },
+            enqueue = { songs ->
+                val items = queue.items.value
+                val firstRecommendation = items.indices.firstOrNull { it > queue.currentIndex.value && items[it].isRecommendation }
+                queue.addToQueue(songs, insertIndex = firstRecommendation.takeUnless { appendsAtEnd })
+            },
+            enqueueNext = { queue.playNext(it) },
+            reorder = { keys ->
+                if (!refusesReorder) queue.reorder(queue.state.value.indicesOf(keys))
+                !refusesReorder
+            },
+            toggleShuffle = ::toggleShuffle,
+        )
 
     /** The queue screen's shuffle button. */
     fun toggleShuffle() = queue.toggleShuffle(legacyShuffle = legacyShuffle)
