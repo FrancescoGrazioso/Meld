@@ -1,0 +1,44 @@
+{
+ "data": {
+  "me": {
+   "library": {
+    "tracks": {
+     "totalCount": 120,
+     "items": [
+      {
+       "addedAt": {"isoString": "2026-05-06T07:08:09Z"},
+       "track": {
+        "_uri": "spotify:track:l1",
+        "data": {
+         "__typename": "Track",
+         "name": "Liked One",
+         "artists": {"items": [{"uri": "spotify:artist:a1", "profile": {"name": "Artist A"}}]},
+         "albumOfTrack": {
+          "uri": "spotify:album:al9",
+          "name": "Album Nine",
+          "coverArt": {"sources": [{"url": "https://i.scdn.co/image/al9", "width": 64, "height": 64}]}
+         },
+         "duration": {"totalMilliseconds": 222000},
+         "contentRating": {"label": "EXPLICIT"}
+        }
+       }
+      },
+      {
+       "addedAt": {"isoString": "2026-05-01T00:00:00Z"},
+       "track": {
+        "_uri": "spotify:track:l2",
+        "data": {
+         "__typename": "Track",
+         "name": "Liked Two",
+         "artists": {"items": [{"uri": "spotify:artist:a3", "profile": {"name": "Artist C"}}]},
+         "albumOfTrack": {"uri": "spotify:album:al8", "name": "Album Eight"},
+         "duration": {"totalMilliseconds": 99000}
+        }
+       }
+      }
+     ]
+    }
+   }
+  }
+ }
+}

@@ -1,0 +1,88 @@
+{
+ "data": {
+  "playlistV2": {
+   "__typename": "Playlist",
+   "name": "Road trip",
+   "description": "Songs for the car",
+   "images": {
+    "items": [
+     {
+      "sources": [
+       {"url": "https://i.scdn.co/image/playlist-cover", "width": 640, "height": 640}
+      ]
+     }
+    ]
+   },
+   "ownerV2": {"data": {"__typename": "User", "name": "Owner", "uri": "spotify:user:owner1"}},
+   "content": {
+    "totalCount": 7,
+    "items": [
+     {
+      "uid": "u1",
+      "addedAt": {"isoString": "2026-01-02T03:04:05Z"},
+      "itemV2": {
+       "__typename": "TrackResponseWrapper",
+       "data": {
+        "__typename": "Track",
+        "uri": "spotify:track:t1",
+        "name": "Song One",
+        "artists": {
+         "items": [
+          {"uri": "spotify:artist:a1", "profile": {"name": "Artist A"}},
+          {"uri": "spotify:artist:a2", "profile": {"name": "Artist B"}}
+         ]
+        },
+        "albumOfTrack": {
+         "uri": "spotify:album:al1",
+         "name": "Album One",
+         "coverArt": {"sources": [{"url": "https://i.scdn.co/image/al1", "width": 300, "height": 300}]}
+        },
+        "trackDuration": {"totalMilliseconds": 201000},
+        "contentRating": {"label": "EXPLICIT"},
+        "playability": {"playable": true}
+       }
+      }
+     },
+     {
+      "uid": "u2",
+      "itemV2": {
+       "__typename": "TrackResponseWrapper",
+       "_uri": "spotify:track:t2",
+       "data": {
+        "__typename": "Track",
+        "name": "Song Two",
+        "artists": {"items": [{"uri": "spotify:artist:a1", "profile": {"name": "Artist A"}}, null]},
+        "albumOfTrack": {"uri": "spotify:album:al1", "name": "Album One"},
+        "duration": {"totalMilliseconds": 180500},
+        "contentRating": {"label": "NONE"}
+       }
+      }
+     },
+     {
+      "uid": "u3",
+      "itemV2": {
+       "__typename": "EpisodeOrChapterResponseWrapper",
+       "data": {"__typename": "Episode", "uri": "spotify:episode:e1", "name": "An episode"}
+      }
+     },
+     {
+      "uid": "u4",
+      "itemV2": {
+       "__typename": "LocalTrackResponseWrapper",
+       "data": {"__typename": "LocalTrack", "uri": "spotify:local:Artist:Album:Title:200", "name": "A local file"}
+      }
+     },
+     null,
+     {"uid": "u6", "itemV2": {"__typename": "NotFound"}},
+     {
+      "uid": "u7",
+      "itemV2": {
+       "__typename": "TrackResponseWrapper",
+       "data": {"__typename": "Track", "uri": "spotify:track:t7", "name": ""}
+      }
+     }
+    ]
+   }
+  }
+ }
+}
