@@ -1,0 +1,44 @@
+{
+ "data": {
+  "albumUnion": {
+   "__typename": "Album",
+   "name": "Album One",
+   "type": "ALBUM",
+   "date": {"isoString": "2024-03-01T00:00:00Z"},
+   "artists": {"items": [{"uri": "spotify:artist:a1", "profile": {"name": "Artist A"}}]},
+   "coverArt": {
+    "sources": [
+     {"url": "https://i.scdn.co/image/al1-small", "width": 64, "height": 64},
+     {"url": "https://i.scdn.co/image/al1-large", "width": 640, "height": 640}
+    ]
+   },
+   "tracksV2": {
+    "totalCount": 2,
+    "items": [
+     {
+      "track": {
+       "uri": "spotify:track:t1",
+       "name": "Song One",
+       "artists": {"items": [{"uri": "spotify:artist:a1", "profile": {"name": "Artist A"}}]},
+       "duration": {"totalMilliseconds": 201000},
+       "contentRating": {"label": "EXPLICIT"}
+      }
+     },
+     {
+      "track": {
+       "uri": "spotify:track:t2",
+       "name": "Song Two",
+       "artists": {
+        "items": [
+         {"uri": "spotify:artist:a1", "profile": {"name": "Artist A"}},
+         {"uri": "spotify:artist:a2", "profile": {"name": "Artist B"}}
+        ]
+       },
+       "duration": {"totalMilliseconds": 180500}
+      }
+     }
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,1484 @@
+{
+ "data": {
+  "home": {
+   "__typename": "HomeResponsePayload",
+   "greeting": {
+    "transformedLabel": "Good afternoon",
+    "translatedBaseText": "Good afternoon"
+   },
+   "sectionContainer": {
+    "sections": {
+     "items": [
+      {
+       "data": {
+        "__typename": "HomeShortsSectionData"
+       },
+       "sectionItems": {
+        "items": [
+         {
+          "content": {
+           "__typename": "PlaylistResponseWrapper",
+           "data": {
+            "__typename": "Playlist",
+            "attributes": [
+             {
+              "key": "request_id",
+              "value": "ssp~redacted"
+             },
+             {
+              "key": "cloud_artists_uris",
+              "value": "spotify:artist:id00000000000000000001,spotify:artist:id00000000000000000002,spotify:artist:id00000000000000000003"
+             },
+             {
+              "key": "madeFor.username",
+              "value": "Test User"
+             },
+             {
+              "key": "should_show_promo_disclosure",
+              "value": "true"
+             },
+             {
+              "key": "send-impression-for-rows",
+              "value": "true"
+             },
+             {
+              "key": "correlation-id",
+              "value": "ssp~redacted"
+             }
+            ],
+            "content": {
+             "__typename": "PlaylistItemsPage",
+             "totalCount": 50
+            },
+            "description": "<a href=spotify:playlist:id00000000000000000004>Link</a>Link<a href=spotify:playlist:id00000000000000000005>Link</a>Link<a href=spotify:playlist:id00000000000000000006>Link</a>",
+            "format": "topic-mix",
+            "images": {
+             "items": [
+              {
+               "extractedColors": {
+                "colorDark": {
+                 "hex": "#6F6FC0",
+                 "isFallback": false
+                }
+               },
+               "sources": [
+                {
+                 "height": null,
+                 "url": "https://pickasso.spotifycdn.com/image/img0001",
+                 "width": null
+                }
+               ]
+              }
+             ]
+            },
+            "name": "Name 1",
+            "ownerV2": {
+             "data": {
+              "__typename": "User",
+              "name": "Spotify",
+              "uri": "spotify:user:spotify"
+             }
+            },
+            "uri": "spotify:playlist:id00000000000000000007"
+           }
+          },
+          "data": null,
+          "uri": "spotify:playlist:id00000000000000000007"
+         },
+         {
+          "content": {
+           "__typename": "UnknownType",
+           "uri": "spotify:user:@:collection"
+          },
+          "data": null,
+          "uri": "spotify:user:@:collection"
+         },
+         {
+          "content": {
+           "__typename": "PlaylistResponseWrapper",
+           "data": {
+            "__typename": "Playlist",
+            "attributes": [
+             {
+              "key": "request_id",
+              "value": "ssp~redacted"
+             },
+             {
+              "key": "canContainArtists.uris",
+              "value": "spotify:artist:id00000000000000000008,spotify:artist:id00000000000000000009,spotify:artist:id00000000000000000010,spotify:artist:id00000000000000000011,spotify:artist:id00000000000000000012"
+             },
+             {
+              "key": "madeFor.username",
+              "value": "Test User"
+             },
+             {
+              "key": "temporary_hack_prefer_linear_playback",
+              "value": "true"
+             },
+             {
+              "key": "should_show_promo_disclosure",
+              "value": "true"
+             },
+             {
+              "key": "send-impression-for-rows",
+              "value": "true"
+             },
+             {
+              "key": "correlation-id",
+              "value": "ssp~redacted"
+             }
+            ],
+            "content": {
+             "__typename": "PlaylistItemsPage",
+             "totalCount": 50
+            },
+            "description": "Description 1",
+            "format": "daily-mix",
+            "images": {
+             "items": [
+              {
+               "extractedColors": {
+                "colorDark": {
+                 "hex": "#767676",
+                 "isFallback": false
+                }
+               },
+               "sources": [
+                {
+                 "height": null,
+                 "url": "https://pickasso.spotifycdn.com/image/img0002",
+                 "width": null
+                }
+               ]
+              }
+             ]
+            },
+            "name": "Name 2",
+            "ownerV2": {
+             "data": {
+              "__typename": "User",
+              "name": "Spotify",
+              "uri": "spotify:user:spotify"
+             }
+            },
+            "uri": "spotify:playlist:id00000000000000000013"
+           }
+          },
+          "data": null,
+          "uri": "spotify:playlist:id00000000000000000013"
+         },
+         {
+          "content": {
+           "__typename": "ArtistResponseWrapper",
+           "data": {
+            "__typename": "Artist",
+            "profile": {
+             "name": "Name 3"
+            },
+            "uri": "spotify:artist:id00000000000000000014",
+            "visuals": {
+             "avatarImage": {
+              "extractedColors": {
+               "colorDark": {
+                "hex": "#102840",
+                "isFallback": false
+               }
+              },
+              "sources": [
+               {
+                "height": 640,
+                "url": "https://i.scdn.co/image/img0003",
+                "width": 640
+               },
+               {
+                "height": 160,
+                "url": "https://i.scdn.co/image/img0004",
+                "width": 160
+               },
+               {
+                "height": 320,
+                "url": "https://i.scdn.co/image/img0005",
+                "width": 320
+               }
+              ]
+             }
+            }
+           }
+          },
+          "data": null,
+          "uri": "spotify:artist:id00000000000000000014"
+         },
+         {
+          "content": {
+           "__typename": "ArtistResponseWrapper",
+           "data": {
+            "__typename": "Artist",
+            "profile": {
+             "name": "Name 4"
+            },
+            "uri": "spotify:artist:id00000000000000000015",
+            "visuals": {
+             "avatarImage": {
+              "extractedColors": {
+               "colorDark": {
+                "hex": "#B80000",
+                "isFallback": false
+               }
+              },
+              "sources": [
+               {
+                "height": 640,
+                "url": "https://i.scdn.co/image/img0006",
+                "width": 640
+               },
+               {
+                "height": 160,
+                "url": "https://i.scdn.co/image/img0007",
+                "width": 160
+               },
+               {
+                "height": 320,
+                "url": "https://i.scdn.co/image/img0008",
+                "width": 320
+               }
+              ]
+             }
+            }
+           }
+          },
+          "data": null,
+          "uri": "spotify:artist:id00000000000000000015"
+         },
+         {
+          "content": {
+           "__typename": "PlaylistResponseWrapper",
+           "data": {
+            "__typename": "Playlist",
+            "attributes": [
+             {
+              "key": "request_id",
+              "value": "ssp~redacted"
+             },
+             {
+              "key": "artistGid",
+              "value": "00000000000000000000000000000000"
+             },
+             {
+              "key": "correlation-id",
+              "value": "ssp~redacted"
+             }
+            ],
+            "content": {
+             "__typename": "PlaylistItemsPage",
+             "totalCount": 50
+            },
+            "description": "Description 2",
+            "format": "artistsets",
+            "images": {
+             "items": [
+              {
+               "extractedColors": {
+                "colorDark": {
+                 "hex": "#857827",
+                 "isFallback": false
+                }
+               },
+               "sources": [
+                {
+                 "height": null,
+                 "url": "https://pickasso.spotifycdn.com/image/img0009",
+                 "width": null
+                }
+               ]
+              }
+             ]
+            },
+            "name": "Name 5",
+            "ownerV2": {
+             "data": {
+              "__typename": "User",
+              "name": "Spotify",
+              "uri": "spotify:user:spotify"
+             }
+            },
+            "uri": "spotify:playlist:id00000000000000000016"
+           }
+          },
+          "data": null,
+          "uri": "spotify:playlist:id00000000000000000016"
+         },
+         {
+          "content": {
+           "__typename": "AlbumResponseWrapper",
+           "data": {
+            "__typename": "Album",
+            "artists": {
+             "items": [
+              {
+               "profile": {
+                "name": "Name 6"
+               },
+               "uri": "spotify:artist:id00000000000000000017"
+              },
+              {
+               "profile": {
+                "name": "Name 7"
+               },
+               "uri": "spotify:artist:id00000000000000000018"
+              },
+              {
+               "profile": {
+                "name": "Name 8"
+               },
+               "uri": "spotify:artist:id00000000000000000019"
+              }
+             ]
+            },
+            "coverArt": {
+             "extractedColors": {
+              "colorDark": {
+               "hex": "#481828",
+               "isFallback": false
+              }
+             },
+             "sources": [
+              {
+               "height": 300,
+               "url": "https://i.scdn.co/image/img0010",
+               "width": 300
+              },
+              {
+               "height": 64,
+               "url": "https://i.scdn.co/image/img0011",
+               "width": 64
+              },
+              {
+               "height": 640,
+               "url": "https://i.scdn.co/image/img0012",
+               "width": 640
+              }
+             ]
+            },
+            "name": "Name 9",
+            "playability": {
+             "playable": true,
+             "reason": "PLAYABLE"
+            },
+            "albumType": "SINGLE",
+            "uri": "spotify:album:id00000000000000000020"
+           }
+          },
+          "data": null,
+          "uri": "spotify:album:id00000000000000000020"
+         },
+         {
+          "content": {
+           "__typename": "AlbumResponseWrapper",
+           "data": {
+            "__typename": "Album",
+            "artists": {
+             "items": [
+              {
+               "profile": {
+                "name": "Name 10"
+               },
+               "uri": "spotify:artist:id00000000000000000021"
+              }
+             ]
+            },
+            "coverArt": {
+             "extractedColors": {
+              "colorDark": {
+               "hex": "#985060",
+               "isFallback": false
+              }
+             },
+             "sources": [
+              {
+               "height": 300,
+               "url": "https://i.scdn.co/image/img0013",
+               "width": 300
+              },
+              {
+               "height": 64,
+               "url": "https://i.scdn.co/image/img0014",
+               "width": 64
+              },
+              {
+               "height": 640,
+               "url": "https://i.scdn.co/image/img0015",
+               "width": 640
+              }
+             ]
+            },
+            "name": "Name 11",
+            "playability": {
+             "playable": true,
+             "reason": "PLAYABLE"
+            },
+            "albumType": "ALBUM",
+            "uri": "spotify:album:id00000000000000000022"
+           }
+          },
+          "data": null,
+          "uri": "spotify:album:id00000000000000000022"
+         },
+         {
+          "content": {
+           "__typename": "PlaylistResponseWrapper",
+           "data": {
+            "__typename": "Playlist",
+            "attributes": [
+             {
+              "key": "request_id",
+              "value": "ssp~redacted"
+             },
+             {
+              "key": "canContainArtists.uris",
+              "value": "spotify:artist:id00000000000000000023,spotify:artist:id00000000000000000024,spotify:artist:id00000000000000000021,spotify:artist:id00000000000000000025,spotify:artist:id00000000000000000026"
+             },
+             {
+              "key": "madeFor.username",
+              "value": "Test User"
+             },
+             {
+              "key": "temporary_hack_prefer_linear_playback",
+              "value": "true"
+             },
+             {
+              "key": "should_show_promo_disclosure",
+              "value": "true"
+             },
+             {
+              "key": "send-impression-for-rows",
+              "value": "true"
+             },
+             {
+              "key": "correlation-id",
+              "value": "ssp~redacted"
+             }
+            ],
+            "content": {
+             "__typename": "PlaylistItemsPage",
+             "totalCount": 50
+            },
+            "description": "Description 3",
+            "format": "daily-mix",
+            "images": {
+             "items": [
+              {
+               "extractedColors": {
+                "colorDark": {
+                 "hex": "#002840",
+                 "isFallback": false
+                }
+               },
+               "sources": [
+                {
+                 "height": null,
+                 "url": "https://pickasso.spotifycdn.com/image/img0016",
+                 "width": null
+                }
+               ]
+              }
+             ]
+            },
+            "name": "Name 12",
+            "ownerV2": {
+             "data": {
+              "__typename": "User",
+              "name": "Spotify",
+              "uri": "spotify:user:spotify"
+             }
+            },
+            "uri": "spotify:playlist:id00000000000000000027"
+           }
+          },
+          "data": null,
+          "uri": "spotify:playlist:id00000000000000000027"
+         },
+         {
+          "content": {
+           "__typename": "AlbumResponseWrapper",
+           "data": {
+            "__typename": "Album",
+            "artists": {
+             "items": [
+              {
+               "profile": {
+                "name": "Name 13"
+               },
+               "uri": "spotify:artist:id00000000000000000009"
+              }
+             ]
+            },
+            "coverArt": {
+             "extractedColors": {
+              "colorDark": {
+               "hex": "#A55F92",
+               "isFallback": false
+              }
+             },
+             "sources": [
+              {
+               "height": 300,
+               "url": "https://i.scdn.co/image/img0017",
+               "width": 300
+              },
+              {
+               "height": 64,
+               "url": "https://i.scdn.co/image/img0018",
+               "width": 64
+              },
+              {
+               "height": 640,
+               "url": "https://i.scdn.co/image/img0019",
+               "width": 640
+              }
+             ]
+            },
+            "name": "Name 14",
+            "playability": {
+             "playable": true,
+             "reason": "PLAYABLE"
+            },
+            "albumType": "ALBUM",
+            "uri": "spotify:album:id00000000000000000028"
+           }
+          },
+          "data": null,
+          "uri": "spotify:album:id00000000000000000028"
+         }
+        ],
+        "pagingInfo": {
+         "nextOffset": 10
+        },
+        "totalCount": 48
+       },
+       "uri": "spotify:section:0JQ5DAIiKWzVFULQfUm85Y"
+      },
+      {
+       "data": {
+        "__typename": "HomeGenericSectionData",
+        "headerEntity": {
+         "__typename": "UnknownType"
+        },
+        "subtitle": {
+         "transformedLabel": "",
+         "translatedBaseText": null
+        },
+        "title": {
+         "transformedLabel": "Made For Test User",
+         "translatedBaseText": "Made For {0}"
+        }
+       },
+       "sectionItems": {
+        "items": [
+         {
+          "content": {
+           "__typename": "PlaylistResponseWrapper",
+           "data": {
+            "__typename": "Playlist",
+            "attributes": [
+             {
+              "key": "request_id",
+              "value": "ssp~redacted"
+             },
+             {
+              "key": "canContainArtists.uris",
+              "value": "spotify:artist:id00000000000000000029,spotify:artist:id00000000000000000030,spotify:artist:id00000000000000000031,spotify:artist:id00000000000000000032,spotify:artist:id00000000000000000033"
+             },
+             {
+              "key": "madeFor.username",
+              "value": "Test User"
+             },
+             {
+              "key": "temporary_hack_prefer_linear_playback",
+              "value": "true"
+             },
+             {
+              "key": "should_show_promo_disclosure",
+              "value": "true"
+             },
+             {
+              "key": "send-impression-for-rows",
+              "value": "true"
+             },
+             {
+              "key": "correlation-id",
+              "value": "ssp~redacted"
+             }
+            ],
+            "content": {
+             "__typename": "PlaylistItemsPage",
+             "totalCount": 50
+            },
+            "description": "Description 4",
+            "format": "daily-mix",
+            "images": {
+             "items": [
+              {
+               "extractedColors": {
+                "colorDark": {
+                 "hex": "#008585",
+                 "isFallback": false
+                }
+               },
+               "sources": [
+                {
+                 "height": null,
+                 "url": "https://pickasso.spotifycdn.com/image/img0020",
+                 "width": null
+                }
+               ]
+              }
+             ]
+            },
+            "name": "Name 15",
+            "ownerV2": {
+             "data": {
+              "__typename": "User",
+              "name": "Spotify",
+              "uri": "spotify:user:spotify"
+             }
+            },
+            "uri": "spotify:playlist:id00000000000000000034"
+           }
+          },
+          "data": null,
+          "uri": "spotify:playlist:id00000000000000000034"
+         },
+         {
+          "content": {
+           "__typename": "PlaylistResponseWrapper",
+           "data": {
+            "__typename": "Playlist",
+            "attributes": [
+             {
+              "key": "request_id",
+              "value": "ssp~redacted"
+             },
+             {
+              "key": "canContainArtists.uris",
+              "value": "spotify:artist:id00000000000000000035,spotify:artist:id00000000000000000036,spotify:artist:id00000000000000000019,spotify:artist:id00000000000000000037,spotify:artist:id00000000000000000038"
+             },
+             {
+              "key": "madeFor.username",
+              "value": "Test User"
+             },
+             {
+              "key": "temporary_hack_prefer_linear_playback",
+              "value": "true"
+             },
+             {
+              "key": "should_show_promo_disclosure",
+              "value": "true"
+             },
+             {
+              "key": "send-impression-for-rows",
+              "value": "true"
+             },
+             {
+              "key": "correlation-id",
+              "value": "ssp~redacted"
+             }
+            ],
+            "content": {
+             "__typename": "PlaylistItemsPage",
+             "totalCount": 50
+            },
+            "description": "Description 5",
+            "format": "daily-mix",
+            "images": {
+             "items": [
+              {
+               "extractedColors": {
+                "colorDark": {
+                 "hex": "#D93F2A",
+                 "isFallback": false
+                }
+               },
+               "sources": [
+                {
+                 "height": null,
+                 "url": "https://pickasso.spotifycdn.com/image/img0021",
+                 "width": null
+                }
+               ]
+              }
+             ]
+            },
+            "name": "Name 16",
+            "ownerV2": {
+             "data": {
+              "__typename": "User",
+              "name": "Spotify",
+              "uri": "spotify:user:spotify"
+             }
+            },
+            "uri": "spotify:playlist:id00000000000000000039"
+           }
+          },
+          "data": null,
+          "uri": "spotify:playlist:id00000000000000000039"
+         }
+        ],
+        "pagingInfo": {
+         "nextOffset": null
+        },
+        "totalCount": 8
+       },
+       "uri": "spotify:section:0JQ5DAUnp4wcj0bCb3wh3S"
+      },
+      {
+       "data": {
+        "__typename": "HomeGenericSectionData",
+        "headerEntity": {
+         "__typename": "UnknownType"
+        },
+        "subtitle": {
+         "transformedLabel": "",
+         "translatedBaseText": null
+        },
+        "title": {
+         "transformedLabel": "Episodes you might like",
+         "translatedBaseText": "Episodes you might like"
+        }
+       },
+       "sectionItems": {
+        "items": [
+         {
+          "content": {
+           "__typename": "EpisodeOrChapterResponseWrapper",
+           "data": {
+            "__typename": "Episode",
+            "contentRating": {
+             "label": "NONE"
+            },
+            "contents": [],
+            "coverArt": {
+             "extractedColors": {
+              "colorDark": {
+               "hex": "#A80000",
+               "isFallback": false
+              }
+             },
+             "sources": [
+              {
+               "height": 64,
+               "url": "https://i.scdn.co/image/img0022",
+               "width": 64
+              },
+              {
+               "height": 300,
+               "url": "https://i.scdn.co/image/img0023",
+               "width": 300
+              },
+              {
+               "height": 640,
+               "url": "https://i.scdn.co/image/img0024",
+               "width": 640
+              }
+             ]
+            },
+            "description": "Description 6",
+            "duration": {
+             "totalMilliseconds": 790442
+            },
+            "id": "id00000000000000000040",
+            "mediaTypes": [
+             "VIDEO",
+             "AUDIO"
+            ],
+            "name": "Name 17",
+            "playability": {
+             "playable": true,
+             "reason": "PLAYABLE"
+            },
+            "playedState": {
+             "playPositionMilliseconds": 0,
+             "state": "NOT_STARTED"
+            },
+            "podcastV2": {
+             "__typename": "PodcastResponseWrapper",
+             "data": {
+              "__typename": "Podcast",
+              "coverArt": {
+               "extractedColors": {
+                "colorDark": {
+                 "hex": "#A80000",
+                 "isFallback": false
+                }
+               },
+               "sources": [
+                {
+                 "height": 64,
+                 "url": "https://i.scdn.co/image/img0022",
+                 "width": 64
+                },
+                {
+                 "height": 300,
+                 "url": "https://i.scdn.co/image/img0023",
+                 "width": 300
+                },
+                {
+                 "height": 640,
+                 "url": "https://i.scdn.co/image/img0024",
+                 "width": 640
+                }
+               ]
+              },
+              "mediaType": "MIXED",
+              "name": "Name 18",
+              "publisher": {
+               "name": "Name 18"
+              },
+              "uri": "spotify:show:id00000000000000000041"
+             }
+            },
+            "releaseDate": {
+             "isoString": "2025-12-23T05:11:00Z",
+             "precision": "MINUTE"
+            },
+            "restrictions": {
+             "paywallContent": false
+            },
+            "type": "PODCAST_EPISODE",
+            "uri": "spotify:episode:id00000000000000000040",
+            "videoPreviewThumbnail": {
+             "__typename": "VideoThumbnailImage",
+             "imagePreview": {
+              "data": {
+               "__typename": "ImageV2",
+               "sources": [
+                {
+                 "imageFormat": "WEBP",
+                 "maxHeight": 720,
+                 "maxWidth": 1280,
+                 "url": "https://image-cdn-ak.spotifycdn.com/image/img0025"
+                },
+                {
+                 "imageFormat": "WEBP",
+                 "maxHeight": 360,
+                 "maxWidth": 640,
+                 "url": "https://image-cdn-ak.spotifycdn.com/image/img0026"
+                }
+               ]
+              }
+             }
+            },
+            "visualIdentity": {
+             "squareCoverImage": {
+              "__typename": "VisualIdentityImage",
+              "extractedColorSet": {
+               "encoreBaseSetTextColor": {
+                "alpha": 255,
+                "blue": 147,
+                "green": 162,
+                "red": 255
+               },
+               "highContrast": {
+                "backgroundBase": {
+                 "alpha": 255,
+                 "blue": 0,
+                 "green": 0,
+                 "red": 159
+                },
+                "backgroundTintedBase": {
+                 "alpha": 255,
+                 "blue": 0,
+                 "green": 0,
+                 "red": 97
+                },
+                "textBase": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                },
+                "textBrightAccent": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                },
+                "textSubdued": {
+                 "alpha": 255,
+                 "blue": 177,
+                 "green": 190,
+                 "red": 255
+                }
+               },
+               "higherContrast": {
+                "backgroundBase": {
+                 "alpha": 255,
+                 "blue": 0,
+                 "green": 0,
+                 "red": 101
+                },
+                "backgroundTintedBase": {
+                 "alpha": 255,
+                 "blue": 41,
+                 "green": 52,
+                 "red": 147
+                },
+                "textBase": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                },
+                "textBrightAccent": {
+                 "alpha": 255,
+                 "blue": 96,
+                 "green": 215,
+                 "red": 30
+                },
+                "textSubdued": {
+                 "alpha": 255,
+                 "blue": 177,
+                 "green": 190,
+                 "red": 255
+                }
+               },
+               "minContrast": {
+                "backgroundBase": {
+                 "alpha": 255,
+                 "blue": 0,
+                 "green": 0,
+                 "red": 168
+                },
+                "backgroundTintedBase": {
+                 "alpha": 255,
+                 "blue": 0,
+                 "green": 0,
+                 "red": 108
+                },
+                "textBase": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                },
+                "textBrightAccent": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                },
+                "textSubdued": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                }
+               }
+              }
+             }
+            }
+           }
+          },
+          "data": {
+           "__typename": "HomeRecsItemData"
+          },
+          "uri": "spotify:episode:id00000000000000000040"
+         },
+         {
+          "content": {
+           "__typename": "EpisodeOrChapterResponseWrapper",
+           "data": {
+            "__typename": "Episode",
+            "contentRating": {
+             "label": "EXPLICIT"
+            },
+            "contents": [],
+            "coverArt": {
+             "extractedColors": {
+              "colorDark": {
+               "hex": "#606850",
+               "isFallback": false
+              }
+             },
+             "sources": [
+              {
+               "height": 64,
+               "url": "https://i.scdn.co/image/img0027",
+               "width": 64
+              },
+              {
+               "height": 300,
+               "url": "https://i.scdn.co/image/img0028",
+               "width": 300
+              },
+              {
+               "height": 640,
+               "url": "https://i.scdn.co/image/img0029",
+               "width": 640
+              }
+             ]
+            },
+            "description": "Description 7",
+            "duration": {
+             "totalMilliseconds": 1967146
+            },
+            "id": "id00000000000000000042",
+            "mediaTypes": [
+             "VIDEO",
+             "AUDIO"
+            ],
+            "name": "Name 19",
+            "playability": {
+             "playable": true,
+             "reason": "PLAYABLE"
+            },
+            "playedState": {
+             "playPositionMilliseconds": 0,
+             "state": "NOT_STARTED"
+            },
+            "podcastV2": {
+             "__typename": "PodcastResponseWrapper",
+             "data": {
+              "__typename": "Podcast",
+              "coverArt": {
+               "extractedColors": {
+                "colorDark": {
+                 "hex": "#547E7E",
+                 "isFallback": false
+                }
+               },
+               "sources": [
+                {
+                 "height": 64,
+                 "url": "https://i.scdn.co/image/img0030",
+                 "width": 64
+                },
+                {
+                 "height": 300,
+                 "url": "https://i.scdn.co/image/img0031",
+                 "width": 300
+                },
+                {
+                 "height": 640,
+                 "url": "https://i.scdn.co/image/img0032",
+                 "width": 640
+                }
+               ]
+              },
+              "mediaType": "MIXED",
+              "name": "Name 20",
+              "publisher": {
+               "name": "Name 21"
+              },
+              "uri": "spotify:show:id00000000000000000043"
+             }
+            },
+            "releaseDate": {
+             "isoString": "2026-04-17T17:00:00Z",
+             "precision": "MINUTE"
+            },
+            "restrictions": {
+             "paywallContent": false
+            },
+            "type": "PODCAST_EPISODE",
+            "uri": "spotify:episode:id00000000000000000042",
+            "videoPreviewThumbnail": {
+             "__typename": "VideoThumbnailImage",
+             "imagePreview": {
+              "data": {
+               "__typename": "ImageV2",
+               "sources": [
+                {
+                 "imageFormat": "WEBP",
+                 "maxHeight": 720,
+                 "maxWidth": 1280,
+                 "url": "https://image-cdn-fa.spotifycdn.com/image/img0033"
+                },
+                {
+                 "imageFormat": "WEBP",
+                 "maxHeight": 360,
+                 "maxWidth": 640,
+                 "url": "https://image-cdn-fa.spotifycdn.com/image/img0034"
+                }
+               ]
+              }
+             }
+            },
+            "visualIdentity": {
+             "squareCoverImage": {
+              "__typename": "VisualIdentityImage",
+              "extractedColorSet": {
+               "encoreBaseSetTextColor": {
+                "alpha": 255,
+                "blue": 164,
+                "green": 190,
+                "red": 181
+               },
+               "highContrast": {
+                "backgroundBase": {
+                 "alpha": 255,
+                 "blue": 63,
+                 "green": 86,
+                 "red": 79
+                },
+                "backgroundTintedBase": {
+                 "alpha": 255,
+                 "blue": 32,
+                 "green": 53,
+                 "red": 47
+                },
+                "textBase": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                },
+                "textBrightAccent": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                },
+                "textSubdued": {
+                 "alpha": 255,
+                 "blue": 182,
+                 "green": 209,
+                 "red": 200
+                }
+               },
+               "higherContrast": {
+                "backgroundBase": {
+                 "alpha": 255,
+                 "blue": 34,
+                 "green": 56,
+                 "red": 49
+                },
+                "backgroundTintedBase": {
+                 "alpha": 255,
+                 "blue": 66,
+                 "green": 89,
+                 "red": 81
+                },
+                "textBase": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                },
+                "textBrightAccent": {
+                 "alpha": 255,
+                 "blue": 96,
+                 "green": 215,
+                 "red": 30
+                },
+                "textSubdued": {
+                 "alpha": 255,
+                 "blue": 182,
+                 "green": 209,
+                 "red": 200
+                }
+               },
+               "minContrast": {
+                "backgroundBase": {
+                 "alpha": 255,
+                 "blue": 80,
+                 "green": 104,
+                 "red": 96
+                },
+                "backgroundTintedBase": {
+                 "alpha": 255,
+                 "blue": 52,
+                 "green": 74,
+                 "red": 67
+                },
+                "textBase": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                },
+                "textBrightAccent": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                },
+                "textSubdued": {
+                 "alpha": 255,
+                 "blue": 255,
+                 "green": 255,
+                 "red": 255
+                }
+               }
+              }
+             }
+            }
+           }
+          },
+          "data": {
+           "__typename": "HomeRecsItemData"
+          },
+          "uri": "spotify:episode:id00000000000000000042"
+         }
+        ],
+        "pagingInfo": {
+         "nextOffset": 10
+        },
+        "totalCount": 100
+       },
+       "uri": "spotify:section:0JQ5DAnM3wGh0gz1MXnuhz"
+      },
+      {
+       "data": {
+        "__typename": "HomeGenericSectionData",
+        "headerEntity": {
+         "__typename": "UnknownType"
+        },
+        "subtitle": {
+         "transformedLabel": "Inspired by your recent activity",
+         "translatedBaseText": "Inspired by your recent activity"
+        },
+        "title": {
+         "transformedLabel": "Recommended for today",
+         "translatedBaseText": "Recommended for today"
+        }
+       },
+       "sectionItems": {
+        "items": [
+         {
+          "content": {
+           "__typename": "AlbumResponseWrapper",
+           "data": {
+            "__typename": "Album",
+            "artists": {
+             "items": [
+              {
+               "profile": {
+                "name": "Name 22"
+               },
+               "uri": "spotify:artist:id00000000000000000044"
+              },
+              {
+               "profile": {
+                "name": "Name 23"
+               },
+               "uri": "spotify:artist:id00000000000000000045"
+              },
+              {
+               "profile": {
+                "name": "Name 24"
+               },
+               "uri": "spotify:artist:id00000000000000000046"
+              }
+             ]
+            },
+            "coverArt": {
+             "extractedColors": {
+              "colorDark": {
+               "hex": "#B35D65",
+               "isFallback": false
+              }
+             },
+             "sources": [
+              {
+               "height": 300,
+               "url": "https://i.scdn.co/image/img0035",
+               "width": 300
+              },
+              {
+               "height": 64,
+               "url": "https://i.scdn.co/image/img0036",
+               "width": 64
+              },
+              {
+               "height": 640,
+               "url": "https://i.scdn.co/image/img0037",
+               "width": 640
+              }
+             ]
+            },
+            "name": "Name 25",
+            "playability": {
+             "playable": true,
+             "reason": "PLAYABLE"
+            },
+            "albumType": "SINGLE",
+            "uri": "spotify:album:id00000000000000000047"
+           }
+          },
+          "data": null,
+          "uri": "spotify:album:id00000000000000000047"
+         },
+         {
+          "content": {
+           "__typename": "AlbumResponseWrapper",
+           "data": {
+            "__typename": "Album",
+            "artists": {
+             "items": [
+              {
+               "profile": {
+                "name": "Name 26"
+               },
+               "uri": "spotify:artist:id00000000000000000048"
+              }
+             ]
+            },
+            "coverArt": {
+             "extractedColors": {
+              "colorDark": {
+               "hex": "#8D725B",
+               "isFallback": false
+              }
+             },
+             "sources": [
+              {
+               "height": 300,
+               "url": "https://i.scdn.co/image/img0038",
+               "width": 300
+              },
+              {
+               "height": 64,
+               "url": "https://i.scdn.co/image/img0039",
+               "width": 64
+              },
+              {
+               "height": 640,
+               "url": "https://i.scdn.co/image/img0040",
+               "width": 640
+              }
+             ]
+            },
+            "name": "Name 27",
+            "playability": {
+             "playable": true,
+             "reason": "PLAYABLE"
+            },
+            "albumType": "SINGLE",
+            "uri": "spotify:album:id00000000000000000049"
+           }
+          },
+          "data": null,
+          "uri": "spotify:album:id00000000000000000049"
+         }
+        ],
+        "pagingInfo": {
+         "nextOffset": 10
+        },
+        "totalCount": 15
+       },
+       "uri": "spotify:section:0JQ5DAnM3wGh0gz1MXnu3F"
+      },
+      {
+       "data": {
+        "__typename": "HomeGenericSectionData",
+        "headerEntity": {
+         "__typename": "UnknownType"
+        },
+        "subtitle": {
+         "transformedLabel": "",
+         "translatedBaseText": null
+        },
+        "title": {
+         "transformedLabel": "Your favorite artists",
+         "translatedBaseText": "Your favorite artists"
+        }
+       },
+       "sectionItems": {
+        "items": [
+         {
+          "content": {
+           "__typename": "ArtistResponseWrapper",
+           "data": {
+            "__typename": "Artist",
+            "profile": {
+             "name": "Name 28"
+            },
+            "uri": "spotify:artist:id00000000000000000050",
+            "visuals": {
+             "avatarImage": {
+              "extractedColors": {
+               "colorDark": {
+                "hex": "#535353",
+                "isFallback": true
+               }
+              },
+              "sources": [
+               {
+                "height": 640,
+                "url": "https://i.scdn.co/image/img0041",
+                "width": 640
+               },
+               {
+                "height": 160,
+                "url": "https://i.scdn.co/image/img0042",
+                "width": 160
+               },
+               {
+                "height": 320,
+                "url": "https://i.scdn.co/image/img0043",
+                "width": 320
+               }
+              ]
+             }
+            }
+           }
+          },
+          "data": null,
+          "uri": "spotify:artist:id00000000000000000050"
+         },
+         {
+          "content": {
+           "__typename": "ArtistResponseWrapper",
+           "data": {
+            "__typename": "Artist",
+            "profile": {
+             "name": "Name 29"
+            },
+            "uri": "spotify:artist:id00000000000000000051",
+            "visuals": {
+             "avatarImage": {
+              "extractedColors": {
+               "colorDark": {
+                "hex": "#800000",
+                "isFallback": false
+               }
+              },
+              "sources": [
+               {
+                "height": 640,
+                "url": "https://i.scdn.co/image/img0044",
+                "width": 640
+               },
+               {
+                "height": 160,
+                "url": "https://i.scdn.co/image/img0045",
+                "width": 160
+               },
+               {
+                "height": 320,
+                "url": "https://i.scdn.co/image/img0046",
+                "width": 320
+               }
+              ]
+             }
+            }
+           }
+          },
+          "data": null,
+          "uri": "spotify:artist:id00000000000000000051"
+         }
+        ],
+        "pagingInfo": {
+         "nextOffset": 10
+        },
+        "totalCount": 20
+       },
+       "uri": "spotify:section:0JQ5DAnM3wGh0gz1MXnu3z"
+      }
+     ],
+     "totalCount": 5
+    }
+   }
+  }
+ }
+}
