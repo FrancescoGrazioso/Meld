@@ -11,7 +11,6 @@ import com.metrolist.shared.network.sharedHttpEngine
 import com.metrolist.shared.settings.Settings
 import com.metrolist.shared.state.GlobalYouTubeRepository
 import com.metrolist.shared.youtube.logging.YtLogger
-import kotlin.time.Clock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -19,6 +18,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
+import kotlin.time.Clock
 
 /** [onLogout] lets a platform drop Spotify clients it keeps alive outside the session owner. */
 fun spotifyModule(onLogout: () -> Unit = {}): Module =
