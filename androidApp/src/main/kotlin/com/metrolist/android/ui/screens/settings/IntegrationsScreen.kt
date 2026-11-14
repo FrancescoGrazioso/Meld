@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import com.meld.android.spotify.rememberSpotifySignIn
 import com.metrolist.android.LocalMiniPlayerBottomInset
 import com.metrolist.android.playback.LocalPlayerConnection
 import com.metrolist.android.ui.screens.rememberDeviceConnectSettingsHost
@@ -89,6 +90,7 @@ fun IntegrationsScreen(
                 },
                 deviceConnect = rememberDeviceConnectSettingsHost(),
                 onOpenListenTogether = onNavigateToListenTogether,
+                onSpotifySignIn = rememberSpotifySignIn(),
                 onOpenUrl = { url -> runCatching { context.openDiscordUrl(url) } },
                 onCopyText = { label, text -> context.copyToClipboard(label, text, copiedMessage) },
                 onMessage = { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() },

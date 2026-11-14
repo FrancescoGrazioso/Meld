@@ -59,6 +59,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.meld.spotify.ui.spotifyPage
 import com.metrolist.shared.api.lastfm.LastFM
 import com.metrolist.shared.api.lastfm.LastFmLoginFailure
 import com.metrolist.shared.api.lastfm.lastFmLoginFailure
@@ -116,6 +117,7 @@ data class SharedIntegrationsHost(
     val onCopyText: (String, String) -> Unit = { _, _ -> },
     val onShareText: ((String) -> Unit)? = null,
     val onMessage: (String) -> Unit = {},
+    val onSpotifySignIn: (() -> Unit)? = null,
 )
 
 data class IntegrationPlaybackState(
@@ -669,6 +671,7 @@ private fun buildIntegrationsRegistry(
         }
     }
 
+    val spotifyPage = builder.spotifyPage(host.onSpotifySignIn)
     host.deviceConnect?.let { builder.deviceConnectPage(it) }
     if (host.listenTogetherManager != null || host.onOpenListenTogether != null) {
         builder.customPage(
@@ -696,6 +699,7 @@ private fun buildIntegrationsRegistry(
     builder.rootGroup(
         stringResource(Res.string.integrations),
         *listOfNotNull(
+            spotifyPage,
             SettingsPageId.DISCORD,
             SettingsPageId.LAST_FM,
             SettingsPageId.LISTEN_BRAINZ,

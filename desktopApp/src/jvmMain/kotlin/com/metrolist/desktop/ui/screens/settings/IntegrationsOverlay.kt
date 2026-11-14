@@ -21,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.meld.desktop.spotify.rememberSpotifySignIn
 import com.metrolist.desktop.auth.DesktopDiscordLogin
 import com.metrolist.desktop.state.app.AppState
 import com.metrolist.desktop.state.app.UiState
@@ -85,6 +86,7 @@ fun IntegrationsOverlay(colorScheme: ColorScheme) {
                         },
                         deviceConnect = rememberDeviceConnectSettingsHost(),
                         listenTogetherManager = ListenTogetherState.listenTogetherManager,
+                        onSpotifySignIn = rememberSpotifySignIn(),
                         onOpenUrl = { openDiscordUrl(it, null) },
                         onCopyText = { _, text -> AppState.copyToClipboard(text) },
                     ),

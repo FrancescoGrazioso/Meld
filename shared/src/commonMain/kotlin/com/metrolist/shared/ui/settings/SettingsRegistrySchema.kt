@@ -63,6 +63,7 @@ enum class SettingsPageId {
     DEVICE_CONNECT,
     LISTEN_TOGETHER,
     EQUALIZER,
+    SPOTIFY,
 }
 
 enum class SettingsChangeEffect {

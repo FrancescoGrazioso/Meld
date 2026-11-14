@@ -5458,4 +5458,22 @@
     <string name="ai_setup_privacy_settings">Open privacy settings</string>
     <string name="ai_setup_sign_in_again">Sign in again</string>
     <string name="ai_setup_key_limits">Review key limits</string>
+    <string name="meld_spotify_overview">Your Spotify library in Meld</string>
+    <string name="meld_spotify_status_not_connected">Not connected</string>
+    <string name="meld_spotify_status_expired">Session expired</string>
+    <string name="meld_spotify_connect">Connect Spotify</string>
+    <string name="meld_spotify_connect_description">Sign in to use your Spotify library in Meld</string>
+    <string name="meld_spotify_connecting">Connecting to Spotify…</string>
+    <string name="meld_spotify_connected">Connected</string>
+    <string name="meld_spotify_connected_as">Connected as %1$s</string>
+    <string name="meld_spotify_disconnect">Disconnect</string>
+    <string name="meld_spotify_disconnect_description">Removes the Spotify account from Meld on this device</string>
+    <string name="meld_spotify_disconnect_confirm">Disconnect Spotify?</string>
+    <string name="meld_spotify_expired">Your Spotify session expired. Sign in again to keep using your library.</string>
+    <string name="meld_spotify_expired_named">The Spotify session of %1$s expired. Sign in again to keep using your library.</string>
+    <string name="meld_spotify_error_offline">Spotify could not be reached. Check your connection and try again.</string>
+    <string name="meld_spotify_error_rate_limited">Spotify is limiting requests right now. Wait a moment and try again.</string>
+    <string name="meld_spotify_error_unavailable">Spotify is having problems right now. Try again later.</string>
+    <string name="meld_spotify_error_rejected">Spotify did not accept the sign-in. Try again.</string>
+    <string name="meld_spotify_error_changed">Spotify changed something Meld relies on. Update Meld and try again.</string>
 </resources>
