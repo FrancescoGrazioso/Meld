@@ -568,7 +568,12 @@ internal class AndroidQueueCoordinator(
         )
 
     private fun canBootstrapRecommendations(): Boolean =
-        shouldBootstrapQueueRecommendations(isFiniteQueue, Settings.shared.autoLoadMore, playlistPage?.hasMore == true)
+        shouldBootstrapQueueRecommendations(
+            isFiniteQueue,
+            Settings.shared.autoLoadMore,
+            // Meld: a Spotify source is queued lazily, like a playlist with pages left.
+            playlistPage?.hasMore == true || com.meld.spotify.playback.spotifySourcePending(),
+        )
 
     fun selectQueueChip(chipId: String) {
         if (AndroidDeviceConnect.manager.remote.isFollowing || AndroidListenTogetherManager.isGuestPlaybackLocked) return
@@ -729,7 +734,7 @@ internal class AndroidQueueCoordinator(
 
     fun scheduleAutoLoadMore(trigger: AutoLoadMoreTrigger) {
         if (!PlaybackNetworkStateStore.current.connected) return
-        if (!trigger.shouldLoadMore) return
+        if (!trigger.shouldLoadMore || !canBootstrapRecommendations()) return
         val currentSongId = trigger.currentSongId ?: return
         if (lastAutoLoadedSongId == currentSongId) return
         if (autoLoadMoreJob?.isActive == true) return

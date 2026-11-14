@@ -377,9 +377,8 @@ class MusicQueue {
         isShuffled = !isShuffled
         displayedEntries =
             prefix +
-            if (isShuffled && legacyShuffle) {
-                upcoming.shuffled()
-            } else if (isShuffled) {
+            // Meld: legacy shuffle used to mix the generated recommendations in among the queued tracks.
+            if (isShuffled) {
                 val (recommendations, explicit) = upcoming.partition { it.song.queueSourceTitle.isRecommendationGeneratedQueueSource() }
                 explicit.shuffled() + recommendations
             } else {

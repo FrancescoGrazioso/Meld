@@ -27,6 +27,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -107,7 +108,7 @@ private class FakePlayback : SpotifyPlayback {
     var tracks = emptyList<SpotifyTrack>()
     var startIndex = -1
     var shuffle = false
-    var more: (suspend () -> List<SpotifyTrack>)? = null
+    var more: (suspend () -> List<SpotifyTrack>?)? = null
     val queued = mutableListOf<String>()
 
     override fun play(
@@ -115,7 +116,7 @@ private class FakePlayback : SpotifyPlayback {
         startIndex: Int,
         title: String?,
         shuffle: Boolean,
-        more: (suspend () -> List<SpotifyTrack>)?,
+        more: (suspend () -> List<SpotifyTrack>?)?,
     ) {
         this.tracks = tracks
         this.startIndex = startIndex
@@ -365,11 +366,11 @@ class SpotifyLibraryTest {
 
             val more = fixture.playback.more!!
             library.failAt = 8
-            assertEquals(emptyList(), more())
+            assertFailsWith<SpotifyError> { more() }
             library.failAt = null
             // The page of unplayable entries is skipped rather than taken for the end.
-            assertEquals(listOf("t8", "t9"), more().ids)
-            assertEquals(emptyList(), more())
+            assertEquals(listOf("t8", "t9"), more()?.ids)
+            assertNull(more())
             assertEquals(10, screen.state.value.tracks.items.size)
             fixture.scope.cancel()
         }
@@ -407,6 +408,6 @@ class SpotifyLibraryTest {
             artist.play()
             assertEquals(0, playback.startIndex)
             assertEquals(5, playback.tracks.size)
-            assertEquals(emptyList(), playback.more!!())
+            assertNull(playback.more!!())
         }
 }

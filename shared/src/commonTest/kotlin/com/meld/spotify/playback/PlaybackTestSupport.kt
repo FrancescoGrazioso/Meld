@@ -11,6 +11,8 @@ import com.meld.spotify.match.TrackMatcher
 import com.metrolist.shared.model.ArtistTiny
 import com.metrolist.shared.model.SongItem
 import com.metrolist.shared.playback.MusicQueue
+import com.metrolist.shared.playback.QUEUE_SOURCE_AUTO_MIX
+import com.metrolist.shared.playback.isRecommendationGeneratedQueueSource
 import kotlinx.coroutines.CompletableDeferred
 
 internal fun track(
@@ -117,23 +119,67 @@ internal class FakeYouTube {
     }
 }
 
+/** The queue as the Android player drives it, recommendations included. */
 internal class FakeTarget : SpotifyQueueTarget {
     val queue = MusicQueue()
     val titles = mutableListOf<String?>()
 
+    // The app's default.
+    var legacyShuffle = true
+
     override val queueState get() = queue.state
+
+    override val shuffleEnabled get() = queue.shuffleEnabled
 
     override fun start(
         songs: List<SongItem>,
         title: String?,
+        shuffle: Boolean,
     ) {
         titles += title
         queue.setQueue(songs)
+        if (shuffle) queue.toggleShuffle(preserveHistory = false, legacyShuffle = legacyShuffle)
     }
 
-    override fun addToQueue(songs: List<SongItem>) = queue.addToQueue(songs)
+    // As the player's enqueueSongs: in front of the first upcoming recommendation.
+    override fun addToQueue(songs: List<SongItem>) {
+        val items = queue.items.value
+        val firstRecommendation = items.indices.firstOrNull { it > queue.currentIndex.value && items[it].isRecommendation }
+        queue.addToQueue(songs, insertIndex = firstRecommendation)
+    }
 
     override fun playNext(songs: List<SongItem>) = queue.playNext(songs)
 
+    override fun reorder(entryKeys: List<Long>) {
+        val indices =
+            queue.state.value.entries
+                .withIndex()
+                .associate { it.value.key to it.index }
+        queue.reorder(entryKeys.map(indices::getValue))
+    }
+
+    /** The queue screen's shuffle button. */
+    fun toggleShuffle() = queue.toggleShuffle(legacyShuffle = legacyShuffle)
+
+    /** The player's continuation, which it holds back while [spotifySourcePending]; [force] adds it regardless. */
+    fun continuation(
+        ids: List<String>,
+        force: Boolean = false,
+    ): Boolean {
+        if (!force && spotifySourcePending()) return false
+        queue.addToQueue(ids.map { ytSong(it, it).copy(queueSourceTitle = QUEUE_SOURCE_AUTO_MIX) })
+        return true
+    }
+
     val ids get() = queue.items.value.map { it.id }
+
+    /** True when no track still to play comes after a recommendation. */
+    val recommendationsAreLast: Boolean
+        get() =
+            queue.items.value
+                .drop(queue.currentIndex.value + 1)
+                .dropWhile { !it.isRecommendation }
+                .all { it.isRecommendation }
 }
+
+private val SongItem.isRecommendation get() = queueSourceTitle.isRecommendationGeneratedQueueSource()
