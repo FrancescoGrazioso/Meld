@@ -48,7 +48,7 @@ class SpotifyQueueContractTest {
         runTest {
             val player = desktop(queueLocked = true)
             sourceIsQueuedInOrder(player)
-            assertFalse(player.reorderQueue(player.ids.indices.reversed().toList()), "the lock still holds for the user's drags")
+            assertFalse(player.reorderQueue(List(player.ids.size) { it }), "the lock still holds for the user's drags")
         }
 
     private fun TestScope.sourceIsQueuedInOrder(player: FakePlayer) {
@@ -168,7 +168,11 @@ class SpotifyQueueContractTest {
             wholeSourceIsQueuedOnce(player)
         }
 
-    private fun TestScope.next(player: FakePlayer): String? = player.queue.getNext()?.id.also { runCurrent() }
+    private fun TestScope.next(player: FakePlayer): String? {
+        val song = player.queue.getNext()
+        runCurrent()
+        return song?.id
+    }
 
     /** The current track and every one after it, as the listener skips to the end of the queue. */
     private fun TestScope.playedToTheEnd(player: FakePlayer): List<String> =
