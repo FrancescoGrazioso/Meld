@@ -149,7 +149,7 @@ class PaxsenixLyricsProvider(
                 .prepareGet("https://lyrics.paxsenix.org/apple-music/lyrics") {
                     expectMissingLyrics()
                     parameter("id", id)
-                    header("User-Agent", "Metrolist")
+                    header("User-Agent", "Meld")
                 }.readLyricsText(MAX_LYRICS_RESPONSE_BYTES)
                 ?: return null
 

@@ -373,7 +373,7 @@ private fun DesktopOnboardingPage(
                     if (content.page == OnboardingPage.WELCOME || content.page == OnboardingPage.CRASH_REPORTS) {
                         val uriHandler = LocalUriHandler.current
                         TextButton(
-                            onClick = { runCatching { uriHandler.openUri("https://metrolist.cc/privacy") } },
+                            onClick = { runCatching { uriHandler.openUri("https://github.com/FrancescoGrazioso/Meld#readme") } },
                             shapes = ButtonDefaults.shapes(),
                         ) {
                             Text(stringResource(Res.string.privacy_policy))

@@ -5,7 +5,7 @@
     <string name="import_error_unsupported_playlist_entries">Šiame grojaraštyje yra vietinių failų arba tiesioginių nuorodų, kurių „Android“ negali pasiekti. Importuokite grojaraštį su „YouTube“ nuorodomis arba pasirinkite vietinius failus kompiuteryje.</string>
     <string name="import_error_local_files_require_local_playlist">Vietinius garso failus galima importuoti tik į vietinį grojaraštį.</string>
     <string name="import_error_file_read_failed">Nepavyko perskaityti grojaraščio failo. Pasirinkite jį dar kartą ir suteikite prieigą prie failo.</string>
-    <string name="startup_error_title">„Metrolist“ paleidimo klaida</string>
+    <string name="startup_error_title">„Meld“ paleidimo klaida</string>
     <string name="lyrics_show_translations">Rodyti vertimus</string>
     <string name="artist_latest_release">Naujausias leidimas</string>
     <string name="top_tracks">Populiariausi kūriniai</string>
@@ -50,7 +50,7 @@
     <string name="available_devices">Pasiekiami įrenginiai</string>
     <string name="no_device_connected">Nėra prijungtų įrenginių</string>
     <string name="no_device_found">Įrenginių nerasta</string>
-    <string name="no_compatible_devices">Nerasta su „Google Cast“, „FCast“, „DLNA“ ar „Metrolist“ suderinamų įrenginių.</string>
+    <string name="no_compatible_devices">Nerasta su „Google Cast“, „FCast“, „DLNA“ ar „Meld“ suderinamų įrenginių.</string>
     <string name="show_player_cast_button">Rodyti perdavimo mygtuką</string>
     <string name="show_player_video_button">Rodyti garso ir vaizdo parinkiklį</string>
     <string name="onboarding_language_lyrics_description">Pasirinkite programėlės kalbą ir dainų žodžių rodymo būdą.</string>
@@ -126,7 +126,7 @@
     <string name="onboarding_continue_without_migration">Tęsti su tuščia biblioteka</string>
     <string name="onboarding_migration_recovery_description">Galite bandyti dar kartą arba tęsti su tuščia biblioteka. Šiame įrenginyje liks pradinės duomenų bazės kopija atkūrimui. Baigę sąranką galėsite atkurti atsarginę kopiją.</string>
     <string name="onboarding_migration_failed">Nepavyko paruošti bibliotekos. Pradiniai duomenys išsaugoti.</string>
-    <string name="onboarding_library_migrated_description">Jūsų grojaraščiai, istorija, patiktukai ir bibliotekos duomenys paruošti šioje „Metrolist“ versijoje.</string>
+    <string name="onboarding_library_migrated_description">Jūsų grojaraščiai, istorija, patiktukai ir bibliotekos duomenys paruošti šioje „Meld“ versijoje.</string>
     <string name="onboarding_notifications_denied">Pranešimai išjungti. Galite juos vėliau įjungti „Android“ programos nustatymuose arba pasirinkti „Ne“ ir tęsti.</string>
     <string name="mini_player_video_prerequisite">Pirmiausia atkūrimo nustatymuose įjunkite muzikinių vaizdo įrašų atkūrimą</string>
     <string name="download_folder_access_failed">Nepavyko išsaugoti prieigos prie šio aplanko. Pasirinkite aplanką su skaitymo ir rašymo teisėmis.</string>
@@ -151,9 +151,9 @@
     <string name="updates_notification_settings">„Android“ pranešimų nustatymai</string>
     <string name="widget_recognizer_open_result">Atverti atpažintą dainą</string>
     <string name="statistics_load_failed">Nepavyko atnaujinti statistikos. Bandykite dar kartą.</string>
-    <string name="desktop_platform_unsupported">„Metrolist“ nepalaiko šios operacinės sistemos. Naudokite „Windows 10“ ar naujesnę versiją, „macOS“ arba kitą „Linux“ platinamąjį paketą nei „Omarchy“.</string>
+    <string name="desktop_platform_unsupported">„Meld“ nepalaiko šios operacinės sistemos. Naudokite „Windows 10“ ar naujesnę versiją, „macOS“ arba kitą „Linux“ platinamąjį paketą nei „Omarchy“.</string>
     <string name="shortcut_toggle_expanded">Išskleisti arba suskleisti leistuvą</string>
-    <string name="desktop_display_unavailable">„Metrolist“ nepavyko prisijungti prie šio seanso X ekrano. Paleiskite programą iš darbalaukio seanso nustatę DISPLAY.</string>
+    <string name="desktop_display_unavailable">„Meld“ nepavyko prisijungti prie šio seanso X ekrano. Paleiskite programą iš darbalaukio seanso nustatę DISPLAY.</string>
     <string name="webkit_install_hint">Prisijungimui programoje reikia „WebKitGTK 4.1“ (%1$s). Įdiekite jį naudodami sistemos paketų tvarkytuvę.</string>
     <string name="webkit_install_command">Įdiekite naudodami komandą:\n%1$s</string>
     <string name="webkit_appimage_hint">„AppImage“ versijos taip pat naudoja sistemos „WebKitGTK“ bibliotekas prisijungimui.</string>
@@ -166,7 +166,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Garsumas: %2$s</string>
-    <string name="download_folder_unavailable">Nepavyko naudoti šio aplanko. Pasirinkite įrašomą aplanką, kurį sistema ar izoliuota aplinka leidžia pasiekti „Metrolist“.</string>
+    <string name="download_folder_unavailable">Nepavyko naudoti šio aplanko. Pasirinkite įrašomą aplanką, kurį sistema ar izoliuota aplinka leidžia pasiekti „Meld“.</string>
     <string name="window_maximize">Išdidinti</string>
     <string name="window_restore">Atkurti lango dydį</string>
     <string name="equalizer_stream_unavailable">Ekvalaizeris ir pirminis stiprintuvas šiam srautui negalimi. Pakeitimai bus pritaikyti atkuriant palaikomą kūrinį.</string>
@@ -182,7 +182,7 @@
     <string name="queue_youtube_history_paused_desc">Atnaujinkite klausymosi istorijos įrašymą, kad klausant be interneto perklausos būtų įtraukiamos į eilę</string>
     <string name="search_online_failed">Nepavyko ieškoti internete. Patikrinkite ryšį ir bandykite dar kartą.</string>
     <string name="search_load_more_failed">Nepavyko įkelti daugiau rezultatų.</string>
-    <string name="discord_error_gateway_configuration">„Discord“ atmetė ryšio konfigūraciją. Prieš bandydami dar kartą atnaujinkite „Metrolist“.</string>
+    <string name="discord_error_gateway_configuration">„Discord“ atmetė ryšio konfigūraciją. Prieš bandydami dar kartą atnaujinkite „Meld“.</string>
     <string name="discord_preview_buttons_adjusted">„Discord“ trumpina ilgus mygtukų užrašus ir praleidžia mygtukus su per ilgomis nuorodomis. Šioje peržiūroje rodomi mygtukai, kurie bus išsiųsti.</string>
     <string name="discord_presence_status_warning">Įjungus išsamią veiklos būseną, „Discord“ siunčiama būsena „Prisijungęs“. Ji gali pakeisti būsenas „Nematomas“ ar „Netrukdyti“, net sustabdžius atkūrimą.</string>
     <string name="discord_refresh_queued">Būsenos atnaujinimas įtrauktas į eilę.</string>
@@ -217,8 +217,8 @@
     <string name="theme_color_rose">Rožinė</string>
     <string name="theme_color_red">Raudona</string>
     <string name="theme_color_gold">Auksinė</string>
-    <string name="backup_unsupported_format">Ši „Metrolist“ versija nepalaiko šio atsarginės kopijos formato.</string>
-    <string name="backup_unsupported_database">Ši „Metrolist“ versija nepalaiko duomenų bazės versijos šioje atsarginėje kopijoje.</string>
+    <string name="backup_unsupported_format">Ši „Meld“ versija nepalaiko šio atsarginės kopijos formato.</string>
+    <string name="backup_unsupported_database">Ši „Meld“ versija nepalaiko duomenų bazės versijos šioje atsarginėje kopijoje.</string>
     <string name="backup_too_large">Atsarginė kopija viršija palaikomą dydį arba įrašų skaičių.</string>
     <string name="backup_invalid_data">Nepavyko perskaityti arba patikrinti atsarginės kopijos. Ji gali būti sugadinta arba joje yra nepalaikomų duomenų.</string>
     <string name="search_history_removal_failed">Nepavyko išvalyti paskyros paieškos istorijos. Prisijungę prie interneto bandykite dar kartą.</string>
@@ -229,10 +229,10 @@
     <string name="top_period_past_year">Pastarieji metai</string>
     <string name="onboarding_welcome_description">Prieš pirmą kartą klausydamiesi nustatykite privatumą ir sistemos leidimus.</string>
     <string name="onboarding_migration_title">Jūsų v13 biblioteka yra čia</string>
-    <string name="onboarding_migration_description">Radome atskirą „Metrolist“ duomenų bazę. Perkelkite grojaraščius, istoriją, patiktukus ir bibliotekos duomenis vietoje. Jei perkėlimas nepavyks, galėsite atkurti pradinę duomenų bazę.</string>
+    <string name="onboarding_migration_description">Radome atskirą „Meld“ duomenų bazę. Perkelkite grojaraščius, istoriją, patiktukus ir bibliotekos duomenis vietoje. Jei perkėlimas nepavyks, galėsite atkurti pradinę duomenų bazę.</string>
     <string name="onboarding_migration_complete_title">Jūsų paskyra perkelta</string>
-    <string name="onboarding_migration_complete_description">Jūsų paskyra, grojaraščiai, istorija, patiktukai ir bibliotekos duomenys paruošti šioje „Metrolist“ versijoje.</string>
-    <string name="onboarding_crash_reports_title">Padėkite tobulinti „Metrolist“</string>
+    <string name="onboarding_migration_complete_description">Jūsų paskyra, grojaraščiai, istorija, patiktukai ir bibliotekos duomenys paruošti šioje „Meld“ versijoje.</string>
+    <string name="onboarding_crash_reports_title">Padėkite tobulinti „Meld“</string>
     <string name="onboarding_crash_reports_description">Pasirinktinai bendrinkite diagnostikos duomenis per „Sentry“, kad padėtumėte mums rasti ir išspręsti problemas. Tai galite bet kada pakeisti nustatymuose.</string>
     <string name="onboarding_notifications_title">Leisti pranešimus</string>
     <string name="onboarding_notifications_description">Įjunkite pranešimus apie atkūrimą ir atsisiuntimus.</string>
@@ -248,10 +248,10 @@
     <string name="onboarding_finish_title">Viskas paruošta</string>
     <string name="onboarding_finish_description">Sąranka baigta. Pradėkite klausytis arba pirmiausia perkelkite savo paskyrą ir duomenis.</string>
     <string name="onboarding_restore_backup">Atkurti iš atsarginės kopijos</string>
-    <string name="onboarding_settings_hint">Norėdami pritaikyti „Metrolist“, viršuje dešinėje esančiame meniu atverkite nustatymus.</string>
+    <string name="onboarding_settings_hint">Norėdami pritaikyti „Meld“, viršuje dešinėje esančiame meniu atverkite nustatymus.</string>
     <string name="onboarding_no_saved_accounts">Susietų paskyrų nerasta.</string>
     <string name="onboarding_account_picture">%1$s profilio nuotrauka</string>
-    <string name="onboarding_backup_picker_title">Atkurti „Metrolist“ atsarginę kopiją</string>
+    <string name="onboarding_backup_picker_title">Atkurti „Meld“ atsarginę kopiją</string>
     <string name="onboarding_backup_picker_error">Nepavyko atverti atsarginės kopijos parinkiklio: %1$s</string>
     <string name="onboarding_backup_restore_failed">Atkurti nepavyko: %1$s</string>
     <string name="new_badge">Nauja</string>

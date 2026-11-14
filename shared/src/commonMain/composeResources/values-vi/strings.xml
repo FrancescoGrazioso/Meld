@@ -171,7 +171,7 @@
     <string name="import_error_unsupported_playlist_entries">Danh sách phát này chứa tệp cục bộ hoặc liên kết trực tiếp mà Android không thể truy cập. Hãy nhập danh sách phát có liên kết YouTube hoặc chọn tệp cục bộ trên máy tính.</string>
     <string name="import_error_local_files_require_local_playlist">Chỉ có thể nhập tệp âm thanh cục bộ vào danh sách phát cục bộ.</string>
     <string name="import_error_file_read_failed">Không thể đọc tệp danh sách phát. Hãy chọn lại và cấp quyền truy cập tệp.</string>
-    <string name="startup_error_title">Lỗi khởi động Metrolist</string>
+    <string name="startup_error_title">Lỗi khởi động Meld</string>
     <string name="lyrics_show_translations">Hiển thị bản dịch</string>
     <string name="artist_latest_release">Bản phát hành mới nhất</string>
     <string name="top_tracks">Bản nhạc hàng đầu</string>
@@ -221,7 +221,7 @@
     <string name="available_devices">Thiết bị khả dụng</string>
     <string name="no_device_connected">Chưa kết nối thiết bị nào</string>
     <string name="no_device_found">Không tìm thấy thiết bị</string>
-    <string name="no_compatible_devices">Không tìm thấy thiết bị tương thích với Google Cast, FCast, DLNA hoặc Metrolist.</string>
+    <string name="no_compatible_devices">Không tìm thấy thiết bị tương thích với Google Cast, FCast, DLNA hoặc Meld.</string>
     <string name="show_player_cast_button">Hiển thị nút truyền</string>
     <string name="show_player_video_button">Hiển thị bộ chọn âm thanh/video</string>
     <string name="onboarding_language_lyrics_description">Chọn ngôn ngữ ứng dụng và cách hiển thị lời bài hát.</string>
@@ -292,7 +292,7 @@
     <string name="onboarding_continue_without_migration">Tiếp tục với thư viện trống</string>
     <string name="onboarding_migration_recovery_description">Bạn có thể thử lại hoặc tiếp tục với thư viện trống. Một bản sao phục hồi của cơ sở dữ liệu gốc sẽ được giữ lại trên thiết bị này. Bạn có thể khôi phục bản sao lưu sau khi thiết lập.</string>
     <string name="onboarding_migration_failed">Không thể chuẩn bị thư viện. Dữ liệu gốc của bạn đã được giữ nguyên.</string>
-    <string name="onboarding_library_migrated_description">Danh sách phát, lịch sử, lượt thích và dữ liệu thư viện của bạn đã sẵn sàng trong phiên bản Metrolist này.</string>
+    <string name="onboarding_library_migrated_description">Danh sách phát, lịch sử, lượt thích và dữ liệu thư viện của bạn đã sẵn sàng trong phiên bản Meld này.</string>
     <string name="onboarding_notifications_denied">Thông báo đang tắt. Bạn có thể bật lại sau trong phần cài đặt ứng dụng của Android hoặc chọn Không để tiếp tục.</string>
     <string name="mini_player_video_prerequisite">Trước tiên, hãy bật Phát video nhạc trong phần cài đặt phát nhạc</string>
     <string name="download_folder_access_failed">Không thể lưu quyền truy cập thư mục này. Hãy chọn thư mục có quyền đọc và ghi.</string>
@@ -317,9 +317,9 @@
     <string name="updates_notification_settings">Cài đặt thông báo của Android</string>
     <string name="widget_recognizer_open_result">Mở bài hát đã nhận diện</string>
     <string name="statistics_load_failed">Không thể làm mới thống kê. Hãy thử lại.</string>
-    <string name="desktop_platform_unsupported">Metrolist không hỗ trợ hệ điều hành này. Hãy dùng Windows 10 trở lên, macOS hoặc bản phân phối Linux khác Omarchy.</string>
+    <string name="desktop_platform_unsupported">Meld không hỗ trợ hệ điều hành này. Hãy dùng Windows 10 trở lên, macOS hoặc bản phân phối Linux khác Omarchy.</string>
     <string name="shortcut_toggle_expanded">Mở rộng hoặc thu gọn trình phát</string>
-    <string name="desktop_display_unavailable">Metrolist không thể kết nối với màn hình X của phiên này. Hãy khởi chạy từ phiên làm việc trên màn hình nền với biến DISPLAY đã được đặt.</string>
+    <string name="desktop_display_unavailable">Meld không thể kết nối với màn hình X của phiên này. Hãy khởi chạy từ phiên làm việc trên màn hình nền với biến DISPLAY đã được đặt.</string>
     <string name="webkit_install_hint">Tính năng đăng nhập tích hợp yêu cầu WebKitGTK 4.1 (%1$s). Hãy cài đặt bằng trình quản lý gói của hệ thống.</string>
     <string name="webkit_install_command">Cài đặt bằng lệnh:\n%1$s</string>
     <string name="webkit_appimage_hint">Các bản AppImage cũng sử dụng thư viện WebKitGTK của hệ thống để đăng nhập.</string>
@@ -332,7 +332,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Âm lượng: %2$s</string>
-    <string name="download_folder_unavailable">Không thể dùng thư mục này. Hãy chọn thư mục có quyền ghi mà hệ thống hoặc môi trường cách ly cho phép Metrolist truy cập.</string>
+    <string name="download_folder_unavailable">Không thể dùng thư mục này. Hãy chọn thư mục có quyền ghi mà hệ thống hoặc môi trường cách ly cho phép Meld truy cập.</string>
     <string name="window_maximize">Phóng to</string>
     <string name="window_restore">Khôi phục cửa sổ</string>
     <string name="equalizer_stream_unavailable">Bộ chỉnh âm và bộ tiền khuếch đại không khả dụng cho luồng này. Các thay đổi sẽ được áp dụng khi phát bài hát được hỗ trợ.</string>
@@ -345,7 +345,7 @@
     <string name="queue_youtube_history_paused_desc">Tiếp tục ghi lịch sử nghe để đưa các lượt phát ngoại tuyến vào hàng đợi đồng bộ</string>
     <string name="search_online_failed">Không thể tìm kiếm trực tuyến. Hãy kiểm tra kết nối rồi thử lại.</string>
     <string name="search_load_more_failed">Không thể tải thêm kết quả.</string>
-    <string name="discord_error_gateway_configuration">Discord đã từ chối cấu hình kết nối. Hãy cập nhật Metrolist trước khi thử lại.</string>
+    <string name="discord_error_gateway_configuration">Discord đã từ chối cấu hình kết nối. Hãy cập nhật Meld trước khi thử lại.</string>
     <string name="discord_preview_buttons_adjusted">Discord rút ngắn nhãn nút dài và bỏ qua các nút có liên kết quá dài. Bản xem trước này hiển thị các nút sẽ được gửi.</string>
     <string name="discord_presence_status_warning">Trạng thái hoạt động chi tiết gửi trạng thái Trực tuyến tới Discord. Nó có thể ghi đè trạng thái Ẩn hoặc Không làm phiền, kể cả khi dừng phát nhạc.</string>
     <string name="discord_refresh_queued">Đã đưa yêu cầu làm mới trạng thái vào hàng đợi.</string>
@@ -380,8 +380,8 @@
     <string name="theme_color_rose">Hồng</string>
     <string name="theme_color_red">Đỏ</string>
     <string name="theme_color_gold">Vàng kim</string>
-    <string name="backup_unsupported_format">Phiên bản Metrolist này không hỗ trợ định dạng bản sao lưu này.</string>
-    <string name="backup_unsupported_database">Phiên bản Metrolist này không hỗ trợ phiên bản cơ sở dữ liệu trong bản sao lưu này.</string>
+    <string name="backup_unsupported_format">Phiên bản Meld này không hỗ trợ định dạng bản sao lưu này.</string>
+    <string name="backup_unsupported_database">Phiên bản Meld này không hỗ trợ phiên bản cơ sở dữ liệu trong bản sao lưu này.</string>
     <string name="backup_too_large">Bản sao lưu vượt quá giới hạn kích thước hoặc số mục được hỗ trợ.</string>
     <string name="backup_invalid_data">Không thể đọc hoặc xác thực bản sao lưu. Bản sao lưu có thể bị hỏng hoặc chứa dữ liệu không được hỗ trợ.</string>
     <string name="search_history_removal_failed">Không thể xóa lịch sử tìm kiếm của tài khoản. Vui lòng thử lại khi có kết nối.</string>
@@ -392,10 +392,10 @@
     <string name="top_period_past_year">Năm qua</string>
     <string name="onboarding_welcome_description">Thiết lập quyền riêng tư và quyền hệ thống trước lần nghe đầu tiên.</string>
     <string name="onboarding_migration_title">Thư viện v13 của bạn ở đây</string>
-    <string name="onboarding_migration_description">Chúng tôi đã tìm thấy một cơ sở dữ liệu Metrolist độc lập. Di chuyển danh sách phát, lịch sử, lượt thích và dữ liệu thư viện ngay tại chỗ. Bạn có thể khôi phục cơ sở dữ liệu gốc nếu quá trình di chuyển thất bại.</string>
+    <string name="onboarding_migration_description">Chúng tôi đã tìm thấy một cơ sở dữ liệu Meld độc lập. Di chuyển danh sách phát, lịch sử, lượt thích và dữ liệu thư viện ngay tại chỗ. Bạn có thể khôi phục cơ sở dữ liệu gốc nếu quá trình di chuyển thất bại.</string>
     <string name="onboarding_migration_complete_title">Tài khoản của bạn đã được di chuyển</string>
-    <string name="onboarding_migration_complete_description">Tài khoản, danh sách phát, lịch sử, lượt thích và dữ liệu thư viện của bạn đã sẵn sàng trong phiên bản Metrolist này.</string>
-    <string name="onboarding_crash_reports_title">Giúp cải thiện Metrolist</string>
+    <string name="onboarding_migration_complete_description">Tài khoản, danh sách phát, lịch sử, lượt thích và dữ liệu thư viện của bạn đã sẵn sàng trong phiên bản Meld này.</string>
+    <string name="onboarding_crash_reports_title">Giúp cải thiện Meld</string>
     <string name="onboarding_crash_reports_description">Tùy chọn chia sẻ dữ liệu chẩn đoán qua Sentry để giúp chúng tôi tìm và khắc phục sự cố. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong Cài đặt.</string>
     <string name="onboarding_notifications_title">Cho phép thông báo</string>
     <string name="onboarding_notifications_description">Bật thông báo về phát nhạc và tải xuống.</string>
@@ -411,10 +411,10 @@
     <string name="onboarding_finish_title">Mọi thứ đã sẵn sàng</string>
     <string name="onboarding_finish_description">Đã hoàn tất thiết lập. Bắt đầu nghe hoặc chuyển tài khoản và dữ liệu của bạn sang trước.</string>
     <string name="onboarding_restore_backup">Khôi phục từ bản sao lưu</string>
-    <string name="onboarding_settings_hint">Mở Cài đặt từ trình đơn ở góc trên bên phải để tùy chỉnh Metrolist.</string>
+    <string name="onboarding_settings_hint">Mở Cài đặt từ trình đơn ở góc trên bên phải để tùy chỉnh Meld.</string>
     <string name="onboarding_no_saved_accounts">Không tìm thấy tài khoản đã liên kết.</string>
     <string name="onboarding_account_picture">Ảnh hồ sơ của %1$s</string>
-    <string name="onboarding_backup_picker_title">Khôi phục bản sao lưu Metrolist</string>
+    <string name="onboarding_backup_picker_title">Khôi phục bản sao lưu Meld</string>
     <string name="onboarding_backup_picker_error">Không thể mở trình chọn bản sao lưu: %1$s</string>
     <string name="onboarding_backup_restore_failed">Khôi phục thất bại: %1$s</string>
     <string name="new_badge">Mới</string>
@@ -433,7 +433,7 @@
     <string name="settings_appearance_overview">Giao diện, phông chữ và hình thức trình phát</string>
     <string name="settings_android_auto_overview">Danh sách phát trên xe và đích thêm nhanh</string>
     <string name="settings_about_overview">Người đóng góp, liên kết cộng đồng và giấy phép</string>
-    <string name="settings_supported_links_overview">Chọn các liên kết YouTube sẽ mở bằng Metrolist</string>
+    <string name="settings_supported_links_overview">Chọn các liên kết YouTube sẽ mở bằng Meld</string>
     <string name="settings_equalizer_overview">Thiết lập âm thanh có sẵn, dải tần và cấu hình</string>
     <string name="settings_fonts_overview">Chọn và nhập phông chữ</string>
     <string name="settings_artwork_overview">Ảnh bìa động, nguồn hình ảnh và chất lượng video</string>
@@ -449,7 +449,7 @@
     <string name="settings_listen_together_overview">Máy chủ, yêu cầu tham gia và đề xuất bài hát</string>
     <string name="settings_device_connect_overview">Thiết bị ở gần, ghép nối và phát từ xa</string>
     <string name="settings_release_overview">Ghi chú phát hành và tùy chọn cài đặt</string>
-    <string name="settings_notification_access_summary">Chọn các thông báo Android cho phép Metrolist gửi</string>
+    <string name="settings_notification_access_summary">Chọn các thông báo Android cho phép Meld gửi</string>
     <string name="settings_crash_reports_summary">Đọc và chia sẻ báo cáo sự cố đã lưu</string>
     <string name="settings_content_language_summary">Ngôn ngữ dùng để tìm kiếm và đề xuất trên YouTube Music</string>
     <string name="settings_content_country_summary">Khu vực dùng cho bảng xếp hạng và đề xuất trên YouTube Music</string>
@@ -469,7 +469,7 @@
     <string name="settings_canvas_playback_summary">Phát đoạn ngắn hoặc toàn bộ video nhạc phía sau trình phát</string>
     <string name="settings_normalization_summary">Cân bằng âm lượng giữa các bài để tránh chênh lệch lớn</string>
     <string name="settings_loudness_target_summary">Đặt âm lượng mục tiêu khi bật chuẩn hóa âm thanh</string>
-    <string name="settings_stop_on_close_summary">Dừng phát khi vuốt Metrolist khỏi danh sách ứng dụng gần đây</string>
+    <string name="settings_stop_on_close_summary">Dừng phát khi vuốt Meld khỏi danh sách ứng dụng gần đây</string>
     <string name="settings_screen_awake_summary">Chọn liệu trình phát hoặc lời bài hát có giữ màn hình sáng không</string>
     <string name="settings_translation_mode_summary">Dịch từ ngữ hoặc ghi cách phát âm bằng hệ chữ đích</string>
     <string name="settings_translation_provider_summary">Chọn dịch vụ dịch lời bài hát</string>
@@ -489,7 +489,7 @@
     <string name="settings_reset_download_folder_summary">Dùng thư mục mặc định cho bài hát đã tải xuống</string>
     <string name="settings_diagnostic_logs_summary">Đọc và sao chép nhật ký chẩn đoán của ứng dụng</string>
     <string name="settings_log_directory_summary">Duyệt tệp nhật ký đã lưu trong trình quản lý tệp</string>
-    <string name="settings_check_releases_summary">Kiểm tra phiên bản Metrolist mới hơn trên GitHub</string>
+    <string name="settings_check_releases_summary">Kiểm tra phiên bản Meld mới hơn trên GitHub</string>
     <string name="settings_share_apk_summary">Chia sẻ gói ứng dụng đã cài đặt dưới dạng tệp</string>
     <string name="settings_system_font_summary">Dùng phông chữ do hệ điều hành cung cấp</string>
     <string name="settings_thumbnail_shape_summary">Chọn hình dạng ảnh bìa trong trình phát mở rộng</string>

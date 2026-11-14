@@ -177,7 +177,7 @@
     <string name="import_error_unsupported_playlist_entries">இந்த பிளேலிஸ்ட்டில் Android அணுக முடியாத உள்ளூர் கோப்புகள் அல்லது நேரடி இணைப்புகள் உள்ளன. YouTube இணைப்புகள் கொண்ட பிளேலிஸ்ட்டை இறக்குமதி செய்யவும் அல்லது கணினியில் உள்ளூர் கோப்புகளைத் தேர்ந்தெடுக்கவும்.</string>
     <string name="import_error_local_files_require_local_playlist">உள்ளூர் ஆடியோ கோப்புகளை உள்ளூர் பிளேலிஸ்ட்டில் மட்டுமே இறக்குமதி செய்ய முடியும்.</string>
     <string name="import_error_file_read_failed">பிளேலிஸ்ட் கோப்பைப் படிக்க முடியவில்லை. அதை மீண்டும் தேர்ந்தெடுத்து கோப்பு அணுகலை வழங்கவும்.</string>
-    <string name="startup_error_title">Metrolist தொடக்கப் பிழை</string>
+    <string name="startup_error_title">Meld தொடக்கப் பிழை</string>
     <string name="lyrics_show_translations">மொழிபெயர்ப்புகளைக் காட்டு</string>
     <string name="artist_latest_release">சமீபத்திய வெளியீடு</string>
     <string name="top_tracks">சிறந்த பாடல்கள்</string>
@@ -219,7 +219,7 @@
     <string name="available_devices">கிடைக்கும் சாதனங்கள்</string>
     <string name="no_device_connected">சாதனம் எதுவும் இணைக்கப்படவில்லை</string>
     <string name="no_device_found">சாதனம் எதுவும் கண்டறியப்படவில்லை</string>
-    <string name="no_compatible_devices">Google Cast, FCast, DLNA அல்லது Metrolist உடன் இணக்கமான சாதனம் எதுவும் கண்டறியப்படவில்லை.</string>
+    <string name="no_compatible_devices">Google Cast, FCast, DLNA அல்லது Meld உடன் இணக்கமான சாதனம் எதுவும் கண்டறியப்படவில்லை.</string>
     <string name="show_player_cast_button">அனுப்பும் பொத்தானைக் காட்டு</string>
     <string name="show_player_video_button">ஒலி/காணொளித் தேர்வைக் காட்டு</string>
     <string name="onboarding_language_lyrics_description">செயலியின் மொழியையும் பாடல் வரிகளைக் காட்டும் முறையையும் தேர்ந்தெடுக்கவும்.</string>
@@ -287,7 +287,7 @@
     <string name="onboarding_continue_without_migration">காலியான நூலகத்துடன் தொடரவும்</string>
     <string name="onboarding_migration_recovery_description">மீண்டும் முயற்சிக்கலாம் அல்லது காலியான நூலகத்துடன் தொடரலாம். உங்கள் அசல் தரவுத்தளத்தின் மீட்பு நகல் இந்தச் சாதனத்தில் இருக்கும். அமைப்பை முடித்த பிறகு காப்புப்பிரதியை மீட்டெடுக்கலாம்.</string>
     <string name="onboarding_migration_failed">உங்கள் நூலகத்தைத் தயார் செய்ய முடியவில்லை. அசல் தரவு பாதுகாக்கப்பட்டுள்ளது.</string>
-    <string name="onboarding_library_migrated_description">உங்கள் பிளேலிச்ட்கள், வரலாறு, விருப்பங்கள் மற்றும் நூலகத் தரவு இந்த Metrolist பதிப்பில் தயாராக உள்ளன.</string>
+    <string name="onboarding_library_migrated_description">உங்கள் பிளேலிச்ட்கள், வரலாறு, விருப்பங்கள் மற்றும் நூலகத் தரவு இந்த Meld பதிப்பில் தயாராக உள்ளன.</string>
     <string name="onboarding_notifications_denied">அறிவிப்புகள் முடக்கப்பட்டுள்ளன. பிறகு Android செயலி அமைப்புகளில் அவற்றை இயக்கலாம் அல்லது தொடர, «வேண்டாம்» என்பதைத் தேர்ந்தெடுக்கலாம்.</string>
     <string name="mini_player_video_prerequisite">முதலில் இயக்க அமைப்புகளில் இசை வீடியோக்களை இயக்கு என்பதை இயக்கவும்</string>
     <string name="download_folder_access_failed">இந்தக் கோப்புறைக்கான அணுகல் அனுமதியைச் சேமிக்க முடியவில்லை. படிக்கவும் எழுதவும் அனுமதியுள்ள கோப்புறையைத் தேர்ந்தெடுக்கவும்.</string>
@@ -312,9 +312,9 @@
     <string name="updates_notification_settings">Android அறிவிப்பு அமைப்புகள்</string>
     <string name="widget_recognizer_open_result">அடையாளம் கண்ட பாடலைத் திற</string>
     <string name="statistics_load_failed">புள்ளிவிவரங்களைப் புதுப்பிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.</string>
-    <string name="desktop_platform_unsupported">இந்த இயங்குதளத்தை Metrolist ஆதரிக்கவில்லை. Windows 10 அல்லது புதிய பதிப்பு, macOS அல்லது Omarchy அல்லாத Linux வழங்கலைப் பயன்படுத்தவும்.</string>
+    <string name="desktop_platform_unsupported">இந்த இயங்குதளத்தை Meld ஆதரிக்கவில்லை. Windows 10 அல்லது புதிய பதிப்பு, macOS அல்லது Omarchy அல்லாத Linux வழங்கலைப் பயன்படுத்தவும்.</string>
     <string name="shortcut_toggle_expanded">இயக்கியை விரிவாக்கு அல்லது சுருக்கு</string>
-    <string name="desktop_display_unavailable">இந்த அமர்வின் X காட்சியுடன் Metrolist இணைய முடியவில்லை. DISPLAY அமைக்கப்பட்ட உங்கள் பணிமேடை அமர்விலிருந்து அதைத் தொடங்கவும்.</string>
+    <string name="desktop_display_unavailable">இந்த அமர்வின் X காட்சியுடன் Meld இணைய முடியவில்லை. DISPLAY அமைக்கப்பட்ட உங்கள் பணிமேடை அமர்விலிருந்து அதைத் தொடங்கவும்.</string>
     <string name="webkit_install_hint">உள்ளமைந்த உள்நுழைவுக்கு WebKitGTK 4.1 (%1$s) தேவை. உங்கள் கணினியின் தொகுப்பு மேலாளரைப் பயன்படுத்தி அதை நிறுவவும்.</string>
     <string name="webkit_install_command">இதைக் கொண்டு நிறுவவும்:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage பதிப்புகளும் உள்நுழைவுக்குக் கணினியின் WebKitGTK நிரலகங்களைப் பயன்படுத்துகின்றன.</string>
@@ -327,7 +327,7 @@
     <string name="video_stats_latency_value">%1$s மி.வி.</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | ஒலியளவு: %2$s</string>
-    <string name="download_folder_unavailable">இந்தக் கோப்புறையைப் பயன்படுத்த முடியவில்லை. உங்கள் கணினி அல்லது தனிமைப்படுத்தப்பட்ட சூழல் Metrolist அணுக அனுமதிக்கும், எழுதக்கூடிய கோப்புறையைத் தேர்ந்தெடுக்கவும்.</string>
+    <string name="download_folder_unavailable">இந்தக் கோப்புறையைப் பயன்படுத்த முடியவில்லை. உங்கள் கணினி அல்லது தனிமைப்படுத்தப்பட்ட சூழல் Meld அணுக அனுமதிக்கும், எழுதக்கூடிய கோப்புறையைத் தேர்ந்தெடுக்கவும்.</string>
     <string name="window_maximize">பெரிதாக்கு</string>
     <string name="window_restore">சாளர அளவை மீட்டமை</string>
     <string name="equalizer_stream_unavailable">இந்த ஓடைக்குச் சமநிலைப்படுத்தியும் முன்பெருக்கியும் கிடைக்கவில்லை. ஆதரிக்கப்படும் பாடல் இயங்கும்போது மாற்றங்கள் செயல்படும்.</string>
@@ -341,7 +341,7 @@
     <string name="queue_youtube_history_paused_desc">இணையமின்றி இயக்கிய பாடல்களின் பதிவுகளை வரிசையில் சேமிக்க, கேட்ட வரலாற்றைப் பதிவு செய்வதை மீண்டும் தொடங்கவும்</string>
     <string name="search_online_failed">இணையத்தில் தேட முடியவில்லை. உங்கள் இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.</string>
     <string name="search_load_more_failed">மேலும் முடிவுகளை ஏற்ற முடியவில்லை.</string>
-    <string name="discord_error_gateway_configuration">இணைப்பு உள்ளமைவை Discord நிராகரித்தது. மீண்டும் முயற்சிக்கும் முன் Metrolist பயன்பாட்டைப் புதுப்பிக்கவும்.</string>
+    <string name="discord_error_gateway_configuration">இணைப்பு உள்ளமைவை Discord நிராகரித்தது. மீண்டும் முயற்சிக்கும் முன் Meld பயன்பாட்டைப் புதுப்பிக்கவும்.</string>
     <string name="discord_preview_buttons_adjusted">Discord நீண்ட பொத்தான் பெயர்களைச் சுருக்கி, மிக நீண்ட இணைப்புகளைக் கொண்ட பொத்தான்களைத் தவிர்க்கிறது. அனுப்பப்படும் பொத்தான்கள் இந்த முன்னோட்டத்தில் காட்டப்படுகின்றன.</string>
     <string name="discord_presence_status_warning">விரிவான செயல்பாட்டு நிலை Discord சேவைக்கு இணையத்தில் உள்ள நிலையை அனுப்பும். மறைவு அல்லது தொந்தரவு செய்யாதே நிலைகளை மாற்றக்கூடும். இசையை நிறுத்திய பிறகும் இது நிகழலாம்.</string>
     <string name="discord_refresh_queued">செயல்பாட்டு நிலைப் புதுப்பிப்பு வரிசையில் சேர்க்கப்பட்டது.</string>
@@ -376,8 +376,8 @@
     <string name="theme_color_rose">இளஞ்சிவப்பு</string>
     <string name="theme_color_red">சிவப்பு</string>
     <string name="theme_color_gold">பொன்னிறம்</string>
-    <string name="backup_unsupported_format">இந்தக் காப்புப்பிரதி வடிவத்தை Metrolist இன் இந்தப் பதிப்பு ஆதரிக்கவில்லை.</string>
-    <string name="backup_unsupported_database">இந்தக் காப்புப்பிரதியில் உள்ள தரவுத்தளப் பதிப்பை Metrolist இன் இந்தப் பதிப்பு ஆதரிக்கவில்லை.</string>
+    <string name="backup_unsupported_format">இந்தக் காப்புப்பிரதி வடிவத்தை Meld இன் இந்தப் பதிப்பு ஆதரிக்கவில்லை.</string>
+    <string name="backup_unsupported_database">இந்தக் காப்புப்பிரதியில் உள்ள தரவுத்தளப் பதிப்பை Meld இன் இந்தப் பதிப்பு ஆதரிக்கவில்லை.</string>
     <string name="backup_too_large">காப்புப்பிரதி ஆதரிக்கப்படும் அளவு அல்லது பதிவுகளின் எண்ணிக்கை வரம்பை மீறுகிறது.</string>
     <string name="backup_invalid_data">காப்புப்பிரதியைப் படிக்கவோ சரிபார்க்கவோ முடியவில்லை. அது சேதமடைந்திருக்கலாம் அல்லது ஆதரிக்கப்படாத தரவைக் கொண்டிருக்கலாம்.</string>
     <string name="search_history_removal_failed">கணக்கின் தேடல் வரலாற்றை அழிக்க முடியவில்லை. இணையத்தில் இணைந்ததும் மீண்டும் முயற்சிக்கவும்.</string>
@@ -388,10 +388,10 @@
     <string name="top_period_past_year">கடந்த ஆண்டு</string>
     <string name="onboarding_welcome_description">முதலில் கேட்பதற்கு முன் தனியுரிமையையும் கணினி அனுமதிகளையும் அமைக்கவும்.</string>
     <string name="onboarding_migration_title">உங்கள் v13 நூலகம் இங்கே உள்ளது</string>
-    <string name="onboarding_migration_description">தனித்த Metrolist தரவுத்தளத்தைக் கண்டறிந்தோம். பிளேலிச்ட்கள், வரலாறு, விருப்பங்கள் மற்றும் நூலகத் தரவை அதே இடத்தில் மாற்றவும். மாற்றம் தோல்வியுற்றால் அசல் தரவுத்தளத்தை மீட்டெடுக்கலாம்.</string>
+    <string name="onboarding_migration_description">தனித்த Meld தரவுத்தளத்தைக் கண்டறிந்தோம். பிளேலிச்ட்கள், வரலாறு, விருப்பங்கள் மற்றும் நூலகத் தரவை அதே இடத்தில் மாற்றவும். மாற்றம் தோல்வியுற்றால் அசல் தரவுத்தளத்தை மீட்டெடுக்கலாம்.</string>
     <string name="onboarding_migration_complete_title">உங்கள் கணக்கு மாற்றப்பட்டது</string>
-    <string name="onboarding_migration_complete_description">உங்கள் கணக்கு, பிளேலிச்ட்கள், வரலாறு, விருப்பங்கள் மற்றும் நூலகத் தரவு இந்த Metrolist பதிப்பில் தயாராக உள்ளன.</string>
-    <string name="onboarding_crash_reports_title">Metrolist-ஐ மேம்படுத்த உதவுங்கள்</string>
+    <string name="onboarding_migration_complete_description">உங்கள் கணக்கு, பிளேலிச்ட்கள், வரலாறு, விருப்பங்கள் மற்றும் நூலகத் தரவு இந்த Meld பதிப்பில் தயாராக உள்ளன.</string>
+    <string name="onboarding_crash_reports_title">Meld-ஐ மேம்படுத்த உதவுங்கள்</string>
     <string name="onboarding_crash_reports_description">சிக்கல்களைக் கண்டறிந்து சரிசெய்ய உதவ, விருப்பப்பட்டால் Sentry வழியாகக் கண்டறிதல் தரவைப் பகிரவும். இதை எந்த நேரத்திலும் அமைப்புகளில் மாற்றலாம்.</string>
     <string name="onboarding_notifications_title">அறிவிப்புகளை அனுமதி</string>
     <string name="onboarding_notifications_description">இயக்கம் மற்றும் பதிவிறக்கங்களுக்கான அறிவிப்புகளை இயக்கவும்.</string>
@@ -407,10 +407,10 @@
     <string name="onboarding_finish_title">எல்லாம் தயார்</string>
     <string name="onboarding_finish_description">அமைப்பு முடிந்தது. கேட்கத் தொடங்குங்கள் அல்லது முதலில் உங்கள் கணக்கையும் தரவையும் கொண்டு வாருங்கள்.</string>
     <string name="onboarding_restore_backup">காப்புப்பிரதியிலிருந்து மீட்டமை</string>
-    <string name="onboarding_settings_hint">Metrolist-ஐத் தனிப்பயனாக்க, மேல் வலதுபுற மெனுவிலிருந்து அமைப்புகளைத் திறக்கவும்.</string>
+    <string name="onboarding_settings_hint">Meld-ஐத் தனிப்பயனாக்க, மேல் வலதுபுற மெனுவிலிருந்து அமைப்புகளைத் திறக்கவும்.</string>
     <string name="onboarding_no_saved_accounts">இணைக்கப்பட்ட கணக்குகள் எதுவும் கிடைக்கவில்லை.</string>
     <string name="onboarding_account_picture">%1$s இன் சுயவிவரப் படம்</string>
-    <string name="onboarding_backup_picker_title">Metrolist காப்புப்பிரதியை மீட்டமை</string>
+    <string name="onboarding_backup_picker_title">Meld காப்புப்பிரதியை மீட்டமை</string>
     <string name="onboarding_backup_picker_error">காப்புப்பிரதித் தேர்வியைத் திறக்க முடியவில்லை: %1$s</string>
     <string name="onboarding_backup_restore_failed">மீட்டமைத்தல் தோல்வியுற்றது: %1$s</string>
     <string name="new_badge">புதியது</string>

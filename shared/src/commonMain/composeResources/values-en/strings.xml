@@ -14,7 +14,7 @@
     <string name="import_error_unsupported_playlist_entries">This playlist contains local files or direct URLs that Android cannot access. Import a playlist containing YouTube links, or choose the local files on desktop.</string>
     <string name="import_error_local_files_require_local_playlist">Local audio files can only be imported into a local playlist.</string>
     <string name="import_error_file_read_failed">Could not read the playlist file. Choose it again and grant file access.</string>
-    <string name="startup_error_title">Metrolist startup error</string>
+    <string name="startup_error_title">Meld startup error</string>
     <string name="lyrics_show_translations">Show translations</string>
     <string name="animated_cover_resolution">Animated cover quality</string>
     <string name="animated_cover_resolution_desc">Single-resolution clips use their original resolution</string>
@@ -47,7 +47,7 @@
     <string name="available_devices">Available devices</string>
     <string name="no_device_connected">No device connected</string>
     <string name="no_device_found">No device found</string>
-    <string name="no_compatible_devices">No compatible Google Cast, FCast, DLNA, or Metrolist device found.</string>
+    <string name="no_compatible_devices">No compatible Google Cast, FCast, DLNA, or Meld device found.</string>
     <string name="show_player_cast_button">Show Cast button</string>
     <string name="show_player_video_button">Show audio/video picker</string>
     <string name="onboarding_language_lyrics_description">Choose the app language and how lyrics appear.</string>
@@ -117,7 +117,7 @@
 <string name="equalizer_create_custom">Create custom EQ</string>
 <string name="metroeq_preset_bass">Bass boost</string>
 <string name="metroeq_presets">Presets</string>
-<string name="equalizer_usage_warning">The Metrolist team assumes no responsibility for your use of MetroEQ.</string>
+<string name="equalizer_usage_warning">The Meld team assumes no responsibility for your use of MetroEQ.</string>
 <string name="library_grid_columns">Library grid columns</string>
     <string name="verified_artists">Verified artists</string>
     <string name="onboarding_welcome_privacy_description">Set up your privacy preferences before your first listen.</string>
@@ -128,7 +128,7 @@
     <string name="onboarding_continue_without_migration">Continue with an empty library</string>
     <string name="onboarding_migration_recovery_description">You can try again or continue with an empty library. A recovery copy of your original database will stay on this device. You can restore a backup after setup.</string>
     <string name="onboarding_migration_failed">Could not prepare your library. Your original data has been preserved.</string>
-    <string name="onboarding_library_migrated_description">Your playlists, history, likes, and library data are ready in this version of Metrolist.</string>
+    <string name="onboarding_library_migrated_description">Your playlists, history, likes, and library data are ready in this version of Meld.</string>
     <string name="onboarding_notifications_denied">Notifications are disabled. You can enable them later in Android app settings, or choose No to continue.</string>
     <string name="mini_player_video_prerequisite">Enable Play music videos in Playback settings first</string>
     <string name="download_folder_access_failed">Access to this folder could not be saved. Choose a folder with read and write access.</string>
@@ -153,9 +153,9 @@
     <string name="updates_notification_settings">Android notification settings</string>
     <string name="widget_recognizer_open_result">Open identified song</string>
     <string name="statistics_load_failed">Could not refresh statistics. Try again.</string>
-    <string name="desktop_platform_unsupported">This operating system is not supported by Metrolist. Use Windows 10 or later, macOS, or a Linux distribution other than Omarchy.</string>
+    <string name="desktop_platform_unsupported">This operating system is not supported by Meld. Use Windows 10 or later, macOS, or a Linux distribution other than Omarchy.</string>
     <string name="shortcut_toggle_expanded">Toggle expanded player</string>
-    <string name="desktop_display_unavailable">Metrolist could not connect to this session’s X display. Launch it from your desktop session with DISPLAY set.</string>
+    <string name="desktop_display_unavailable">Meld could not connect to this session’s X display. Launch it from your desktop session with DISPLAY set.</string>
     <string name="webkit_install_hint">Embedded sign-in requires WebKitGTK 4.1 (%1$s). Install it using your system package manager.</string>
     <string name="webkit_install_command">Install it with:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage builds also use the system WebKitGTK libraries for sign-in.</string>
@@ -168,7 +168,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Vol: %2$s</string>
-    <string name="download_folder_unavailable">Could not use this folder. Choose a writable folder that your system or sandbox allows Metrolist to access.</string>
+    <string name="download_folder_unavailable">Could not use this folder. Choose a writable folder that your system or sandbox allows Meld to access.</string>
     <string name="window_maximize">Maximize</string>
     <string name="window_restore">Restore window</string>
     <string name="equalizer_stream_unavailable">Equalizer and preamp are unavailable for this stream. Changes apply when a supported track plays.</string>
@@ -182,7 +182,7 @@
     <string name="queue_youtube_history_paused_desc">Resume listen history to queue plays while offline</string>
     <string name="search_online_failed">Could not search online. Check your connection and try again.</string>
     <string name="search_load_more_failed">Could not load more results.</string>
-    <string name="discord_error_gateway_configuration">Discord rejected the connection configuration. Update Metrolist before trying again.</string>
+    <string name="discord_error_gateway_configuration">Discord rejected the connection configuration. Update Meld before trying again.</string>
     <string name="discord_preview_buttons_adjusted">Discord shortens long button labels and omits buttons whose links are too long. This preview shows the buttons that will be sent.</string>
     <string name="discord_presence_status_warning">When enabled, rich presence sends Online status to Discord. It may override Invisible or Do Not Disturb, including when playback stops.</string>
     <string name="discord_refresh_queued">Presence refresh queued.</string>
@@ -217,8 +217,8 @@
     <string name="theme_color_rose">Rose</string>
     <string name="theme_color_red">Red</string>
     <string name="theme_color_gold">Gold</string>
-    <string name="backup_unsupported_format">This backup format is not supported by this version of Metrolist.</string>
-    <string name="backup_unsupported_database">The database version in this backup is not supported by this version of Metrolist.</string>
+    <string name="backup_unsupported_format">This backup format is not supported by this version of Meld.</string>
+    <string name="backup_unsupported_database">The database version in this backup is not supported by this version of Meld.</string>
     <string name="backup_too_large">The backup exceeds a supported size or entry limit.</string>
     <string name="backup_invalid_data">The backup could not be read or validated. It may be damaged or contain unsupported data.</string>
     <string name="search_history_removal_failed">Could not clear account search history. Please try again when connected.</string>
@@ -229,10 +229,10 @@
     <string name="top_period_past_year">Past year</string>
     <string name="onboarding_welcome_description">Set up privacy and system permissions before your first listen.</string>
     <string name="onboarding_migration_title">Your v13 library is here</string>
-    <string name="onboarding_migration_description">We found a standalone Metrolist database. Migrate playlists, history, likes, and library data in place. You can recover the original database if migration fails.</string>
+    <string name="onboarding_migration_description">We found a standalone Meld database. Migrate playlists, history, likes, and library data in place. You can recover the original database if migration fails.</string>
     <string name="onboarding_migration_complete_title">Your account was migrated</string>
-    <string name="onboarding_migration_complete_description">Your account, playlists, history, likes, and library data are ready in this version of Metrolist.</string>
-    <string name="onboarding_crash_reports_title">Help improve Metrolist</string>
+    <string name="onboarding_migration_complete_description">Your account, playlists, history, likes, and library data are ready in this version of Meld.</string>
+    <string name="onboarding_crash_reports_title">Help improve Meld</string>
     <string name="onboarding_crash_reports_description">Share optional diagnostics through Sentry to help us find and fix problems. You can change this anytime in Settings.</string>
     <string name="onboarding_notifications_title">Allow notifications</string>
     <string name="onboarding_notifications_description">Enable alerts for playback and downloads.</string>
@@ -248,10 +248,10 @@
     <string name="onboarding_finish_title">You're all set</string>
     <string name="onboarding_finish_description">Setup is complete. Start listening, or bring your account and data with you first.</string>
     <string name="onboarding_restore_backup">Restore from backup</string>
-    <string name="onboarding_settings_hint">Open Settings from the menu in the top right to customize Metrolist.</string>
+    <string name="onboarding_settings_hint">Open Settings from the menu in the top right to customize Meld.</string>
     <string name="onboarding_no_saved_accounts">No linked accounts were found.</string>
     <string name="onboarding_account_picture">%1$s profile picture</string>
-    <string name="onboarding_backup_picker_title">Restore Metrolist backup</string>
+    <string name="onboarding_backup_picker_title">Restore Meld backup</string>
     <string name="onboarding_backup_picker_error">Could not open the backup picker: %1$s</string>
     <string name="onboarding_backup_restore_failed">Restore failed: %1$s</string>
     <string name="new_badge">New</string>
@@ -268,7 +268,7 @@
     <string name="settings_appearance_overview">Theme, fonts and player appearance</string>
     <string name="settings_android_auto_overview">Driving playlists and quick-add destination</string>
     <string name="settings_about_overview">Contributors, community links and licenses</string>
-    <string name="settings_supported_links_overview">Choose which YouTube links open in Metrolist</string>
+    <string name="settings_supported_links_overview">Choose which YouTube links open in Meld</string>
     <string name="settings_equalizer_overview">Sound presets, frequency bands and profiles</string>
     <string name="settings_fonts_overview">Font selection and font imports</string>
     <string name="settings_artwork_overview">Animated covers, artwork sources and video quality</string>
@@ -284,7 +284,7 @@
     <string name="settings_listen_together_overview">Server, join requests and song suggestions</string>
     <string name="settings_device_connect_overview">Nearby devices, pairing and remote playback</string>
     <string name="settings_release_overview">Release notes and installation options</string>
-    <string name="settings_notification_access_summary">Choose which notifications Android allows for Metrolist</string>
+    <string name="settings_notification_access_summary">Choose which notifications Android allows for Meld</string>
     <string name="settings_crash_reports_summary">Read and share saved crash reports</string>
     <string name="settings_content_language_summary">Language used for YouTube Music search and recommendations</string>
     <string name="settings_content_country_summary">Region used for YouTube Music charts and recommendations</string>
@@ -304,7 +304,7 @@
     <string name="settings_canvas_playback_summary">Play short clips or the full music video behind the player</string>
     <string name="settings_normalization_summary">Balance volume between songs to avoid large changes</string>
     <string name="settings_loudness_target_summary">Set the target loudness when audio normalization is on</string>
-    <string name="settings_stop_on_close_summary">Stop playback when Metrolist is swiped out of recent apps</string>
+    <string name="settings_stop_on_close_summary">Stop playback when Meld is swiped out of recent apps</string>
     <string name="settings_screen_awake_summary">Choose whether the player or lyrics keep the display awake</string>
     <string name="settings_translation_mode_summary">Translate words or transcribe pronunciation into the target script</string>
     <string name="settings_translation_provider_summary">Choose the service that translates lyrics</string>
@@ -324,7 +324,7 @@
     <string name="settings_reset_download_folder_summary">Use the default folder for downloaded songs</string>
     <string name="settings_diagnostic_logs_summary">Read and copy the app's diagnostic log</string>
     <string name="settings_log_directory_summary">Browse saved log files in your file manager</string>
-    <string name="settings_check_releases_summary">Check GitHub for a newer Metrolist release</string>
+    <string name="settings_check_releases_summary">Check GitHub for a newer Meld release</string>
     <string name="settings_share_apk_summary">Share the installed app package as a file</string>
     <string name="settings_system_font_summary">Use the font supplied by your operating system</string>
     <string name="settings_thumbnail_shape_summary">Choose the shape of artwork in the expanded player</string>

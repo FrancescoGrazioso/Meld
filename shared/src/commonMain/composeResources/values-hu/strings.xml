@@ -177,7 +177,7 @@
     <string name="import_error_unsupported_playlist_entries">Ez a lejátszási lista olyan helyi fájlokat vagy közvetlen hivatkozásokat tartalmaz, amelyekhez az Android nem fér hozzá. Importálj YouTube-hivatkozásokat tartalmazó listát, vagy válaszd ki a helyi fájlokat asztali gépen.</string>
     <string name="import_error_local_files_require_local_playlist">Helyi hangfájlok csak helyi lejátszási listába importálhatók.</string>
     <string name="import_error_file_read_failed">A lejátszási lista fájlja nem olvasható. Válaszd ki újra, és engedélyezd a fájl elérését.</string>
-    <string name="startup_error_title">Hiba a Metrolist indításakor</string>
+    <string name="startup_error_title">Hiba a Meld indításakor</string>
     <string name="lyrics_show_translations">Fordítások megjelenítése</string>
     <string name="artist_latest_release">Legújabb kiadvány</string>
     <string name="top_tracks">Legnépszerűbb számok</string>
@@ -228,7 +228,7 @@
     <string name="available_devices">Elérhető eszközök</string>
     <string name="no_device_connected">Nincs csatlakoztatott eszköz</string>
     <string name="no_device_found">Nem található eszköz</string>
-    <string name="no_compatible_devices">Nem található Google Cast-, FCast-, DLNA- vagy Metrolist-kompatibilis eszköz.</string>
+    <string name="no_compatible_devices">Nem található Google Cast-, FCast-, DLNA- vagy Meld-kompatibilis eszköz.</string>
     <string name="show_player_cast_button">Átküldés gomb megjelenítése</string>
     <string name="show_player_video_button">Hang- és videóválasztó megjelenítése</string>
     <string name="onboarding_language_lyrics_description">Válaszd ki az alkalmazás nyelvét és a dalszövegek megjelenítését.</string>
@@ -299,7 +299,7 @@
     <string name="onboarding_continue_without_migration">Folytatás üres könyvtárral</string>
     <string name="onboarding_migration_recovery_description">Újrapróbálkozhatsz, vagy folytathatod üres könyvtárral. Az eredeti adatbázis helyreállítási másolata ezen az eszközön marad. A beállítás után visszaállíthatsz egy biztonsági mentést.</string>
     <string name="onboarding_migration_failed">Nem sikerült előkészíteni a könyvtáradat. Az eredeti adataid megmaradtak.</string>
-    <string name="onboarding_library_migrated_description">A lejátszásilistáid, előzményeid, kedveléseid és könyvtáradataid készen állnak a Metrolist ezen verziójában.</string>
+    <string name="onboarding_library_migrated_description">A lejátszásilistáid, előzményeid, kedveléseid és könyvtáradataid készen állnak a Meld ezen verziójában.</string>
     <string name="onboarding_notifications_denied">Az értesítések ki vannak kapcsolva. Később engedélyezheted őket az Android alkalmazásbeállításaiban, vagy válaszd a Nem lehetőséget a folytatáshoz.</string>
     <string name="mini_player_video_prerequisite">Először engedélyezd a Zenei videók lejátszása lehetőséget a lejátszási beállításokban</string>
     <string name="download_folder_access_failed">Nem sikerült menteni a mappa hozzáférési engedélyét. Válassz olvasható és írható mappát.</string>
@@ -324,9 +324,9 @@
     <string name="updates_notification_settings">Android-értesítési beállítások</string>
     <string name="widget_recognizer_open_result">Felismert dal megnyitása</string>
     <string name="statistics_load_failed">Nem sikerült frissíteni a statisztikákat. Próbáld újra.</string>
-    <string name="desktop_platform_unsupported">A Metrolist nem támogatja ezt az operációs rendszert. Használj Windows 10-et vagy újabbat, macOS-t, illetve az Omarchytól eltérő Linux-disztribúciót.</string>
+    <string name="desktop_platform_unsupported">A Meld nem támogatja ezt az operációs rendszert. Használj Windows 10-et vagy újabbat, macOS-t, illetve az Omarchytól eltérő Linux-disztribúciót.</string>
     <string name="shortcut_toggle_expanded">Kibontott lejátszó be- és kikapcsolása</string>
-    <string name="desktop_display_unavailable">A Metrolist nem tudott csatlakozni a munkamenet X-kijelzőjéhez. Indítsd az asztali munkamenetből, beállított DISPLAY változóval.</string>
+    <string name="desktop_display_unavailable">A Meld nem tudott csatlakozni a munkamenet X-kijelzőjéhez. Indítsd az asztali munkamenetből, beállított DISPLAY változóval.</string>
     <string name="webkit_install_hint">A beépített bejelentkezéshez WebKitGTK 4.1 szükséges (%1$s). Telepítsd a rendszer csomagkezelőjével.</string>
     <string name="webkit_install_command">Telepítsd ezzel:\n%1$s</string>
     <string name="webkit_appimage_hint">Az AppImage-kiadások is a rendszer WebKitGTK-könyvtárait használják a bejelentkezéshez.</string>
@@ -339,7 +339,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Hangerő: %2$s</string>
-    <string name="download_folder_unavailable">Ez a mappa nem használható. Válassz olyan írható mappát, amelyhez a rendszer vagy az elkülönített környezet hozzáférést enged a Metrolist számára.</string>
+    <string name="download_folder_unavailable">Ez a mappa nem használható. Válassz olyan írható mappát, amelyhez a rendszer vagy az elkülönített környezet hozzáférést enged a Meld számára.</string>
     <string name="window_maximize">Teljes méret</string>
     <string name="window_restore">Ablak visszaállítása</string>
     <string name="equalizer_stream_unavailable">A hangszínszabályzó és az előerősítő nem érhető el ennél az adatfolyamnál. A módosítások egy támogatott dal lejátszásakor lépnek érvénybe.</string>
@@ -353,7 +353,7 @@
     <string name="queue_youtube_history_paused_desc">Folytasd a hallgatási előzmények rögzítését, hogy az offline lejátszásokat későbbi szinkronizálásra mentsük</string>
     <string name="search_online_failed">Nem sikerült az online keresés. Ellenőrizd a kapcsolatot, majd próbáld újra.</string>
     <string name="search_load_more_failed">Nem sikerült további találatokat betölteni.</string>
-    <string name="discord_error_gateway_configuration">A Discord elutasította a kapcsolat beállításait. Frissítsd a Metrolist alkalmazást, mielőtt újrapróbálkozol.</string>
+    <string name="discord_error_gateway_configuration">A Discord elutasította a kapcsolat beállításait. Frissítsd a Meld alkalmazást, mielőtt újrapróbálkozol.</string>
     <string name="discord_preview_buttons_adjusted">A Discord lerövidíti a hosszú gombfeliratokat, és kihagyja a túl hosszú hivatkozású gombokat. Ez az előnézet az elküldendő gombokat mutatja.</string>
     <string name="discord_presence_status_warning">A részletes aktivitásjelzés Elérhető állapotot küld a Discordnak. Felülírhatja a Láthatatlan vagy a Ne zavarjanak állapotot, a lejátszás leállításakor is.</string>
     <string name="discord_refresh_queued">Az aktivitásjelzés frissítése várólistára került.</string>
@@ -388,8 +388,8 @@
     <string name="theme_color_rose">Rózsaszín</string>
     <string name="theme_color_red">Piros</string>
     <string name="theme_color_gold">Arany</string>
-    <string name="backup_unsupported_format">A Metrolist ezen verziója nem támogatja ezt a biztonságimentés-formátumot.</string>
-    <string name="backup_unsupported_database">A Metrolist ezen verziója nem támogatja a biztonsági mentésben lévő adatbázis verzióját.</string>
+    <string name="backup_unsupported_format">A Meld ezen verziója nem támogatja ezt a biztonságimentés-formátumot.</string>
+    <string name="backup_unsupported_database">A Meld ezen verziója nem támogatja a biztonsági mentésben lévő adatbázis verzióját.</string>
     <string name="backup_too_large">A biztonsági mentés meghaladja a támogatott méretet vagy bejegyzésszámot.</string>
     <string name="backup_invalid_data">A biztonsági mentés nem olvasható vagy nem ellenőrizhető. Lehet, hogy sérült, vagy nem támogatott adatokat tartalmaz.</string>
     <string name="search_history_removal_failed">Nem sikerült törölni a fiók keresési előzményeit. Próbáld újra, amikor van internetkapcsolat.</string>
@@ -400,10 +400,10 @@
     <string name="top_period_past_year">Elmúlt év</string>
     <string name="onboarding_welcome_description">Állítsd be az adatvédelmet és a rendszerengedélyeket az első zenehallgatás előtt.</string>
     <string name="onboarding_migration_title">Itt van a v13-as könyvtárad</string>
-    <string name="onboarding_migration_description">Találtunk egy önálló Metrolist-adatbázist. Helyben áttelepítheted a lejátszásilistákat, előzményeket, kedveléseket és könyvtáradatokat. Ha az áttelepítés sikertelen, visszaállíthatod az eredeti adatbázist.</string>
+    <string name="onboarding_migration_description">Találtunk egy önálló Meld-adatbázist. Helyben áttelepítheted a lejátszásilistákat, előzményeket, kedveléseket és könyvtáradatokat. Ha az áttelepítés sikertelen, visszaállíthatod az eredeti adatbázist.</string>
     <string name="onboarding_migration_complete_title">A fiókod áttelepítése megtörtént</string>
-    <string name="onboarding_migration_complete_description">A fiókod, lejátszásilistáid, előzményeid, kedveléseid és könyvtáradataid készen állnak a Metrolist ezen verziójában.</string>
-    <string name="onboarding_crash_reports_title">Segíts a Metrolist fejlesztésében</string>
+    <string name="onboarding_migration_complete_description">A fiókod, lejátszásilistáid, előzményeid, kedveléseid és könyvtáradataid készen állnak a Meld ezen verziójában.</string>
+    <string name="onboarding_crash_reports_title">Segíts a Meld fejlesztésében</string>
     <string name="onboarding_crash_reports_description">Önkéntesen megoszthatsz diagnosztikai adatokat a Sentryn keresztül, hogy segíts a problémák felderítésében és javításában. Ezt bármikor módosíthatod a Beállításokban.</string>
     <string name="onboarding_notifications_title">Értesítések engedélyezése</string>
     <string name="onboarding_notifications_description">Engedélyezd a lejátszásról és letöltésekről szóló értesítéseket.</string>
@@ -419,10 +419,10 @@
     <string name="onboarding_finish_title">Minden készen áll</string>
     <string name="onboarding_finish_description">A beállítás kész. Kezdj el zenét hallgatni, vagy előbb hozd át a fiókodat és az adataidat.</string>
     <string name="onboarding_restore_backup">Visszaállítás biztonsági mentésből</string>
-    <string name="onboarding_settings_hint">A Metrolist testreszabásához nyisd meg a Beállításokat a jobb felső menüből.</string>
+    <string name="onboarding_settings_hint">A Meld testreszabásához nyisd meg a Beállításokat a jobb felső menüből.</string>
     <string name="onboarding_no_saved_accounts">Nem találhatók összekapcsolt fiókok.</string>
     <string name="onboarding_account_picture">%1$s profilképe</string>
-    <string name="onboarding_backup_picker_title">Metrolist biztonsági mentésének visszaállítása</string>
+    <string name="onboarding_backup_picker_title">Meld biztonsági mentésének visszaállítása</string>
     <string name="onboarding_backup_picker_error">Nem sikerült megnyitni a biztonsági mentés kiválasztóját: %1$s</string>
     <string name="onboarding_backup_restore_failed">A visszaállítás sikertelen: %1$s</string>
     <string name="new_badge">Új</string>
@@ -441,7 +441,7 @@
     <string name="settings_appearance_overview">Téma, betűtípusok és a lejátszó megjelenése</string>
     <string name="settings_android_auto_overview">Autós lejátszási listák és a gyors hozzáadás célja</string>
     <string name="settings_about_overview">Közreműködők, közösségi hivatkozások és licencek</string>
-    <string name="settings_supported_links_overview">Válaszd ki, mely YouTube-hivatkozásokat nyissa meg a Metrolist</string>
+    <string name="settings_supported_links_overview">Válaszd ki, mely YouTube-hivatkozásokat nyissa meg a Meld</string>
     <string name="settings_equalizer_overview">Előre beállított hangzások, frekvenciasávok és profilok</string>
     <string name="settings_fonts_overview">Betűtípusok kiválasztása és importálása</string>
     <string name="settings_artwork_overview">Animált borítók, képforrások és videóminőség</string>
@@ -457,7 +457,7 @@
     <string name="settings_listen_together_overview">Kiszolgáló, csatlakozási kérelmek és daljavaslatok</string>
     <string name="settings_device_connect_overview">Közeli eszközök, párosítás és távoli lejátszás</string>
     <string name="settings_release_overview">Kiadási megjegyzések és telepítési lehetőségek</string>
-    <string name="settings_notification_access_summary">Válaszd ki, mely értesítéseket engedélyezze az Android a Metrolistnek</string>
+    <string name="settings_notification_access_summary">Válaszd ki, mely értesítéseket engedélyezze az Android a Meldnek</string>
     <string name="settings_crash_reports_summary">Olvasd el és oszd meg a mentett összeomlási jelentéseket</string>
     <string name="settings_content_language_summary">A YouTube Music keresésének és ajánlásainak nyelve</string>
     <string name="settings_content_country_summary">A YouTube Music slágerlistáinak és ajánlásainak régiója</string>
@@ -477,7 +477,7 @@
     <string name="settings_canvas_playback_summary">Rövid klipek vagy a teljes videóklip lejátszása a lejátszó mögött</string>
     <string name="settings_normalization_summary">Egyenlítsd ki a dalok hangerejét a nagy eltérések elkerüléséhez</string>
     <string name="settings_loudness_target_summary">Állítsd be a célhangerőt bekapcsolt hangnormalizálás mellett</string>
-    <string name="settings_stop_on_close_summary">Álljon le a lejátszás, ha a Metrolistet eltávolítod a legutóbbi alkalmazások közül</string>
+    <string name="settings_stop_on_close_summary">Álljon le a lejátszás, ha a Meldet eltávolítod a legutóbbi alkalmazások közül</string>
     <string name="settings_screen_awake_summary">Válaszd ki, hogy a lejátszó vagy a dalszöveg tartsa-e ébren a kijelzőt</string>
     <string name="settings_translation_mode_summary">A szavak fordítása vagy a kiejtés átírása a célnyelv írásrendszerébe</string>
     <string name="settings_translation_provider_summary">Válaszd ki a dalszövegeket fordító szolgáltatást</string>
@@ -497,7 +497,7 @@
     <string name="settings_reset_download_folder_summary">Az alapértelmezett mappa használata a letöltött dalokhoz</string>
     <string name="settings_diagnostic_logs_summary">Olvasd el és másold ki az alkalmazás diagnosztikai naplóját</string>
     <string name="settings_log_directory_summary">Böngészd a mentett naplófájlokat a fájlkezelőben</string>
-    <string name="settings_check_releases_summary">Keress újabb Metrolist-verziót a GitHubon</string>
+    <string name="settings_check_releases_summary">Keress újabb Meld-verziót a GitHubon</string>
     <string name="settings_share_apk_summary">A telepített alkalmazáscsomag megosztása fájlként</string>
     <string name="settings_system_font_summary">Az operációs rendszer betűtípusának használata</string>
     <string name="settings_thumbnail_shape_summary">Válaszd ki a borítók alakját a kibontott lejátszóban</string>

@@ -182,7 +182,7 @@
     <string name="import_error_unsupported_playlist_entries">Αυτή η λίστα αναπαραγωγής περιέχει τοπικά αρχεία ή άμεσους συνδέσμους στους οποίους δεν έχει πρόσβαση το Android. Εισαγάγετε μια λίστα με συνδέσμους YouTube ή επιλέξτε τα τοπικά αρχεία σε υπολογιστή.</string>
     <string name="import_error_local_files_require_local_playlist">Τα τοπικά αρχεία ήχου μπορούν να εισαχθούν μόνο σε τοπική λίστα αναπαραγωγής.</string>
     <string name="import_error_file_read_failed">Δεν ήταν δυνατή η ανάγνωση του αρχείου λίστας αναπαραγωγής. Επιλέξτε το ξανά και παραχωρήστε πρόσβαση στο αρχείο.</string>
-    <string name="startup_error_title">Σφάλμα εκκίνησης του Metrolist</string>
+    <string name="startup_error_title">Σφάλμα εκκίνησης του Meld</string>
     <string name="lyrics_show_translations">Εμφάνιση μεταφράσεων</string>
     <string name="artist_latest_release">Τελευταία κυκλοφορία</string>
     <string name="top_tracks">Κορυφαία κομμάτια</string>
@@ -224,7 +224,7 @@
     <string name="available_devices">Διαθέσιμες συσκευές</string>
     <string name="no_device_connected">Καμία συνδεδεμένη συσκευή</string>
     <string name="no_device_found">Δεν βρέθηκε συσκευή</string>
-    <string name="no_compatible_devices">Δεν βρέθηκε συσκευή συμβατή με Google Cast, FCast, DLNA ή Metrolist.</string>
+    <string name="no_compatible_devices">Δεν βρέθηκε συσκευή συμβατή με Google Cast, FCast, DLNA ή Meld.</string>
     <string name="show_player_cast_button">Εμφάνιση κουμπιού μετάδοσης</string>
     <string name="show_player_video_button">Εμφάνιση επιλογέα ήχου και βίντεο</string>
     <string name="onboarding_language_lyrics_description">Επιλέξτε τη γλώσσα της εφαρμογής και πώς εμφανίζονται οι στίχοι.</string>
@@ -295,7 +295,7 @@
     <string name="onboarding_continue_without_migration">Συνέχεια με κενή βιβλιοθήκη</string>
     <string name="onboarding_migration_recovery_description">Μπορείτε να δοκιμάσετε ξανά ή να συνεχίσετε με κενή βιβλιοθήκη. Ένα αντίγραφο ανάκτησης της αρχικής βάσης δεδομένων σας θα παραμείνει σε αυτή τη συσκευή. Μπορείτε να επαναφέρετε ένα αντίγραφο ασφαλείας μετά τη ρύθμιση.</string>
     <string name="onboarding_migration_failed">Δεν ήταν δυνατή η προετοιμασία της βιβλιοθήκης σας. Τα αρχικά δεδομένα σας έχουν διατηρηθεί.</string>
-    <string name="onboarding_library_migrated_description">Οι λίστες αναπαραγωγής, το ιστορικό, οι επισημάνσεις «Μου αρέσει» και τα δεδομένα της βιβλιοθήκης σας είναι έτοιμα σε αυτή την έκδοση του Metrolist.</string>
+    <string name="onboarding_library_migrated_description">Οι λίστες αναπαραγωγής, το ιστορικό, οι επισημάνσεις «Μου αρέσει» και τα δεδομένα της βιβλιοθήκης σας είναι έτοιμα σε αυτή την έκδοση του Meld.</string>
     <string name="onboarding_notifications_denied">Οι ειδοποιήσεις είναι απενεργοποιημένες. Μπορείτε να τις ενεργοποιήσετε αργότερα στις ρυθμίσεις της εφαρμογής στο Android ή να επιλέξετε «Όχι» για να συνεχίσετε.</string>
     <string name="mini_player_video_prerequisite">Ενεργοποιήστε πρώτα την «Αναπαραγωγή μουσικών βίντεο» στις ρυθμίσεις αναπαραγωγής</string>
     <string name="download_folder_access_failed">Δεν ήταν δυνατή η αποθήκευση της πρόσβασης σε αυτόν τον φάκελο. Επιλέξτε φάκελο με πρόσβαση ανάγνωσης και εγγραφής.</string>
@@ -320,9 +320,9 @@
     <string name="updates_notification_settings">Ρυθμίσεις ειδοποιήσεων Android</string>
     <string name="widget_recognizer_open_result">Άνοιγμα αναγνωρισμένου τραγουδιού</string>
     <string name="statistics_load_failed">Δεν ήταν δυνατή η ανανέωση των στατιστικών. Δοκιμάστε ξανά.</string>
-    <string name="desktop_platform_unsupported">Αυτό το λειτουργικό σύστημα δεν υποστηρίζεται από το Metrolist. Χρησιμοποιήστε Windows 10 ή νεότερα, macOS ή μια διανομή Linux εκτός του Omarchy.</string>
+    <string name="desktop_platform_unsupported">Αυτό το λειτουργικό σύστημα δεν υποστηρίζεται από το Meld. Χρησιμοποιήστε Windows 10 ή νεότερα, macOS ή μια διανομή Linux εκτός του Omarchy.</string>
     <string name="shortcut_toggle_expanded">Εναλλαγή ανεπτυγμένου προγράμματος αναπαραγωγής</string>
-    <string name="desktop_display_unavailable">Το Metrolist δεν μπόρεσε να συνδεθεί στην οθόνη X αυτής της συνεδρίας. Εκκινήστε το από τη συνεδρία της επιφάνειας εργασίας σας με ορισμένη τη μεταβλητή DISPLAY.</string>
+    <string name="desktop_display_unavailable">Το Meld δεν μπόρεσε να συνδεθεί στην οθόνη X αυτής της συνεδρίας. Εκκινήστε το από τη συνεδρία της επιφάνειας εργασίας σας με ορισμένη τη μεταβλητή DISPLAY.</string>
     <string name="webkit_install_hint">Η ενσωματωμένη σύνδεση απαιτεί WebKitGTK 4.1 (%1$s). Εγκαταστήστε το μέσω του διαχειριστή πακέτων του συστήματός σας.</string>
     <string name="webkit_install_command">Εγκαταστήστε το με:\n%1$s</string>
     <string name="webkit_appimage_hint">Οι εκδόσεις AppImage χρησιμοποιούν επίσης τις βιβλιοθήκες WebKitGTK του συστήματος για τη σύνδεση.</string>
@@ -335,7 +335,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Ένταση: %2$s</string>
-    <string name="download_folder_unavailable">Δεν ήταν δυνατή η χρήση αυτού του φακέλου. Επιλέξτε έναν εγγράψιμο φάκελο στον οποίο το σύστημα ή το απομονωμένο περιβάλλον επιτρέπει την πρόσβαση του Metrolist.</string>
+    <string name="download_folder_unavailable">Δεν ήταν δυνατή η χρήση αυτού του φακέλου. Επιλέξτε έναν εγγράψιμο φάκελο στον οποίο το σύστημα ή το απομονωμένο περιβάλλον επιτρέπει την πρόσβαση του Meld.</string>
     <string name="window_maximize">Μεγιστοποίηση</string>
     <string name="window_restore">Επαναφορά παραθύρου</string>
     <string name="equalizer_stream_unavailable">Ο ισοσταθμιστής και ο προενισχυτής δεν είναι διαθέσιμοι για αυτή τη ροή. Οι αλλαγές εφαρμόζονται όταν αναπαράγεται ένα υποστηριζόμενο κομμάτι.</string>
@@ -349,7 +349,7 @@
     <string name="queue_youtube_history_paused_desc">Συνεχίστε την καταγραφή του ιστορικού ακρόασης για να αποθηκεύονται οι αναπαραγωγές εκτός σύνδεσης για αποστολή αργότερα</string>
     <string name="search_online_failed">Δεν ήταν δυνατή η αναζήτηση στο διαδίκτυο. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.</string>
     <string name="search_load_more_failed">Δεν ήταν δυνατή η φόρτωση περισσότερων αποτελεσμάτων.</string>
-    <string name="discord_error_gateway_configuration">Το Discord απέρριψε τη διαμόρφωση της σύνδεσης. Ενημερώστε το Metrolist πριν δοκιμάσετε ξανά.</string>
+    <string name="discord_error_gateway_configuration">Το Discord απέρριψε τη διαμόρφωση της σύνδεσης. Ενημερώστε το Meld πριν δοκιμάσετε ξανά.</string>
     <string name="discord_preview_buttons_adjusted">Το Discord συντομεύει τις μεγάλες ετικέτες κουμπιών και παραλείπει κουμπιά με υπερβολικά μεγάλους συνδέσμους. Αυτή η προεπισκόπηση δείχνει τα κουμπιά που θα σταλούν.</string>
     <string name="discord_presence_status_warning">Η εμπλουτισμένη παρουσία στέλνει την κατάσταση «Συνδεδεμένος» στο Discord. Ενδέχεται να παρακάμψει το «Αόρατος» ή το «Μην ενοχλείτε», ακόμη και όταν σταματά η αναπαραγωγή.</string>
     <string name="discord_refresh_queued">Η ανανέωση παρουσίας προστέθηκε στην ουρά.</string>
@@ -384,8 +384,8 @@
     <string name="theme_color_rose">Ροζ</string>
     <string name="theme_color_red">Κόκκινο</string>
     <string name="theme_color_gold">Χρυσό</string>
-    <string name="backup_unsupported_format">Η μορφή αυτού του αντιγράφου ασφαλείας δεν υποστηρίζεται από αυτή την έκδοση του Metrolist.</string>
-    <string name="backup_unsupported_database">Η έκδοση της βάσης δεδομένων σε αυτό το αντίγραφο ασφαλείας δεν υποστηρίζεται από αυτή την έκδοση του Metrolist.</string>
+    <string name="backup_unsupported_format">Η μορφή αυτού του αντιγράφου ασφαλείας δεν υποστηρίζεται από αυτή την έκδοση του Meld.</string>
+    <string name="backup_unsupported_database">Η έκδοση της βάσης δεδομένων σε αυτό το αντίγραφο ασφαλείας δεν υποστηρίζεται από αυτή την έκδοση του Meld.</string>
     <string name="backup_too_large">Το αντίγραφο ασφαλείας υπερβαίνει το υποστηριζόμενο όριο μεγέθους ή πλήθους καταχωρίσεων.</string>
     <string name="backup_invalid_data">Δεν ήταν δυνατή η ανάγνωση ή η επικύρωση του αντιγράφου ασφαλείας. Ενδέχεται να είναι κατεστραμμένο ή να περιέχει μη υποστηριζόμενα δεδομένα.</string>
     <string name="search_history_removal_failed">Δεν ήταν δυνατή η εκκαθάριση του ιστορικού αναζήτησης του λογαριασμού. Δοκιμάστε ξανά όταν συνδεθείτε.</string>
@@ -396,10 +396,10 @@
     <string name="top_period_past_year">Τελευταίο έτος</string>
     <string name="onboarding_welcome_description">Ρυθμίστε το απόρρητο και τις άδειες συστήματος πριν ακούσετε για πρώτη φορά.</string>
     <string name="onboarding_migration_title">Η βιβλιοθήκη σας από την v13 είναι εδώ</string>
-    <string name="onboarding_migration_description">Βρήκαμε μια ανεξάρτητη βάση δεδομένων του Metrolist. Μεταφέρετε επιτόπου τις λίστες αναπαραγωγής, το ιστορικό, τις επισημάνσεις «Μου αρέσει» και τα δεδομένα της βιβλιοθήκης. Μπορείτε να ανακτήσετε την αρχική βάση δεδομένων αν η μεταφορά αποτύχει.</string>
+    <string name="onboarding_migration_description">Βρήκαμε μια ανεξάρτητη βάση δεδομένων του Meld. Μεταφέρετε επιτόπου τις λίστες αναπαραγωγής, το ιστορικό, τις επισημάνσεις «Μου αρέσει» και τα δεδομένα της βιβλιοθήκης. Μπορείτε να ανακτήσετε την αρχική βάση δεδομένων αν η μεταφορά αποτύχει.</string>
     <string name="onboarding_migration_complete_title">Ο λογαριασμός σας μεταφέρθηκε</string>
-    <string name="onboarding_migration_complete_description">Ο λογαριασμός σας, οι λίστες αναπαραγωγής, το ιστορικό, οι επισημάνσεις «Μου αρέσει» και τα δεδομένα της βιβλιοθήκης σας είναι έτοιμα σε αυτή την έκδοση του Metrolist.</string>
-    <string name="onboarding_crash_reports_title">Βοηθήστε στη βελτίωση του Metrolist</string>
+    <string name="onboarding_migration_complete_description">Ο λογαριασμός σας, οι λίστες αναπαραγωγής, το ιστορικό, οι επισημάνσεις «Μου αρέσει» και τα δεδομένα της βιβλιοθήκης σας είναι έτοιμα σε αυτή την έκδοση του Meld.</string>
+    <string name="onboarding_crash_reports_title">Βοηθήστε στη βελτίωση του Meld</string>
     <string name="onboarding_crash_reports_description">Μοιραστείτε προαιρετικά διαγνωστικά δεδομένα μέσω του Sentry για να μας βοηθήσετε να εντοπίζουμε και να διορθώνουμε προβλήματα. Μπορείτε να το αλλάξετε οποιαδήποτε στιγμή στις Ρυθμίσεις.</string>
     <string name="onboarding_notifications_title">Να επιτρέπονται οι ειδοποιήσεις</string>
     <string name="onboarding_notifications_description">Ενεργοποιήστε ειδοποιήσεις για αναπαραγωγή και λήψεις.</string>
@@ -415,10 +415,10 @@
     <string name="onboarding_finish_title">Όλα είναι έτοιμα</string>
     <string name="onboarding_finish_description">Η ρύθμιση ολοκληρώθηκε. Ξεκινήστε να ακούτε ή μεταφέρετε πρώτα τον λογαριασμό και τα δεδομένα σας.</string>
     <string name="onboarding_restore_backup">Επαναφορά από αντίγραφο ασφαλείας</string>
-    <string name="onboarding_settings_hint">Ανοίξτε τις Ρυθμίσεις από το μενού επάνω δεξιά για να προσαρμόσετε το Metrolist.</string>
+    <string name="onboarding_settings_hint">Ανοίξτε τις Ρυθμίσεις από το μενού επάνω δεξιά για να προσαρμόσετε το Meld.</string>
     <string name="onboarding_no_saved_accounts">Δεν βρέθηκαν συνδεδεμένοι λογαριασμοί.</string>
     <string name="onboarding_account_picture">Εικόνα προφίλ του χρήστη %1$s</string>
-    <string name="onboarding_backup_picker_title">Επαναφορά αντιγράφου ασφαλείας του Metrolist</string>
+    <string name="onboarding_backup_picker_title">Επαναφορά αντιγράφου ασφαλείας του Meld</string>
     <string name="onboarding_backup_picker_error">Δεν ήταν δυνατό το άνοιγμα της επιλογής αντιγράφου ασφαλείας: %1$s</string>
     <string name="onboarding_backup_restore_failed">Η επαναφορά απέτυχε: %1$s</string>
     <string name="new_badge">Νέο</string>
@@ -437,7 +437,7 @@
     <string name="settings_appearance_overview">Θέμα, γραμματοσειρές και εμφάνιση αναπαραγωγέα</string>
     <string name="settings_android_auto_overview">Λίστες αυτοκινήτου και προορισμός γρήγορης προσθήκης</string>
     <string name="settings_about_overview">Συντελεστές, σύνδεσμοι κοινότητας και άδειες</string>
-    <string name="settings_supported_links_overview">Επιλέξτε ποιοι σύνδεσμοι YouTube ανοίγουν στο Metrolist</string>
+    <string name="settings_supported_links_overview">Επιλέξτε ποιοι σύνδεσμοι YouTube ανοίγουν στο Meld</string>
     <string name="settings_equalizer_overview">Προεπιλογές ήχου, ζώνες συχνοτήτων και προφίλ</string>
     <string name="settings_fonts_overview">Επιλογή και εισαγωγή γραμματοσειρών</string>
     <string name="settings_artwork_overview">Κινούμενα εξώφυλλα, πηγές εικόνων και ποιότητα βίντεο</string>
@@ -453,7 +453,7 @@
     <string name="settings_listen_together_overview">Διακομιστής, αιτήματα συμμετοχής και προτάσεις τραγουδιών</string>
     <string name="settings_device_connect_overview">Κοντινές συσκευές, σύζευξη και απομακρυσμένη αναπαραγωγή</string>
     <string name="settings_release_overview">Σημειώσεις έκδοσης και επιλογές εγκατάστασης</string>
-    <string name="settings_notification_access_summary">Επιλέξτε ποιες ειδοποιήσεις επιτρέπει το Android για το Metrolist</string>
+    <string name="settings_notification_access_summary">Επιλέξτε ποιες ειδοποιήσεις επιτρέπει το Android για το Meld</string>
     <string name="settings_crash_reports_summary">Διαβάστε και μοιραστείτε αποθηκευμένες αναφορές σφαλμάτων</string>
     <string name="settings_content_language_summary">Γλώσσα αναζήτησης και προτάσεων του YouTube Music</string>
     <string name="settings_content_country_summary">Περιοχή κατατάξεων και προτάσεων του YouTube Music</string>
@@ -473,7 +473,7 @@
     <string name="settings_canvas_playback_summary">Αναπαραγωγή σύντομων κλιπ ή ολόκληρου του μουσικού βίντεο πίσω από τον αναπαραγωγέα</string>
     <string name="settings_normalization_summary">Εξισορρόπηση της έντασης μεταξύ τραγουδιών για αποφυγή μεγάλων διαφορών</string>
     <string name="settings_loudness_target_summary">Ορίστε την επιθυμητή ένταση όταν είναι ενεργή η κανονικοποίηση ήχου</string>
-    <string name="settings_stop_on_close_summary">Διακοπή αναπαραγωγής όταν το Metrolist αφαιρείται από τις πρόσφατες εφαρμογές</string>
+    <string name="settings_stop_on_close_summary">Διακοπή αναπαραγωγής όταν το Meld αφαιρείται από τις πρόσφατες εφαρμογές</string>
     <string name="settings_screen_awake_summary">Επιλέξτε αν ο αναπαραγωγέας ή οι στίχοι κρατούν την οθόνη ενεργή</string>
     <string name="settings_translation_mode_summary">Μετάφραση των λέξεων ή μεταγραφή της προφοράς στο σύστημα γραφής προορισμού</string>
     <string name="settings_translation_provider_summary">Επιλέξτε την υπηρεσία που μεταφράζει τους στίχους</string>
@@ -493,7 +493,7 @@
     <string name="settings_reset_download_folder_summary">Χρήση του προεπιλεγμένου φακέλου για τα τραγούδια που κατεβάζετε</string>
     <string name="settings_diagnostic_logs_summary">Διαβάστε και αντιγράψτε το αρχείο διάγνωσης της εφαρμογής</string>
     <string name="settings_log_directory_summary">Περιηγηθείτε στα αποθηκευμένα αρχεία καταγραφής μέσω της διαχείρισης αρχείων</string>
-    <string name="settings_check_releases_summary">Αναζητήστε νεότερη έκδοση του Metrolist στο GitHub</string>
+    <string name="settings_check_releases_summary">Αναζητήστε νεότερη έκδοση του Meld στο GitHub</string>
     <string name="settings_share_apk_summary">Κοινοποίηση του πακέτου της εγκατεστημένης εφαρμογής ως αρχείου</string>
     <string name="settings_system_font_summary">Χρήση της γραμματοσειράς που παρέχει το λειτουργικό σύστημα</string>
     <string name="settings_thumbnail_shape_summary">Επιλέξτε το σχήμα των εξωφύλλων στον ανεπτυγμένο αναπαραγωγέα</string>

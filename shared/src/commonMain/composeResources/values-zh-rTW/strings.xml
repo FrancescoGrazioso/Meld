@@ -239,20 +239,20 @@
     <string name="open_github_profile">開啟GitHub個人資料</string>
     <string name="sponsor_developer">贊助開發者</string>
     <string name="credits_license_name">授權</string>
-    <string name="credits_license_desc">Metrolist 依據 GPL-3.0 授權。</string>
+    <string name="credits_license_desc">Meld 依據 GPL-3.0 授權。</string>
     <string name="devmode_already_active" translatable="true">開發模式已啟用</string>
     <string name="discord_enable_rich_presence">啟用 Discord Rich Presence</string>
-    <string name="discord_listen_to_metrolist">用 Metrolist 收聽</string>
+    <string name="discord_listen_to_metrolist">用 Meld 收聽</string>
     <string name="discord_login_description">連結您的 Discord 帳戶</string>
     <string name="discord_rich_presence">Rich Presence</string>
     <string name="discord_state">狀態</string>
     <string name="discord_button1_text_default">在YouTube Music上收聽</string>
-    <string name="discord_button2_text_default">造訪 Metrolist</string>
+    <string name="discord_button2_text_default">造訪 Meld</string>
     <string name="discord_status_authorizing">授權中…</string>
     <string name="discord_status_not_initialized">未啟動</string>
     <string name="discord_status_authorized">已授權</string>
     <string name="discord_error_denied">Discord拒絕授權。</string>
-    <string name="discord_error_connection_failed">無法連結Discord。Metrolist即將自動重試。</string>
+    <string name="discord_error_connection_failed">無法連結Discord。Meld即將自動重試。</string>
     <string name="discord_error_no_browser">沒有可用應用程式來開啟 Discord 授權。</string>
     <string name="discord_error_token_exchange_failed">Token 交換失敗。請再試一次。</string>
     <string name="discord_error_token_refresh_failed">Token 更新失敗。請重新登入。</string>
@@ -343,7 +343,7 @@
     <string name="import_error_unsupported_playlist_entries">此播放清單包含 Android 無法存取的本機檔案或直接連結。請匯入包含 YouTube 連結的播放清單，或在桌面版選擇本機檔案。</string>
     <string name="import_error_local_files_require_local_playlist">本機音訊檔案只能匯入本機播放清單。</string>
     <string name="import_error_file_read_failed">無法讀取播放清單檔案。請重新選擇並授予檔案存取權限。</string>
-    <string name="startup_error_title">Metrolist 啟動錯誤</string>
+    <string name="startup_error_title">Meld 啟動錯誤</string>
     <string name="lyrics_show_translations">顯示翻譯</string>
     <string name="artist_latest_release">最新發行</string>
     <string name="top_tracks">熱門曲目</string>
@@ -386,7 +386,7 @@
     <string name="available_devices">可用裝置</string>
     <string name="no_device_connected">尚未連線任何裝置</string>
     <string name="no_device_found">找不到裝置</string>
-    <string name="no_compatible_devices">找不到相容 Google Cast、FCast、DLNA 或 Metrolist 的裝置。</string>
+    <string name="no_compatible_devices">找不到相容 Google Cast、FCast、DLNA 或 Meld 的裝置。</string>
     <string name="show_player_cast_button">顯示投放按鈕</string>
     <string name="show_player_video_button">顯示音訊/影片切換器</string>
     <string name="onboarding_language_lyrics_description">選擇應用程式語言和歌詞的顯示方式。</string>
@@ -455,7 +455,7 @@
     <string name="onboarding_continue_without_migration">以空白音樂庫繼續</string>
     <string name="onboarding_migration_recovery_description">您可以重試，或以空白音樂庫繼續。原始資料庫的復原副本會保留在此裝置上。設定完成後，您可以還原備份。</string>
     <string name="onboarding_migration_failed">無法準備您的音樂庫。原始資料已保留。</string>
-    <string name="onboarding_library_migrated_description">您的播放清單、歷史記錄、喜歡的歌曲和音樂庫資料已可在此版本的 Metrolist 中使用。</string>
+    <string name="onboarding_library_migrated_description">您的播放清單、歷史記錄、喜歡的歌曲和音樂庫資料已可在此版本的 Meld 中使用。</string>
     <string name="onboarding_notifications_denied">通知已停用。您可以稍後在 Android 應用程式設定中啟用，或選擇「否」以繼續。</string>
     <string name="mini_player_video_prerequisite">請先在播放設定中啟用「播放音樂影片」</string>
     <string name="download_folder_access_failed">無法儲存此資料夾的存取權限。請選擇具有讀取及寫入權限的資料夾。</string>
@@ -480,9 +480,9 @@
     <string name="updates_notification_settings">Android 通知設定</string>
     <string name="widget_recognizer_open_result">開啟已辨識的歌曲</string>
     <string name="statistics_load_failed">無法更新統計資料。請重試。</string>
-    <string name="desktop_platform_unsupported">Metrolist 不支援此作業系統。請使用 Windows 10 或更新版本、macOS，或 Omarchy 以外的 Linux 發行版。</string>
+    <string name="desktop_platform_unsupported">Meld 不支援此作業系統。請使用 Windows 10 或更新版本、macOS，或 Omarchy 以外的 Linux 發行版。</string>
     <string name="shortcut_toggle_expanded">展開或收合播放器</string>
-    <string name="desktop_display_unavailable">Metrolist 無法連線至此工作階段的 X 顯示伺服器。請從已設定 DISPLAY 的桌面工作階段啟動。</string>
+    <string name="desktop_display_unavailable">Meld 無法連線至此工作階段的 X 顯示伺服器。請從已設定 DISPLAY 的桌面工作階段啟動。</string>
     <string name="webkit_install_hint">內嵌登入需要 WebKitGTK 4.1（%1$s）。請使用系統套件管理員安裝。</string>
     <string name="webkit_install_command">使用以下指令安裝：\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage 版本也會使用系統的 WebKitGTK 程式庫進行登入。</string>
@@ -495,7 +495,7 @@
     <string name="video_stats_latency_value">%1$s 毫秒</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB（%3$s%）</string>
     <string name="video_stats_position_volume_value">%1$s | 音量：%2$s</string>
-    <string name="download_folder_unavailable">無法使用此資料夾。請選擇可寫入，且系統或沙箱允許 Metrolist 存取的資料夾。</string>
+    <string name="download_folder_unavailable">無法使用此資料夾。請選擇可寫入，且系統或沙箱允許 Meld 存取的資料夾。</string>
     <string name="window_maximize">最大化</string>
     <string name="window_restore">還原視窗</string>
     <string name="equalizer_stream_unavailable">此串流無法使用等化器及前置放大器。播放支援的曲目時，變更才會生效。</string>
@@ -508,7 +508,7 @@
     <string name="queue_youtube_history_paused_desc">請恢復聆聽記錄，以便在離線時暫存播放記錄</string>
     <string name="search_online_failed">無法線上搜尋。請檢查連線後重試。</string>
     <string name="search_load_more_failed">無法載入更多結果。</string>
-    <string name="discord_error_gateway_configuration">Discord 拒絕了連線設定。請更新 Metrolist 後再試。</string>
+    <string name="discord_error_gateway_configuration">Discord 拒絕了連線設定。請更新 Meld 後再試。</string>
     <string name="discord_preview_buttons_adjusted">Discord 會縮短過長的按鈕文字，並省略連結過長的按鈕。此預覽顯示將傳送的按鈕。</string>
     <string name="discord_presence_status_warning">詳細活動狀態會向 Discord 傳送「線上」狀態。它可能覆蓋「隱形」或「請勿打擾」，即使播放停止也一樣。</string>
     <string name="discord_refresh_queued">活動狀態更新已加入佇列。</string>
@@ -543,8 +543,8 @@
     <string name="theme_color_rose">玫瑰色</string>
     <string name="theme_color_red">紅色</string>
     <string name="theme_color_gold">金色</string>
-    <string name="backup_unsupported_format">此版本的 Metrolist 不支援此備份格式。</string>
-    <string name="backup_unsupported_database">此版本的 Metrolist 不支援此備份中的資料庫版本。</string>
+    <string name="backup_unsupported_format">此版本的 Meld 不支援此備份格式。</string>
+    <string name="backup_unsupported_database">此版本的 Meld 不支援此備份中的資料庫版本。</string>
     <string name="backup_too_large">備份超出支援的大小或項目數量上限。</string>
     <string name="backup_invalid_data">無法讀取或驗證備份。備份可能已損毀或含有不支援的資料。</string>
     <string name="search_history_removal_failed">無法清除帳戶的搜尋記錄。請連線後重試。</string>
@@ -555,10 +555,10 @@
     <string name="top_period_past_year">過去一年</string>
     <string name="onboarding_welcome_description">首次聆聽前，請設定隱私和系統權限。</string>
     <string name="onboarding_migration_title">已找到您的 v13 音樂庫</string>
-    <string name="onboarding_migration_description">我們找到了獨立版 Metrolist 的資料庫。您可以就地移轉播放清單、歷史記錄、喜歡的歌曲和音樂庫資料。如果移轉失敗，您可以復原原始資料庫。</string>
+    <string name="onboarding_migration_description">我們找到了獨立版 Meld 的資料庫。您可以就地移轉播放清單、歷史記錄、喜歡的歌曲和音樂庫資料。如果移轉失敗，您可以復原原始資料庫。</string>
     <string name="onboarding_migration_complete_title">您的帳戶已移轉</string>
-    <string name="onboarding_migration_complete_description">您的帳戶、播放清單、歷史記錄、喜歡的歌曲和音樂庫資料已可在此版本的 Metrolist 中使用。</string>
-    <string name="onboarding_crash_reports_title">協助改善 Metrolist</string>
+    <string name="onboarding_migration_complete_description">您的帳戶、播放清單、歷史記錄、喜歡的歌曲和音樂庫資料已可在此版本的 Meld 中使用。</string>
+    <string name="onboarding_crash_reports_title">協助改善 Meld</string>
     <string name="onboarding_crash_reports_description">您可以選擇透過 Sentry 分享診斷資訊，協助我們找出並修正問題。您隨時都可以在設定中變更此選項。</string>
     <string name="onboarding_notifications_title">允許通知</string>
     <string name="onboarding_notifications_description">啟用播放和下載通知。</string>
@@ -574,10 +574,10 @@
     <string name="onboarding_finish_title">一切就緒</string>
     <string name="onboarding_finish_description">設定已完成。開始聆聽，或先匯入您的帳戶和資料。</string>
     <string name="onboarding_restore_backup">從備份還原</string>
-    <string name="onboarding_settings_hint">從右上角選單開啟設定，即可自訂 Metrolist。</string>
+    <string name="onboarding_settings_hint">從右上角選單開啟設定，即可自訂 Meld。</string>
     <string name="onboarding_no_saved_accounts">找不到已連結的帳戶。</string>
     <string name="onboarding_account_picture">%1$s 的個人資料圖片</string>
-    <string name="onboarding_backup_picker_title">還原 Metrolist 備份</string>
+    <string name="onboarding_backup_picker_title">還原 Meld 備份</string>
     <string name="onboarding_backup_picker_error">無法開啟備份選擇器：%1$s</string>
     <string name="onboarding_backup_restore_failed">還原失敗：%1$s</string>
     <string name="new_badge">新</string>
@@ -593,7 +593,7 @@
     <string name="settings_appearance_overview">主題、字型與播放器外觀</string>
     <string name="settings_android_auto_overview">車用播放清單與快速加入的目標清單</string>
     <string name="settings_about_overview">貢獻者、社群連結與授權條款</string>
-    <string name="settings_supported_links_overview">選擇哪些 YouTube 連結透過 Metrolist 開啟</string>
+    <string name="settings_supported_links_overview">選擇哪些 YouTube 連結透過 Meld 開啟</string>
     <string name="settings_equalizer_overview">音效預設、頻段與設定檔</string>
     <string name="settings_fonts_overview">字型選擇與字型匯入</string>
     <string name="settings_artwork_overview">動態封面、圖片來源與影片畫質</string>
@@ -609,7 +609,7 @@
     <string name="settings_listen_together_overview">伺服器、加入請求與歌曲建議</string>
     <string name="settings_device_connect_overview">附近裝置、配對與遠端播放</string>
     <string name="settings_release_overview">版本說明與安裝選項</string>
-    <string name="settings_notification_access_summary">選擇 Android 允許 Metrolist 傳送的通知</string>
+    <string name="settings_notification_access_summary">選擇 Android 允許 Meld 傳送的通知</string>
     <string name="settings_crash_reports_summary">檢視並分享已儲存的當機報告</string>
     <string name="settings_content_language_summary">YouTube Music 搜尋與推薦使用的語言</string>
     <string name="settings_content_country_summary">YouTube Music 排行榜與推薦使用的地區</string>
@@ -629,7 +629,7 @@
     <string name="settings_canvas_playback_summary">在播放器背景播放短片段或完整音樂影片</string>
     <string name="settings_normalization_summary">平衡歌曲之間的音量，避免音量變化過大</string>
     <string name="settings_loudness_target_summary">啟用音訊標準化時設定目標音量</string>
-    <string name="settings_stop_on_close_summary">從最近使用的應用程式中滑除 Metrolist 時停止播放</string>
+    <string name="settings_stop_on_close_summary">從最近使用的應用程式中滑除 Meld 時停止播放</string>
     <string name="settings_screen_awake_summary">選擇播放器或歌詞是否讓螢幕保持開啟</string>
     <string name="settings_translation_mode_summary">翻譯文字，或以目標文字系統轉寫發音</string>
     <string name="settings_translation_provider_summary">選擇翻譯歌詞的服務</string>
@@ -649,7 +649,7 @@
     <string name="settings_reset_download_folder_summary">使用預設資料夾儲存已下載的歌曲</string>
     <string name="settings_diagnostic_logs_summary">檢視並複製應用程式的診斷紀錄</string>
     <string name="settings_log_directory_summary">在檔案管理員中瀏覽已儲存的紀錄檔</string>
-    <string name="settings_check_releases_summary">在 GitHub 上檢查 Metrolist 是否有較新版本</string>
+    <string name="settings_check_releases_summary">在 GitHub 上檢查 Meld 是否有較新版本</string>
     <string name="settings_share_apk_summary">以檔案形式分享已安裝應用程式的安裝套件</string>
     <string name="settings_system_font_summary">使用作業系統提供的字型</string>
     <string name="settings_thumbnail_shape_summary">選擇展開播放器中的封面形狀</string>
@@ -714,8 +714,8 @@
     <string name="settings_sound">音響</string>
     <string name="settings_open_supported_links_title">開啟支緩的連結</string>
     <string name="settings_updates_title">更新</string>
-    <string name="settings_updates_available_description">新的 Metrolist 更新可供下載</string>
-    <string name="settings_about_title">關於 Metrolist</string>
+    <string name="settings_updates_available_description">新的 Meld 更新可供下載</string>
+    <string name="settings_about_title">關於 Meld</string>
     <string name="settings_search_placeholder">搜尋設定</string>
     <string name="settings_search_no_results">找不到該設定</string>
     <string name="settings_search_no_results_desc">找不到相對%1$s的項目</string>
@@ -743,7 +743,7 @@
     <string name="app_icon_zenith_black">頂峰</string>
     <string name="app_icon_gradient">顏色漸變</string>
     <string name="app_font_choose">選取字體檔案</string>
-    <string name="app_font_picker_desc">選取 TTF 或 OTF 字型檔案。Metrolist 即將複製該檔案至應用程式私有儲存空間。</string>
+    <string name="app_font_picker_desc">選取 TTF 或 OTF 字型檔案。Meld 即將複製該檔案至應用程式私有儲存空間。</string>
     <string name="appearance_mini_player">迷你播放器</string>
     <string name="appearance_mini_player_type">迷你播放器類型</string>
     <string name="appearance_player_style">播放器樣式</string>

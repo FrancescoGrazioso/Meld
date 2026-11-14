@@ -5,7 +5,7 @@
     <string name="import_error_unsupported_playlist_entries">اس پلے لسٹ میں مقامی فائلیں یا براہ راست روابط ہیں جن تک Android رسائی حاصل نہیں کر سکتا۔ YouTube روابط والی پلے لسٹ درآمد کریں، یا ڈیسک ٹاپ پر مقامی فائلیں منتخب کریں۔</string>
     <string name="import_error_local_files_require_local_playlist">مقامی آڈیو فائلیں صرف مقامی پلے لسٹ میں درآمد کی جا سکتی ہیں۔</string>
     <string name="import_error_file_read_failed">پلے لسٹ فائل پڑھی نہیں جا سکی۔ اسے دوبارہ منتخب کریں اور فائل تک رسائی کی اجازت دیں۔</string>
-    <string name="startup_error_title">Metrolist شروع کرنے میں خرابی</string>
+    <string name="startup_error_title">Meld شروع کرنے میں خرابی</string>
     <string name="lyrics_show_translations">ترجمے دکھائیں</string>
     <string name="artist_latest_release">تازہ ترین ریلیز</string>
     <string name="top_tracks">مقبول ترین ٹریکس</string>
@@ -48,7 +48,7 @@
     <string name="available_devices">دستیاب آلات</string>
     <string name="no_device_connected">کوئی آلہ منسلک نہیں</string>
     <string name="no_device_found">کوئی آلہ نہیں ملا</string>
-    <string name="no_compatible_devices">Google Cast، FCast، DLNA یا Metrolist کے ساتھ مطابقت رکھنے والا کوئی آلہ نہیں ملا۔</string>
+    <string name="no_compatible_devices">Google Cast، FCast، DLNA یا Meld کے ساتھ مطابقت رکھنے والا کوئی آلہ نہیں ملا۔</string>
     <string name="show_player_cast_button">کاسٹ بٹن دکھائیں</string>
     <string name="show_player_video_button">آڈیو/ویڈیو انتخاب دکھائیں</string>
     <string name="onboarding_language_lyrics_description">ایپ کی زبان اور بول دکھانے کا طریقہ منتخب کریں۔</string>
@@ -121,7 +121,7 @@
     <string name="onboarding_continue_without_migration">خالی لائبریری کے ساتھ جاری رکھیں</string>
     <string name="onboarding_migration_recovery_description">آپ دوبارہ کوشش کر سکتے ہیں یا خالی لائبریری کے ساتھ جاری رکھ سکتے ہیں۔ آپ کے اصل ڈیٹابیس کی بحالی کے لیے ایک نقل اس آلے پر رہے گی۔ سیٹ اپ کے بعد آپ بیک اپ بحال کر سکتے ہیں۔</string>
     <string name="onboarding_migration_failed">آپ کی لائبریری تیار نہیں ہو سکی۔ آپ کا اصل ڈیٹا محفوظ رکھا گیا ہے۔</string>
-    <string name="onboarding_library_migrated_description">آپ کی پلے لسٹس، سرگزشت، پسند کردہ گانے اور لائبریری کا ڈیٹا Metrolist کے اس ورژن میں تیار ہیں۔</string>
+    <string name="onboarding_library_migrated_description">آپ کی پلے لسٹس، سرگزشت، پسند کردہ گانے اور لائبریری کا ڈیٹا Meld کے اس ورژن میں تیار ہیں۔</string>
     <string name="onboarding_notifications_denied">اطلاعات بند ہیں۔ آپ انہیں بعد میں Android کی ایپ کی ترتیبات میں فعال کر سکتے ہیں یا جاری رکھنے کے لیے ”نہیں“ منتخب کریں۔</string>
     <string name="mini_player_video_prerequisite">پہلے پلے بیک کی ترتیبات میں موسیقی کی ویڈیوز چلانے کا اختیار فعال کریں۔</string>
     <string name="download_folder_access_failed">اس فولڈر تک رسائی کی اجازت محفوظ نہیں ہو سکی۔ ایسا فولڈر منتخب کریں جس میں پڑھنے اور لکھنے کی اجازت ہو۔</string>
@@ -146,9 +146,9 @@
     <string name="updates_notification_settings">Android کی اطلاعات کی ترتیبات</string>
     <string name="widget_recognizer_open_result">شناخت شدہ گانا کھولیں</string>
     <string name="statistics_load_failed">اعداد و شمار تازہ نہیں ہو سکے۔ دوبارہ کوشش کریں۔</string>
-    <string name="desktop_platform_unsupported">Metrolist اس آپریٹنگ سسٹم کو سپورٹ نہیں کرتا۔ Windows 10 یا جدید تر ورژن، macOS یا Omarchy کے علاوہ کوئی Linux ڈسٹری بیوشن استعمال کریں۔</string>
+    <string name="desktop_platform_unsupported">Meld اس آپریٹنگ سسٹم کو سپورٹ نہیں کرتا۔ Windows 10 یا جدید تر ورژن، macOS یا Omarchy کے علاوہ کوئی Linux ڈسٹری بیوشن استعمال کریں۔</string>
     <string name="shortcut_toggle_expanded">پلیئر بڑا یا چھوٹا کریں</string>
-    <string name="desktop_display_unavailable">Metrolist اس سیشن کے X ڈسپلے سے جڑ نہیں سکا۔ DISPLAY مقرر کر کے اسے اپنے ڈیسک ٹاپ سیشن سے چلائیں۔</string>
+    <string name="desktop_display_unavailable">Meld اس سیشن کے X ڈسپلے سے جڑ نہیں سکا۔ DISPLAY مقرر کر کے اسے اپنے ڈیسک ٹاپ سیشن سے چلائیں۔</string>
     <string name="webkit_install_hint">ایپ کے اندر سائن ان کے لیے WebKitGTK 4.1 (%1$s) درکار ہے۔ اسے اپنے سسٹم کے پیکیج مینیجر سے انسٹال کریں۔</string>
     <string name="webkit_install_command">اس کمانڈ سے انسٹال کریں:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage ورژن بھی سائن ان کے لیے سسٹم کی WebKitGTK لائبریریاں استعمال کرتے ہیں۔</string>
@@ -161,7 +161,7 @@
     <string name="video_stats_latency_value">%1$s ملی سیکنڈ</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s ایم بی (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | آواز: %2$s</string>
-    <string name="download_folder_unavailable">یہ فولڈر استعمال نہیں ہو سکا۔ لکھنے کی اجازت والا ایسا فولڈر منتخب کریں جس تک سسٹم یا سینڈ باکس Metrolist کو رسائی دیتا ہو۔</string>
+    <string name="download_folder_unavailable">یہ فولڈر استعمال نہیں ہو سکا۔ لکھنے کی اجازت والا ایسا فولڈر منتخب کریں جس تک سسٹم یا سینڈ باکس Meld کو رسائی دیتا ہو۔</string>
     <string name="window_maximize">زیادہ سے زیادہ بڑا کریں</string>
     <string name="window_restore">ونڈو کا پچھلا سائز بحال کریں</string>
     <string name="equalizer_stream_unavailable">اس اسٹریم کے لیے ایکولائزر اور پری ایمپ دستیاب نہیں ہیں۔ تبدیلیاں کسی مطابقت رکھنے والے گانے کے چلنے پر لاگو ہوں گی۔</string>
@@ -175,7 +175,7 @@
     <string name="queue_youtube_history_paused_desc">آف لائن سنے گئے گانوں کا ریکارڈ قطار میں رکھنے کے لیے سننے کی سرگزشت دوبارہ فعال کریں۔</string>
     <string name="search_online_failed">آن لائن تلاش نہیں ہو سکی۔ اپنا کنکشن جانچیں اور دوبارہ کوشش کریں۔</string>
     <string name="search_load_more_failed">مزید نتائج لوڈ نہیں ہو سکے۔</string>
-    <string name="discord_error_gateway_configuration">Discord نے کنکشن کی ترتیب مسترد کر دی۔ دوبارہ کوشش کرنے سے پہلے Metrolist اپ ڈیٹ کریں۔</string>
+    <string name="discord_error_gateway_configuration">Discord نے کنکشن کی ترتیب مسترد کر دی۔ دوبارہ کوشش کرنے سے پہلے Meld اپ ڈیٹ کریں۔</string>
     <string name="discord_preview_buttons_adjusted">Discord بٹنوں کے طویل لیبل مختصر کرتا ہے اور بہت طویل روابط والے بٹن ہٹا دیتا ہے۔ اس پیش منظر میں وہ بٹن دکھائے گئے ہیں جو بھیجے جائیں گے۔</string>
     <string name="discord_presence_status_warning">تفصیلی سرگرمی کی نمائش فعال کرنے سے Discord کو آن لائن حالت بھیجی جاتی ہے۔ یہ پوشیدہ یا تنگ نہ کریں کی حالت کو بدل سکتی ہے، یہاں تک کہ پلے بیک رکنے پر بھی۔</string>
     <string name="discord_refresh_queued">موجودگی کی معلومات تازہ کرنے کی درخواست قطار میں ہے۔</string>
@@ -210,8 +210,8 @@
     <string name="theme_color_rose">گلابی</string>
     <string name="theme_color_red">سرخ</string>
     <string name="theme_color_gold">سنہری</string>
-    <string name="backup_unsupported_format">Metrolist کا یہ ورژن اس بیک اپ فارمیٹ کو سپورٹ نہیں کرتا۔</string>
-    <string name="backup_unsupported_database">Metrolist کا یہ ورژن اس بیک اپ کے ڈیٹابیس ورژن کو سپورٹ نہیں کرتا۔</string>
+    <string name="backup_unsupported_format">Meld کا یہ ورژن اس بیک اپ فارمیٹ کو سپورٹ نہیں کرتا۔</string>
+    <string name="backup_unsupported_database">Meld کا یہ ورژن اس بیک اپ کے ڈیٹابیس ورژن کو سپورٹ نہیں کرتا۔</string>
     <string name="backup_too_large">بیک اپ کا سائز یا اس میں اندراجات کی تعداد مقررہ حد سے زیادہ ہے۔</string>
     <string name="backup_invalid_data">بیک اپ پڑھا یا تصدیق نہیں کیا جا سکا۔ یہ خراب ہو سکتا ہے یا اس میں ایسا ڈیٹا ہو سکتا ہے جسے ایپ سپورٹ نہیں کرتی۔</string>
     <string name="search_history_removal_failed">اکاؤنٹ کی تلاش کی سرگزشت صاف نہیں ہو سکی۔ انٹرنیٹ سے جڑ کر دوبارہ کوشش کریں۔</string>
@@ -222,10 +222,10 @@
     <string name="top_period_past_year">گزشتہ سال</string>
     <string name="onboarding_welcome_description">پہلی بار سننے سے پہلے رازداری اور سسٹم کی اجازتیں ترتیب دیں۔</string>
     <string name="onboarding_migration_title">آپ کی v13 لائبریری یہاں ہے</string>
-    <string name="onboarding_migration_description">ہمیں Metrolist کا ایک الگ ڈیٹابیس ملا ہے۔ پلے لسٹس، سرگزشت، پسند کردہ گانے اور لائبریری کا ڈیٹا اسی جگہ منتقل کریں۔ منتقلی ناکام ہونے پر آپ اصل ڈیٹابیس بحال کر سکتے ہیں۔</string>
+    <string name="onboarding_migration_description">ہمیں Meld کا ایک الگ ڈیٹابیس ملا ہے۔ پلے لسٹس، سرگزشت، پسند کردہ گانے اور لائبریری کا ڈیٹا اسی جگہ منتقل کریں۔ منتقلی ناکام ہونے پر آپ اصل ڈیٹابیس بحال کر سکتے ہیں۔</string>
     <string name="onboarding_migration_complete_title">آپ کا اکاؤنٹ منتقل ہو گیا</string>
-    <string name="onboarding_migration_complete_description">آپ کا اکاؤنٹ، پلے لسٹس، سرگزشت، پسند کردہ گانے اور لائبریری کا ڈیٹا Metrolist کے اس ورژن میں تیار ہیں۔</string>
-    <string name="onboarding_crash_reports_title">Metrolist کو بہتر بنانے میں مدد کریں</string>
+    <string name="onboarding_migration_complete_description">آپ کا اکاؤنٹ، پلے لسٹس، سرگزشت، پسند کردہ گانے اور لائبریری کا ڈیٹا Meld کے اس ورژن میں تیار ہیں۔</string>
+    <string name="onboarding_crash_reports_title">Meld کو بہتر بنانے میں مدد کریں</string>
     <string name="onboarding_crash_reports_description">مسائل تلاش کرنے اور حل کرنے میں ہماری مدد کے لیے Sentry کے ذریعے اختیاری تشخیصی معلومات شیئر کریں۔ آپ اسے کسی بھی وقت ترتیبات میں تبدیل کر سکتے ہیں۔</string>
     <string name="onboarding_notifications_title">اطلاعات کی اجازت دیں</string>
     <string name="onboarding_notifications_description">پلے بیک اور ڈاؤن لوڈز کے لیے اطلاعات فعال کریں۔</string>
@@ -241,10 +241,10 @@
     <string name="onboarding_finish_title">سب تیار ہے</string>
     <string name="onboarding_finish_description">سیٹ اپ مکمل ہو گیا۔ سننا شروع کریں یا پہلے اپنا اکاؤنٹ اور ڈیٹا لے آئیں۔</string>
     <string name="onboarding_restore_backup">بیک اپ سے بحال کریں</string>
-    <string name="onboarding_settings_hint">Metrolist کو اپنی مرضی کے مطابق بنانے کے لیے اوپر دائیں جانب مینو سے ترتیبات کھولیں۔</string>
+    <string name="onboarding_settings_hint">Meld کو اپنی مرضی کے مطابق بنانے کے لیے اوپر دائیں جانب مینو سے ترتیبات کھولیں۔</string>
     <string name="onboarding_no_saved_accounts">کوئی منسلک اکاؤنٹ نہیں ملا۔</string>
     <string name="onboarding_account_picture">%1$s کی پروفائل تصویر</string>
-    <string name="onboarding_backup_picker_title">Metrolist کا بیک اپ بحال کریں</string>
+    <string name="onboarding_backup_picker_title">Meld کا بیک اپ بحال کریں</string>
     <string name="onboarding_backup_picker_error">بیک اپ منتخب کرنے کی ونڈو نہیں کھل سکی: %1$s</string>
     <string name="onboarding_backup_restore_failed">بحالی ناکام ہو گئی: %1$s</string>
     <string name="new_badge">نیا</string>
@@ -266,7 +266,7 @@
     <string name="settings_appearance_overview">تھیم، فونٹس اور پلیئر کی شکل</string>
     <string name="settings_android_auto_overview">گاڑی کی پلے لسٹس اور فوری اضافے کی منزل</string>
     <string name="settings_about_overview">تعاون کرنے والے، کمیونٹی کے لنکس اور لائسنس</string>
-    <string name="settings_supported_links_overview">منتخب کریں کہ کون سے YouTube لنکس Metrolist میں کھلیں</string>
+    <string name="settings_supported_links_overview">منتخب کریں کہ کون سے YouTube لنکس Meld میں کھلیں</string>
     <string name="settings_equalizer_overview">آواز کی پہلے سے تیار ترتیبات، فریکوئنسی بینڈز اور پروفائلز</string>
     <string name="settings_fonts_overview">فونٹ کا انتخاب اور درآمد</string>
     <string name="settings_artwork_overview">متحرک کور، تصاویر کے ذرائع اور ویڈیو کا معیار</string>
@@ -282,7 +282,7 @@
     <string name="settings_listen_together_overview">سرور، شمولیت کی درخواستیں اور گانوں کی تجاویز</string>
     <string name="settings_device_connect_overview">قریبی آلات، جوڑا بنانا اور دور سے پلے بیک</string>
     <string name="settings_release_overview">ریلیز کی تفصیلات اور تنصیب کے اختیارات</string>
-    <string name="settings_notification_access_summary">منتخب کریں کہ Android، Metrolist کی کون سی اطلاعات کی اجازت دے</string>
+    <string name="settings_notification_access_summary">منتخب کریں کہ Android، Meld کی کون سی اطلاعات کی اجازت دے</string>
     <string name="settings_crash_reports_summary">محفوظ کردہ کریش رپورٹس پڑھیں اور شیئر کریں</string>
     <string name="settings_content_language_summary">YouTube Music کی تلاش اور تجاویز کی زبان</string>
     <string name="settings_content_country_summary">YouTube Music کی مقبول گانوں کی فہرستوں اور تجاویز کا خطہ</string>
@@ -302,7 +302,7 @@
     <string name="settings_canvas_playback_summary">پلیئر کے پیچھے مختصر کلپس یا پوری میوزک ویڈیو چلائیں</string>
     <string name="settings_normalization_summary">گانوں کی آواز برابر کریں تاکہ بڑا فرق نہ ہو</string>
     <string name="settings_loudness_target_summary">آڈیو نارملائزیشن فعال ہونے پر آواز کی مطلوبہ سطح طے کریں</string>
-    <string name="settings_stop_on_close_summary">حالیہ ایپس سے Metrolist ہٹانے پر پلے بیک روکیں</string>
+    <string name="settings_stop_on_close_summary">حالیہ ایپس سے Meld ہٹانے پر پلے بیک روکیں</string>
     <string name="settings_screen_awake_summary">منتخب کریں کہ پلیئر یا بول اسکرین کو روشن رکھیں یا نہیں</string>
     <string name="settings_translation_mode_summary">الفاظ کا ترجمہ کریں یا ان کا تلفظ ہدف کے رسم الخط میں لکھیں</string>
     <string name="settings_translation_provider_summary">بول کا ترجمہ کرنے والی سروس منتخب کریں</string>
@@ -322,7 +322,7 @@
     <string name="settings_reset_download_folder_summary">ڈاؤن لوڈ کیے گئے گانوں کے لیے پہلے سے طے شدہ فولڈر استعمال کریں</string>
     <string name="settings_diagnostic_logs_summary">ایپ کا تشخیصی لاگ پڑھیں اور نقل کریں</string>
     <string name="settings_log_directory_summary">فائل مینیجر میں محفوظ شدہ لاگ فائلیں دیکھیں</string>
-    <string name="settings_check_releases_summary">GitHub پر Metrolist کا نیا ورژن تلاش کریں</string>
+    <string name="settings_check_releases_summary">GitHub پر Meld کا نیا ورژن تلاش کریں</string>
     <string name="settings_share_apk_summary">نصب شدہ ایپ کا پیکیج فائل کے طور پر شیئر کریں</string>
     <string name="settings_system_font_summary">آپریٹنگ سسٹم کا فراہم کردہ فونٹ استعمال کریں</string>
     <string name="settings_thumbnail_shape_summary">بڑے پلیئر میں کور کی شکل منتخب کریں</string>

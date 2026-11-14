@@ -171,7 +171,7 @@
     <string name="import_error_unsupported_playlist_entries">이 재생목록에는 Android에서 접근할 수 없는 로컬 파일이나 직접 링크가 있습니다. YouTube 링크가 포함된 재생목록을 가져오거나 데스크톱에서 로컬 파일을 선택하세요.</string>
     <string name="import_error_local_files_require_local_playlist">로컬 오디오 파일은 로컬 재생목록으로만 가져올 수 있습니다.</string>
     <string name="import_error_file_read_failed">재생목록 파일을 읽을 수 없습니다. 파일을 다시 선택하고 접근 권한을 허용하세요.</string>
-    <string name="startup_error_title">Metrolist 시작 오류</string>
+    <string name="startup_error_title">Meld 시작 오류</string>
     <string name="lyrics_show_translations">번역 표시</string>
     <string name="artist_latest_release">최신 발매</string>
     <string name="top_tracks">인기 트랙</string>
@@ -221,7 +221,7 @@
     <string name="available_devices">사용 가능한 기기</string>
     <string name="no_device_connected">연결된 기기 없음</string>
     <string name="no_device_found">기기를 찾을 수 없음</string>
-    <string name="no_compatible_devices">Google Cast, FCast, DLNA 또는 Metrolist와 호환되는 기기를 찾을 수 없습니다.</string>
+    <string name="no_compatible_devices">Google Cast, FCast, DLNA 또는 Meld와 호환되는 기기를 찾을 수 없습니다.</string>
     <string name="show_player_cast_button">전송 버튼 표시</string>
     <string name="show_player_video_button">오디오/동영상 선택기 표시</string>
     <string name="onboarding_language_lyrics_description">앱 언어와 가사 표시 방법을 선택하세요.</string>
@@ -292,7 +292,7 @@
     <string name="onboarding_continue_without_migration">빈 보관함으로 계속하기</string>
     <string name="onboarding_migration_recovery_description">다시 시도하거나 빈 보관함으로 계속할 수 있습니다. 원본 데이터베이스의 복구용 사본은 이 기기에 남습니다. 설정을 마친 후 백업을 복원할 수 있습니다.</string>
     <string name="onboarding_migration_failed">보관함을 준비하지 못했습니다. 원본 데이터는 보존되었습니다.</string>
-    <string name="onboarding_library_migrated_description">이 버전의 Metrolist에서 재생목록, 기록, 좋아요 및 보관함 데이터를 사용할 준비가 되었습니다.</string>
+    <string name="onboarding_library_migrated_description">이 버전의 Meld에서 재생목록, 기록, 좋아요 및 보관함 데이터를 사용할 준비가 되었습니다.</string>
     <string name="onboarding_notifications_denied">알림이 꺼져 있습니다. 나중에 Android 앱 설정에서 켜거나 아니요를 선택해 계속할 수 있습니다.</string>
     <string name="mini_player_video_prerequisite">먼저 재생 설정에서 뮤직비디오 재생을 켜세요</string>
     <string name="download_folder_access_failed">이 폴더의 접근 권한을 저장하지 못했습니다. 읽기와 쓰기가 가능한 폴더를 선택하세요.</string>
@@ -317,9 +317,9 @@
     <string name="updates_notification_settings">Android 알림 설정</string>
     <string name="widget_recognizer_open_result">인식된 노래 열기</string>
     <string name="statistics_load_failed">통계를 새로고침하지 못했습니다. 다시 시도하세요.</string>
-    <string name="desktop_platform_unsupported">Metrolist에서 지원하지 않는 운영체제입니다. Windows 10 이상, macOS 또는 Omarchy 이외의 Linux 배포판을 사용하세요.</string>
+    <string name="desktop_platform_unsupported">Meld에서 지원하지 않는 운영체제입니다. Windows 10 이상, macOS 또는 Omarchy 이외의 Linux 배포판을 사용하세요.</string>
     <string name="shortcut_toggle_expanded">플레이어 확대 전환</string>
-    <string name="desktop_display_unavailable">Metrolist가 이 세션의 X 디스플레이에 연결하지 못했습니다. DISPLAY를 설정한 데스크톱 세션에서 실행하세요.</string>
+    <string name="desktop_display_unavailable">Meld가 이 세션의 X 디스플레이에 연결하지 못했습니다. DISPLAY를 설정한 데스크톱 세션에서 실행하세요.</string>
     <string name="webkit_install_hint">앱 내 로그인에는 WebKitGTK 4.1(%1$s)이 필요합니다. 시스템 패키지 관리자로 설치하세요.</string>
     <string name="webkit_install_command">다음 명령으로 설치하세요:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage 버전도 로그인에 시스템의 WebKitGTK 라이브러리를 사용합니다.</string>
@@ -332,7 +332,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | 음량: %2$s</string>
-    <string name="download_folder_unavailable">이 폴더를 사용할 수 없습니다. 시스템이나 샌드박스에서 Metrolist의 접근을 허용하는 쓰기 가능한 폴더를 선택하세요.</string>
+    <string name="download_folder_unavailable">이 폴더를 사용할 수 없습니다. 시스템이나 샌드박스에서 Meld의 접근을 허용하는 쓰기 가능한 폴더를 선택하세요.</string>
     <string name="window_maximize">최대화</string>
     <string name="window_restore">창 복원</string>
     <string name="equalizer_stream_unavailable">이 스트림에서는 이퀄라이저와 프리앰프를 사용할 수 없습니다. 지원되는 곡이 재생되면 변경 사항이 적용됩니다.</string>
@@ -345,7 +345,7 @@
     <string name="queue_youtube_history_paused_desc">오프라인 재생 기록을 저장해 두려면 청취 기록을 다시 켜세요</string>
     <string name="search_online_failed">온라인 검색에 실패했습니다. 연결 상태를 확인하고 다시 시도하세요.</string>
     <string name="search_load_more_failed">추가 결과를 불러오지 못했습니다.</string>
-    <string name="discord_error_gateway_configuration">Discord가 연결 구성을 거부했습니다. Metrolist를 업데이트한 후 다시 시도하세요.</string>
+    <string name="discord_error_gateway_configuration">Discord가 연결 구성을 거부했습니다. Meld를 업데이트한 후 다시 시도하세요.</string>
     <string name="discord_preview_buttons_adjusted">Discord는 긴 버튼 이름을 줄이고 링크가 너무 긴 버튼은 제외합니다. 이 미리보기에는 전송될 버튼이 표시됩니다.</string>
     <string name="discord_presence_status_warning">리치 프레즌스는 Discord에 온라인 상태를 전송합니다. 재생이 멈춘 경우에도 오프라인 표시나 방해 금지 상태를 덮어쓸 수 있습니다.</string>
     <string name="discord_refresh_queued">활동 상태 새로고침이 대기열에 추가되었습니다.</string>
@@ -380,8 +380,8 @@
     <string name="theme_color_rose">장미색</string>
     <string name="theme_color_red">빨간색</string>
     <string name="theme_color_gold">금색</string>
-    <string name="backup_unsupported_format">이 버전의 Metrolist에서는 이 백업 형식을 지원하지 않습니다.</string>
-    <string name="backup_unsupported_database">이 버전의 Metrolist에서는 이 백업의 데이터베이스 버전을 지원하지 않습니다.</string>
+    <string name="backup_unsupported_format">이 버전의 Meld에서는 이 백업 형식을 지원하지 않습니다.</string>
+    <string name="backup_unsupported_database">이 버전의 Meld에서는 이 백업의 데이터베이스 버전을 지원하지 않습니다.</string>
     <string name="backup_too_large">백업이 지원되는 크기 또는 항목 수 제한을 초과했습니다.</string>
     <string name="backup_invalid_data">백업을 읽거나 검증하지 못했습니다. 손상되었거나 지원하지 않는 데이터가 포함되어 있을 수 있습니다.</string>
     <string name="search_history_removal_failed">계정의 검색 기록을 지우지 못했습니다. 연결된 상태에서 다시 시도하세요.</string>
@@ -392,10 +392,10 @@
     <string name="top_period_past_year">지난 1년</string>
     <string name="onboarding_welcome_description">처음 듣기 전에 개인정보 보호 및 시스템 권한을 설정하세요.</string>
     <string name="onboarding_migration_title">v13 보관함을 찾았습니다</string>
-    <string name="onboarding_migration_description">독립형 Metrolist 데이터베이스를 찾았습니다. 재생목록, 기록, 좋아요 및 보관함 데이터를 현재 위치에서 이전하세요. 이전에 실패하면 원본 데이터베이스를 복구할 수 있습니다.</string>
+    <string name="onboarding_migration_description">독립형 Meld 데이터베이스를 찾았습니다. 재생목록, 기록, 좋아요 및 보관함 데이터를 현재 위치에서 이전하세요. 이전에 실패하면 원본 데이터베이스를 복구할 수 있습니다.</string>
     <string name="onboarding_migration_complete_title">계정이 이전되었습니다</string>
-    <string name="onboarding_migration_complete_description">이 버전의 Metrolist에서 계정, 재생목록, 기록, 좋아요 및 보관함 데이터를 사용할 준비가 되었습니다.</string>
-    <string name="onboarding_crash_reports_title">Metrolist 개선에 참여해 주세요</string>
+    <string name="onboarding_migration_complete_description">이 버전의 Meld에서 계정, 재생목록, 기록, 좋아요 및 보관함 데이터를 사용할 준비가 되었습니다.</string>
+    <string name="onboarding_crash_reports_title">Meld 개선에 참여해 주세요</string>
     <string name="onboarding_crash_reports_description">문제를 찾고 해결하는 데 도움이 되도록 Sentry를 통해 진단 정보를 선택적으로 공유하세요. 설정에서 언제든지 변경할 수 있습니다.</string>
     <string name="onboarding_notifications_title">알림 허용</string>
     <string name="onboarding_notifications_description">재생 및 다운로드 알림을 사용 설정하세요.</string>
@@ -411,10 +411,10 @@
     <string name="onboarding_finish_title">모든 준비가 끝났습니다</string>
     <string name="onboarding_finish_description">설정이 완료되었습니다. 음악을 듣거나 먼저 계정과 데이터를 가져오세요.</string>
     <string name="onboarding_restore_backup">백업에서 복원</string>
-    <string name="onboarding_settings_hint">오른쪽 상단 메뉴에서 설정을 열어 Metrolist를 맞춤 설정하세요.</string>
+    <string name="onboarding_settings_hint">오른쪽 상단 메뉴에서 설정을 열어 Meld를 맞춤 설정하세요.</string>
     <string name="onboarding_no_saved_accounts">연결된 계정을 찾을 수 없습니다.</string>
     <string name="onboarding_account_picture">%1$s의 프로필 사진</string>
-    <string name="onboarding_backup_picker_title">Metrolist 백업 복원</string>
+    <string name="onboarding_backup_picker_title">Meld 백업 복원</string>
     <string name="onboarding_backup_picker_error">백업 선택기를 열 수 없습니다: %1$s</string>
     <string name="onboarding_backup_restore_failed">복원 실패: %1$s</string>
     <string name="new_badge">신규</string>
@@ -433,7 +433,7 @@
     <string name="settings_appearance_overview">테마, 글꼴 및 플레이어 모양</string>
     <string name="settings_android_auto_overview">차량용 재생목록과 빠른 추가 대상</string>
     <string name="settings_about_overview">기여자, 커뮤니티 링크 및 라이선스</string>
-    <string name="settings_supported_links_overview">Metrolist에서 열 YouTube 링크 선택</string>
+    <string name="settings_supported_links_overview">Meld에서 열 YouTube 링크 선택</string>
     <string name="settings_equalizer_overview">음향 프리셋, 주파수 대역 및 프로필</string>
     <string name="settings_fonts_overview">글꼴 선택 및 가져오기</string>
     <string name="settings_artwork_overview">움직이는 커버, 이미지 출처 및 동영상 화질</string>
@@ -449,7 +449,7 @@
     <string name="settings_listen_together_overview">서버, 참여 요청 및 노래 추천</string>
     <string name="settings_device_connect_overview">주변 기기, 페어링 및 원격 재생</string>
     <string name="settings_release_overview">출시 정보 및 설치 옵션</string>
-    <string name="settings_notification_access_summary">Android에서 Metrolist에 허용할 알림 선택</string>
+    <string name="settings_notification_access_summary">Android에서 Meld에 허용할 알림 선택</string>
     <string name="settings_crash_reports_summary">저장된 비정상 종료 보고서 읽기 및 공유</string>
     <string name="settings_content_language_summary">YouTube Music 검색과 추천에 사용할 언어</string>
     <string name="settings_content_country_summary">YouTube Music 차트와 추천에 사용할 지역</string>
@@ -469,7 +469,7 @@
     <string name="settings_canvas_playback_summary">플레이어 배경에서 짧은 클립 또는 전체 뮤직비디오 재생</string>
     <string name="settings_normalization_summary">곡 사이의 음량을 맞춰 큰 차이 방지</string>
     <string name="settings_loudness_target_summary">오디오 정규화가 켜져 있을 때 목표 음량 설정</string>
-    <string name="settings_stop_on_close_summary">최근 앱 목록에서 Metrolist를 없애면 재생 중지</string>
+    <string name="settings_stop_on_close_summary">최근 앱 목록에서 Meld를 없애면 재생 중지</string>
     <string name="settings_screen_awake_summary">플레이어나 가사가 화면을 켜 둔 상태로 유지할지 선택</string>
     <string name="settings_translation_mode_summary">단어를 번역하거나 발음을 대상 문자로 표기</string>
     <string name="settings_translation_provider_summary">가사를 번역할 서비스 선택</string>
@@ -489,7 +489,7 @@
     <string name="settings_reset_download_folder_summary">다운로드한 노래에 기본 폴더 사용</string>
     <string name="settings_diagnostic_logs_summary">앱 진단 로그 읽기 및 복사</string>
     <string name="settings_log_directory_summary">파일 관리자에서 저장된 로그 파일 찾아보기</string>
-    <string name="settings_check_releases_summary">GitHub에서 새 Metrolist 버전 확인</string>
+    <string name="settings_check_releases_summary">GitHub에서 새 Meld 버전 확인</string>
     <string name="settings_share_apk_summary">설치된 앱 패키지를 파일로 공유</string>
     <string name="settings_system_font_summary">운영체제에서 제공하는 글꼴 사용</string>
     <string name="settings_thumbnail_shape_summary">확장된 플레이어에서 커버 모양 선택</string>

@@ -260,20 +260,20 @@
     <string name="open_github_profile">Apri profilo GitHub</string>
     <string name="sponsor_developer">Sostieni sviluppatore</string>
     <string name="credits_license_name">Licenza</string>
-    <string name="credits_license_desc">Metrolist è concesso sotto licenza GPL-3.0</string>
+    <string name="credits_license_desc">Meld è concesso sotto licenza GPL-3.0</string>
     <string name="devmode_already_active" translatable="true">La modalità sviluppatore è già attiva</string>
     <string name="discord_enable_rich_presence">Discord Rich Presence</string>
-    <string name="discord_listen_to_metrolist">Ascolta su Metrolist</string>
+    <string name="discord_listen_to_metrolist">Ascolta su Meld</string>
     <string name="discord_login_description">Connetti il tuo account Discord</string>
     <string name="discord_rich_presence">Rich Presence</string>
     <string name="discord_state">Stato</string>
     <string name="discord_button1_text_default">Ascolta su YouTube Music</string>
-    <string name="discord_button2_text_default">Scopri Metrolist</string>
+    <string name="discord_button2_text_default">Scopri Meld</string>
     <string name="discord_status_authorizing">Autorizzazione in corso…</string>
     <string name="discord_status_not_initialized">Non connesso</string>
     <string name="discord_status_authorized">Autorizzato</string>
     <string name="discord_error_denied">Autorizzazione negata da Discord.</string>
-    <string name="discord_error_connection_failed">Non è stato possibile connettersi a Discord. Metrolist riproverà automaticamente.</string>
+    <string name="discord_error_connection_failed">Non è stato possibile connettersi a Discord. Meld riproverà automaticamente.</string>
     <string name="discord_error_no_browser">Nessuna app disponibile per aprire l\u0027autorizzazione di Discord.</string>
     <string name="discord_error_token_exchange_failed">Scambio di token fallito. Riprova.</string>
     <string name="discord_error_token_refresh_failed">Aggiornamento del token fallito. Riprova ad accedere.</string>
@@ -303,8 +303,8 @@
     <string name="settings_application_about">App e informazioni</string>
     <string name="settings_open_supported_links_title">Apri link supportati</string>
     <string name="settings_updates_title">Aggiornamenti</string>
-    <string name="settings_updates_available_description">È disponibile un nuovo aggiornamento di Metrolist</string>
-    <string name="settings_about_title">Info su Metrolist</string>
+    <string name="settings_updates_available_description">È disponibile un nuovo aggiornamento di Meld</string>
+    <string name="settings_about_title">Info su Meld</string>
     <string name="settings_search_placeholder">Cerca nelle impostazioni</string>
     <string name="settings_search_no_results">Nessuna impostazione trovata</string>
     <string name="settings_search_no_results_desc">Nessuna corrispondenza per %1$s</string>
@@ -334,7 +334,7 @@
     <string name="app_icon_zenith_black">Zenith Black</string>
     <string name="app_icon_zenith_white">Zenith White</string>
     <string name="app_font_choose">Scegli file per il font</string>
-    <string name="app_font_picker_desc">Seleziona un file TTF od OTF. Metrolist lo copierà nell\u0027archiviazione privata dell\u0027app.</string>
+    <string name="app_font_picker_desc">Seleziona un file TTF od OTF. Meld lo copierà nell\u0027archiviazione privata dell\u0027app.</string>
     <string name="app_font_system">Predefinito di sistema</string>
     <string name="app_font_applied">Utilizzando %1$s</string>
     <string name="app_font_invalid">Impossibile utilizzare questo font. Seleziona un file TTF od OTF valido e inferiore a 20MB.</string>
@@ -451,7 +451,7 @@
     <string name="backup_restore_title">Backup e importazione</string>
     <string name="spotify_sign_in">Accedi a Spotify</string>
     <string name="spotify_sign_in_again">Accedi di nuovo</string>
-    <string name="spotify_choose_playlists_supporting">Scegli le playlist che vuoi importare su Metrolist.</string>
+    <string name="spotify_choose_playlists_supporting">Scegli le playlist che vuoi importare su Meld.</string>
     <plurals name="spotify_selected_playlist_count">
         <item quantity="one">%1$d playlist selezionata</item>
         <item quantity="many">%1$d playlist selezionate</item>
@@ -481,11 +481,11 @@
         <item quantity="other">Importate %1$d tracce</item>
     </plurals>
     <string name="backup_restore_export_desc">Esporta le impostazioni, il database della libreria, la playlist, i Mi piace e la cronologia in un file zip</string>
-    <string name="backup_restore_import_desc">Ripristina un backup di Metrolist. In seguito ad un ripristino andato a buon fine, l\u0027app si riavvierà.</string>
+    <string name="backup_restore_import_desc">Ripristina un backup di Meld. In seguito ad un ripristino andato a buon fine, l\u0027app si riavvierà.</string>
     <string name="backup_restore_busy">Elaborazione in corso…</string>
     <string name="backup_sensitive_title">Backup con dati sensibili</string>
     <string name="backup_sensitive_message">I backup contengono le tue chiavi API, credenziali dell\u0027account, cookie di autenticazione, token di sessione e altre informazioni sensibili. Chiunque entri in possesso di questo file potrà accedere ai tuoi account. Conservalo in un luogo sicuro e non condividerlo con nessuno.</string>
-    <string name="restore_in_progress">Ripristinando il tuo backup...\nMetrolist si riavvierà automaticamente.</string>
+    <string name="restore_in_progress">Ripristinando il tuo backup...\nMeld si riavvierà automaticamente.</string>
     <string name="scrobble_tap_to_disconnect">Tocca per disconnettere</string>
     <string name="scrobble_enable">Scrobbling</string>
     <string name="scrobble_now_playing">Aggiornamenti in riproduzione</string>
@@ -506,7 +506,7 @@
     <string name="listenbrainz_now_playing_description">Mostra il brano in riproduzione su ListenBrainz</string>
     <string name="listenbrainz_connect_title">Connettiti a ListenBrainz</string>
     <string name="listenbrainz_user_token">Token utente</string>
-    <string name="restore_database_incompatible">Questo backup utilizza la versione %1$d del database, ma quest\u0027app supporta solo fino alla versione %2$d. Aggiorna Metrolist e riprova.</string>
+    <string name="restore_database_incompatible">Questo backup utilizza la versione %1$d del database, ma quest\u0027app supporta solo fino alla versione %2$d. Aggiorna Meld e riprova.</string>
     <string name="restore_failed_detail">Impossibile ripristinare il backup durante %1$s\n\nMotivo: %2$s</string>
     <string name="restore_error_unknown">Nessun\u0027informazione aggiuntiva disponibile.</string>
     <string name="restore_stage_reading_backup">Leggendo il file di backup</string>
@@ -574,35 +574,35 @@
     <string name="updates_title">Aggiornamento app</string>
     <string name="updates_check">Cerca aggiornamenti</string>
     <string name="updates_checking">Controllo gli aggiornamenti…</string>
-    <string name="updates_no_updates">Metrolist è aggiornato</string>
+    <string name="updates_no_updates">Meld è aggiornato</string>
     <string name="updates_error">Impossibile controllare gli aggiornamenti</string>
-    <string name="updates_status_current">Aggiornato a Metrolist %1$s</string>
+    <string name="updates_status_current">Aggiornato a Meld %1$s</string>
     <string name="updates_auto_check">Controlla in automatico gli aggiornamenti</string>
     <string name="updates_notifications">Notifiche d'aggiornamento</string>
     <string name="updates_changelogs">Changelog</string>
     <string name="updates_last_check">Ultimo controllo</string>
     <string name="updates_pending_title">Aggiornamento in attesa</string>
-    <string name="updates_version">Versione Metrolist</string>
+    <string name="updates_version">Versione Meld</string>
     <string name="updates_size">Dimensione aggiornamento</string>
     <string name="updates_date">Data</string>
     <string name="updates_changelog">Changelog</string>
     <string name="updates_install">Installa</string>
     <string name="updates_retry">Riprova</string>
-    <string name="updates_available_title">Metrolist %1$s è disponibile</string>
+    <string name="updates_available_title">Meld %1$s è disponibile</string>
     <string name="updates_available_message">Tocca Aggiorna per scaricare l\u0027aggiornamento e proseguire con l\u0027installazione.</string>
     <string name="updates_changelog_preview">Cosa c\u0027è di nuovo</string>
     <string name="updates_pending_parenthetical">(aggiornamento in attesa)</string>
     <string name="update_pending">Aggiornamento in attesa</string>
     <string name="updates_action">Aggiorna</string>
-    <string name="updates_notification_title">Metrolist %1$s è pronto</string>
+    <string name="updates_notification_title">Meld %1$s è pronto</string>
     <string name="updates_notification_text">Tocca per scaricare e installare l\u0027aggiornamento</string>
     <string name="updates_channel_name">Aggiornamenti app</string>
-    <string name="updates_channel_description">Notifiche sulle nuove versioni di Metrolist</string>
+    <string name="updates_channel_description">Notifiche sulle nuove versioni di Meld</string>
     <string name="updates_download_failed">Impossibile scaricare l\u0027aggiornamento.</string>
     <string name="updates_digest_failed">L\u0027aggiornamento scaricato non corrisponde al checksum di GitHub.</string>
     <string name="updates_installer_failed">L\u0027installer di Android non è disponibile o l\u0027installazione delle app non è consentita.</string>
     <string name="updates_release_unavailable">Questo rilascio non include un APK compatibile.</string>
-    <string name="updates_release_notes_title">Cosa c\u0027è di nuovo in Metrolist %1$s</string>
+    <string name="updates_release_notes_title">Cosa c\u0027è di nuovo in Meld %1$s</string>
     <string name="device_connect_title">Device Connect</string>
     <string name="device_connect_beta">Beta</string>
     <string name="device_connect_enable">Attiva</string>
@@ -613,7 +613,7 @@
     <string name="device_connect_rescan">Cerca di nuovo</string>
     <string name="device_connect_account_mismatch">Account diverso</string>
     <string name="device_connect_grant_permission">Concedi permesso</string>
-    <string name="side_menu_welcome">Benvenuto in Metrolist</string>
+    <string name="side_menu_welcome">Benvenuto in Meld</string>
     <string name="action_cannot_be_undone">Quest\u0027azione non potrà essere annullata.</string>
     <string name="add">Aggiungi</string>
     <string name="add_a_song">Aggiungi un brano</string>
@@ -932,7 +932,7 @@
         <item quantity="many">Aggiunti %1$d brani a %2$s</item>
         <item quantity="other">Aggiunti %1$d brani a %2$s</item>
     </plurals>
-    <string name="onboarding_migration_complete_description">Il tuo account, le playlist, la cronologia, i preferiti e i dati della libreria sono pronti in questa versione di Metrolist.</string>
+    <string name="onboarding_migration_complete_description">Il tuo account, le playlist, la cronologia, i preferiti e i dati della libreria sono pronti in questa versione di Meld.</string>
     <string name="statistics_play_count_duration">%1$s · %2$s</string>
     <string name="stored_remove_selected_message">I file audio salvati selezionati verranno rimossi.</string>
     <string name="suggested_to_host">Suggerito all\u0027host</string>
@@ -1017,7 +1017,7 @@
     <string name="suggest">Suggerisci</string>
     <string name="new_playlist">Nuova playlist</string>
     <string name="move_up">Sposta in alto</string>
-    <string name="restore_replaces_data">Questa operazione sostituirà le impostazioni, credenziali, account e dati della libreria attuali. Metrolist si riavvierà automaticamente.</string>
+    <string name="restore_replaces_data">Questa operazione sostituirà le impostazioni, credenziali, account e dati della libreria attuali. Meld si riavvierà automaticamente.</string>
     <string name="recognition_service_temporarily_unavailable">Servizio di riconoscimento temporaneamente non disponibile</string>
     <string name="small_album_art">Copertina album piccola</string>
     <string name="language_arabic">Arabo</string>
@@ -1041,7 +1041,7 @@
     <string name="account_webview_remove_failed">Impossibile rimuovere il profilo d\u0027accesso WebView.</string>
     <string name="account_login_with_token">Accedi con il token</string>
     <string name="playlist_reorder">Riordina</string>
-    <string name="startup_error_title">Errore di avvio di Metrolist</string>
+    <string name="startup_error_title">Errore di avvio di Meld</string>
     <string name="lyrics_show_translations">Traduzioni</string>
     <string name="top_tracks">Tracce più ascoltate</string>
     <plurals name="history_days_ago">
@@ -1061,7 +1061,7 @@
     </plurals>
     <string name="history_duration">Durata cronologia</string>
     <string name="recognition_history">Cronologia brani riconosciuti</string>
-    <string name="onboarding_migration_description">È stato trovato un database autonomo di Metrolist. Importa playlist, cronologia, preferiti e dati della libreria direttamente qui. Potrai recuperare il database originale in caso di errore.</string>
+    <string name="onboarding_migration_description">È stato trovato un database autonomo di Meld. Importa playlist, cronologia, preferiti e dati della libreria direttamente qui. Potrai recuperare il database originale in caso di errore.</string>
     <string name="menu_history">Cronologia</string>
     <string name="remove_from_search_history">Rimuovi %1$s dalla cronologia ricerche</string>
     <string name="top_playlist_subtitle">In base alla tua cronologia di ascolto</string>
@@ -1221,7 +1221,7 @@
     <string name="play_pause">Riproduci/pausa</string>
     <string name="next">Avanti</string>
     <string name="not_playing">Nessun brano in riproduzione</string>
-    <string name="tap_to_play">Tocca per aprire Metrolist</string>
+    <string name="tap_to_play">Tocca per aprire Meld</string>
     <string name="widget_description">Lettore con controlli di riproduzione</string>
     <string name="turntable_widget_description">Cover album circolare con controlli di riproduzione</string>
     <string name="widget_turntable">Giradischi</string>
@@ -1282,7 +1282,7 @@
     <string name="discord_activity_competing">In gara</string>
     <string name="onboarding_welcome_description">Imposta i permessi di sistema e di privacy prima dell\u0027ascolto.</string>
     <string name="onboarding_migration_title">La tua libreria v13 è qui</string>
-    <string name="onboarding_crash_reports_title">Aiutaci a migliorare Metrolist</string>
+    <string name="onboarding_crash_reports_title">Aiutaci a migliorare Meld</string>
     <string name="onboarding_crash_reports_description">Condividi dati di diagnostica facoltativi tramite Sentry per aiutarci a trovare e risolvere i problemi. Puoi cambiare questa opzione quando vuoi nelle Impostazioni.</string>
     <string name="onboarding_notifications_title">Consenti notifiche</string>
     <string name="onboarding_notifications_description">Attiva le notifiche per la riproduzione e i download.</string>
@@ -1298,7 +1298,7 @@
     <string name="onboarding_finish_title">È tutto pronto</string>
     <string name="finish">Fine</string>
     <string name="onboarding_restore_backup">Ripristina da backup</string>
-    <string name="onboarding_settings_hint">Apri le Impostazioni dal menù in alto a destra per personalizzare Metrolist.</string>
+    <string name="onboarding_settings_hint">Apri le Impostazioni dal menù in alto a destra per personalizzare Meld.</string>
     <string name="migrated">Importato</string>
     <string name="ready_to_migrate">Pronto a importare</string>
     <string name="discord_logout">Disconnetti</string>
@@ -1439,7 +1439,7 @@
     <string name="menu_keyboard_shortcuts">Scorciatoie da tastiera</string>
     <string name="menu_application_logs">Log dell'applicazione</string>
     <string name="menu_report_issue">Segnala un problema…</string>
-    <string name="menu_about_metrolist">A proposito di Metrolist</string>
+    <string name="menu_about_metrolist">A proposito di Meld</string>
     <string name="menu_song">Brani</string>
     <string name="menu_stop">Ferma</string>
     <string name="menu_go_to_current_song">Vai al brano in riproduzione</string>
@@ -1497,18 +1497,18 @@
     <string name="export_logs">Esporta log</string>
     <string name="create_backup">Crea backup</string>
     <string name="restore_backup">Ripristina backup</string>
-    <string name="restore_backup_desc">Importa un backup di Metrolist da Android o desktop e riavvia</string>
+    <string name="restore_backup_desc">Importa un backup di Meld da Android o desktop e riavvia</string>
     <string name="sensitive_backup">Backup sensibile</string>
     <string name="restore_backup_confirm">Ripristinare backup?</string>
     <string name="restore">Ripristina</string>
-    <string name="restoring_backup">Ripristinando il tuo backup...\nMetrolist si riavvierà automaticamente.</string>
+    <string name="restoring_backup">Ripristinando il tuo backup...\nMeld si riavvierà automaticamente.</string>
     <string name="hidden_library_items">Elementi nascosti in libreria</string>
     <string name="delete_playlist_confirm">Eliminare playlist?</string>
     <string name="join_room">Unisciti a una stanza</string>
     <string name="privacy_policy">Leggi la nostra policy della privacy</string>
     <string name="log_in">Accedi</string>
     <string name="restore_from_backup">Ripristina da un backup</string>
-    <string name="onboarding_backup_picker_title">Ripristina un backup di Metrolist</string>
+    <string name="onboarding_backup_picker_title">Ripristina un backup di Meld</string>
     <string name="onboarding_backup_picker_error">Impossibile aprire il selezionatore di backup: %1$s</string>
     <string name="onboarding_backup_restore_failed">Errore nel ripristino: %1$s</string>
     <string name="edit_sidebar">Modifica barra laterale</string>
@@ -1600,8 +1600,8 @@
         <item quantity="other">%1$d brani</item>
     </plurals>
     <string name="app_data">Dati app</string>
-    <string name="backup_picker_title">Ripristina backup Metrolist</string>
-    <string name="create_backup_dialog_title">Crea backup Metrolist</string>
+    <string name="backup_picker_title">Ripristina backup Meld</string>
+    <string name="create_backup_dialog_title">Crea backup Meld</string>
     <string name="backup_created">Backup creato</string>
     <string name="backup_failed">Errore nel backup: %1$s</string>
     <string name="could_not_open_file_picker">Impossibile aprire il selettore file: %1$s</string>
@@ -1677,7 +1677,7 @@
     <string name="tray_show_window">Mostra finestra</string>
     <string name="tray_show_miniplayer">Mostra mini lettore</string>
     <string name="tray_settings">Impostazioni</string>
-    <string name="tray_quit_metrolist">Esci da Metrolist</string>
+    <string name="tray_quit_metrolist">Esci da Meld</string>
     <string name="sign_in_discord">Accedi a Discord</string>
     <string name="discord_sign_in_unavailable">Accesso a Discord non disponibile</string>
     <string name="sign_in_youtube_music">Accedi a YouTube Music</string>
@@ -1857,7 +1857,7 @@
     <string name="available_devices">Dispositivi disponibili</string>
     <string name="no_device_connected">Nessun dispositivo connesso</string>
     <string name="no_device_found">Nessun dispositivo trovato</string>
-    <string name="no_compatible_devices">Nessun dispositivo compatibile con Google Cast, FCast, DLNA o Metrolist trovato.</string>
+    <string name="no_compatible_devices">Nessun dispositivo compatibile con Google Cast, FCast, DLNA o Meld trovato.</string>
     <string name="show_player_cast_button">Pulsante di trasmissione</string>
     <string name="show_player_video_button">Selettore audio/video</string>
     <string name="onboarding_language_lyrics_description">Scegli la lingua dell’app e come mostrare i testi.</string>
@@ -1975,7 +1975,7 @@
     <string name="no_match_found">Nessuna corrispondenza trovata</string>
     <string name="recognition_error">Errore di riconoscimento</string>
     <string name="try_again">Riprova</string>
-    <string name="play_on_app">Riproduci su Metrolist</string>
+    <string name="play_on_app">Riproduci su Meld</string>
     <string name="re_listen">Riascolta</string>
     <string name="stands_with_palestine">Questo progetto supporta la Palestina</string>
     <string name="mini_player_subscribe_artist">Iscriviti all\u0027artista</string>
@@ -2119,7 +2119,7 @@
     <string name="canvas">Canvas</string>
     <string name="library_grid_columns">Colonne della griglia della raccolta</string>
     <string name="canvas_cache">Cache canvas</string>
-    <string name="equalizer_usage_warning">Il team di Metrolist non si assume alcuna responsabilità per l’uso di MetroEQ.</string>
+    <string name="equalizer_usage_warning">Il team di Meld non si assume alcuna responsabilità per l’uso di MetroEQ.</string>
     <string name="metroeq_profiles">Profili salvati</string>
     <string name="metroeq_preset_treble">Alti potenziati</string>
     <string name="metroeq_save_as">Salva con nome</string>
@@ -2146,7 +2146,7 @@
     <string name="onboarding_continue_without_migration">Continua con una libreria vuota</string>
     <string name="onboarding_migration_recovery_description">Puoi riprovare o continuare con una libreria vuota. Una copia di recupero del database originale rimarrà su questo dispositivo. Potrai ripristinare un backup dopo la configurazione.</string>
     <string name="onboarding_migration_failed">Impossibile preparare la libreria. I dati originali sono stati conservati.</string>
-    <string name="onboarding_library_migrated_description">Le tue playlist, la cronologia, i brani piaciuti e i dati della libreria sono pronti in questa versione di Metrolist.</string>
+    <string name="onboarding_library_migrated_description">Le tue playlist, la cronologia, i brani piaciuti e i dati della libreria sono pronti in questa versione di Meld.</string>
     <string name="onboarding_notifications_denied">Le notifiche sono disattivate. Puoi attivarle in seguito nelle impostazioni dell'app di Android oppure scegliere No per continuare.</string>
     <string name="mini_player_video_prerequisite">Attiva prima Riproduci video musicali nelle impostazioni di riproduzione</string>
     <string name="download_folder_access_failed">Impossibile salvare l'accesso a questa cartella. Scegli una cartella con accesso in lettura e scrittura.</string>
@@ -2171,9 +2171,9 @@
     <string name="updates_notification_settings">Impostazioni notifiche di Android</string>
     <string name="widget_recognizer_open_result">Apri il brano riconosciuto</string>
     <string name="statistics_load_failed">Impossibile aggiornare le statistiche. Riprova.</string>
-    <string name="desktop_platform_unsupported">Questo sistema operativo non è supportato da Metrolist. Usa Windows 10 o successivo, macOS o una distribuzione Linux diversa da Omarchy.</string>
+    <string name="desktop_platform_unsupported">Questo sistema operativo non è supportato da Meld. Usa Windows 10 o successivo, macOS o una distribuzione Linux diversa da Omarchy.</string>
     <string name="shortcut_toggle_expanded">Espandi o riduci il lettore</string>
-    <string name="desktop_display_unavailable">Metrolist non è riuscito a connettersi al display X di questa sessione. Avvialo dalla sessione desktop con DISPLAY impostato.</string>
+    <string name="desktop_display_unavailable">Meld non è riuscito a connettersi al display X di questa sessione. Avvialo dalla sessione desktop con DISPLAY impostato.</string>
     <string name="webkit_install_hint">L'accesso integrato richiede WebKitGTK 4.1 (%1$s). Installalo tramite il gestore di pacchetti del sistema.</string>
     <string name="webkit_install_command">Installalo con:\n%1$s</string>
     <string name="webkit_appimage_hint">Anche le versioni AppImage usano le librerie WebKitGTK di sistema per l'accesso.</string>
@@ -2186,7 +2186,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Vol.: %2$s</string>
-    <string name="download_folder_unavailable">Impossibile usare questa cartella. Scegli una cartella scrivibile a cui il sistema o la sandbox consentano l'accesso a Metrolist.</string>
+    <string name="download_folder_unavailable">Impossibile usare questa cartella. Scegli una cartella scrivibile a cui il sistema o la sandbox consentano l'accesso a Meld.</string>
     <string name="window_maximize">Massimizza</string>
     <string name="window_restore">Ripristina finestra</string>
     <string name="equalizer_stream_unavailable">Equalizzatore e preamplificatore non disponibili per questo flusso. Le modifiche verranno applicate alla riproduzione di un brano supportato.</string>
@@ -2201,7 +2201,7 @@
     <string name="queue_youtube_history_paused_desc">Riattiva la cronologia di ascolto per accodare le riproduzioni effettuate offline</string>
     <string name="search_online_failed">Impossibile cercare online. Controlla la connessione e riprova.</string>
     <string name="search_load_more_failed">Impossibile caricare altri risultati.</string>
-    <string name="discord_error_gateway_configuration">Discord ha rifiutato la configurazione della connessione. Aggiorna Metrolist prima di riprovare.</string>
+    <string name="discord_error_gateway_configuration">Discord ha rifiutato la configurazione della connessione. Aggiorna Meld prima di riprovare.</string>
     <string name="discord_preview_buttons_adjusted">Discord abbrevia le etichette lunghe dei pulsanti e omette i pulsanti con link troppo lunghi. Questa anteprima mostra i pulsanti che verranno inviati.</string>
     <string name="discord_presence_status_warning">Rich Presence invia lo stato Online a Discord. Può sostituire Invisibile o Non disturbare, anche quando la riproduzione si interrompe.</string>
     <string name="discord_refresh_queued">Aggiornamento della presenza in coda.</string>
@@ -2236,8 +2236,8 @@
     <string name="theme_color_rose">Rosa</string>
     <string name="theme_color_red">Rosso</string>
     <string name="theme_color_gold">Oro</string>
-    <string name="backup_unsupported_format">Questo formato di backup non è supportato da questa versione di Metrolist.</string>
-    <string name="backup_unsupported_database">La versione del database in questo backup non è supportata da questa versione di Metrolist.</string>
+    <string name="backup_unsupported_format">Questo formato di backup non è supportato da questa versione di Meld.</string>
+    <string name="backup_unsupported_database">La versione del database in questo backup non è supportata da questa versione di Meld.</string>
     <string name="backup_too_large">Il backup supera un limite consentito di dimensione o numero di voci.</string>
     <string name="backup_invalid_data">Impossibile leggere o convalidare il backup. Potrebbe essere danneggiato o contenere dati non supportati.</string>
     <string name="search_history_removal_failed">Impossibile cancellare la cronologia delle ricerche dell'account. Riprova quando sei connesso.</string>
@@ -2447,7 +2447,7 @@
     <string name="settings_appearance_overview">Tema, font e aspetto del lettore</string>
     <string name="settings_android_auto_overview">Playlist in auto e destinazione per le aggiunte rapide</string>
     <string name="settings_about_overview">Collaboratori, collegamenti della comunità e licenze</string>
-    <string name="settings_supported_links_overview">Scegli quali link di YouTube aprire in Metrolist</string>
+    <string name="settings_supported_links_overview">Scegli quali link di YouTube aprire in Meld</string>
     <string name="settings_equalizer_overview">Preimpostazioni audio, bande di frequenza e profili</string>
     <string name="settings_fonts_overview">Scelta e importazione dei font</string>
     <string name="settings_artwork_overview">Copertine animate, fonti delle immagini e qualità video</string>
@@ -2463,7 +2463,7 @@
     <string name="settings_listen_together_overview">Server, richieste di accesso e suggerimenti di brani</string>
     <string name="settings_device_connect_overview">Dispositivi vicini, associazione e riproduzione remota</string>
     <string name="settings_release_overview">Note di versione e opzioni di installazione</string>
-    <string name="settings_notification_access_summary">Scegli quali notifiche Android consente per Metrolist</string>
+    <string name="settings_notification_access_summary">Scegli quali notifiche Android consente per Meld</string>
     <string name="settings_crash_reports_summary">Leggi e condividi i rapporti di arresto anomalo salvati</string>
     <string name="settings_content_language_summary">Lingua per ricerche e consigli di YouTube Music</string>
     <string name="settings_content_country_summary">Regione per classifiche e consigli di YouTube Music</string>
@@ -2483,7 +2483,7 @@
     <string name="settings_canvas_playback_summary">Riproduci brevi clip o il video musicale completo dietro il lettore</string>
     <string name="settings_normalization_summary">Bilancia il volume tra i brani per evitare grandi differenze</string>
     <string name="settings_loudness_target_summary">Imposta il volume di riferimento quando la normalizzazione audio è attiva</string>
-    <string name="settings_stop_on_close_summary">Interrompi la riproduzione quando Metrolist viene rimosso dalle app recenti</string>
+    <string name="settings_stop_on_close_summary">Interrompi la riproduzione quando Meld viene rimosso dalle app recenti</string>
     <string name="settings_screen_awake_summary">Scegli se il lettore o i testi mantengono lo schermo acceso</string>
     <string name="settings_translation_mode_summary">Traduci le parole o trascrivine la pronuncia nel sistema di scrittura di destinazione</string>
     <string name="settings_translation_provider_summary">Scegli il servizio che traduce i testi</string>
@@ -2503,7 +2503,7 @@
     <string name="settings_reset_download_folder_summary">Usa la cartella predefinita per i brani scaricati</string>
     <string name="settings_diagnostic_logs_summary">Leggi e copia il registro diagnostico dell'app</string>
     <string name="settings_log_directory_summary">Esplora i registri salvati nel gestore dei file</string>
-    <string name="settings_check_releases_summary">Cerca su GitHub una versione più recente di Metrolist</string>
+    <string name="settings_check_releases_summary">Cerca su GitHub una versione più recente di Meld</string>
     <string name="settings_share_apk_summary">Condividi il pacchetto dell'app installata come file</string>
     <string name="settings_system_font_summary">Usa il font fornito dal sistema operativo</string>
     <string name="settings_thumbnail_shape_summary">Scegli la forma delle copertine nel lettore espanso</string>
@@ -2540,7 +2540,7 @@
     <string name="switch_to_audio">Passa ad audio</string>
     <string name="prefer_word_synced_lyrics">Preferisci i testi sincronizzati parola per parola</string>
     <string name="prefer_word_synced_lyrics_description">Cerca i tempi per parola nelle fonti abilitate prima di usare testi sincronizzati per riga o non sincronizzati</string>
-    <string name="discord_continue_in_browser">Continua ad accedere su Discord dal tuo browser. Torna su Metrolist quando hai finito.</string>
+    <string name="discord_continue_in_browser">Continua ad accedere su Discord dal tuo browser. Torna su Meld quando hai finito.</string>
     <string name="discord_open_browser_again">Apri di nuovo</string>
     <string name="discord_browser_open_failed">Impossibile aprire il browser. Riprova.</string>
     <string name="channel_switch_recovery_hint">Impossibile caricare i tuoi canali YouTube. Accedi di nuovo per aggiornare la tua sessione, quindi scegli un canale.</string>
@@ -2554,7 +2554,7 @@
     <string name="ai_setup_description">Crea un account OpenRouter, accedi e scegli un modello gratuito.</string>
     <string name="ai_setup_step">Passo %1$d di %2$d</string>
     <string name="ai_setup_account">Crea un account OpenRouter</string>
-    <string name="ai_setup_account_description">OpenRouter connette Metrolist ai modelli IA che traducono i testi.</string>
+    <string name="ai_setup_account_description">OpenRouter connette Meld ai modelli IA che traducono i testi.</string>
     <string name="ai_setup_limits">I modelli gratuiti permettono fino a %1$d richieste al minuto e %2$d al giorno, oppure %4$d al giorno dopo aver acquistato almeno %3$d crediti.</string>
     <string name="ai_setup_create_account">Crea account</string>
     <string name="ai_setup_view_limits">Controlla limiti attuali</string>

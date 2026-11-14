@@ -177,7 +177,7 @@
     <string name="import_error_unsupported_playlist_entries">Android-ന് ആക്‌സസ് ചെയ്യാനാകാത്ത ലോക്കൽ ഫയലുകളോ നേരിട്ടുള്ള ലിങ്കുകളോ ഈ പ്ലേലിസ്റ്റിലുണ്ട്. YouTube ലിങ്കുകളുള്ള പ്ലേലിസ്റ്റ് ഇറക്കുമതി ചെയ്യുക, അല്ലെങ്കിൽ ഡെസ്‌ക്‌ടോപ്പിൽ ലോക്കൽ ഫയലുകൾ തിരഞ്ഞെടുക്കുക.</string>
     <string name="import_error_local_files_require_local_playlist">ലോക്കൽ ഓഡിയോ ഫയലുകൾ ഒരു ലോക്കൽ പ്ലേലിസ്റ്റിലേക്ക് മാത്രമേ ഇറക്കുമതി ചെയ്യാനാകൂ.</string>
     <string name="import_error_file_read_failed">പ്ലേലിസ്റ്റ് ഫയൽ വായിക്കാനായില്ല. അത് വീണ്ടും തിരഞ്ഞെടുത്ത് ഫയൽ ആക്‌സസ് അനുവദിക്കുക.</string>
-    <string name="startup_error_title">Metrolist ആരംഭിക്കുന്നതിൽ പിശക്</string>
+    <string name="startup_error_title">Meld ആരംഭിക്കുന്നതിൽ പിശക്</string>
     <string name="lyrics_show_translations">വിവർത്തനങ്ങൾ കാണിക്കുക</string>
     <string name="artist_latest_release">ഏറ്റവും പുതിയ റിലീസ്</string>
     <string name="top_tracks">മികച്ച ഗാനങ്ങൾ</string>
@@ -219,7 +219,7 @@
     <string name="available_devices">ലഭ്യമായ ഉപകരണങ്ങൾ</string>
     <string name="no_device_connected">ഉപകരണമൊന്നും കണക്റ്റ് ചെയ്തിട്ടില്ല</string>
     <string name="no_device_found">ഉപകരണമൊന്നും കണ്ടെത്തിയില്ല</string>
-    <string name="no_compatible_devices">Google Cast, FCast, DLNA അല്ലെങ്കിൽ Metrolist എന്നിവയുമായി പൊരുത്തപ്പെടുന്ന ഉപകരണമൊന്നും കണ്ടെത്തിയില്ല.</string>
+    <string name="no_compatible_devices">Google Cast, FCast, DLNA അല്ലെങ്കിൽ Meld എന്നിവയുമായി പൊരുത്തപ്പെടുന്ന ഉപകരണമൊന്നും കണ്ടെത്തിയില്ല.</string>
     <string name="show_player_cast_button">കാസ്റ്റ് ബട്ടൺ കാണിക്കുക</string>
     <string name="show_player_video_button">ഓഡിയോ/വീഡിയോ തിരഞ്ഞെടുപ്പ് കാണിക്കുക</string>
     <string name="onboarding_language_lyrics_description">ആപ്പിന്റെ ഭാഷയും വരികൾ കാണിക്കേണ്ട രീതിയും തിരഞ്ഞെടുക്കുക.</string>
@@ -287,7 +287,7 @@
     <string name="onboarding_continue_without_migration">ശൂന്യമായ ലൈബ്രറിയുമായി തുടരുക</string>
     <string name="onboarding_migration_recovery_description">വീണ്ടും ശ്രമിക്കാം അല്ലെങ്കിൽ ശൂന്യമായ ലൈബ്രറിയുമായി തുടരാം. പഴയ ഡാറ്റാബേസിന്റെ വീണ്ടെടുക്കൽ പകർപ്പ് ഈ ഉപകരണത്തിൽ സൂക്ഷിക്കും. സജ്ജീകരണം പൂർത്തിയാക്കിയശേഷം ബാക്കപ്പ് പുനഃസ്ഥാപിക്കാം.</string>
     <string name="onboarding_migration_failed">നിങ്ങളുടെ ലൈബ്രറി തയ്യാറാക്കാനായില്ല. പഴയ ഡാറ്റ സുരക്ഷിതമായി സൂക്ഷിച്ചിട്ടുണ്ട്.</string>
-    <string name="onboarding_library_migrated_description">നിങ്ങളുടെ പ്ലേലിസ്റ്റുകൾ, ചരിത്രം, ഇഷ്ടപ്പെട്ടവ, ലൈബ്രറി ഡാറ്റ എന്നിവ Metrolist-ന്റെ ഈ പതിപ്പിൽ തയ്യാറാണ്.</string>
+    <string name="onboarding_library_migrated_description">നിങ്ങളുടെ പ്ലേലിസ്റ്റുകൾ, ചരിത്രം, ഇഷ്ടപ്പെട്ടവ, ലൈബ്രറി ഡാറ്റ എന്നിവ Meld-ന്റെ ഈ പതിപ്പിൽ തയ്യാറാണ്.</string>
     <string name="onboarding_notifications_denied">അറിയിപ്പുകൾ പ്രവർത്തനരഹിതമാണ്. പിന്നീട് Android ആപ്പ് ക്രമീകരണങ്ങളിൽ അവ പ്രവർത്തനക്ഷമമാക്കാം, അല്ലെങ്കിൽ തുടരാൻ “ഇല്ല” തിരഞ്ഞെടുക്കുക.</string>
     <string name="mini_player_video_prerequisite">ആദ്യം പ്ലേബാക്ക് ക്രമീകരണങ്ങളിൽ സംഗീത വീഡിയോകൾ പ്ലേ ചെയ്യുക പ്രവർത്തനക്ഷമമാക്കുക</string>
     <string name="download_folder_access_failed">ഈ ഫോൾഡറിലേക്കുള്ള പ്രവേശനാനുമതി സൂക്ഷിക്കാനായില്ല. വായിക്കാനും എഴുതാനും അനുമതിയുള്ള ഫോൾഡർ തിരഞ്ഞെടുക്കുക.</string>
@@ -312,9 +312,9 @@
     <string name="updates_notification_settings">Android അറിയിപ്പ് ക്രമീകരണങ്ങൾ</string>
     <string name="widget_recognizer_open_result">തിരിച്ചറിഞ്ഞ പാട്ട് തുറക്കുക</string>
     <string name="statistics_load_failed">സ്ഥിതിവിവരക്കണക്കുകൾ പുതുക്കാനായില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
-    <string name="desktop_platform_unsupported">ഈ ഓപ്പറേറ്റിങ് സിസ്റ്റത്തെ Metrolist പിന്തുണയ്ക്കുന്നില്ല. Windows 10 അല്ലെങ്കിൽ അതിനുശേഷമുള്ള പതിപ്പ്, macOS, അല്ലെങ്കിൽ Omarchy ഒഴികെയുള്ള ഒരു Linux വിതരണം ഉപയോഗിക്കുക.</string>
+    <string name="desktop_platform_unsupported">ഈ ഓപ്പറേറ്റിങ് സിസ്റ്റത്തെ Meld പിന്തുണയ്ക്കുന്നില്ല. Windows 10 അല്ലെങ്കിൽ അതിനുശേഷമുള്ള പതിപ്പ്, macOS, അല്ലെങ്കിൽ Omarchy ഒഴികെയുള്ള ഒരു Linux വിതരണം ഉപയോഗിക്കുക.</string>
     <string name="shortcut_toggle_expanded">വിപുലീകരിച്ച പ്ലേയർ തുറക്കുക അല്ലെങ്കിൽ അടയ്ക്കുക</string>
-    <string name="desktop_display_unavailable">ഈ സെഷന്റെ X ഡിസ്പ്ലേയിലേക്ക് Metrolist-ന് കണക്റ്റ് ചെയ്യാനായില്ല. DISPLAY സജ്ജമാക്കിയ ഡെസ്ക്ടോപ്പ് സെഷനിൽനിന്ന് ആരംഭിക്കുക.</string>
+    <string name="desktop_display_unavailable">ഈ സെഷന്റെ X ഡിസ്പ്ലേയിലേക്ക് Meld-ന് കണക്റ്റ് ചെയ്യാനായില്ല. DISPLAY സജ്ജമാക്കിയ ഡെസ്ക്ടോപ്പ് സെഷനിൽനിന്ന് ആരംഭിക്കുക.</string>
     <string name="webkit_install_hint">ആപ്പിനുള്ളിൽ പ്രവേശിക്കാൻ WebKitGTK 4.1 (%1$s) ആവശ്യമാണ്. സിസ്റ്റത്തിന്റെ പാക്കേജ് മാനേജർ ഉപയോഗിച്ച് ഇൻസ്റ്റാൾ ചെയ്യുക.</string>
     <string name="webkit_install_command">ഇത് ഉപയോഗിച്ച് ഇൻസ്റ്റാൾ ചെയ്യുക:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage പതിപ്പുകളും പ്രവേശനത്തിനായി സിസ്റ്റത്തിലെ WebKitGTK ലൈബ്രറികൾ ഉപയോഗിക്കുന്നു.</string>
@@ -327,7 +327,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | ശബ്ദനില: %2$s</string>
-    <string name="download_folder_unavailable">ഈ ഫോൾഡർ ഉപയോഗിക്കാനായില്ല. Metrolist-ന് പ്രവേശിക്കാൻ സിസ്റ്റമോ ഒറ്റപ്പെട്ട പ്രവർത്തനപരിസരമോ അനുവദിക്കുന്ന, എഴുതാൻ കഴിയുന്ന ഫോൾഡർ തിരഞ്ഞെടുക്കുക.</string>
+    <string name="download_folder_unavailable">ഈ ഫോൾഡർ ഉപയോഗിക്കാനായില്ല. Meld-ന് പ്രവേശിക്കാൻ സിസ്റ്റമോ ഒറ്റപ്പെട്ട പ്രവർത്തനപരിസരമോ അനുവദിക്കുന്ന, എഴുതാൻ കഴിയുന്ന ഫോൾഡർ തിരഞ്ഞെടുക്കുക.</string>
     <string name="window_maximize">വലുതാക്കുക</string>
     <string name="window_restore">വിൻഡോ പഴയ വലുപ്പത്തിലാക്കുക</string>
     <string name="equalizer_stream_unavailable">ഈ സ്ട്രീമിന് ഇക്വലൈസറും പ്രീആംപും ലഭ്യമല്ല. പിന്തുണയ്ക്കുന്ന പാട്ട് പ്ലേ ചെയ്യുമ്പോൾ മാറ്റങ്ങൾ ബാധകമാകും.</string>
@@ -341,7 +341,7 @@
     <string name="queue_youtube_history_paused_desc">ഓഫ്‌ലൈനിൽ കേട്ട പാട്ടുകളുടെ വിവരം പിന്നീട് സമന്വയിപ്പിക്കാൻ സൂക്ഷിക്കുന്നതിന് കേട്ടതിന്റെ ചരിത്രം വീണ്ടും പ്രവർത്തനക്ഷമമാക്കുക</string>
     <string name="search_online_failed">ഓൺലൈനിൽ തിരയാനായില്ല. കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</string>
     <string name="search_load_more_failed">കൂടുതൽ ഫലങ്ങൾ ലോഡ് ചെയ്യാനായില്ല.</string>
-    <string name="discord_error_gateway_configuration">കണക്ഷൻ ക്രമീകരണങ്ങൾ Discord നിരസിച്ചു. വീണ്ടും ശ്രമിക്കുന്നതിനുമുമ്പ് Metrolist പുതുക്കുക.</string>
+    <string name="discord_error_gateway_configuration">കണക്ഷൻ ക്രമീകരണങ്ങൾ Discord നിരസിച്ചു. വീണ്ടും ശ്രമിക്കുന്നതിനുമുമ്പ് Meld പുതുക്കുക.</string>
     <string name="discord_preview_buttons_adjusted">Discord നീളമുള്ള ബട്ടൺ ലേബലുകൾ ചുരുക്കുകയും വളരെ നീളമുള്ള ലിങ്കുകളുള്ള ബട്ടണുകൾ ഒഴിവാക്കുകയും ചെയ്യുന്നു. അയയ്ക്കുന്ന ബട്ടണുകളാണ് ഈ പ്രിവ്യൂവിൽ കാണിക്കുന്നത്.</string>
     <string name="discord_presence_status_warning">വിശദമായ പ്രവർത്തനനില പ്രവർത്തനക്ഷമമാക്കുന്നത് Discord-ലേക്ക് ഓൺലൈൻ നില അയയ്ക്കും. പ്ലേബാക്ക് നിർത്തുമ്പോഴും അദൃശ്യം അല്ലെങ്കിൽ ശല്യപ്പെടുത്തരുത് നിലകളെ ഇത് മാറ്റിയേക്കാം.</string>
     <string name="discord_refresh_queued">പ്രവർത്തനനില പുതുക്കൽ ക്യൂവിൽ ചേർത്തു.</string>
@@ -376,8 +376,8 @@
     <string name="theme_color_rose">റോസ്</string>
     <string name="theme_color_red">ചുവപ്പ്</string>
     <string name="theme_color_gold">സ്വർണ്ണനിറം</string>
-    <string name="backup_unsupported_format">ഈ ബാക്കപ്പ് ഫോർമാറ്റിനെ Metrolist-ന്റെ ഈ പതിപ്പ് പിന്തുണയ്ക്കുന്നില്ല.</string>
-    <string name="backup_unsupported_database">ഈ ബാക്കപ്പിലെ ഡാറ്റാബേസ് പതിപ്പിനെ Metrolist-ന്റെ ഈ പതിപ്പ് പിന്തുണയ്ക്കുന്നില്ല.</string>
+    <string name="backup_unsupported_format">ഈ ബാക്കപ്പ് ഫോർമാറ്റിനെ Meld-ന്റെ ഈ പതിപ്പ് പിന്തുണയ്ക്കുന്നില്ല.</string>
+    <string name="backup_unsupported_database">ഈ ബാക്കപ്പിലെ ഡാറ്റാബേസ് പതിപ്പിനെ Meld-ന്റെ ഈ പതിപ്പ് പിന്തുണയ്ക്കുന്നില്ല.</string>
     <string name="backup_too_large">ബാക്കപ്പിന്റെ വലുപ്പമോ അതിലെ ഇനങ്ങളുടെ എണ്ണമോ അനുവദനീയമായ പരിധി കവിയുന്നു.</string>
     <string name="backup_invalid_data">ബാക്കപ്പ് വായിക്കാനോ സാധുത പരിശോധിക്കാനോ കഴിഞ്ഞില്ല. അത് കേടായിരിക്കാം അല്ലെങ്കിൽ പിന്തുണയ്ക്കാത്ത ഡാറ്റ അടങ്ങിയിരിക്കാം.</string>
     <string name="search_history_removal_failed">അക്കൗണ്ടിന്റെ തിരയൽ ചരിത്രം മായ്ക്കാനായില്ല. ഇന്റർനെറ്റിൽ കണക്റ്റ് ചെയ്തശേഷം വീണ്ടും ശ്രമിക്കുക.</string>
@@ -388,10 +388,10 @@
     <string name="top_period_past_year">കഴിഞ്ഞ വർഷം</string>
     <string name="onboarding_welcome_description">ആദ്യമായി കേൾക്കുന്നതിന് മുമ്പ് സ്വകാര്യതയും സിസ്റ്റം അനുമതികളും സജ്ജമാക്കുക.</string>
     <string name="onboarding_migration_title">നിങ്ങളുടെ v13 ലൈബ്രറി ഇവിടെയുണ്ട്</string>
-    <string name="onboarding_migration_description">ഒരു സ്വതന്ത്ര Metrolist ഡാറ്റാബേസ് കണ്ടെത്തി. പ്ലേലിസ്റ്റുകൾ, ചരിത്രം, ഇഷ്ടപ്പെട്ടവ, ലൈബ്രറി ഡാറ്റ എന്നിവ അതേ സ്ഥാനത്ത് മാറ്റുക. മാറ്റം പരാജയപ്പെട്ടാൽ യഥാർത്ഥ ഡാറ്റാബേസ് വീണ്ടെടുക്കാം.</string>
+    <string name="onboarding_migration_description">ഒരു സ്വതന്ത്ര Meld ഡാറ്റാബേസ് കണ്ടെത്തി. പ്ലേലിസ്റ്റുകൾ, ചരിത്രം, ഇഷ്ടപ്പെട്ടവ, ലൈബ്രറി ഡാറ്റ എന്നിവ അതേ സ്ഥാനത്ത് മാറ്റുക. മാറ്റം പരാജയപ്പെട്ടാൽ യഥാർത്ഥ ഡാറ്റാബേസ് വീണ്ടെടുക്കാം.</string>
     <string name="onboarding_migration_complete_title">നിങ്ങളുടെ അക്കൗണ്ട് മാറ്റിയിരിക്കുന്നു</string>
-    <string name="onboarding_migration_complete_description">നിങ്ങളുടെ അക്കൗണ്ട്, പ്ലേലിസ്റ്റുകൾ, ചരിത്രം, ഇഷ്ടപ്പെട്ടവ, ലൈബ്രറി ഡാറ്റ എന്നിവ Metrolist-ന്റെ ഈ പതിപ്പിൽ തയ്യാറാണ്.</string>
-    <string name="onboarding_crash_reports_title">Metrolist മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</string>
+    <string name="onboarding_migration_complete_description">നിങ്ങളുടെ അക്കൗണ്ട്, പ്ലേലിസ്റ്റുകൾ, ചരിത്രം, ഇഷ്ടപ്പെട്ടവ, ലൈബ്രറി ഡാറ്റ എന്നിവ Meld-ന്റെ ഈ പതിപ്പിൽ തയ്യാറാണ്.</string>
+    <string name="onboarding_crash_reports_title">Meld മെച്ചപ്പെടുത്താൻ സഹായിക്കുക</string>
     <string name="onboarding_crash_reports_description">പ്രശ്നങ്ങൾ കണ്ടെത്താനും പരിഹരിക്കാനും ഞങ്ങളെ സഹായിക്കാൻ Sentry വഴി പരിശോധനാ വിവരങ്ങൾ ഇഷ്ടാനുസരണം പങ്കിടുക. ക്രമീകരണങ്ങളിൽ ഇത് എപ്പോൾ വേണമെങ്കിലും മാറ്റാം.</string>
     <string name="onboarding_notifications_title">അറിയിപ്പുകൾ അനുവദിക്കുക</string>
     <string name="onboarding_notifications_description">പ്ലേബാക്കിനും ഡൗൺലോഡുകൾക്കുമുള്ള അറിയിപ്പുകൾ പ്രവർത്തനക്ഷമമാക്കുക.</string>
@@ -407,10 +407,10 @@
     <string name="onboarding_finish_title">എല്ലാം തയ്യാറായി</string>
     <string name="onboarding_finish_description">സജ്ജീകരണം പൂർത്തിയായി. കേൾക്കാൻ തുടങ്ങുക, അല്ലെങ്കിൽ ആദ്യം നിങ്ങളുടെ അക്കൗണ്ടും ഡാറ്റയും കൊണ്ടുവരിക.</string>
     <string name="onboarding_restore_backup">ബാക്കപ്പിൽ നിന്ന് പുനഃസ്ഥാപിക്കുക</string>
-    <string name="onboarding_settings_hint">Metrolist ഇഷ്ടാനുസൃതമാക്കാൻ മുകളിൽ വലതുവശത്തെ മെനുവിൽ നിന്ന് ക്രമീകരണങ്ങൾ തുറക്കുക.</string>
+    <string name="onboarding_settings_hint">Meld ഇഷ്ടാനുസൃതമാക്കാൻ മുകളിൽ വലതുവശത്തെ മെനുവിൽ നിന്ന് ക്രമീകരണങ്ങൾ തുറക്കുക.</string>
     <string name="onboarding_no_saved_accounts">ലിങ്ക് ചെയ്ത അക്കൗണ്ടുകളൊന്നും കണ്ടെത്തിയില്ല.</string>
     <string name="onboarding_account_picture">%1$s-ന്റെ പ്രൊഫൈൽ ചിത്രം</string>
-    <string name="onboarding_backup_picker_title">Metrolist ബാക്കപ്പ് പുനഃസ്ഥാപിക്കുക</string>
+    <string name="onboarding_backup_picker_title">Meld ബാക്കപ്പ് പുനഃസ്ഥാപിക്കുക</string>
     <string name="onboarding_backup_picker_error">ബാക്കപ്പ് തിരഞ്ഞെടുക്കാനുള്ള വിൻഡോ തുറക്കാനായില്ല: %1$s</string>
     <string name="onboarding_backup_restore_failed">പുനഃസ്ഥാപിക്കൽ പരാജയപ്പെട്ടു: %1$s</string>
     <string name="new_badge">പുതിയത്</string>

@@ -8,7 +8,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Bottom navigation -->
     <!-- Translators: Label for app name in the multiple app screens. -->
-    <string name="app_name" translatable="false">Metrolist</string>
+    <string name="app_name" translatable="false">Meld</string>
     <string name="account_menu_license" translatable="false">GPL-3.0 MetrolistGroup</string>
     <!-- Translators: Apple mobile platform name displayed in application information. -->
     <!-- Translators: Navigation label for home in the multiple app screens. -->
@@ -720,6 +720,10 @@
     <string name="credits_desktop_lead">Lead desktop developer</string>
     <!-- Translators: Label for credits creator in the About screen. -->
     <string name="credits_creator">Creator of Metrolist</string>
+    <!-- Translators: Role of the Meld maintainer in the About screen. -->
+    <string name="credits_meld_developer">Developer of Meld</string>
+    <!-- Translators: Credit shown above the upstream Metrolist team in the About screen. -->
+    <string name="credits_based_on_metrolist">Meld is based on Metrolist, an open-source YouTube Music client.</string>
     <!-- Translators: Heading for Rich Presence in the Discord integration. -->
     <string name="discord_rpc_title" translatable="false">Discord Rich Presence</string>
     <!-- Translators: Label for credits android developer in the About screen. -->
@@ -755,7 +759,7 @@
     <!-- Translators: Label for credits license name in the About screen. -->
     <string name="credits_license_name">License</string>
     <!-- Translators: Supporting text beneath the credits license option in the About screen. -->
-    <string name="credits_license_desc">Metrolist is licensed under GPL-3.0</string>
+    <string name="credits_license_desc">Meld is licensed under GPL-3.0</string>
     <!-- Translators: Confirmation prompt for wanna play favorite song; retained for translation compatibility but not currently referenced by app code. -->
     <!-- Translators: Message explaining yeah; retained for translation compatibility but not currently referenced by app code. -->
     <!-- Translators: Label for credits collaborators section in the About screen. -->
@@ -775,7 +779,7 @@
     <!-- Translators: Imperative action label for enable rich presence in the Discord integration. -->
     <string name="discord_enable_rich_presence">Discord Rich Presence</string>
     <!-- Translators: Label for listen to metrolist in the Discord integration. -->
-    <string name="discord_listen_to_metrolist">Listen to Metrolist</string>
+    <string name="discord_listen_to_metrolist">Listen to Meld</string>
     <!-- Translators: Supporting text beneath the login option in the Discord integration. -->
     <string name="discord_login_description">Connect your Discord account</string>
     <!-- Translators: Label for rich presence in the Discord integration. -->
@@ -785,7 +789,7 @@
     <!-- Translators: Label for button1 text default; retained for translation compatibility but not currently referenced by app code. -->
     <string name="discord_button1_text_default">Listen on YouTube Music</string>
     <!-- Translators: Label for button2 text default; retained for translation compatibility but not currently referenced by app code. -->
-    <string name="discord_button2_text_default">Visit Metrolist</string>
+    <string name="discord_button2_text_default">Visit Meld</string>
     <!-- Translators: Progress or status message for authorizing in the Discord integration. -->
     <string name="discord_status_authorizing">Authorizing…</string>
     <!-- Translators: Label for not initialized in the Discord integration. -->
@@ -795,7 +799,7 @@
     <!-- Translators: Error message about denied in the Discord integration. -->
     <string name="discord_error_denied">Authorization denied by Discord.</string>
     <!-- Translators: Error message about connection in the Discord integration. -->
-    <string name="discord_error_connection_failed">Could not connect to Discord. Metrolist will retry automatically.</string>
+    <string name="discord_error_connection_failed">Could not connect to Discord. Meld will retry automatically.</string>
     <!-- Translators: Error message about no browser in the Discord integration. -->
     <string name="discord_error_no_browser">No app available to open Discord authorization.</string>
     <!-- Translators: Error message about token exchange in the Discord integration. -->
@@ -878,9 +882,9 @@
     <!-- Translators: Heading for updates in the settings. -->
     <string name="settings_updates_title">Updates</string>
     <!-- Translators: Supporting text beneath the available option in the settings. -->
-    <string name="settings_updates_available_description">A new Metrolist update is available</string>
+    <string name="settings_updates_available_description">A new Meld update is available</string>
     <!-- Translators: Heading for about in the settings. -->
-    <string name="settings_about_title">About Metrolist</string>
+    <string name="settings_about_title">About Meld</string>
     <!-- Translators: Heading for devtools in the settings and app-wide dialogs. -->
     <string name="devtools_title" translatable="false">Devtools</string>
     <!-- Translators: Label for devtools enabled in the About screen. -->
@@ -1018,7 +1022,7 @@
     <!-- Translators: Imperative action label for choose in the font settings. -->
     <string name="app_font_choose">Choose font file</string>
     <!-- Translators: Supporting text beneath the picker option; retained for translation compatibility but not currently referenced by app code. -->
-    <string name="app_font_picker_desc">Select a TTF or OTF file. Metrolist copies it to private app storage.</string>
+    <string name="app_font_picker_desc">Select a TTF or OTF file. Meld copies it to private app storage.</string>
     <!-- Translators: Font option that uses the Android system font. -->
     <string name="app_font_system">System default</string>
 
@@ -1313,7 +1317,7 @@
     <!-- Translators: Imperative action label for sign in again in the Spotify playlist import. -->
     <string name="spotify_sign_in_again">Sign in again</string>
     <!-- Translators: Imperative action label for choose playlists supporting in the Spotify playlist import. -->
-    <string name="spotify_choose_playlists_supporting">Select the playlists you want to import into Metrolist.</string>
+    <string name="spotify_choose_playlists_supporting">Select the playlists you want to import into Meld.</string>
     <!-- Translators: Pluralized count or status for selected playlist count in the Spotify playlist import. %1$d is the playlist count. -->
     <plurals name="spotify_selected_playlist_count">
         <item quantity="one">%1$d playlist selected</item>
@@ -1370,7 +1374,7 @@
     <!-- Translators: Supporting text beneath the restore export option in the Backup & Restore. -->
     <string name="backup_restore_export_desc">Export settings, library database, playlists, likes, and history to a zip file</string>
     <!-- Translators: Supporting text beneath the restore import option in the Backup & Restore. -->
-    <string name="backup_restore_import_desc">Restore a Metrolist backup. The app will restart after a successful restore.</string>
+    <string name="backup_restore_import_desc">Restore a Meld backup. The app will restart after a successful restore.</string>
     <!-- Translators: Progress or status message for restore busy in the Backup & Restore. -->
     <string name="backup_restore_busy">Working…</string>
     <!-- Translators: Title of the Backup & Restore option that imports a backup made by a different YouTube Music app. -->
@@ -1388,7 +1392,7 @@
     <!-- Translators: Dialog or notice body text for sensitive in the Backup & Restore. -->
     <string name="backup_sensitive_message">Backups contain your API keys, account credentials, authentication cookies, session tokens, and other sensitive information. Anyone with this file can access your accounts. Store it securely. Never share it.</string>
     <!-- Translators: Progress or status message for in progress in the Backup & Restore. -->
-    <string name="restore_in_progress">Restoring your backup…\nMetrolist will restart automatically.</string>
+    <string name="restore_in_progress">Restoring your backup…\nMeld will restart automatically.</string>
     <!-- Translators: Section heading for scrobbling account and behavior settings. -->
     <!-- Translators: Option or section label for not connected; retained for translation compatibility but not currently referenced by app code. -->
     <!-- Translators: Option or section label for signed in as; retained for translation compatibility but not currently referenced by app code. %1$s is the account name. -->
@@ -1444,7 +1448,7 @@
     <string name="listenbrainz_user_token">User token</string>
     <string name="scrobble_create_account">Create account</string>
     <!-- Translators: Message explaining database incompatible in the Backup & Restore. %1$d is the backup database version; %2$d is the newest supported database version. -->
-    <string name="restore_database_incompatible">This backup uses database version %1$d, but this app supports up to version %2$d. Update Metrolist and try again.</string>
+    <string name="restore_database_incompatible">This backup uses database version %1$d, but this app supports up to version %2$d. Update Meld and try again.</string>
     <!-- Translators: Error message about failed detail in the Backup & Restore. %1$s is the restore stage; %2$s is the failure reason. -->
     <string name="restore_failed_detail">Could not restore the backup while %1$s.\n\nReason: %2$s</string>
     <!-- Translators: Error message about unknown in the Backup & Restore. -->
@@ -1654,11 +1658,11 @@
     <!-- Translators: Progress or status message for checking in the update settings. -->
     <string name="updates_checking">Checking for updates…</string>
     <!-- Translators: Option or section label for no updates in the update settings. -->
-    <string name="updates_no_updates">Metrolist is up to date</string>
+    <string name="updates_no_updates">Meld is up to date</string>
     <!-- Translators: Error message about updates in the update settings. -->
     <string name="updates_error">Couldn\u0027t check for updates</string>
     <!-- Translators: Option or section label for current in the update settings. %1$s is the installed app version. -->
-    <string name="updates_status_current">Updated to Metrolist %1$s</string>
+    <string name="updates_status_current">Updated to Meld %1$s</string>
     <!-- Translators: Option or section label for auto check in the update settings. -->
     <string name="updates_auto_check">Automatically check for updates</string>
     <!-- Translators: Imperative action label for notifications in the update settings. -->
@@ -1679,7 +1683,7 @@
     <string name="updates_installing_description">Downloading and installing the update</string>
     <!-- Translators: Progress or status message for download progress in the update settings. %1$d is the percentage; %2$s is the percent symbol. -->
     <!-- Translators: Option or section label for version in the update settings. -->
-    <string name="updates_version">Metrolist version</string>
+    <string name="updates_version">Meld version</string>
     <!-- Translators: Imperative action label for size in the update settings. -->
     <string name="updates_size">Update size</string>
     <!-- Translators: Option or section label for date in the update settings. -->
@@ -1693,7 +1697,7 @@
     <!-- Translators: Imperative action label for retry in the update settings. -->
     <string name="updates_retry">Try again</string>
     <!-- Translators: Heading for available in the update settings. %1$s is the available app version. -->
-    <string name="updates_available_title">Metrolist %1$s is available</string>
+    <string name="updates_available_title">Meld %1$s is available</string>
     <!-- Translators: Dialog or notice body text for available in the update settings. -->
     <string name="updates_available_message">Tap Update to download the update and continue to Android\u0027s installer.</string>
     <!-- Translators: Option or section label for changelog preview in the update settings. -->
@@ -1705,13 +1709,13 @@
     <!-- Translators: Imperative action label for updates in the update settings. -->
     <string name="updates_action">Update</string>
     <!-- Translators: Heading for notification in the update settings. %1$s is the downloaded app version. -->
-    <string name="updates_notification_title">Metrolist %1$s is ready</string>
+    <string name="updates_notification_title">Meld %1$s is ready</string>
     <!-- Translators: Option or section label for notification text in the update settings. -->
     <string name="updates_notification_text">Tap to download and install the update</string>
     <!-- Translators: Option or section label for channel name in the update settings. -->
     <string name="updates_channel_name">App updates</string>
     <!-- Translators: Supporting text beneath the channel option in the update settings. -->
-    <string name="updates_channel_description">Notifications about new Metrolist versions</string>
+    <string name="updates_channel_description">Notifications about new Meld versions</string>
     <!-- Translators: Error message about download in the update settings. -->
     <string name="updates_download_failed">The update could not be downloaded.</string>
     <!-- Translators: Error message about digest in the update settings. -->
@@ -1721,7 +1725,7 @@
     <!-- Translators: Error message about release unavailable in the update settings. -->
     <string name="updates_release_unavailable">This release does not include a compatible APK.</string>
     <!-- Translators: Heading for release notes in the update settings. %1$s is the app version. -->
-    <string name="updates_release_notes_title">What\u0027s new in Metrolist %1$s</string>
+    <string name="updates_release_notes_title">What\u0027s new in Meld %1$s</string>
 
     <!-- Device Connect (LAN P2P, Spotify Connect-like) -->
     <!-- Translators: Heading for device connect in the Device Connect. -->
@@ -1797,7 +1801,7 @@
 
     <!-- Side Menu -->
     <!-- Translators: Label for welcome; retained for translation compatibility but not currently referenced by app code. -->
-    <string name="side_menu_welcome">Welcome to Metrolist</string>
+    <string name="side_menu_welcome">Welcome to Meld</string>
     <!-- Translators: Imperative action label for sign in prompt; retained for translation compatibility but not currently referenced by app code. -->
     <!-- Translators: Imperative action label for view token; retained for translation compatibility but not currently referenced by app code. -->
     <!-- Translators: Confirmation prompt for view token; retained for translation compatibility but not currently referenced by app code. -->
@@ -3062,7 +3066,7 @@
     <!-- Translators: Label for not playing in the multiple app screens. -->
     <string name="not_playing">No song playing</string>
     <!-- Translators: Label for tap to play in the Android home-screen widget. -->
-    <string name="tap_to_play">Tap to open Metrolist</string>
+    <string name="tap_to_play">Tap to open Meld</string>
     <!-- Translators: Supporting text beneath the widget option in the Android home-screen widget. -->
     <string name="widget_description">Music player widget with playback controls</string>
     <!-- Translators: Supporting text beneath the turntable widget option in the Android home-screen widget. -->
@@ -3199,7 +3203,7 @@
     <!-- Translators: Heading for share in the crash reporting. -->
     <string name="crash_share_title" translatable="false">Share crash report</string>
     <!-- Translators: Label for report subject in the crash reporting. -->
-    <string name="crash_report_subject" translatable="false">Metrolist crash report</string>
+    <string name="crash_report_subject" translatable="false">Meld crash report</string>
     <!-- Translators: Label for no log in the crash reporting. -->
     <string name="crash_no_log" translatable="false">No crash log available</string>
 
@@ -3270,13 +3274,13 @@
     <!-- Translators: Heading for migration in the onboarding. -->
     <string name="onboarding_migration_title">Your v13 library is here</string>
     <!-- Translators: Supporting text beneath the migration option in the onboarding. -->
-    <string name="onboarding_migration_description">We found a standalone Metrolist database. Migrate playlists, history, likes, and library data in place. You can recover the original database if migration fails.</string>
+    <string name="onboarding_migration_description">We found a standalone Meld database. Migrate playlists, history, likes, and library data in place. You can recover the original database if migration fails.</string>
     <!-- Translators: Heading for migration complete in the onboarding. -->
     <string name="onboarding_migration_complete_title">Your account was migrated</string>
     <!-- Translators: Supporting text beneath the migration complete option in the onboarding. -->
-    <string name="onboarding_migration_complete_description">Your account, playlists, history, likes, and library data are ready in this version of Metrolist.</string>
+    <string name="onboarding_migration_complete_description">Your account, playlists, history, likes, and library data are ready in this version of Meld.</string>
     <!-- Translators: Heading for crash reports in the onboarding. -->
-    <string name="onboarding_crash_reports_title">Help improve Metrolist</string>
+    <string name="onboarding_crash_reports_title">Help improve Meld</string>
     <!-- Translators: Supporting text beneath the crash reports option in the onboarding. -->
     <string name="onboarding_crash_reports_description">Share optional diagnostics through Sentry to help us find and fix problems. You can change this anytime in Settings.</string>
     <!-- Translators: Heading for notifications in the onboarding. -->
@@ -3313,7 +3317,7 @@
     <!-- Translators: Imperative action label for restore backup in the onboarding. -->
     <string name="onboarding_restore_backup">Restore from backup</string>
     <!-- Translators: Input hint for onboarding settings in the onboarding. -->
-    <string name="onboarding_settings_hint">Open Settings from the menu in the top right to customize Metrolist.</string>
+    <string name="onboarding_settings_hint">Open Settings from the menu in the top right to customize Meld.</string>
     <!-- Translators: Confirmation message about no saved accounts in the onboarding. -->
     <string name="onboarding_no_saved_accounts">No linked accounts were found.</string>
     <!-- Translators: Label for google in the onboarding. -->
@@ -3385,7 +3389,7 @@
     <!-- Translators: Label for user icon in the account menu. -->
     <string name="account_user_icon">User</string>
     <!-- Translators: Heading for menu in the account menu. %1$s is the app version. -->
-    <string name="account_menu_title" translatable="false">Metrolist-KMP (%1$s)</string>
+    <string name="account_menu_title" translatable="false">Meld (%1$s)</string>
     <!-- Translators: Label for not signed in in the account menu. -->
     <!-- Translators: Progress or status message for logging out; retained for translation compatibility but not currently referenced by app code. -->
     <!-- Translators: Confirmation prompt for logout in the account menu. -->
@@ -3678,7 +3682,7 @@
     <!-- Translators: Progress or status message for report issue in the desktop application menu. -->
     <string name="menu_report_issue">Report an issue…</string>
     <!-- Translators: Label for about metrolist in the desktop application menu. -->
-    <string name="menu_about_metrolist">About Metrolist</string>
+    <string name="menu_about_metrolist">About Meld</string>
     <!-- Translators: Label for song in the desktop application menu. -->
     <string name="menu_song">Song</string>
     <!-- Translators: Imperative action label for stop in the desktop application menu. -->
@@ -3863,7 +3867,7 @@
     <!-- Translators: Imperative action label for backup in the Backup & Restore. -->
     <string name="restore_backup">Restore backup</string>
     <!-- Translators: Supporting text beneath the backup option in the Backup & Restore. -->
-    <string name="restore_backup_desc">Import an Android or desktop Metrolist backup and restart</string>
+    <string name="restore_backup_desc">Import an Android or desktop Meld backup and restart</string>
     <!-- Translators: Imperative action label for from spotify; retained for translation compatibility but not currently referenced by app code. -->
     <!-- Translators: Supporting text beneath the from spotify option; retained for translation compatibility but not currently referenced by app code. -->
     <!-- Translators: Label for sensitive backup in the Backup & Restore. -->
@@ -3873,7 +3877,7 @@
     <!-- Translators: Imperative action label for restore in the Library and Backup & Restore. -->
     <string name="restore">Restore</string>
     <!-- Translators: Message explaining restoring backup in the Backup & Restore. -->
-    <string name="restoring_backup">Restoring your backup…\nMetrolist will restart automatically.</string>
+    <string name="restoring_backup">Restoring your backup…\nMeld will restart automatically.</string>
 
     <!-- Desktop: history -->
     <!-- Translators: Imperative action label for cannot undone; retained for translation compatibility but not currently referenced by app code. -->
@@ -3918,7 +3922,7 @@
     <!-- Translators: Imperative action label for from backup in the Backup & Restore. -->
     <string name="restore_from_backup">Restore from backup</string>
     <!-- Translators: Heading for backup picker in the onboarding. -->
-    <string name="onboarding_backup_picker_title">Restore Metrolist backup</string>
+    <string name="onboarding_backup_picker_title">Restore Meld backup</string>
     <!-- Translators: Error message about backup picker in the onboarding. %1$s is the error details. -->
     <string name="onboarding_backup_picker_error">Could not open the backup picker: %1$s</string>
     <!-- Translators: Error message about backup restart in the onboarding. %1$s is the error details. -->
@@ -4168,9 +4172,9 @@
     <!-- Translators: Label for app data in the Backup & Restore. -->
     <string name="app_data">App data</string>
     <!-- Translators: Heading for picker in the Backup & Restore. -->
-    <string name="backup_picker_title">Restore Metrolist backup</string>
+    <string name="backup_picker_title">Restore Meld backup</string>
     <!-- Translators: Heading for create backup dialog in the Backup & Restore. -->
-    <string name="create_backup_dialog_title">Create Metrolist backup</string>
+    <string name="create_backup_dialog_title">Create Meld backup</string>
     <!-- Translators: Label for created in the Backup & Restore. -->
     <string name="backup_created">Backup created</string>
     <!-- Translators: Error message about backup in the Backup & Restore. %1$s is the error details. -->
@@ -4178,11 +4182,11 @@
     <!-- Translators: Error message about could not open file picker in the Backup & Restore. %1$s is the error details. -->
     <string name="could_not_open_file_picker">Could not open file picker: %1$s</string>
     <!-- Translators: Message explaining replaces data in the Backup & Restore. -->
-    <string name="restore_replaces_data">This replaces your current settings, credentials, accounts, and library data. Metrolist will restart automatically.</string>
+    <string name="restore_replaces_data">This replaces your current settings, credentials, accounts, and library data. Meld will restart automatically.</string>
     <!-- Translators: Imperative action label for sign in before spotify import; retained for translation compatibility but not currently referenced by app code. -->
     <!-- Translators: Error message about unknown; retained for translation compatibility but not currently referenced by app code. -->
     <!-- Translators: Label for filename in the Backup & Restore. -->
-    <string name="backup_filename_prefix" translatable="false">metrolist-backup</string>
+    <string name="backup_filename_prefix" translatable="false">meld-backup</string>
     <!-- Translators: Imperative action label for create backup countdown in the Backup & Restore. %1$d is the seconds remaining before backup creation. -->
     <string name="create_backup_countdown">Create backup (%1$d)</string>
 
@@ -4427,12 +4431,12 @@
     <!-- Translators: Label for tray settings in the desktop system tray. -->
     <string name="tray_settings">Settings</string>
     <!-- Translators: Label for quit metrolist in the desktop system tray. -->
-    <string name="tray_quit_metrolist">Quit Metrolist</string>
+    <string name="tray_quit_metrolist">Quit Meld</string>
 
     <!-- Desktop: Discord login -->
     <!-- Translators: Imperative action label for sign in discord in the sign-in flow. -->
     <string name="sign_in_discord">Sign in to Discord</string>
-    <string name="discord_continue_in_browser">Continue signing in to Discord in your browser. Return to Metrolist when you are done.</string>
+    <string name="discord_continue_in_browser">Continue signing in to Discord in your browser. Return to Meld when you are done.</string>
     <string name="discord_open_browser_again">Open again</string>
     <string name="discord_browser_open_failed">The browser could not be opened. Try opening it again.</string>
     <!-- Translators: Error message about sign in unavailable in the Discord integration. -->
@@ -4758,7 +4762,7 @@
     <!-- Translators: Label for source YouTube music; retained for translation compatibility but not currently referenced by app code. -->
     <string name="import_source_youtube_music">YouTube Music</string>
     <!-- Translators: Heading for startup error; retained for translation compatibility but not currently referenced by app code. -->
-    <string name="startup_error_title">Metrolist startup error</string>
+    <string name="startup_error_title">Meld startup error</string>
     <!-- Translators: Error message about startup error; retained for translation compatibility but not currently referenced by app code. %1$s is the temporary-storage location; %2$s is the initialization error details. -->
 
     <!-- Player control button labels -->
@@ -4900,7 +4904,7 @@
     <string name="no_device_connected">No device connected</string>
     <string name="no_other_devices_nearby">No other devices nearby</string>
     <string name="no_device_found">No device found</string>
-    <string name="no_compatible_devices">No compatible Google Cast, FCast, DLNA, or Metrolist device found.</string>
+    <string name="no_compatible_devices">No compatible Google Cast, FCast, DLNA, or Meld device found.</string>
     <string name="playlist_order_original">Playlist order</string>
     <string name="album_order_original">Album order</string>
     <string name="show_player_cast_button">Cast button</string>
@@ -4936,7 +4940,7 @@
     <!-- Translators: Imperative action label for try again in the music recognition. -->
     <string name="try_again">Try again</string>
     <!-- Translators: Imperative action label for play on app in the music recognition. -->
-    <string name="play_on_app">Play in Metrolist</string>
+    <string name="play_on_app">Play in Meld</string>
     <!-- Translators: Imperative action label for re-listen in the music recognition. -->
     <string name="re_listen">Re-listen</string>
 
@@ -5017,7 +5021,7 @@
     <string name="import_error_playlist_tracks_unavailable">Could not load the playlist's tracks from %1$s. Export the playlist and paste the track list.</string>
     <string name="import_error_album_tracks_unavailable">Could not load the album's tracks from %1$s. Export the album and paste the track list.</string>
 <string name="audio_boost">Preamp</string>
-<string name="equalizer_usage_warning">The Metrolist team assumes no responsibility for your use of MetroEQ.</string>
+<string name="equalizer_usage_warning">The Meld team assumes no responsibility for your use of MetroEQ.</string>
 <string name="playlist_cover_updated">Playlist cover updated</string>
 <string name="playlist_cover_removed">Custom cover removed</string>
 <string name="login">Login</string>
@@ -5099,7 +5103,7 @@
     <string name="onboarding_continue_without_migration">Continue with an empty library</string>
     <string name="onboarding_migration_recovery_description">You can try again or continue with an empty library. A recovery copy of your original database will stay on this device. You can restore a backup after setup.</string>
     <string name="onboarding_migration_failed">Could not prepare your library. Your original data has been preserved.</string>
-    <string name="onboarding_library_migrated_description">Your playlists, history, likes, and library data are ready in this version of Metrolist.</string>
+    <string name="onboarding_library_migrated_description">Your playlists, history, likes, and library data are ready in this version of Meld.</string>
     <string name="onboarding_notifications_denied">Notifications are disabled. You can enable them later in Android app settings, or choose No to continue.</string>
     <string name="mini_player_video_prerequisite">Enable Play music videos in Playback settings first</string>
     <string name="download_folder_access_failed">Access to this folder could not be saved. Choose a folder with read and write access.</string>
@@ -5125,9 +5129,9 @@
     <string name="updates_notification_settings">Android notification settings</string>
     <string name="widget_recognizer_open_result">Open identified song</string>
     <string name="statistics_load_failed">Could not refresh statistics. Try again.</string>
-    <string name="desktop_platform_unsupported">This operating system is not supported by Metrolist. Use Windows 10 or later, macOS, or a Linux distribution other than Omarchy.</string>
+    <string name="desktop_platform_unsupported">This operating system is not supported by Meld. Use Windows 10 or later, macOS, or a Linux distribution other than Omarchy.</string>
     <string name="shortcut_toggle_expanded">Toggle expanded player</string>
-    <string name="desktop_display_unavailable">Metrolist could not connect to this session’s X display. Launch it from your desktop session with DISPLAY set.</string>
+    <string name="desktop_display_unavailable">Meld could not connect to this session’s X display. Launch it from your desktop session with DISPLAY set.</string>
     <string name="webkit_install_hint">Embedded sign-in requires WebKitGTK 4.1 (%1$s). Install it using your system package manager.</string>
     <string name="webkit_install_command">Install it with:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage builds also use the system WebKitGTK libraries for sign-in.</string>
@@ -5140,7 +5144,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Vol: %2$s</string>
-    <string name="download_folder_unavailable">Could not use this folder. Choose a writable folder that your system or sandbox allows Metrolist to access.</string>
+    <string name="download_folder_unavailable">Could not use this folder. Choose a writable folder that your system or sandbox allows Meld to access.</string>
     <string name="window_maximize">Maximize</string>
     <string name="window_restore">Restore window</string>
     <string name="equalizer_stream_unavailable">Equalizer and preamp are unavailable for this stream. Changes apply when a supported track plays.</string>
@@ -5154,7 +5158,7 @@
     <string name="queue_youtube_history_paused_desc">Resume listen history to queue plays while offline</string>
     <string name="search_online_failed">Could not search online. Check your connection and try again.</string>
     <string name="search_load_more_failed">Could not load more results.</string>
-    <string name="discord_error_gateway_configuration">Discord rejected the connection configuration. Update Metrolist before trying again.</string>
+    <string name="discord_error_gateway_configuration">Discord rejected the connection configuration. Update Meld before trying again.</string>
     <string name="discord_preview_buttons_adjusted">Discord shortens long button labels and omits buttons whose links are too long. This preview shows the buttons that will be sent.</string>
     <string name="discord_presence_status_warning">When enabled, rich presence sends Online status to Discord. It may override Invisible or Do Not Disturb, including when playback stops.</string>
     <string name="discord_refresh_queued">Presence refresh queued.</string>
@@ -5189,8 +5193,8 @@
     <string name="theme_color_rose">Rose</string>
     <string name="theme_color_red">Red</string>
     <string name="theme_color_gold">Gold</string>
-    <string name="backup_unsupported_format">This backup format is not supported by this version of Metrolist.</string>
-    <string name="backup_unsupported_database">The database version in this backup is not supported by this version of Metrolist.</string>
+    <string name="backup_unsupported_format">This backup format is not supported by this version of Meld.</string>
+    <string name="backup_unsupported_database">The database version in this backup is not supported by this version of Meld.</string>
     <string name="backup_too_large">The backup exceeds a supported size or entry limit.</string>
     <string name="backup_invalid_data">The backup could not be read or validated. It may be damaged or contain unsupported data.</string>
     <string name="search_history_removal_failed">Could not clear account search history. Please try again when connected.</string>
@@ -5201,8 +5205,8 @@
     <string name="lastfm_service_error">Last.fm sign-in is unavailable. Please try again later.</string>
     <string name="crash_logs" translatable="false">Crash logs</string>
     <string name="crash_restart" translatable="false">Restart app</string>
-    <string name="database_downgrade" translatable="false">Database downgrades are never supported because they would cause data loss. Install the newer version of Metrolist again.</string>
-    <string name="crash_imminent_title" translatable="false">Metrolist is about to crash</string>
+    <string name="database_downgrade" translatable="false">Database downgrades are never supported because they would cause data loss. Install the newer version of Meld again.</string>
+    <string name="crash_imminent_title" translatable="false">Meld is about to crash</string>
     <string name="crash_imminent_message" translatable="false">What would you like to do?</string>
     <string name="crash_let_it_crash" translatable="false">Let it crash</string>
     <string name="chip_content_description">%1$s, chip</string>
@@ -5304,12 +5308,12 @@
     <string name="crash_updates_installing_description" translatable="false">Downloading and installing the update</string>
     <string name="crash_updates_installing_title" translatable="false">Installing the update</string>
     <string name="crash_updates_last_check" translatable="false">Last successful update check</string>
-    <string name="crash_updates_no_updates" translatable="false">Metrolist is up to date</string>
+    <string name="crash_updates_no_updates" translatable="false">Meld is up to date</string>
     <string name="crash_updates_pending_title" translatable="false">Pending update</string>
     <string name="crash_updates_release_unavailable" translatable="false">This release does not include a compatible APK.</string>
     <string name="crash_updates_retry" translatable="false">Try again</string>
     <string name="crash_updates_size" translatable="false">Update size</string>
-    <string name="crash_updates_version" translatable="false">Metrolist version</string>
+    <string name="crash_updates_version" translatable="false">Meld version</string>
     <string name="crash_upload" translatable="false">Upload</string>
     <string name="error_audio_output_unavailable">The audio output is unavailable. Check your system audio settings, then try playing again.</string>
     <string name="playlist_removed_from_youtube">This playlist is no longer available on YouTube Music and was removed from your library. Downloaded songs are still available.</string>
@@ -5345,7 +5349,7 @@
     <string name="settings_appearance_overview">Theme, fonts and player appearance</string>
     <string name="settings_android_auto_overview">Driving playlists and quick-add destination</string>
     <string name="settings_about_overview">Contributors, community links and licenses</string>
-    <string name="settings_supported_links_overview">Choose which YouTube links open in Metrolist</string>
+    <string name="settings_supported_links_overview">Choose which YouTube links open in Meld</string>
     <string name="settings_equalizer_overview">Sound presets, frequency bands and profiles</string>
     <string name="settings_fonts_overview">Font selection and font imports</string>
     <string name="settings_artwork_overview">Animated covers, artwork sources and video quality</string>
@@ -5361,7 +5365,7 @@
     <string name="settings_listen_together_overview">Server, join requests and song suggestions</string>
     <string name="settings_device_connect_overview">Nearby devices, pairing and remote playback</string>
     <string name="settings_release_overview">Release notes and installation options</string>
-    <string name="settings_notification_access_summary">Choose which notifications Android allows for Metrolist</string>
+    <string name="settings_notification_access_summary">Choose which notifications Android allows for Meld</string>
     <string name="settings_crash_reports_summary">Read and share saved crash reports</string>
     <string name="settings_content_language_summary">Language used for YouTube Music search and recommendations</string>
     <string name="settings_content_country_summary">Region used for YouTube Music charts and recommendations</string>
@@ -5382,7 +5386,7 @@
     <string name="settings_canvas_playback_summary">Play short clips or the full music video behind the player</string>
     <string name="settings_normalization_summary">Balance volume between songs to avoid large changes</string>
     <string name="settings_loudness_target_summary">Set the target loudness when audio normalization is on</string>
-    <string name="settings_stop_on_close_summary">Stop playback when Metrolist is swiped out of recent apps</string>
+    <string name="settings_stop_on_close_summary">Stop playback when Meld is swiped out of recent apps</string>
     <string name="settings_screen_awake_summary">Choose whether the player or lyrics keep the display awake</string>
     <string name="settings_translation_mode_summary">Translate words or transcribe pronunciation into the target script</string>
     <string name="settings_translation_provider_summary">Choose the service that translates lyrics</string>
@@ -5402,7 +5406,7 @@
     <string name="settings_reset_download_folder_summary">Use the default folder for downloaded songs</string>
     <string name="settings_diagnostic_logs_summary">Read and copy the app's diagnostic log</string>
     <string name="settings_log_directory_summary">Browse saved log files in your file manager</string>
-    <string name="settings_check_releases_summary">Check GitHub for a newer Metrolist release</string>
+    <string name="settings_check_releases_summary">Check GitHub for a newer Meld release</string>
     <string name="settings_share_apk_summary">Share the installed app package as a file</string>
     <string name="settings_system_font_summary">Use the font supplied by your operating system</string>
     <string name="settings_thumbnail_shape_summary">Choose the shape of artwork in the expanded player</string>
@@ -5431,7 +5435,7 @@
     <string name="ai_setup_description">Create an OpenRouter account, sign in and choose a free model.</string>
     <string name="ai_setup_step">Step %1$d of %2$d</string>
     <string name="ai_setup_account">Create an OpenRouter account</string>
-    <string name="ai_setup_account_description">OpenRouter connects Metrolist to AI models that translate lyrics.</string>
+    <string name="ai_setup_account_description">OpenRouter connects Meld to AI models that translate lyrics.</string>
     <string name="ai_setup_limits">Free models allow up to %1$d requests per minute and %2$d per day, or %4$d per day after purchasing at least %3$d credits.</string>
     <string name="ai_setup_create_account">Create account</string>
     <string name="ai_setup_view_limits">Check current limits</string>

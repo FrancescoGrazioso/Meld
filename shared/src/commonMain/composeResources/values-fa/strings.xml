@@ -212,7 +212,7 @@
     <string name="auto_load_more">ترانه‌های بیشتر رو به صورت خودکار بارگیری کن</string>
     <string name="auto_load_more_desc">درصف های مخلوطی و رادیو، به‌صورت خودکار ترانه‌های مشابه اضافه کن</string>
     <string name="auto_skip_next_on_error">بعد از خطاء پخش، به صورت خودکار به ترانه بعدی برو</string>
-    <string name="startup_error_title">خطای راه‌اندازی Metrolist</string>
+    <string name="startup_error_title">خطای راه‌اندازی Meld</string>
     <string name="lyrics_show_translations">نمایش ترجمه‌ها</string>
     <string name="artist_latest_release">تازه‌ترین انتشار</string>
     <string name="top_tracks">برترین آهنگ‌ها</string>
@@ -275,18 +275,18 @@
     <string name="open_website">ورود به وبسایت</string>
     <string name="open_github_profile">ورود به صفحه گیت‌هاب</string>
     <string name="credits_license_name">مجوز</string>
-    <string name="credits_license_desc">مترولیست با مجوز GPL-3.0 منتشر می‌شود.</string>
+    <string name="credits_license_desc">Meld با مجوز GPL-3.0 منتشر می‌شود.</string>
     <string name="devmode_already_active" translatable="true">حالت برنامه‌نویسی از قبل فعال شده است</string>
-    <string name="discord_listen_to_metrolist">شنیدن مترولیست</string>
+    <string name="discord_listen_to_metrolist">شنیدن Meld</string>
     <string name="discord_login_description">اتصال به حساب دیسکورد</string>
     <string name="discord_state">حالت</string>
     <string name="discord_button1_text_default">گوش دادن در YouTube Music</string>
-    <string name="discord_button2_text_default">دیدار از مترولیست</string>
+    <string name="discord_button2_text_default">دیدار از Meld</string>
     <string name="discord_status_authorizing">درحال تایید اعتبار…</string>
     <string name="discord_status_not_initialized">انجام نشده</string>
     <string name="discord_status_authorized">متصل شده</string>
     <string name="discord_error_denied">دیسکورد اجازه اتصال رو ردکرد.</string>
-    <string name="discord_error_connection_failed">اتصال به دیسکورد شکست خورد. مترولیست به صورت خودکار دوباره تلاش میکند.</string>
+    <string name="discord_error_connection_failed">اتصال به دیسکورد شکست خورد. Meld به صورت خودکار دوباره تلاش میکند.</string>
     <string name="discord_error_no_browser">برنامه‌ای برای باز کردن تأییدیه دیسکورد وجود ندارد.</string>
     <string name="discord_error_invalid_scope">خطای دسترسی. لطفاً مجدداً وارد حساب کاربری خود شوید.</string>
     <string name="discord_error_timeout">مهلت زمان اتصال به دیسکورد به پایان رسید. دوباره تلاش کنید.</string>
@@ -318,7 +318,7 @@
     <string name="available_devices">دستگاه‌های در دسترس</string>
     <string name="no_device_connected">دستگاهی متصل نیست</string>
     <string name="no_device_found">دستگاهی پیدا نشد</string>
-    <string name="no_compatible_devices">هیچ دستگاه سازگاری با Google Cast، FCast، DLNA یا Metrolist پیدا نشد.</string>
+    <string name="no_compatible_devices">هیچ دستگاه سازگاری با Google Cast، FCast، DLNA یا Meld پیدا نشد.</string>
     <string name="show_player_cast_button">نمایش دکمهٔ پخش روی دستگاه</string>
     <string name="show_player_video_button">نمایش انتخابگر صدا و ویدیو</string>
     <string name="onboarding_language_lyrics_description">زبان برنامه و شیوهٔ نمایش متن ترانه‌ها را انتخاب کنید.</string>
@@ -389,7 +389,7 @@
     <string name="onboarding_continue_without_migration">ادامه با مجموعهٔ خالی</string>
     <string name="onboarding_migration_recovery_description">می‌توانید دوباره تلاش کنید یا با مجموعه‌ای خالی ادامه دهید. یک نسخهٔ بازیابی از پایگاه دادهٔ اصلی روی این دستگاه باقی می‌ماند. پس از راه‌اندازی می‌توانید نسخهٔ پشتیبان را بازیابی کنید.</string>
     <string name="onboarding_migration_failed">آماده‌سازی مجموعهٔ شما ممکن نشد. داده‌های اصلی شما حفظ شده‌اند.</string>
-    <string name="onboarding_library_migrated_description">فهرست‌پخش‌ها، سابقه، آهنگ‌های پسندیده‌شده و داده‌های مجموعهٔ شما در این نسخه از Metrolist آماده‌اند.</string>
+    <string name="onboarding_library_migrated_description">فهرست‌پخش‌ها، سابقه، آهنگ‌های پسندیده‌شده و داده‌های مجموعهٔ شما در این نسخه از Meld آماده‌اند.</string>
     <string name="onboarding_notifications_denied">اعلان‌ها غیرفعال‌اند. می‌توانید بعداً در تنظیمات برنامه در Android آن‌ها را فعال کنید یا برای ادامه «خیر» را انتخاب کنید.</string>
     <string name="mini_player_video_prerequisite">ابتدا «پخش ویدیوهای موسیقی» را در تنظیمات پخش فعال کنید</string>
     <string name="download_folder_access_failed">ذخیرهٔ دسترسی به این پوشه ممکن نشد. پوشه‌ای با دسترسی خواندن و نوشتن انتخاب کنید.</string>
@@ -414,9 +414,9 @@
     <string name="updates_notification_settings">تنظیمات اعلان Android</string>
     <string name="widget_recognizer_open_result">باز کردن آهنگ شناسایی‌شده</string>
     <string name="statistics_load_failed">به‌روزرسانی آمار ممکن نشد. دوباره تلاش کنید.</string>
-    <string name="desktop_platform_unsupported">Metrolist از این سیستم‌عامل پشتیبانی نمی‌کند. از Windows 10 یا جدیدتر، macOS یا توزیعی از Linux به‌جز Omarchy استفاده کنید.</string>
+    <string name="desktop_platform_unsupported">Meld از این سیستم‌عامل پشتیبانی نمی‌کند. از Windows 10 یا جدیدتر، macOS یا توزیعی از Linux به‌جز Omarchy استفاده کنید.</string>
     <string name="shortcut_toggle_expanded">باز یا جمع کردن پخش‌کننده</string>
-    <string name="desktop_display_unavailable">Metrolist نتوانست به نمایشگر X این نشست متصل شود. آن را از نشست دسکتاپ خود با متغیر DISPLAY تنظیم‌شده اجرا کنید.</string>
+    <string name="desktop_display_unavailable">Meld نتوانست به نمایشگر X این نشست متصل شود. آن را از نشست دسکتاپ خود با متغیر DISPLAY تنظیم‌شده اجرا کنید.</string>
     <string name="webkit_install_hint">ورود درون‌برنامه‌ای به WebKitGTK 4.1 (%1$s) نیاز دارد. آن را با مدیر بستهٔ سیستم نصب کنید.</string>
     <string name="webkit_install_command">با این دستور نصب کنید:\n%1$s</string>
     <string name="webkit_appimage_hint">نسخه‌های AppImage هم برای ورود از کتابخانه‌های WebKitGTK سیستم استفاده می‌کنند.</string>
@@ -429,7 +429,7 @@
     <string name="video_stats_latency_value">%1$s میلی‌ثانیه</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s مگابایت (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | بلندی صدا: %2$s</string>
-    <string name="download_folder_unavailable">استفاده از این پوشه ممکن نشد. پوشه‌ای قابل‌نوشتن انتخاب کنید که سیستم یا محیط ایزوله اجازهٔ دسترسی Metrolist به آن را بدهد.</string>
+    <string name="download_folder_unavailable">استفاده از این پوشه ممکن نشد. پوشه‌ای قابل‌نوشتن انتخاب کنید که سیستم یا محیط ایزوله اجازهٔ دسترسی Meld به آن را بدهد.</string>
     <string name="window_maximize">بیشینه کردن</string>
     <string name="window_restore">بازگرداندن اندازهٔ پنجره</string>
     <string name="equalizer_stream_unavailable">میزان‌گر و پیش‌تقویت‌کننده برای این جریان در دسترس نیستند. تغییرات هنگام پخش آهنگی پشتیبانی‌شده اعمال می‌شوند.</string>
@@ -443,7 +443,7 @@
     <string name="queue_youtube_history_paused_desc">ثبت سابقهٔ شنیدن را از سر بگیرید تا پخش‌ها هنگام آفلاین بودن در صف قرار بگیرند</string>
     <string name="search_online_failed">جستجوی آنلاین ممکن نشد. اتصال خود را بررسی کنید و دوباره تلاش کنید.</string>
     <string name="search_load_more_failed">بارگیری نتایج بیشتر ممکن نشد.</string>
-    <string name="discord_error_gateway_configuration">Discord پیکربندی اتصال را رد کرد. پیش از تلاش دوباره، Metrolist را به‌روزرسانی کنید.</string>
+    <string name="discord_error_gateway_configuration">Discord پیکربندی اتصال را رد کرد. پیش از تلاش دوباره، Meld را به‌روزرسانی کنید.</string>
     <string name="discord_preview_buttons_adjusted">Discord متن بلند دکمه‌ها را کوتاه می‌کند و دکمه‌هایی با پیوند بیش‌ازحد بلند را حذف می‌کند. این پیش‌نمایش دکمه‌هایی را نشان می‌دهد که ارسال خواهند شد.</string>
     <string name="discord_presence_status_warning">نمایش جزئیات فعالیت، وضعیت آنلاین را به Discord می‌فرستد. ممکن است جایگزین نامرئی یا مزاحم نشوید شود، حتی وقتی پخش متوقف می‌شود.</string>
     <string name="discord_refresh_queued">به‌روزرسانی وضعیت فعالیت در صف قرار گرفت.</string>
@@ -478,8 +478,8 @@
     <string name="theme_color_rose">صورتی</string>
     <string name="theme_color_red">قرمز</string>
     <string name="theme_color_gold">طلایی</string>
-    <string name="backup_unsupported_format">این نسخه از Metrolist از قالب این نسخهٔ پشتیبان پشتیبانی نمی‌کند.</string>
-    <string name="backup_unsupported_database">این نسخه از Metrolist از نسخهٔ پایگاه دادهٔ این پشتیبان پشتیبانی نمی‌کند.</string>
+    <string name="backup_unsupported_format">این نسخه از Meld از قالب این نسخهٔ پشتیبان پشتیبانی نمی‌کند.</string>
+    <string name="backup_unsupported_database">این نسخه از Meld از نسخهٔ پایگاه دادهٔ این پشتیبان پشتیبانی نمی‌کند.</string>
     <string name="backup_too_large">حجم یا تعداد مدخل‌های نسخهٔ پشتیبان از حد مجاز بیشتر است.</string>
     <string name="backup_invalid_data">خواندن یا اعتبارسنجی نسخهٔ پشتیبان ممکن نشد. شاید آسیب دیده باشد یا داده‌های پشتیبانی‌نشده داشته باشد.</string>
     <string name="search_history_removal_failed">پاک کردن سابقهٔ جستجوی حساب ممکن نشد. پس از اتصال دوباره تلاش کنید.</string>
@@ -490,10 +490,10 @@
     <string name="top_period_past_year">سال گذشته</string>
     <string name="onboarding_welcome_description">پیش از اولین بار گوش دادن، حریم خصوصی و مجوزهای سیستم را تنظیم کنید.</string>
     <string name="onboarding_migration_title">مجموعهٔ نسخهٔ ۱۳ شما اینجاست</string>
-    <string name="onboarding_migration_description">یک پایگاه دادهٔ مستقل Metrolist پیدا کردیم. فهرست‌پخش‌ها، تاریخچه، آهنگ‌های پسندیده‌شده و داده‌های مجموعه را در همین محل منتقل کنید. اگر انتقال ناموفق باشد، می‌توانید پایگاه دادهٔ اصلی را بازیابی کنید.</string>
+    <string name="onboarding_migration_description">یک پایگاه دادهٔ مستقل Meld پیدا کردیم. فهرست‌پخش‌ها، تاریخچه، آهنگ‌های پسندیده‌شده و داده‌های مجموعه را در همین محل منتقل کنید. اگر انتقال ناموفق باشد، می‌توانید پایگاه دادهٔ اصلی را بازیابی کنید.</string>
     <string name="onboarding_migration_complete_title">حساب شما منتقل شد</string>
-    <string name="onboarding_migration_complete_description">حساب، فهرست‌پخش‌ها، تاریخچه، آهنگ‌های پسندیده‌شده و داده‌های مجموعهٔ شما در این نسخه از Metrolist آماده‌اند.</string>
-    <string name="onboarding_crash_reports_title">به بهبود Metrolist کمک کنید</string>
+    <string name="onboarding_migration_complete_description">حساب، فهرست‌پخش‌ها، تاریخچه، آهنگ‌های پسندیده‌شده و داده‌های مجموعهٔ شما در این نسخه از Meld آماده‌اند.</string>
+    <string name="onboarding_crash_reports_title">به بهبود Meld کمک کنید</string>
     <string name="onboarding_crash_reports_description">برای کمک به پیدا کردن و رفع مشکلات، داده‌های عیب‌یابی را به‌صورت اختیاری از طریق Sentry به اشتراک بگذارید. می‌توانید هر زمان این گزینه را در تنظیمات تغییر دهید.</string>
     <string name="onboarding_notifications_title">اجازهٔ اعلان‌ها</string>
     <string name="onboarding_notifications_description">اعلان‌های پخش و بارگیری‌ها را فعال کنید.</string>
@@ -509,10 +509,10 @@
     <string name="onboarding_finish_title">همه‌چیز آماده است</string>
     <string name="onboarding_finish_description">راه‌اندازی کامل شد. گوش دادن را شروع کنید یا ابتدا حساب و داده‌های خود را منتقل کنید.</string>
     <string name="onboarding_restore_backup">بازیابی از پشتیبان</string>
-    <string name="onboarding_settings_hint">برای شخصی‌سازی Metrolist، تنظیمات را از منوی بالا سمت راست باز کنید.</string>
+    <string name="onboarding_settings_hint">برای شخصی‌سازی Meld، تنظیمات را از منوی بالا سمت راست باز کنید.</string>
     <string name="onboarding_no_saved_accounts">هیچ حساب پیوندخورده‌ای پیدا نشد.</string>
     <string name="onboarding_account_picture">تصویر نمایهٔ %1$s</string>
-    <string name="onboarding_backup_picker_title">بازیابی پشتیبان Metrolist</string>
+    <string name="onboarding_backup_picker_title">بازیابی پشتیبان Meld</string>
     <string name="onboarding_backup_picker_error">باز کردن انتخابگر پشتیبان ممکن نشد: %1$s</string>
     <string name="onboarding_backup_restore_failed">بازیابی ناموفق بود: %1$s</string>
     <string name="new_badge">جدید</string>
@@ -531,7 +531,7 @@
     <string name="settings_appearance_overview">پوسته، قلم‌ها و ظاهر پخش‌کننده</string>
     <string name="settings_android_auto_overview">فهرست‌های پخش خودرو و مقصد افزودن سریع</string>
     <string name="settings_about_overview">مشارکت‌کنندگان، پیوندهای انجمن و مجوزها</string>
-    <string name="settings_supported_links_overview">انتخاب پیوندهای YouTube که با Metrolist باز می‌شوند</string>
+    <string name="settings_supported_links_overview">انتخاب پیوندهای YouTube که با Meld باز می‌شوند</string>
     <string name="settings_equalizer_overview">پیش‌تنظیم‌های صدا، باندهای فرکانسی و نمایه‌ها</string>
     <string name="settings_fonts_overview">انتخاب و وارد کردن قلم</string>
     <string name="settings_artwork_overview">جلدهای متحرک، منابع تصویر و کیفیت ویدیو</string>
@@ -547,7 +547,7 @@
     <string name="settings_listen_together_overview">سرور، درخواست‌های پیوستن و پیشنهادهای آهنگ</string>
     <string name="settings_device_connect_overview">دستگاه‌های نزدیک، جفت‌سازی و پخش از راه دور</string>
     <string name="settings_release_overview">یادداشت‌های انتشار و گزینه‌های نصب</string>
-    <string name="settings_notification_access_summary">انتخاب اعلان‌هایی که Android برای Metrolist مجاز می‌داند</string>
+    <string name="settings_notification_access_summary">انتخاب اعلان‌هایی که Android برای Meld مجاز می‌داند</string>
     <string name="settings_crash_reports_summary">خواندن و اشتراک‌گذاری گزارش‌های خرابی ذخیره‌شده</string>
     <string name="settings_content_language_summary">زبان جستجو و پیشنهادهای YouTube Music</string>
     <string name="settings_content_country_summary">منطقهٔ جدول‌های آهنگ و پیشنهادهای YouTube Music</string>
@@ -567,7 +567,7 @@
     <string name="settings_canvas_playback_summary">پخش کلیپ‌های کوتاه یا کل موزیک‌ویدیو پشت پخش‌کننده</string>
     <string name="settings_normalization_summary">متعادل کردن بلندی صدا میان آهنگ‌ها برای جلوگیری از اختلاف زیاد</string>
     <string name="settings_loudness_target_summary">تنظیم بلندی صدای هدف هنگام فعال بودن یکسان‌سازی صدا</string>
-    <string name="settings_stop_on_close_summary">توقف پخش هنگام کنار زدن Metrolist از برنامه‌های اخیر</string>
+    <string name="settings_stop_on_close_summary">توقف پخش هنگام کنار زدن Meld از برنامه‌های اخیر</string>
     <string name="settings_screen_awake_summary">انتخاب اینکه پخش‌کننده یا متن ترانه نمایشگر را روشن نگه دارد</string>
     <string name="settings_translation_mode_summary">ترجمهٔ واژه‌ها یا نوشتن تلفظ آن‌ها با خط مقصد</string>
     <string name="settings_translation_provider_summary">انتخاب سرویسی که متن ترانه را ترجمه می‌کند</string>
@@ -587,7 +587,7 @@
     <string name="settings_reset_download_folder_summary">استفاده از پوشهٔ پیش‌فرض برای آهنگ‌های بارگیری‌شده</string>
     <string name="settings_diagnostic_logs_summary">خواندن و کپی کردن گزارش تشخیصی برنامه</string>
     <string name="settings_log_directory_summary">مرور فایل‌های گزارش ذخیره‌شده در مدیر فایل</string>
-    <string name="settings_check_releases_summary">بررسی GitHub برای یافتن نسخهٔ جدیدتر Metrolist</string>
+    <string name="settings_check_releases_summary">بررسی GitHub برای یافتن نسخهٔ جدیدتر Meld</string>
     <string name="settings_share_apk_summary">اشتراک‌گذاری بستهٔ برنامهٔ نصب‌شده به‌صورت فایل</string>
     <string name="settings_system_font_summary">استفاده از قلم ارائه‌شده توسط سیستم‌عامل</string>
     <string name="settings_thumbnail_shape_summary">انتخاب شکل جلدها در پخش‌کنندهٔ بازشده</string>

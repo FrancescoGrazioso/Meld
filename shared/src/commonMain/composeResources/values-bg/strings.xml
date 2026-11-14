@@ -177,7 +177,7 @@
     <string name="import_error_unsupported_playlist_entries">Този плейлист съдържа локални файлове или директни връзки, до които Android няма достъп. Импортирайте плейлист с връзки към YouTube или изберете локалните файлове на настолен компютър.</string>
     <string name="import_error_local_files_require_local_playlist">Локалните аудиофайлове могат да се импортират само в локален плейлист.</string>
     <string name="import_error_file_read_failed">Файлът на плейлиста не можа да бъде прочетен. Изберете го отново и разрешете достъп до файла.</string>
-    <string name="startup_error_title">Грешка при стартиране на Metrolist</string>
+    <string name="startup_error_title">Грешка при стартиране на Meld</string>
     <string name="lyrics_show_translations">Показване на преводите</string>
     <string name="artist_latest_release">Най-ново издание</string>
     <string name="top_tracks">Най-популярни песни</string>
@@ -228,7 +228,7 @@
     <string name="available_devices">Налични устройства</string>
     <string name="no_device_connected">Няма свързано устройство</string>
     <string name="no_device_found">Няма намерено устройство</string>
-    <string name="no_compatible_devices">Не е намерено съвместимо устройство с Google Cast, FCast, DLNA или Metrolist.</string>
+    <string name="no_compatible_devices">Не е намерено съвместимо устройство с Google Cast, FCast, DLNA или Meld.</string>
     <string name="show_player_cast_button">Показване на бутона за предаване</string>
     <string name="show_player_video_button">Показване на превключвателя за аудио и видео</string>
     <string name="onboarding_language_lyrics_description">Изберете езика на приложението и как да се показват текстовете.</string>
@@ -299,7 +299,7 @@
     <string name="onboarding_continue_without_migration">Продължаване с празна библиотека</string>
     <string name="onboarding_migration_recovery_description">Можете да опитате отново или да продължите с празна библиотека. Копие на оригиналната ви база данни за възстановяване ще остане на това устройство. След настройката можете да възстановите резервно копие.</string>
     <string name="onboarding_migration_failed">Библиотеката ви не можа да бъде подготвена. Оригиналните ви данни са запазени.</string>
-    <string name="onboarding_library_migrated_description">Вашите плейлисти, история, харесвания и данни от библиотеката са готови в тази версия на Metrolist.</string>
+    <string name="onboarding_library_migrated_description">Вашите плейлисти, история, харесвания и данни от библиотеката са готови в тази версия на Meld.</string>
     <string name="onboarding_notifications_denied">Известията са изключени. Можете да ги включите по-късно в настройките на приложението в Android или да изберете „Не“, за да продължите.</string>
     <string name="mini_player_video_prerequisite">Първо включете „Пускане на музикални видеоклипове“ в настройките за възпроизвеждане</string>
     <string name="download_folder_access_failed">Достъпът до тази папка не можа да бъде запазен. Изберете папка с достъп за четене и запис.</string>
@@ -324,9 +324,9 @@
     <string name="updates_notification_settings">Настройки за известия в Android</string>
     <string name="widget_recognizer_open_result">Отваряне на разпознатата песен</string>
     <string name="statistics_load_failed">Статистиката не можа да бъде обновена. Опитайте отново.</string>
-    <string name="desktop_platform_unsupported">Тази операционна система не се поддържа от Metrolist. Използвайте Windows 10 или по-нова версия, macOS или Linux дистрибуция, различна от Omarchy.</string>
+    <string name="desktop_platform_unsupported">Тази операционна система не се поддържа от Meld. Използвайте Windows 10 или по-нова версия, macOS или Linux дистрибуция, различна от Omarchy.</string>
     <string name="shortcut_toggle_expanded">Разгъване или свиване на плейъра</string>
-    <string name="desktop_display_unavailable">Metrolist не можа да се свърже с X дисплея на тази сесия. Стартирайте го от графичната си сесия със зададена променлива DISPLAY.</string>
+    <string name="desktop_display_unavailable">Meld не можа да се свърже с X дисплея на тази сесия. Стартирайте го от графичната си сесия със зададена променлива DISPLAY.</string>
     <string name="webkit_install_hint">За вграденото влизане е необходим WebKitGTK 4.1 (%1$s). Инсталирайте го чрез пакетния мениджър на системата си.</string>
     <string name="webkit_install_command">Инсталирайте с:\n%1$s</string>
     <string name="webkit_appimage_hint">Версиите AppImage също използват системните библиотеки WebKitGTK за влизане.</string>
@@ -339,7 +339,7 @@
     <string name="video_stats_latency_value">%1$s мс</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s МБ (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Сила на звука: %2$s</string>
-    <string name="download_folder_unavailable">Тази папка не може да се използва. Изберете папка с право на запис, до която системата или изолираната среда позволява достъп на Metrolist.</string>
+    <string name="download_folder_unavailable">Тази папка не може да се използва. Изберете папка с право на запис, до която системата или изолираната среда позволява достъп на Meld.</string>
     <string name="window_maximize">Увеличаване</string>
     <string name="window_restore">Възстановяване на прозореца</string>
     <string name="equalizer_stream_unavailable">Еквалайзерът и предусилвателят не са достъпни за този поток. Промените ще се приложат при възпроизвеждане на поддържана песен.</string>
@@ -353,7 +353,7 @@
     <string name="queue_youtube_history_paused_desc">Възобновете историята на слушане, за да запазвате слушанията без интернет за изпращане по-късно</string>
     <string name="search_online_failed">Онлайн търсенето е неуспешно. Проверете връзката си и опитайте отново.</string>
     <string name="search_load_more_failed">Не можаха да бъдат заредени още резултати.</string>
-    <string name="discord_error_gateway_configuration">Discord отхвърли настройките на връзката. Обновете Metrolist, преди да опитате отново.</string>
+    <string name="discord_error_gateway_configuration">Discord отхвърли настройките на връзката. Обновете Meld, преди да опитате отново.</string>
     <string name="discord_preview_buttons_adjusted">Discord съкращава дългите надписи на бутоните и пропуска бутоните с твърде дълги връзки. Този преглед показва бутоните, които ще бъдат изпратени.</string>
     <string name="discord_presence_status_warning">Подробният статус изпраща статус „На линия“ към Discord. Може да замени „Невидим“ или „Не ме безпокойте“, включително при спиране на възпроизвеждането.</string>
     <string name="discord_refresh_queued">Обновяването на статуса е добавено в опашката.</string>
@@ -388,8 +388,8 @@
     <string name="theme_color_rose">Розово</string>
     <string name="theme_color_red">Червено</string>
     <string name="theme_color_gold">Златисто</string>
-    <string name="backup_unsupported_format">Форматът на това резервно копие не се поддържа от тази версия на Metrolist.</string>
-    <string name="backup_unsupported_database">Версията на базата данни в това резервно копие не се поддържа от тази версия на Metrolist.</string>
+    <string name="backup_unsupported_format">Форматът на това резервно копие не се поддържа от тази версия на Meld.</string>
+    <string name="backup_unsupported_database">Версията на базата данни в това резервно копие не се поддържа от тази версия на Meld.</string>
     <string name="backup_too_large">Резервното копие надвишава поддържания размер или брой записи.</string>
     <string name="backup_invalid_data">Резервното копие не можа да бъде прочетено или проверено. То може да е повредено или да съдържа неподдържани данни.</string>
     <string name="search_history_removal_failed">Историята на търсене в профила не можа да бъде изчистена. Опитайте отново, когато имате връзка.</string>
@@ -400,10 +400,10 @@
     <string name="top_period_past_year">Последната година</string>
     <string name="onboarding_welcome_description">Настройте поверителността и системните разрешения преди първото слушане.</string>
     <string name="onboarding_migration_title">Вашата библиотека от v13 е тук</string>
-    <string name="onboarding_migration_description">Открихме самостоятелна база данни на Metrolist. Прехвърлете плейлистите, историята, харесванията и данните от библиотеката на място. Можете да възстановите оригиналната база данни, ако прехвърлянето е неуспешно.</string>
+    <string name="onboarding_migration_description">Открихме самостоятелна база данни на Meld. Прехвърлете плейлистите, историята, харесванията и данните от библиотеката на място. Можете да възстановите оригиналната база данни, ако прехвърлянето е неуспешно.</string>
     <string name="onboarding_migration_complete_title">Вашият акаунт е прехвърлен</string>
-    <string name="onboarding_migration_complete_description">Вашият акаунт, плейлисти, история, харесвания и данни от библиотеката са готови в тази версия на Metrolist.</string>
-    <string name="onboarding_crash_reports_title">Помогнете за подобряването на Metrolist</string>
+    <string name="onboarding_migration_complete_description">Вашият акаунт, плейлисти, история, харесвания и данни от библиотеката са готови в тази версия на Meld.</string>
+    <string name="onboarding_crash_reports_title">Помогнете за подобряването на Meld</string>
     <string name="onboarding_crash_reports_description">Споделяйте диагностични данни по желание чрез Sentry, за да ни помогнете да откриваме и отстраняваме проблеми. Можете да промените това по всяко време в Настройки.</string>
     <string name="onboarding_notifications_title">Разрешаване на известия</string>
     <string name="onboarding_notifications_description">Включете известията за възпроизвеждане и изтегляния.</string>
@@ -419,10 +419,10 @@
     <string name="onboarding_finish_title">Всичко е готово</string>
     <string name="onboarding_finish_description">Настройката е завършена. Започнете да слушате или първо прехвърлете акаунта и данните си.</string>
     <string name="onboarding_restore_backup">Възстановяване от резервно копие</string>
-    <string name="onboarding_settings_hint">Отворете Настройки от менюто горе вдясно, за да персонализирате Metrolist.</string>
+    <string name="onboarding_settings_hint">Отворете Настройки от менюто горе вдясно, за да персонализирате Meld.</string>
     <string name="onboarding_no_saved_accounts">Не са намерени свързани акаунти.</string>
     <string name="onboarding_account_picture">Профилна снимка на %1$s</string>
-    <string name="onboarding_backup_picker_title">Възстановяване на резервно копие на Metrolist</string>
+    <string name="onboarding_backup_picker_title">Възстановяване на резервно копие на Meld</string>
     <string name="onboarding_backup_picker_error">Неуспешно отваряне на прозореца за избор на резервно копие: %1$s</string>
     <string name="onboarding_backup_restore_failed">Възстановяването е неуспешно: %1$s</string>
     <string name="new_badge">Ново</string>
@@ -441,7 +441,7 @@
     <string name="settings_appearance_overview">Тема, шрифтове и изглед на плейъра</string>
     <string name="settings_android_auto_overview">Плейлисти в колата и цел за бързо добавяне</string>
     <string name="settings_about_overview">Сътрудници, връзки към общността и лицензи</string>
-    <string name="settings_supported_links_overview">Изберете кои връзки от YouTube да се отварят в Metrolist</string>
+    <string name="settings_supported_links_overview">Изберете кои връзки от YouTube да се отварят в Meld</string>
     <string name="settings_equalizer_overview">Готови настройки за звук, честотни ленти и профили</string>
     <string name="settings_fonts_overview">Избор и импортиране на шрифтове</string>
     <string name="settings_artwork_overview">Анимирани обложки, източници на изображения и качество на видеото</string>
@@ -457,7 +457,7 @@
     <string name="settings_listen_together_overview">Сървър, заявки за присъединяване и предложения за песни</string>
     <string name="settings_device_connect_overview">Устройства наблизо, сдвояване и отдалечено възпроизвеждане</string>
     <string name="settings_release_overview">Бележки по версията и опции за инсталиране</string>
-    <string name="settings_notification_access_summary">Изберете кои известия Android разрешава за Metrolist</string>
+    <string name="settings_notification_access_summary">Изберете кои известия Android разрешава за Meld</string>
     <string name="settings_crash_reports_summary">Четете и споделяйте запазени отчети за сривове</string>
     <string name="settings_content_language_summary">Език за търсене и препоръки в YouTube Music</string>
     <string name="settings_content_country_summary">Регион за класации и препоръки в YouTube Music</string>
@@ -477,7 +477,7 @@
     <string name="settings_canvas_playback_summary">Възпроизвеждане на кратки клипове или целия музикален видеоклип зад плейъра</string>
     <string name="settings_normalization_summary">Изравняване на силата на звука между песните, за да няма големи разлики</string>
     <string name="settings_loudness_target_summary">Задайте целевата сила на звука при включена нормализация</string>
-    <string name="settings_stop_on_close_summary">Спиране на възпроизвеждането при премахване на Metrolist от последните приложения</string>
+    <string name="settings_stop_on_close_summary">Спиране на възпроизвеждането при премахване на Meld от последните приложения</string>
     <string name="settings_screen_awake_summary">Изберете дали плейърът или текстовете да поддържат екрана включен</string>
     <string name="settings_translation_mode_summary">Превеждане на думите или изписване на произношението с целевата писменост</string>
     <string name="settings_translation_provider_summary">Изберете услугата, която превежда текстовете</string>
@@ -497,7 +497,7 @@
     <string name="settings_reset_download_folder_summary">Използване на папката по подразбиране за изтеглените песни</string>
     <string name="settings_diagnostic_logs_summary">Четете и копирайте диагностичния журнал на приложението</string>
     <string name="settings_log_directory_summary">Преглеждайте запазените журнали във файловия мениджър</string>
-    <string name="settings_check_releases_summary">Проверете в GitHub за по-нова версия на Metrolist</string>
+    <string name="settings_check_releases_summary">Проверете в GitHub за по-нова версия на Meld</string>
     <string name="settings_share_apk_summary">Споделяне на пакета на инсталираното приложение като файл</string>
     <string name="settings_system_font_summary">Използване на шрифта от операционната система</string>
     <string name="settings_thumbnail_shape_summary">Изберете формата на обложките в разгънатия плейър</string>

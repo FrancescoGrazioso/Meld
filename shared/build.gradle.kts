@@ -656,6 +656,15 @@ val generateBuildConfig =
                 .orElse(providers.provider { "" })
                 .get()
                 .trim()
+        val sentryDsn =
+            providers
+                .gradleProperty("SENTRY_DSN")
+                .filter { it.isNotEmpty() }
+                .orElse(providers.environmentVariable("SENTRY_DSN").filter { it.isNotEmpty() })
+                .orElse(providers.provider { localProperties.getProperty("SENTRY_DSN").orEmpty() }.filter { it.isNotEmpty() })
+                .orElse(providers.provider { "" })
+                .get()
+                .trim()
         val isReleaseTask =
             gradle.startParameter.taskNames.any { name ->
                 name.contains("Release", ignoreCase = true) ||
@@ -713,6 +722,7 @@ val generateBuildConfig =
         }
         inputs.property("lastFmKey", lastFmKey)
         inputs.property("lastFmSecret", lastFmSecret)
+        inputs.property("sentryDsn", sentryDsn)
         inputs.property("lyprioBaseUrl", lyprioBaseUrl)
         inputs.property("lyprioHmacKey", lyprioHmacKey)
         val sourceRevision =
@@ -747,6 +757,7 @@ val generateBuildConfig =
                 object BuildConfig {
                     const val LASTFM_API_KEY = "${inputs.properties["lastFmKey"]}"
                     const val LASTFM_SECRET = "${inputs.properties["lastFmSecret"]}"
+                    const val SENTRY_DSN = "${inputs.properties["sentryDsn"]}"
                     const val LYPRIO_BASE_URL = "${inputs.properties["lyprioBaseUrl"]}"
                     const val LYPRIO_HMAC_KEY = "${inputs.properties["lyprioHmacKey"]}"
                     const val APP_VERSION = "${inputs.properties["appVersion"]}"

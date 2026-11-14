@@ -154,8 +154,8 @@ class AiModelCatalog(
                 httpClient.get(url) {
                     timeout { requestTimeoutMillis = 20_000 }
                     if (preset.id == "OpenRouter" || url.contains("openrouter.ai")) {
-                        header("HTTP-Referer", "https://github.com/MetrolistGroup/Metrolist")
-                        header("X-Title", "Metrolist")
+                        header("HTTP-Referer", "https://github.com/FrancescoGrazioso/Meld")
+                        header("X-Title", "Meld")
                     }
                     if (apiKey.isNotBlank()) {
                         when (preset.protocol) {

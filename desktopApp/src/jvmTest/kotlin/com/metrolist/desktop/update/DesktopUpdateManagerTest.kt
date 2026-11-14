@@ -87,7 +87,7 @@ class DesktopUpdateManagerTest {
         assertEquals(listOf("14.0.0-rc10", "14.0.0-rc8", "13.7.0"), releases.map { it.version })
         assertEquals("## Fixes", releases[1].body)
         assertEquals("2026-11-01T12:00:00Z", releases[1].publishedAt)
-        assertEquals("https://github.com/MetrolistGroup/Metrolist/releases/tag/v14.0.0-rc8", releases[1].url)
+        assertEquals("https://github.com/FrancescoGrazioso/Meld/releases/tag/v14.0.0-rc8", releases[1].url)
         assertFailsWith<Exception> { DesktopUpdateManager.parseReleases("not json") }
         assertFailsWith<Exception> {
             DesktopUpdateManager.parseReleases("""[{"tag_name":"v14.0.0","prerelease":false,"assets":[]}]""")

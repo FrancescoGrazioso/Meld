@@ -68,7 +68,7 @@ class SentryManagerTest {
         val nativeSent = CountDownLatch(1)
         val nativeSummary = AtomicReference<String>()
         Sentry.init { options ->
-            configureDesktopSentry(options, desktopSentryRelease("test"), "test")
+            configureDesktopSentry(options, desktopSentryRelease("test"), "test", dsn = "https://key@sentry.invalid/1")
             options.isEnableUncaughtExceptionHandler = false
             options.setTransportFactory(
                 ITransportFactory { transportOptions, _ ->

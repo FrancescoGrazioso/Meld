@@ -252,20 +252,20 @@
     <string name="open_github_profile">Open GitHub profiel</string>
     <string name="sponsor_developer">Sponsor ontwikkelaar</string>
     <string name="credits_license_name">Licentie</string>
-    <string name="credits_license_desc">Metrolist valt onder de GPL-3.0-licentie.</string>
+    <string name="credits_license_desc">Meld valt onder de GPL-3.0-licentie.</string>
     <string name="devmode_already_active" translatable="true">Devmode is al actief</string>
     <string name="discord_enable_rich_presence">Zet Discord Rich Presence aan</string>
-    <string name="discord_listen_to_metrolist">Luister naar Metrolist</string>
+    <string name="discord_listen_to_metrolist">Luister naar Meld</string>
     <string name="discord_login_description">Connecteer je Discord account</string>
     <string name="discord_rich_presence">Rich presence</string>
     <string name="discord_state">Status</string>
     <string name="discord_button1_text_default">Luister op Youtube Music</string>
-    <string name="discord_button2_text_default">Bezoek Metrolist</string>
+    <string name="discord_button2_text_default">Bezoek Meld</string>
     <string name="discord_status_authorizing">Goedkeuren…</string>
     <string name="discord_status_not_initialized">Niet geïnitialiseerd</string>
     <string name="discord_status_authorized">Goedgekeurd</string>
     <string name="discord_error_denied">Autorisatie geweigerd bij Discord.</string>
-    <string name="discord_error_connection_failed">Kon geen connectie maken met Discord. Metrolist probeert automatisch opnieuw.</string>
+    <string name="discord_error_connection_failed">Kon geen connectie maken met Discord. Meld probeert automatisch opnieuw.</string>
     <string name="discord_error_no_browser">Geen app beschikbaar om de Discord autorisatie te openen.</string>
     <string name="discord_error_token_exchange_failed">Tokenuitwisseling mislukt. Probeer het opnieuw.</string>
     <string name="discord_error_token_refresh_failed">Tokenvernieuwing mislukt. Meld je opnieuw aan.</string>
@@ -295,8 +295,8 @@
     <string name="settings_application_about">Applicatie &amp; over</string>
     <string name="settings_open_supported_links_title">Open ondersteunde links</string>
     <string name="settings_updates_title">Updates</string>
-    <string name="settings_updates_available_description">Een nieuwe Metrolist update is beschikbaar</string>
-    <string name="settings_about_title">Over Metrolist</string>
+    <string name="settings_updates_available_description">Een nieuwe Meld update is beschikbaar</string>
+    <string name="settings_about_title">Over Meld</string>
     <string name="settings_search_placeholder">Zoek instellingen</string>
     <string name="settings_search_no_results">Geen instellingen gevonden</string>
     <string name="settings_search_no_results_desc">Geen resultaten voor %1$s gevonden</string>
@@ -323,7 +323,7 @@
     <string name="app_icon_pride_special">Pride Speciaal</string>
     <string name="app_icon_static">Staties</string>
     <string name="app_font_choose">Kies font bestand</string>
-    <string name="app_font_picker_desc">Selecteer een TTF- of OTF-bestand. Metrolist kopieert het naar de eigen appopslag.</string>
+    <string name="app_font_picker_desc">Selecteer een TTF- of OTF-bestand. Meld kopieert het naar de eigen appopslag.</string>
     <string name="app_font_system">Systeemstandaard</string>
     <string name="app_font_applied">Gebruik %1$s</string>
     <string name="app_font_invalid">Dit lettertype kan niet worden gebruikt. Kies een geldig TTF- of OTF-bestand dat kleiner is dan 20 MB.</string>
@@ -425,11 +425,11 @@
         <item quantity="other">Geïmporteerd %1$d nummers</item>
     </plurals>
     <string name="backup_restore_export_desc">Exporteer instellingen, bibliotheek opslag, afspeellijsten, vind ik leuks en geschiedenis naar een zip bestand</string>
-    <string name="backup_restore_import_desc">Herstel een Metrolist-reservekopie. De app start opnieuw na een geslaagd herstel.</string>
+    <string name="backup_restore_import_desc">Herstel een Meld-reservekopie. De app start opnieuw na een geslaagd herstel.</string>
     <string name="backup_restore_busy">Laden…</string>
     <string name="backup_sensitive_title">Gevoelige backup</string>
     <string name="backup_sensitive_message">Reservekopieën bevatten je API-sleutels, inloggegevens, authenticatiecookies, sessietokens en andere gevoelige informatie. Iedereen met dit bestand kan toegang krijgen tot je accounts. Bewaar het veilig en deel het nooit.</string>
-    <string name="restore_in_progress">Je backup aan het herstellen…\nMetrolist zal automatisch herstarten.</string>
+    <string name="restore_in_progress">Je backup aan het herstellen…\nMeld zal automatisch herstarten.</string>
     <string name="scrobble_tap_to_disconnect">Tik om de verbinding te verbreken</string>
     <string name="playback_speed_value" translatable="false">%1$sx</string>
     <string name="equalizer">Egalisator</string>
@@ -869,7 +869,7 @@
     <string name="play_pause">Speel/Pauze</string>
     <string name="next">Volgende</string>
     <string name="not_playing">Geen nummer is aan het afspelen</string>
-    <string name="tap_to_play">Tik om Metrolist te openen</string>
+    <string name="tap_to_play">Tik om Meld te openen</string>
     <string name="widget_description">Widget voor een muziekspeler met afspeelknoppen</string>
     <string name="turntable_widget_description">Ronde kunstwerk widget met afspeelknoppen</string>
     <string name="widget_music_player">Muziekspeler</string>
@@ -941,10 +941,10 @@
     <string name="upload_failed">Uploaden mislukt</string>
     <string name="onboarding_welcome_description">Stel de privacy en systeem rechten in voordat je voor het eerst naar muziek luistert.</string>
     <string name="onboarding_migration_title">Je v13 bibliotheek is hier</string>
-    <string name="onboarding_migration_description">We hebben een alleenstaande Metrolist database gevonden. Migreer afspeellijsten, geschiedenis, video's die je leuk vind en bibliotheekgegevens zonder alles te verwijderen. Je oorspronkelijke gegevens blijven herstelbaar als de overzetten mislukt.</string>
+    <string name="onboarding_migration_description">We hebben een alleenstaande Meld database gevonden. Migreer afspeellijsten, geschiedenis, video's die je leuk vind en bibliotheekgegevens zonder alles te verwijderen. Je oorspronkelijke gegevens blijven herstelbaar als de overzetten mislukt.</string>
     <string name="onboarding_migration_complete_title">Je account is overgezet</string>
-    <string name="onboarding_migration_complete_description">Je account, afspeellijsten, geschiedenis, video\u0027s die je leuk vind en bibliotheekgegevens zijn beschikbaar in deze versie van Metrolist.</string>
-    <string name="onboarding_crash_reports_title">Help Metrolist te verbeteren</string>
+    <string name="onboarding_migration_complete_description">Je account, afspeellijsten, geschiedenis, video\u0027s die je leuk vind en bibliotheekgegevens zijn beschikbaar in deze versie van Meld.</string>
+    <string name="onboarding_crash_reports_title">Help Meld te verbeteren</string>
     <string name="onboarding_crash_reports_description">Deel optionele gegevens via Sentry, zodat we problemen sneller kunnen vinden en oplossen. Je kunt dit op elk moment aanpassen in de instellingen.</string>
     <string name="onboarding_notifications_title">Meldingen toestaan</string>
     <string name="onboarding_notifications_description">Schakel meldingen voor afspelen en downloads in.</string>
@@ -1058,7 +1058,7 @@
     <string name="import_error_file_read_failed">Het afspeellijstbestand kon niet worden gelezen. Kies het opnieuw en verleen toegang tot het bestand.</string>
     <string name="lyrics_source_preference">Handmatige songtekstbronnen</string>
     <string name="lyrics_offset">Songtekstverschuiving</string>
-    <string name="startup_error_title">Opstartfout van Metrolist</string>
+    <string name="startup_error_title">Opstartfout van Meld</string>
     <string name="lyrics_show_translations">Vertalingen tonen</string>
     <string name="top_tracks">Top nummers</string>
     <string name="animated_cover_resolution_desc">Clips met één resolutie gebruiken hun oorspronkelijke resolutie</string>
@@ -1087,7 +1087,7 @@
     <string name="available_devices">Beschikbare apparaten</string>
     <string name="no_device_connected">Geen apparaat verbonden</string>
     <string name="no_device_found">Geen apparaat gevonden</string>
-    <string name="no_compatible_devices">Geen apparaat gevonden dat compatibel is met Google Cast, FCast, DLNA of Metrolist.</string>
+    <string name="no_compatible_devices">Geen apparaat gevonden dat compatibel is met Google Cast, FCast, DLNA of Meld.</string>
     <string name="show_player_cast_button">Castknop tonen</string>
     <string name="show_player_video_button">Audio-/videokiezer tonen</string>
     <string name="onboarding_language_lyrics_description">Kies de taal van de app en hoe songteksten worden getoond.</string>
@@ -1150,7 +1150,7 @@
     <string name="onboarding_continue_without_migration">Doorgaan met een lege bibliotheek</string>
     <string name="onboarding_migration_recovery_description">Je kunt het opnieuw proberen of doorgaan met een lege bibliotheek. Een herstelkopie van je oorspronkelijke database blijft op dit apparaat staan. Na het instellen kun je een reservekopie terugzetten.</string>
     <string name="onboarding_migration_failed">Je bibliotheek kon niet worden voorbereid. Je oorspronkelijke gegevens zijn behouden.</string>
-    <string name="onboarding_library_migrated_description">Je afspeellijsten, geschiedenis, likes en bibliotheekgegevens staan klaar in deze versie van Metrolist.</string>
+    <string name="onboarding_library_migrated_description">Je afspeellijsten, geschiedenis, likes en bibliotheekgegevens staan klaar in deze versie van Meld.</string>
     <string name="onboarding_notifications_denied">Meldingen zijn uitgeschakeld. Je kunt ze later inschakelen in de Android-appinstellingen of Nee kiezen om door te gaan.</string>
     <string name="mini_player_video_prerequisite">Schakel eerst Muziekvideo's afspelen in bij de afspeelinstellingen</string>
     <string name="download_folder_access_failed">De toegang tot deze map kon niet worden opgeslagen. Kies een map met lees- en schrijftoegang.</string>
@@ -1175,9 +1175,9 @@
     <string name="updates_notification_settings">Android-meldingsinstellingen</string>
     <string name="widget_recognizer_open_result">Herkend nummer openen</string>
     <string name="statistics_load_failed">Statistieken konden niet worden vernieuwd. Probeer het opnieuw.</string>
-    <string name="desktop_platform_unsupported">Dit besturingssysteem wordt niet ondersteund door Metrolist. Gebruik Windows 10 of nieuwer, macOS of een andere Linux-distributie dan Omarchy.</string>
+    <string name="desktop_platform_unsupported">Dit besturingssysteem wordt niet ondersteund door Meld. Gebruik Windows 10 of nieuwer, macOS of een andere Linux-distributie dan Omarchy.</string>
     <string name="shortcut_toggle_expanded">Uitgevouwen speler in- of uitschakelen</string>
-    <string name="desktop_display_unavailable">Metrolist kon geen verbinding maken met het X-display van deze sessie. Start de app vanuit je desktopsessie met DISPLAY ingesteld.</string>
+    <string name="desktop_display_unavailable">Meld kon geen verbinding maken met het X-display van deze sessie. Start de app vanuit je desktopsessie met DISPLAY ingesteld.</string>
     <string name="webkit_install_hint">Inloggen binnen de app vereist WebKitGTK 4.1 (%1$s). Installeer dit met de pakketbeheerder van je systeem.</string>
     <string name="webkit_install_command">Installeer dit met:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage-versies gebruiken ook de WebKitGTK-bibliotheken van het systeem om in te loggen.</string>
@@ -1190,7 +1190,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Volume: %2$s</string>
-    <string name="download_folder_unavailable">Deze map kon niet worden gebruikt. Kies een beschrijfbare map waartoe je systeem of sandbox Metrolist toegang geeft.</string>
+    <string name="download_folder_unavailable">Deze map kon niet worden gebruikt. Kies een beschrijfbare map waartoe je systeem of sandbox Meld toegang geeft.</string>
     <string name="window_maximize">Maximaliseren</string>
     <string name="window_restore">Venster herstellen</string>
     <string name="equalizer_stream_unavailable">Equalizer en voorversterker zijn niet beschikbaar voor deze stream. Wijzigingen worden toegepast zodra een ondersteund nummer wordt afgespeeld.</string>
@@ -1204,7 +1204,7 @@
     <string name="queue_youtube_history_paused_desc">Hervat de luistergeschiedenis om offline luisterbeurten in de wachtrij te zetten</string>
     <string name="search_online_failed">Online zoeken is mislukt. Controleer je verbinding en probeer het opnieuw.</string>
     <string name="search_load_more_failed">Meer resultaten laden is mislukt.</string>
-    <string name="discord_error_gateway_configuration">Discord heeft de verbindingsconfiguratie geweigerd. Werk Metrolist bij voordat je het opnieuw probeert.</string>
+    <string name="discord_error_gateway_configuration">Discord heeft de verbindingsconfiguratie geweigerd. Werk Meld bij voordat je het opnieuw probeert.</string>
     <string name="discord_preview_buttons_adjusted">Discord kort lange knopteksten in en laat knoppen met te lange links weg. Dit voorbeeld toont de knoppen die worden verstuurd.</string>
     <string name="discord_presence_status_warning">Als je uitgebreide activiteitsinformatie inschakelt, wordt de status Online naar Discord gestuurd. Dit kan Onzichtbaar of Niet storen overschrijven, ook wanneer het afspelen stopt.</string>
     <string name="discord_refresh_queued">Vernieuwen van activiteitsinformatie staat in de wachtrij.</string>
@@ -1239,8 +1239,8 @@
     <string name="theme_color_rose">Roze</string>
     <string name="theme_color_red">Rood</string>
     <string name="theme_color_gold">Goud</string>
-    <string name="backup_unsupported_format">De indeling van deze reservekopie wordt niet ondersteund door deze versie van Metrolist.</string>
-    <string name="backup_unsupported_database">De databaseversie in deze reservekopie wordt niet ondersteund door deze versie van Metrolist.</string>
+    <string name="backup_unsupported_format">De indeling van deze reservekopie wordt niet ondersteund door deze versie van Meld.</string>
+    <string name="backup_unsupported_database">De databaseversie in deze reservekopie wordt niet ondersteund door deze versie van Meld.</string>
     <string name="backup_too_large">De reservekopie overschrijdt de ondersteunde grootte of het maximale aantal items.</string>
     <string name="backup_invalid_data">De reservekopie kon niet worden gelezen of gevalideerd. Deze is mogelijk beschadigd of bevat niet-ondersteunde gegevens.</string>
     <string name="search_history_removal_failed">De zoekgeschiedenis van je account kon niet worden gewist. Probeer het opnieuw wanneer je verbonden bent.</string>
@@ -1250,8 +1250,8 @@
     <string name="top_period_past_month">Afgelopen maand</string>
     <string name="top_period_past_year">Afgelopen jaar</string>
     <string name="onboarding_sentry_opt_in">Sentry-rapportage is optioneel en wordt alleen ingeschakeld als je Ja kiest.</string>
-    <string name="onboarding_settings_hint">Open Instellingen via het menu rechtsboven om Metrolist aan te passen.</string>
-    <string name="onboarding_backup_picker_title">Metrolist-reservekopie herstellen</string>
+    <string name="onboarding_settings_hint">Open Instellingen via het menu rechtsboven om Meld aan te passen.</string>
+    <string name="onboarding_backup_picker_title">Meld-reservekopie herstellen</string>
     <string name="onboarding_backup_picker_error">De reservekopiekiezer kon niet worden geopend: %1$s</string>
     <string name="onboarding_backup_restore_failed">Herstellen mislukt: %1$s</string>
     <string name="new_badge">Nieuw</string>
@@ -1268,7 +1268,7 @@
     <string name="settings_appearance_overview">Thema, lettertypes en weergave van de speler</string>
     <string name="settings_android_auto_overview">Playlists voor in de auto en bestemming voor snel toevoegen</string>
     <string name="settings_about_overview">Bijdragers, communitylinks en licenties</string>
-    <string name="settings_supported_links_overview">Kies welke YouTube-links in Metrolist openen</string>
+    <string name="settings_supported_links_overview">Kies welke YouTube-links in Meld openen</string>
     <string name="settings_equalizer_overview">Geluidsvoorinstellingen, frequentiebanden en profielen</string>
     <string name="settings_fonts_overview">Lettertypes kiezen en importeren</string>
     <string name="settings_artwork_overview">Geanimeerde hoezen, afbeeldingsbronnen en videokwaliteit</string>
@@ -1284,7 +1284,7 @@
     <string name="settings_listen_together_overview">Server, deelnameverzoeken en nummervoorstellen</string>
     <string name="settings_device_connect_overview">Apparaten in de buurt, koppeling en afspelen op afstand</string>
     <string name="settings_release_overview">Versieopmerkingen en installatieopties</string>
-    <string name="settings_notification_access_summary">Kies welke meldingen Android voor Metrolist toestaat</string>
+    <string name="settings_notification_access_summary">Kies welke meldingen Android voor Meld toestaat</string>
     <string name="settings_crash_reports_summary">Lees en deel opgeslagen crashrapporten</string>
     <string name="settings_content_language_summary">Taal voor zoekopdrachten en aanbevelingen van YouTube Music</string>
     <string name="settings_content_country_summary">Regio voor hitlijsten en aanbevelingen van YouTube Music</string>
@@ -1304,7 +1304,7 @@
     <string name="settings_canvas_playback_summary">Speel korte clips of de volledige muziekvideo achter de speler af</string>
     <string name="settings_normalization_summary">Stem het volume tussen nummers af om grote verschillen te voorkomen</string>
     <string name="settings_loudness_target_summary">Stel het doelvolume in wanneer audionormalisatie aanstaat</string>
-    <string name="settings_stop_on_close_summary">Stop het afspelen wanneer Metrolist uit recente apps wordt geveegd</string>
+    <string name="settings_stop_on_close_summary">Stop het afspelen wanneer Meld uit recente apps wordt geveegd</string>
     <string name="settings_screen_awake_summary">Kies of de speler of songteksten het scherm aanhouden</string>
     <string name="settings_translation_mode_summary">Vertaal woorden of schrijf hun uitspraak in het doelschrift</string>
     <string name="settings_translation_provider_summary">Kies de dienst die songteksten vertaalt</string>
@@ -1324,7 +1324,7 @@
     <string name="settings_reset_download_folder_summary">Gebruik de standaardmap voor gedownloade nummers</string>
     <string name="settings_diagnostic_logs_summary">Lees en kopieer het diagnostische logboek van de app</string>
     <string name="settings_log_directory_summary">Bekijk opgeslagen logbestanden in je bestandsbeheerder</string>
-    <string name="settings_check_releases_summary">Zoek op GitHub naar een nieuwere Metrolist-versie</string>
+    <string name="settings_check_releases_summary">Zoek op GitHub naar een nieuwere Meld-versie</string>
     <string name="settings_share_apk_summary">Deel het geïnstalleerde app-pakket als bestand</string>
     <string name="settings_system_font_summary">Gebruik het lettertype van je besturingssysteem</string>
     <string name="settings_thumbnail_shape_summary">Kies de vorm van hoezen in de uitgeklapte speler</string>

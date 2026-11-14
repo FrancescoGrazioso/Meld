@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 /** The repository's latest stable release; GitHub excludes drafts and prereleases from `releases/latest`. */
-const val LATEST_RELEASE_URL = "https://api.github.com/repos/MetrolistGroup/Metrolist/releases/latest"
+const val LATEST_RELEASE_URL = "https://api.github.com/repos/FrancescoGrazioso/Meld/releases/latest"
 
 @Serializable
 data class LatestRelease(

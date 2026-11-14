@@ -171,7 +171,7 @@
     <string name="import_error_unsupported_playlist_entries">เพลย์ลิสต์นี้มีไฟล์ในเครื่องหรือลิงก์โดยตรงที่ Android เข้าถึงไม่ได้ โปรดนำเข้าเพลย์ลิสต์ที่มีลิงก์ YouTube หรือเลือกไฟล์ในเครื่องบนเดสก์ท็อป</string>
     <string name="import_error_local_files_require_local_playlist">ไฟล์เสียงในเครื่องสามารถนำเข้าได้เฉพาะในเพลย์ลิสต์ในเครื่องเท่านั้น</string>
     <string name="import_error_file_read_failed">ไม่สามารถอ่านไฟล์เพลย์ลิสต์ได้ โปรดเลือกอีกครั้งและอนุญาตการเข้าถึงไฟล์</string>
-    <string name="startup_error_title">ข้อผิดพลาดในการเริ่มต้น Metrolist</string>
+    <string name="startup_error_title">ข้อผิดพลาดในการเริ่มต้น Meld</string>
     <string name="lyrics_show_translations">แสดงคำแปล</string>
     <string name="artist_latest_release">ผลงานล่าสุด</string>
     <string name="top_tracks">เพลงยอดนิยม</string>
@@ -221,7 +221,7 @@
     <string name="available_devices">อุปกรณ์ที่พร้อมใช้งาน</string>
     <string name="no_device_connected">ไม่มีอุปกรณ์ที่เชื่อมต่อ</string>
     <string name="no_device_found">ไม่พบอุปกรณ์</string>
-    <string name="no_compatible_devices">ไม่พบอุปกรณ์ที่รองรับ Google Cast, FCast, DLNA หรือ Metrolist</string>
+    <string name="no_compatible_devices">ไม่พบอุปกรณ์ที่รองรับ Google Cast, FCast, DLNA หรือ Meld</string>
     <string name="show_player_cast_button">แสดงปุ่มแคสต์</string>
     <string name="show_player_video_button">แสดงตัวเลือกเสียง/วิดีโอ</string>
     <string name="onboarding_language_lyrics_description">เลือกภาษาของแอปและรูปแบบการแสดงเนื้อเพลง</string>
@@ -292,7 +292,7 @@
     <string name="onboarding_continue_without_migration">ดำเนินการต่อด้วยคลังเปล่า</string>
     <string name="onboarding_migration_recovery_description">คุณสามารถลองอีกครั้งหรือดำเนินการต่อด้วยคลังเปล่า สำเนาฐานข้อมูลเดิมสำหรับกู้คืนจะยังอยู่ในอุปกรณ์นี้ คุณสามารถกู้คืนจากข้อมูลสำรองได้หลังตั้งค่าเสร็จ</string>
     <string name="onboarding_migration_failed">เตรียมคลังของคุณไม่ได้ ข้อมูลเดิมยังเก็บไว้อย่างปลอดภัย</string>
-    <string name="onboarding_library_migrated_description">เพลย์ลิสต์ ประวัติ เพลงที่ถูกใจ และข้อมูลคลังของคุณพร้อมใช้งานใน Metrolist เวอร์ชันนี้แล้ว</string>
+    <string name="onboarding_library_migrated_description">เพลย์ลิสต์ ประวัติ เพลงที่ถูกใจ และข้อมูลคลังของคุณพร้อมใช้งานใน Meld เวอร์ชันนี้แล้ว</string>
     <string name="onboarding_notifications_denied">การแจ้งเตือนถูกปิดอยู่ คุณสามารถเปิดได้ภายหลังในการตั้งค่าแอปของ Android หรือเลือก “ไม่” เพื่อดำเนินการต่อ</string>
     <string name="mini_player_video_prerequisite">เปิด “เล่นมิวสิกวิดีโอ” ในการตั้งค่าการเล่นก่อน</string>
     <string name="download_folder_access_failed">บันทึกสิทธิ์เข้าถึงโฟลเดอร์นี้ไม่ได้ เลือกโฟลเดอร์ที่อ่านและเขียนได้</string>
@@ -317,9 +317,9 @@
     <string name="updates_notification_settings">การตั้งค่าการแจ้งเตือนของ Android</string>
     <string name="widget_recognizer_open_result">เปิดเพลงที่ระบุได้</string>
     <string name="statistics_load_failed">รีเฟรชสถิติไม่ได้ ลองอีกครั้ง</string>
-    <string name="desktop_platform_unsupported">Metrolist ไม่รองรับระบบปฏิบัติการนี้ โปรดใช้ Windows 10 ขึ้นไป, macOS หรือดิสทริบิวชัน Linux ที่ไม่ใช่ Omarchy</string>
+    <string name="desktop_platform_unsupported">Meld ไม่รองรับระบบปฏิบัติการนี้ โปรดใช้ Windows 10 ขึ้นไป, macOS หรือดิสทริบิวชัน Linux ที่ไม่ใช่ Omarchy</string>
     <string name="shortcut_toggle_expanded">สลับการขยายเครื่องเล่น</string>
-    <string name="desktop_display_unavailable">Metrolist เชื่อมต่อกับจอแสดงผล X ของเซสชันนี้ไม่ได้ ให้เปิดจากเซสชันเดสก์ท็อปที่ตั้งค่า DISPLAY ไว้</string>
+    <string name="desktop_display_unavailable">Meld เชื่อมต่อกับจอแสดงผล X ของเซสชันนี้ไม่ได้ ให้เปิดจากเซสชันเดสก์ท็อปที่ตั้งค่า DISPLAY ไว้</string>
     <string name="webkit_install_hint">การลงชื่อเข้าใช้ในแอปต้องใช้ WebKitGTK 4.1 (%1$s) ติดตั้งผ่านตัวจัดการแพ็กเกจของระบบ</string>
     <string name="webkit_install_command">ติดตั้งด้วยคำสั่ง:\n%1$s</string>
     <string name="webkit_appimage_hint">รุ่น AppImage ก็ใช้ไลบรารี WebKitGTK ของระบบในการลงชื่อเข้าใช้เช่นกัน</string>
@@ -332,7 +332,7 @@
     <string name="video_stats_latency_value">%1$s มิลลิวินาที</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s เมกะไบต์ (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | ระดับเสียง: %2$s</string>
-    <string name="download_folder_unavailable">ใช้โฟลเดอร์นี้ไม่ได้ เลือกโฟลเดอร์ที่เขียนได้และระบบหรือแซนด์บ็อกซ์อนุญาตให้ Metrolist เข้าถึง</string>
+    <string name="download_folder_unavailable">ใช้โฟลเดอร์นี้ไม่ได้ เลือกโฟลเดอร์ที่เขียนได้และระบบหรือแซนด์บ็อกซ์อนุญาตให้ Meld เข้าถึง</string>
     <string name="window_maximize">ขยายใหญ่สุด</string>
     <string name="window_restore">คืนขนาดหน้าต่าง</string>
     <string name="equalizer_stream_unavailable">สตรีมนี้ใช้อีควอไลเซอร์และปรีแอมป์ไม่ได้ การเปลี่ยนแปลงจะมีผลเมื่อเล่นเพลงที่รองรับ</string>
@@ -345,7 +345,7 @@
     <string name="queue_youtube_history_paused_desc">เปิดประวัติการฟังอีกครั้งเพื่อเก็บข้อมูลการเล่นไว้ในคิวขณะออฟไลน์</string>
     <string name="search_online_failed">ค้นหาออนไลน์ไม่ได้ ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง</string>
     <string name="search_load_more_failed">โหลดผลลัพธ์เพิ่มเติมไม่ได้</string>
-    <string name="discord_error_gateway_configuration">Discord ปฏิเสธการตั้งค่าการเชื่อมต่อ อัปเดต Metrolist ก่อนลองอีกครั้ง</string>
+    <string name="discord_error_gateway_configuration">Discord ปฏิเสธการตั้งค่าการเชื่อมต่อ อัปเดต Meld ก่อนลองอีกครั้ง</string>
     <string name="discord_preview_buttons_adjusted">Discord ย่อข้อความบนปุ่มที่ยาวและละเว้นปุ่มที่มีลิงก์ยาวเกินไป ตัวอย่างนี้แสดงปุ่มที่จะส่ง</string>
     <string name="discord_presence_status_warning">สถานะกิจกรรมแบบละเอียดส่งสถานะออนไลน์ไปยัง Discord และอาจเปลี่ยนสถานะซ่อนตัวหรือห้ามรบกวน แม้หยุดเล่นแล้ว</string>
     <string name="discord_refresh_queued">เพิ่มคำขอรีเฟรชสถานะกิจกรรมในคิวแล้ว</string>
@@ -380,8 +380,8 @@
     <string name="theme_color_rose">ชมพู</string>
     <string name="theme_color_red">แดง</string>
     <string name="theme_color_gold">ทอง</string>
-    <string name="backup_unsupported_format">Metrolist เวอร์ชันนี้ไม่รองรับรูปแบบข้อมูลสำรองนี้</string>
-    <string name="backup_unsupported_database">Metrolist เวอร์ชันนี้ไม่รองรับเวอร์ชันฐานข้อมูลในข้อมูลสำรองนี้</string>
+    <string name="backup_unsupported_format">Meld เวอร์ชันนี้ไม่รองรับรูปแบบข้อมูลสำรองนี้</string>
+    <string name="backup_unsupported_database">Meld เวอร์ชันนี้ไม่รองรับเวอร์ชันฐานข้อมูลในข้อมูลสำรองนี้</string>
     <string name="backup_too_large">ข้อมูลสำรองมีขนาดหรือจำนวนรายการเกินขีดจำกัดที่รองรับ</string>
     <string name="backup_invalid_data">อ่านหรือตรวจสอบข้อมูลสำรองไม่ได้ ไฟล์อาจเสียหายหรือมีข้อมูลที่ไม่รองรับ</string>
     <string name="search_history_removal_failed">ล้างประวัติการค้นหาของบัญชีไม่ได้ โปรดลองอีกครั้งเมื่อเชื่อมต่อแล้ว</string>
@@ -392,10 +392,10 @@
     <string name="top_period_past_year">ปีที่ผ่านมา</string>
     <string name="onboarding_welcome_description">ตั้งค่าความเป็นส่วนตัวและสิทธิ์ของระบบก่อนฟังครั้งแรก</string>
     <string name="onboarding_migration_title">คลังจาก v13 ของคุณอยู่ที่นี่</string>
-    <string name="onboarding_migration_description">เราพบฐานข้อมูล Metrolist แบบแยก ย้ายเพลย์ลิสต์ ประวัติ เพลงที่ถูกใจ และข้อมูลคลังในตำแหน่งเดิมได้ คุณสามารถกู้คืนฐานข้อมูลต้นฉบับได้หากการย้ายล้มเหลว</string>
+    <string name="onboarding_migration_description">เราพบฐานข้อมูล Meld แบบแยก ย้ายเพลย์ลิสต์ ประวัติ เพลงที่ถูกใจ และข้อมูลคลังในตำแหน่งเดิมได้ คุณสามารถกู้คืนฐานข้อมูลต้นฉบับได้หากการย้ายล้มเหลว</string>
     <string name="onboarding_migration_complete_title">ย้ายบัญชีของคุณแล้ว</string>
-    <string name="onboarding_migration_complete_description">บัญชี เพลย์ลิสต์ ประวัติ เพลงที่ถูกใจ และข้อมูลคลังของคุณพร้อมใช้งานใน Metrolist เวอร์ชันนี้แล้ว</string>
-    <string name="onboarding_crash_reports_title">ช่วยปรับปรุง Metrolist</string>
+    <string name="onboarding_migration_complete_description">บัญชี เพลย์ลิสต์ ประวัติ เพลงที่ถูกใจ และข้อมูลคลังของคุณพร้อมใช้งานใน Meld เวอร์ชันนี้แล้ว</string>
+    <string name="onboarding_crash_reports_title">ช่วยปรับปรุง Meld</string>
     <string name="onboarding_crash_reports_description">เลือกแชร์ข้อมูลวินิจฉัยผ่าน Sentry เพื่อช่วยเราค้นหาและแก้ไขปัญหา คุณเปลี่ยนตัวเลือกนี้ได้ทุกเมื่อในการตั้งค่า</string>
     <string name="onboarding_notifications_title">อนุญาตการแจ้งเตือน</string>
     <string name="onboarding_notifications_description">เปิดการแจ้งเตือนสำหรับการเล่นและการดาวน์โหลด</string>
@@ -411,10 +411,10 @@
     <string name="onboarding_finish_title">พร้อมแล้ว</string>
     <string name="onboarding_finish_description">ตั้งค่าเสร็จแล้ว เริ่มฟังได้เลย หรือย้ายบัญชีและข้อมูลของคุณมาก่อน</string>
     <string name="onboarding_restore_backup">กู้คืนจากข้อมูลสำรอง</string>
-    <string name="onboarding_settings_hint">เปิดการตั้งค่าจากเมนูมุมขวาบนเพื่อปรับแต่ง Metrolist</string>
+    <string name="onboarding_settings_hint">เปิดการตั้งค่าจากเมนูมุมขวาบนเพื่อปรับแต่ง Meld</string>
     <string name="onboarding_no_saved_accounts">ไม่พบบัญชีที่เชื่อมโยง</string>
     <string name="onboarding_account_picture">รูปโปรไฟล์ของ %1$s</string>
-    <string name="onboarding_backup_picker_title">กู้คืนข้อมูลสำรอง Metrolist</string>
+    <string name="onboarding_backup_picker_title">กู้คืนข้อมูลสำรอง Meld</string>
     <string name="onboarding_backup_picker_error">เปิดหน้าต่างเลือกข้อมูลสำรองไม่ได้: %1$s</string>
     <string name="onboarding_backup_restore_failed">กู้คืนไม่สำเร็จ: %1$s</string>
     <string name="new_badge">ใหม่</string>
@@ -433,7 +433,7 @@
     <string name="settings_appearance_overview">ธีม แบบอักษร และรูปลักษณ์เครื่องเล่น</string>
     <string name="settings_android_auto_overview">เพลย์ลิสต์ในรถและปลายทางสำหรับเพิ่มเพลงด่วน</string>
     <string name="settings_about_overview">ผู้ร่วมพัฒนา ลิงก์ชุมชน และใบอนุญาต</string>
-    <string name="settings_supported_links_overview">เลือกลิงก์ YouTube ที่จะเปิดด้วย Metrolist</string>
+    <string name="settings_supported_links_overview">เลือกลิงก์ YouTube ที่จะเปิดด้วย Meld</string>
     <string name="settings_equalizer_overview">ค่าปรับเสียงสำเร็จรูป ย่านความถี่ และโปรไฟล์</string>
     <string name="settings_fonts_overview">การเลือกและนำเข้าแบบอักษร</string>
     <string name="settings_artwork_overview">ปกเคลื่อนไหว แหล่งรูปภาพ และคุณภาพวิดีโอ</string>
@@ -449,7 +449,7 @@
     <string name="settings_listen_together_overview">เซิร์ฟเวอร์ คำขอเข้าร่วม และเพลงที่แนะนำ</string>
     <string name="settings_device_connect_overview">อุปกรณ์ใกล้เคียง การจับคู่ และการเล่นจากระยะไกล</string>
     <string name="settings_release_overview">บันทึกประจำรุ่นและตัวเลือกการติดตั้ง</string>
-    <string name="settings_notification_access_summary">เลือกการแจ้งเตือนที่ Android อนุญาตให้ Metrolist ส่ง</string>
+    <string name="settings_notification_access_summary">เลือกการแจ้งเตือนที่ Android อนุญาตให้ Meld ส่ง</string>
     <string name="settings_crash_reports_summary">อ่านและแชร์รายงานแอปขัดข้องที่บันทึกไว้</string>
     <string name="settings_content_language_summary">ภาษาที่ใช้ค้นหาและแนะนำเพลงใน YouTube Music</string>
     <string name="settings_content_country_summary">ภูมิภาคสำหรับอันดับเพลงและคำแนะนำของ YouTube Music</string>
@@ -469,7 +469,7 @@
     <string name="settings_canvas_playback_summary">เล่นคลิปสั้นหรือมิวสิกวิดีโอเต็มเป็นพื้นหลังเครื่องเล่น</string>
     <string name="settings_normalization_summary">ปรับระดับเสียงระหว่างเพลงให้ใกล้เคียงกันเพื่อเลี่ยงความต่างมาก</string>
     <string name="settings_loudness_target_summary">ตั้งระดับเสียงเป้าหมายเมื่อเปิดการปรับระดับเสียงให้เท่ากัน</string>
-    <string name="settings_stop_on_close_summary">หยุดเล่นเมื่อนำ Metrolist ออกจากรายการแอปล่าสุด</string>
+    <string name="settings_stop_on_close_summary">หยุดเล่นเมื่อนำ Meld ออกจากรายการแอปล่าสุด</string>
     <string name="settings_screen_awake_summary">เลือกว่าจะให้เครื่องเล่นหรือเนื้อเพลงคงหน้าจอเปิดอยู่หรือไม่</string>
     <string name="settings_translation_mode_summary">แปลคำหรือถอดเสียงเป็นระบบอักษรของภาษาปลายทาง</string>
     <string name="settings_translation_provider_summary">เลือกบริการที่ใช้แปลเนื้อเพลง</string>
@@ -489,7 +489,7 @@
     <string name="settings_reset_download_folder_summary">ใช้โฟลเดอร์เริ่มต้นสำหรับเพลงที่ดาวน์โหลด</string>
     <string name="settings_diagnostic_logs_summary">อ่านและคัดลอกบันทึกการวินิจฉัยของแอป</string>
     <string name="settings_log_directory_summary">เรียกดูไฟล์บันทึกที่เก็บไว้ในตัวจัดการไฟล์</string>
-    <string name="settings_check_releases_summary">ตรวจหา Metrolist รุ่นใหม่กว่าบน GitHub</string>
+    <string name="settings_check_releases_summary">ตรวจหา Meld รุ่นใหม่กว่าบน GitHub</string>
     <string name="settings_share_apk_summary">แชร์แพ็กเกจแอปที่ติดตั้งแล้วเป็นไฟล์</string>
     <string name="settings_system_font_summary">ใช้แบบอักษรที่ระบบปฏิบัติการจัดเตรียมไว้</string>
     <string name="settings_thumbnail_shape_summary">เลือกรูปร่างของปกในเครื่องเล่นที่ขยายแล้ว</string>

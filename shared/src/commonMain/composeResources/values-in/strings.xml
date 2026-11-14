@@ -236,18 +236,18 @@
     <string name="open_github_profile">Buka profil GitHub</string>
     <string name="sponsor_developer">Sponsor pengembang</string>
     <string name="credits_license_name">Lisensi</string>
-    <string name="credits_license_desc">Metrolist dilisensi di bawah GPL-3.0</string>
+    <string name="credits_license_desc">Meld dilisensi di bawah GPL-3.0</string>
     <string name="devmode_already_active" translatable="true">Mode pengembang sudah aktif</string>
     <string name="discord_enable_rich_presence">Discord Rich Presence</string>
     <string name="discord_login_description">Hubungkan akun Discord Anda</string>
     <string name="discord_state">Status</string>
     <string name="discord_button1_text_default">Dengarkan di YouTube Music</string>
-    <string name="discord_button2_text_default">Kunjungi Metrolist</string>
+    <string name="discord_button2_text_default">Kunjungi Meld</string>
     <string name="discord_status_authorizing">Mengotorisasi…</string>
     <string name="discord_status_not_initialized">Tidak terinisialisasi</string>
     <string name="discord_status_authorized">Terotorisasi</string>
     <string name="discord_error_denied">Otorisasi ditolak oleh Discord.</string>
-    <string name="discord_error_connection_failed">Tidak dapat terhubung ke Discord. Metrolist akan mencoba lagi secara otomatis.</string>
+    <string name="discord_error_connection_failed">Tidak dapat terhubung ke Discord. Meld akan mencoba lagi secara otomatis.</string>
     <string name="discord_error_no_browser">Tidak ada aplikasi tersedia untuk membuka otorisasi Discord.</string>
     <string name="discord_error_token_exchange_failed">Pertukaran token gagal. Coba lagi.</string>
     <string name="discord_error_token_refresh_failed">Pembaruan token gagal. Masuk ulang.</string>
@@ -276,8 +276,8 @@
     <string name="settings_application_about">Aplikasi &amp; tentang</string>
     <string name="settings_open_supported_links_title">Buka tautan yang didukung</string>
     <string name="settings_updates_title">Pembaruan</string>
-    <string name="settings_updates_available_description">Pembaruan baru Metrolist tersedia</string>
-    <string name="settings_about_title">Tentang Metrolist</string>
+    <string name="settings_updates_available_description">Pembaruan baru Meld tersedia</string>
+    <string name="settings_about_title">Tentang Meld</string>
     <string name="settings_search_placeholder">Cari pengaturan</string>
     <string name="settings_search_no_results">Tidak ada pengaturan yang ditemukan</string>
     <string name="settings_search_no_results_desc">Tidak menemukan kecocokan untuk %1$s</string>
@@ -298,7 +298,7 @@
     <string name="app_icon_original">Asli</string>
     <string name="app_icon_static">Statis</string>
     <string name="app_font_choose">Pilih file font</string>
-    <string name="app_font_picker_desc">Pilih file TTF atau OTF. Metrolist akan menyalinnya ke penyimpanan aplikasi pribadi.</string>
+    <string name="app_font_picker_desc">Pilih file TTF atau OTF. Meld akan menyalinnya ke penyimpanan aplikasi pribadi.</string>
     <string name="app_font_system">Bawaan sistem</string>
     <string name="app_font_applied">Menggunakan %1$s</string>
     <string name="app_font_invalid">Tidak dapat menggunakan font tersebut. Pilih TTF atau OTF yang valid dengan ukuran dibawah 20 MB.</string>
@@ -388,7 +388,7 @@
     <string name="backup_restore_title">Cadangkan dan impor</string>
     <string name="spotify_sign_in">Masuk ke Spotify</string>
     <string name="spotify_sign_in_again">Masuk kembali</string>
-    <string name="spotify_choose_playlists_supporting">Pilih playlist yang ingin Anda impor ke Metrolist.</string>
+    <string name="spotify_choose_playlists_supporting">Pilih playlist yang ingin Anda impor ke Meld.</string>
     <plurals name="spotify_selected_playlist_count">
         <item quantity="other">%1$d playlist dipilih</item>
     </plurals>
@@ -411,9 +411,9 @@
         <item quantity="other">%1$d lagu diimpor</item>
     </plurals>
     <string name="backup_restore_export_desc">Ekspor pengaturan, database koleksi, playlist, lagu yang disukai, dan riwayat ke file zip</string>
-    <string name="backup_restore_import_desc">Pulihkan cadangan Metrolist. Aplikasi akan dimulai ulang setelah pemulihan berhasil.</string>
+    <string name="backup_restore_import_desc">Pulihkan cadangan Meld. Aplikasi akan dimulai ulang setelah pemulihan berhasil.</string>
     <string name="backup_sensitive_title">Cadangan sensitif</string>
-    <string name="restore_in_progress">Memulihkan cadangan Anda…\nMetrolist akan dimuat ulang secara otomatis.</string>
+    <string name="restore_in_progress">Memulihkan cadangan Anda…\nMeld akan dimuat ulang secara otomatis.</string>
     <string name="scrobble_tap_to_disconnect">Tekan untuk memutuskan sambungan</string>
     <string name="scrobble_enable">Scrobbling</string>
     <string name="scrobble_now_playing">Pembaruan sedang diputar</string>
@@ -430,7 +430,7 @@
     <string name="listenbrainz_now_playing_description">Tampilkan lagu yang sedang diputar di ListenBrainz</string>
     <string name="listenbrainz_connect_title">Hubungkan ListenBrainz</string>
     <string name="listenbrainz_user_token">Token pengguna</string>
-    <string name="restore_database_incompatible">Cadangan ini menggunakan versi database %1$d, tetapi aplikasi ini hanya mendukung hingga versi %2$d. Perbarui Metrolist dan coba lagi.</string>
+    <string name="restore_database_incompatible">Cadangan ini menggunakan versi database %1$d, tetapi aplikasi ini hanya mendukung hingga versi %2$d. Perbarui Meld dan coba lagi.</string>
     <string name="restore_failed_detail">Tidak dapat memulihkan cadangan pada tahap %1$s\n\nAlasan: %2$s</string>
     <string name="restore_error_unknown">Tidak ada detail tambahan yang tersedia.</string>
     <string name="restore_stage_reading_backup">Membaca file cadangan</string>
@@ -484,34 +484,34 @@
     <string name="updates_title">Pembaruan aplikasi</string>
     <string name="updates_check">Cek pembaruan</string>
     <string name="updates_checking">Memeriksa pembaruan…</string>
-    <string name="updates_no_updates">Metrolist sudah terbaru</string>
+    <string name="updates_no_updates">Meld sudah terbaru</string>
     <string name="updates_error">Gagal memeriksa pembaruan</string>
-    <string name="updates_status_current">Diperbarui ke Metrolist %1$s</string>
+    <string name="updates_status_current">Diperbarui ke Meld %1$s</string>
     <string name="updates_auto_check">Otomatis memeriksa pembaruan</string>
     <string name="updates_notifications">Notifikasi pembaruan</string>
     <string name="updates_changelogs">Catatan perubahan</string>
     <string name="updates_last_check">Pemeriksaan pembaruan terakhir yang berhasil</string>
     <string name="updates_pending_title">Pembaruan tertunda</string>
-    <string name="updates_version">Versi Metrolist</string>
+    <string name="updates_version">Versi Meld</string>
     <string name="updates_size">Ukuran pembaruan</string>
     <string name="updates_date">Tanggal</string>
     <string name="updates_changelog">Catatan perubahan</string>
     <string name="updates_install">Instal</string>
     <string name="updates_retry">Coba lagi</string>
-    <string name="updates_available_title">Metrolist %1$s tersedia</string>
+    <string name="updates_available_title">Meld %1$s tersedia</string>
     <string name="updates_available_message">Tekan Perbarui untuk mengunduh pembaruan dan melanjutkan ke Android installer.</string>
     <string name="updates_changelog_preview">Apa yang baru</string>
     <string name="updates_pending_parenthetical">(pembaruan tertunda)</string>
     <string name="update_pending">Pembaruan tertunda</string>
     <string name="updates_action">Perbarui</string>
-    <string name="updates_notification_title">Metrolist %1$s siap</string>
+    <string name="updates_notification_title">Meld %1$s siap</string>
     <string name="updates_notification_text">Tekan untuk mengunduh dan instal pembaruan</string>
     <string name="updates_channel_name">Pembaruan aplikasi</string>
-    <string name="updates_channel_description">Notifikasi tentang versi baru Metrolist</string>
+    <string name="updates_channel_description">Notifikasi tentang versi baru Meld</string>
     <string name="updates_download_failed">Pembaruan tidak dapat diunduh.</string>
     <string name="updates_digest_failed">Pembaruan yang diunduh tidak cocok dengan checksum GitHub.</string>
     <string name="updates_installer_failed">Android installer tidak tersedia atau instalasi aplikasi dibatasi pada perangkat ini.</string>
-    <string name="updates_release_notes_title">Apa yang baru di Metrolist %1$s</string>
+    <string name="updates_release_notes_title">Apa yang baru di Meld %1$s</string>
     <string name="device_connect_beta">Beta</string>
     <string name="device_connect_enable">Aktifkan</string>
     <string name="copy_logs">Salin log</string>
@@ -522,7 +522,7 @@
     <string name="device_connect_account_mismatch">Beda akun</string>
     <string name="device_connect_permission_needed">Izin jaringan lokal diperlukan untuk menemukan dan menghubungkan ke perangkat.</string>
     <string name="device_connect_grant_permission">Berikan izin</string>
-    <string name="side_menu_welcome">Selamat datang di Metrolist</string>
+    <string name="side_menu_welcome">Selamat datang di Meld</string>
     <string name="action_cannot_be_undone">Aksi ini tidak dapat dikembalikan.</string>
     <string name="add">Tambah</string>
     <string name="add_a_song">Tambahkan lagu</string>
@@ -925,7 +925,7 @@
     <string name="import_error_no_tracks_to_import">Tidak ada lagu untuk diimpor</string>
     <string name="import_error_generic">Impor gagal</string>
     <string name="import_source_youtube_music">YouTube Music</string>
-    <string name="startup_error_title">Kesalahan saat memulai Metrolist</string>
+    <string name="startup_error_title">Kesalahan saat memulai Meld</string>
     <string name="subtitles">Subtitle</string>
     <string name="open_miniplayer">Buka pemutar mini</string>
     <string name="active">Aktif</string>
@@ -1033,12 +1033,12 @@
         <item quantity="other">%1$d lagu</item>
     </plurals>
     <string name="app_data">Data aplikasi</string>
-    <string name="backup_picker_title">Pulihkan cadangan Metrolist</string>
-    <string name="create_backup_dialog_title">Buat cadangan Metrolist</string>
+    <string name="backup_picker_title">Pulihkan cadangan Meld</string>
+    <string name="create_backup_dialog_title">Buat cadangan Meld</string>
     <string name="backup_created">Cadangan dibuat</string>
     <string name="backup_failed">Gagal mencadangkan: %1$s</string>
     <string name="could_not_open_file_picker">Tidak dapat membuka pemilih file: %1$s</string>
-    <string name="restore_replaces_data">Tindakan ini akan mengganti pengaturan, kredensial, akun, dan data koleksi. Metrolist akan mulai ulang secara otomatis.</string>
+    <string name="restore_replaces_data">Tindakan ini akan mengganti pengaturan, kredensial, akun, dan data koleksi. Meld akan mulai ulang secara otomatis.</string>
     <string name="create_backup_countdown">Membuat cadangan (%1$d)</string>
     <string name="approve">Setujui</string>
     <string name="reject">Tolak</string>
@@ -1169,7 +1169,7 @@
     <string name="sensitive_backup">Cadangan sensitif</string>
     <string name="restore_backup_confirm">Pulihkan cadangan?</string>
     <string name="restore">Pulihkan</string>
-    <string name="restoring_backup">Memulihkan cadangan Anda…\nMetrolist akan memuat ulang sendirinya.</string>
+    <string name="restoring_backup">Memulihkan cadangan Anda…\nMeld akan memuat ulang sendirinya.</string>
     <string name="settings_layout_canvas">Kanvas</string>
     <string name="spotify_import_error_sign_in_failed">Gagal masuk ke Spotify.</string>
     <plurals name="spotify_import_skipped_playlists">
@@ -1181,13 +1181,13 @@
     <string name="privacy_policy">Baca kebijakan privasi kami</string>
     <string name="log_in">Masuk</string>
     <string name="restore_from_backup">Pulihkan dari cadangan</string>
-    <string name="onboarding_backup_picker_title">Pulihkan cadangan Metrolist</string>
+    <string name="onboarding_backup_picker_title">Pulihkan cadangan Meld</string>
     <string name="onboarding_backup_picker_error">Tidak dapat membuka pemilih cadangan: %1$s</string>
     <string name="onboarding_backup_restore_failed">Pemulihan gagal: %1$s</string>
     <string name="tray_by">oleh %1$s</string>
     <string name="top_playlist_title">100 teratas saya</string>
     <string name="thumbnail">Thumbnail</string>
-    <string name="tap_to_play">Tekan untuk membuka Metrolist</string>
+    <string name="tap_to_play">Tekan untuk membuka Meld</string>
     <string name="views">Penonton</string>
     <string name="clear_collection_confirm">Hapus %1$s?</string>
     <string name="confirm_clear_collection">Semua audio yang disimpan di koleksi ini akan dihapus.</string>
@@ -1231,7 +1231,7 @@
     <string name="menu_keyboard_shortcuts">Pintasan keyboard</string>
     <string name="menu_application_logs">Log aplikasi</string>
     <string name="menu_report_issue">Laporkan masalah…</string>
-    <string name="menu_about_metrolist">Tentang Metrolist</string>
+    <string name="menu_about_metrolist">Tentang Meld</string>
     <string name="menu_song">Lagu</string>
     <string name="menu_back">Kembali</string>
     <string name="menu_new_playlist">Playlist baru</string>
@@ -1281,7 +1281,7 @@
     <string name="tray_show_window">Tampilkan jendela</string>
     <string name="tray_show_miniplayer">Tampilkan pemutar mini</string>
     <string name="tray_settings">Pengaturan</string>
-    <string name="tray_quit_metrolist">Keluar Metrolist</string>
+    <string name="tray_quit_metrolist">Keluar Meld</string>
     <string name="sign_in_discord">Masuk ke Discord</string>
     <string name="openrouter_auth_instruction">Tempel kode otorisasi yang ditampilkan OpenRouter di peramban Anda.</string>
     <string name="openrouter_auth_code">Kode otorisasi</string>
@@ -1316,7 +1316,7 @@
     <string name="available_devices">Perangkat tersedia</string>
     <string name="no_device_connected">Tidak ada perangkat terhubung</string>
     <string name="no_device_found">Tidak ditemukan perangkat</string>
-    <string name="no_compatible_devices">Tidak ditemukan perangkat yang kompatibel dengan Google Cast, FCast, DLNA, atau Metrolist.</string>
+    <string name="no_compatible_devices">Tidak ditemukan perangkat yang kompatibel dengan Google Cast, FCast, DLNA, atau Meld.</string>
     <string name="show_player_cast_button">Tombol cast</string>
     <string name="show_player_video_button">Pemilih audio/video</string>
     <string name="onboarding_language_lyrics_description">Pilih bahasa aplikasi dan cara menampilkan lirik.</string>
@@ -1414,7 +1414,7 @@
     <string name="history_playlist_weekly">Lagu Teratas Mingguan</string>
     <string name="history_playlist_monthly">Lagu Teratas Bulanan</string>
     <string name="queue_youtube_history_when_offline_desc">Simpan laporan pemutaran di perangkat ini dan coba lagi setelah terhubung kembali saat aplikasi berjalan. Riwayat yang sedang dijeda tidak akan dicatat</string>
-    <string name="discord_listen_to_metrolist">Dengarkan Metrolist</string>
+    <string name="discord_listen_to_metrolist">Dengarkan Meld</string>
     <string name="app_icon_zenith_black">Zenith Black</string>
     <string name="app_icon_zenith_white">Zenith White</string>
     <string name="mysterious_fourth_tab">Tab keempat yang misterius</string>
@@ -1493,7 +1493,7 @@
     <string name="onboarding_step_of">Langkah %1$d dari %2$d</string>
     <string name="onboarding_finish_title">Anda sudah siap</string>
     <string name="onboarding_finish_description">Penyiapan selesai. Mulai mendengarkan, atau bawa akun dan data Anda terlebih dahulu.</string>
-    <string name="onboarding_settings_hint">Buka Pengaturan di menu sudut kanan atas untuk menyesuaikan Metrolist.</string>
+    <string name="onboarding_settings_hint">Buka Pengaturan di menu sudut kanan atas untuk menyesuaikan Meld.</string>
     <string name="onboarding_no_saved_accounts">Tidak ada akun terhubung yang ditemukan.</string>
     <string name="cached_audio">Audio ter-cache</string>
     <string name="shortcut_toggle_fullscreen_video">Video layar penuh</string>
@@ -1525,7 +1525,7 @@
     <string name="no_match_found">Tidak ada kecocokan</string>
     <string name="recognition_error">Kesalahan pengenalan</string>
     <string name="try_again">Coba lagi</string>
-    <string name="play_on_app">Putar di Metrolist</string>
+    <string name="play_on_app">Putar di Meld</string>
     <string name="re_listen">Dengarkan lagi</string>
     <string name="stands_with_palestine">Proyek ini mendukung Palestina</string>
     <string name="mini_player_subscribe_artist">Berlangganan artis</string>
@@ -1572,7 +1572,7 @@
     <string name="onboarding_continue_without_migration">Lanjutkan dengan koleksi kosong</string>
     <string name="onboarding_migration_recovery_description">Anda dapat mencoba lagi atau melanjutkan dengan koleksi kosong. Salinan pemulihan basis data asli akan tetap tersimpan di perangkat ini. Anda dapat memulihkan cadangan setelah penyiapan.</string>
     <string name="onboarding_migration_failed">Tidak dapat menyiapkan koleksi Anda. Data asli Anda tetap tersimpan.</string>
-    <string name="onboarding_library_migrated_description">Playlist, riwayat, lagu yang disukai, dan data koleksi Anda sudah siap di versi Metrolist ini.</string>
+    <string name="onboarding_library_migrated_description">Playlist, riwayat, lagu yang disukai, dan data koleksi Anda sudah siap di versi Meld ini.</string>
     <string name="onboarding_notifications_denied">Notifikasi dinonaktifkan. Anda dapat mengaktifkannya nanti di setelan aplikasi Android, atau pilih Tidak untuk melanjutkan.</string>
     <string name="mini_player_video_prerequisite">Aktifkan Putar video musik di setelan Pemutaran terlebih dahulu</string>
     <string name="download_folder_access_failed">Izin akses ke folder ini tidak dapat disimpan. Pilih folder dengan akses baca dan tulis.</string>
@@ -1597,9 +1597,9 @@
     <string name="updates_notification_settings">Setelan notifikasi Android</string>
     <string name="widget_recognizer_open_result">Buka lagu yang dikenali</string>
     <string name="statistics_load_failed">Tidak dapat memperbarui statistik. Coba lagi.</string>
-    <string name="desktop_platform_unsupported">Sistem operasi ini tidak didukung oleh Metrolist. Gunakan Windows 10 atau yang lebih baru, macOS, atau distribusi Linux selain Omarchy.</string>
+    <string name="desktop_platform_unsupported">Sistem operasi ini tidak didukung oleh Meld. Gunakan Windows 10 atau yang lebih baru, macOS, atau distribusi Linux selain Omarchy.</string>
     <string name="shortcut_toggle_expanded">Perluas atau ciutkan pemutar</string>
-    <string name="desktop_display_unavailable">Metrolist tidak dapat terhubung ke tampilan X sesi ini. Jalankan dari sesi desktop Anda dengan variabel DISPLAY yang sudah diatur.</string>
+    <string name="desktop_display_unavailable">Meld tidak dapat terhubung ke tampilan X sesi ini. Jalankan dari sesi desktop Anda dengan variabel DISPLAY yang sudah diatur.</string>
     <string name="webkit_install_hint">Login bawaan memerlukan WebKitGTK 4.1 (%1$s). Instal menggunakan pengelola paket sistem Anda.</string>
     <string name="webkit_install_command">Instal dengan:\n%1$s</string>
     <string name="webkit_appimage_hint">Versi AppImage juga menggunakan pustaka WebKitGTK sistem untuk login.</string>
@@ -1612,7 +1612,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Volume: %2$s</string>
-    <string name="download_folder_unavailable">Folder ini tidak dapat digunakan. Pilih folder yang dapat ditulisi dan diizinkan oleh sistem atau lingkungan terisolasi untuk diakses Metrolist.</string>
+    <string name="download_folder_unavailable">Folder ini tidak dapat digunakan. Pilih folder yang dapat ditulisi dan diizinkan oleh sistem atau lingkungan terisolasi untuk diakses Meld.</string>
     <string name="window_maximize">Maksimalkan</string>
     <string name="window_restore">Pulihkan ukuran jendela</string>
     <string name="equalizer_stream_unavailable">Equalizer dan preamp tidak tersedia untuk aliran ini. Perubahan diterapkan saat lagu yang didukung diputar.</string>
@@ -1625,7 +1625,7 @@
     <string name="queue_youtube_history_paused_desc">Lanjutkan pencatatan riwayat mendengarkan untuk mengantrekan catatan pemutaran saat offline</string>
     <string name="search_online_failed">Tidak dapat mencari secara online. Periksa koneksi Anda dan coba lagi.</string>
     <string name="search_load_more_failed">Tidak dapat memuat hasil lainnya.</string>
-    <string name="discord_error_gateway_configuration">Discord menolak konfigurasi koneksi. Perbarui Metrolist sebelum mencoba lagi.</string>
+    <string name="discord_error_gateway_configuration">Discord menolak konfigurasi koneksi. Perbarui Meld sebelum mencoba lagi.</string>
     <string name="discord_preview_buttons_adjusted">Discord mempersingkat label tombol yang panjang dan menghilangkan tombol dengan tautan yang terlalu panjang. Pratinjau ini menampilkan tombol yang akan dikirim.</string>
     <string name="discord_presence_status_warning">Fitur rich presence mengirim status Online ke Discord. Status ini dapat menimpa Tak Terlihat atau Jangan Ganggu, bahkan saat pemutaran berhenti.</string>
     <string name="discord_refresh_queued">Pembaruan status aktivitas diantrekan.</string>
@@ -1660,8 +1660,8 @@
     <string name="theme_color_rose">Merah muda</string>
     <string name="theme_color_red">Merah</string>
     <string name="theme_color_gold">Emas</string>
-    <string name="backup_unsupported_format">Format cadangan ini tidak didukung oleh versi Metrolist ini.</string>
-    <string name="backup_unsupported_database">Versi basis data dalam cadangan ini tidak didukung oleh versi Metrolist ini.</string>
+    <string name="backup_unsupported_format">Format cadangan ini tidak didukung oleh versi Meld ini.</string>
+    <string name="backup_unsupported_database">Versi basis data dalam cadangan ini tidak didukung oleh versi Meld ini.</string>
     <string name="backup_too_large">Cadangan melebihi batas ukuran atau jumlah entri yang didukung.</string>
     <string name="backup_invalid_data">Cadangan tidak dapat dibaca atau divalidasi. Cadangan mungkin rusak atau berisi data yang tidak didukung.</string>
     <string name="search_history_removal_failed">Tidak dapat menghapus riwayat penelusuran akun. Silakan coba lagi saat terhubung.</string>
@@ -1672,10 +1672,10 @@
     <string name="top_period_past_year">Setahun terakhir</string>
     <string name="onboarding_welcome_description">Atur privasi dan izin sistem sebelum mendengarkan untuk pertama kali.</string>
     <string name="onboarding_migration_title">Koleksi v13 Anda ada di sini</string>
-    <string name="onboarding_migration_description">Kami menemukan database Metrolist mandiri. Migrasikan playlist, riwayat mendengarkan, lagu yang disukai, dan data koleksi di tempat. Anda dapat memulihkan database asli jika migrasi gagal.</string>
+    <string name="onboarding_migration_description">Kami menemukan database Meld mandiri. Migrasikan playlist, riwayat mendengarkan, lagu yang disukai, dan data koleksi di tempat. Anda dapat memulihkan database asli jika migrasi gagal.</string>
     <string name="onboarding_migration_complete_title">Akun Anda telah dimigrasikan</string>
-    <string name="onboarding_migration_complete_description">Akun, playlist, riwayat mendengarkan, lagu yang disukai, dan data koleksi Anda sudah siap di versi Metrolist ini.</string>
-    <string name="onboarding_crash_reports_title">Bantu tingkatkan Metrolist</string>
+    <string name="onboarding_migration_complete_description">Akun, playlist, riwayat mendengarkan, lagu yang disukai, dan data koleksi Anda sudah siap di versi Meld ini.</string>
+    <string name="onboarding_crash_reports_title">Bantu tingkatkan Meld</string>
     <string name="onboarding_crash_reports_description">Bagikan diagnostik opsional melalui Sentry untuk membantu kami menemukan dan memperbaiki masalah. Anda dapat mengubahnya kapan saja di Pengaturan.</string>
     <string name="onboarding_notifications_title">Izinkan notifikasi</string>
     <string name="onboarding_notifications_description">Aktifkan notifikasi untuk pemutaran dan unduhan.</string>
@@ -2164,7 +2164,7 @@
     <string name="charts">Grafik</string>
     <string name="recap_playlists">Rekap playlist</string>
     <string name="settings_default">Default</string>
-    <string name="equalizer_usage_warning">Tim Metrolist tidak bertanggung jawab atas penggunaan MetroEQ oleh Anda.</string>
+    <string name="equalizer_usage_warning">Tim Meld tidak bertanggung jawab atas penggunaan MetroEQ oleh Anda.</string>
     <string name="login">Masuk</string>
     <string name="app_version">Versi aplikasi</string>
     <string name="yeah">Yeah!</string>
@@ -2340,7 +2340,7 @@
     <string name="settings_appearance_overview">Tema, font, dan tampilan pemutar</string>
     <string name="settings_android_auto_overview">Playlist di mobil dan tujuan tambah cepat</string>
     <string name="settings_about_overview">Kontributor, tautan komunitas, dan lisensi</string>
-    <string name="settings_supported_links_overview">Pilih tautan YouTube yang dibuka di Metrolist</string>
+    <string name="settings_supported_links_overview">Pilih tautan YouTube yang dibuka di Meld</string>
     <string name="settings_equalizer_overview">Preset suara, pita frekuensi, dan profil</string>
     <string name="settings_fonts_overview">Pemilihan dan impor font</string>
     <string name="settings_artwork_overview">Sampul animasi, sumber artwork, dan kualitas video</string>
@@ -2356,7 +2356,7 @@
     <string name="settings_listen_together_overview">Server, permintaan bergabung, dan saran lagu</string>
     <string name="settings_device_connect_overview">Perangkat terdekat, penyandingan, dan pemutaran jarak jauh</string>
     <string name="settings_release_overview">Catatan rilis dan opsi pemasangan</string>
-    <string name="settings_notification_access_summary">Pilih notifikasi yang diizinkan Android untuk Metrolist</string>
+    <string name="settings_notification_access_summary">Pilih notifikasi yang diizinkan Android untuk Meld</string>
     <string name="settings_crash_reports_summary">Baca dan bagikan laporan kerusakan yang tersimpan</string>
     <string name="settings_content_language_summary">Bahasa pencarian dan rekomendasi YouTube Music</string>
     <string name="settings_content_country_summary">Wilayah digunakan untuk tangga lagu dan rekomendasi YouTube Music</string>
@@ -2376,7 +2376,7 @@
     <string name="settings_canvas_playback_summary">Putar klip pendek atau seluruh video musik di belakang pemutar</string>
     <string name="settings_normalization_summary">Seimbangkan volume antar lagu agar tidak berbeda jauh</string>
     <string name="settings_loudness_target_summary">Atur volume sasaran saat normalisasi audio aktif</string>
-    <string name="settings_stop_on_close_summary">Hentikan pemutaran saat Metrolist disingkirkan dari aplikasi terbaru</string>
+    <string name="settings_stop_on_close_summary">Hentikan pemutaran saat Meld disingkirkan dari aplikasi terbaru</string>
     <string name="settings_screen_awake_summary">Pilih apakah pemutar atau lirik membuat layar tetap menyala</string>
     <string name="settings_translation_mode_summary">Terjemahkan kata atau tulis pelafalannya dalam sistem tulisan tujuan</string>
     <string name="settings_translation_provider_summary">Pilih layanan yang menerjemahkan lirik</string>
@@ -2396,7 +2396,7 @@
     <string name="settings_reset_download_folder_summary">Gunakan folder default untuk lagu yang diunduh</string>
     <string name="settings_diagnostic_logs_summary">Baca dan salin log diagnostik aplikasi</string>
     <string name="settings_log_directory_summary">Jelajahi file log tersimpan melalui pengelola file</string>
-    <string name="settings_check_releases_summary">Periksa versi Metrolist yang lebih baru di GitHub</string>
+    <string name="settings_check_releases_summary">Periksa versi Meld yang lebih baru di GitHub</string>
     <string name="settings_share_apk_summary">Bagikan paket aplikasi yang terpasang sebagai file</string>
     <string name="settings_system_font_summary">Gunakan font yang disediakan sistem operasi</string>
     <string name="settings_thumbnail_shape_summary">Pilih bentuk sampul di pemutar yang diperluas</string>
@@ -2444,7 +2444,7 @@
     <string name="ai_setup_description">Buat akun OpenRouter, masuk dan pilih model gratis.</string>
     <string name="ai_setup_step">Langkah %1$d dari %2$d</string>
     <string name="ai_setup_account">Buat akun OpenRouter</string>
-    <string name="ai_setup_account_description">OpenRouter menghubungkan Metrolist dengan model AI untuk menerjemahkan lirik.</string>
+    <string name="ai_setup_account_description">OpenRouter menghubungkan Meld dengan model AI untuk menerjemahkan lirik.</string>
     <string name="ai_setup_limits">Model gratis mengizinkan permintaan hingga %1$d per menit dan %2$d per hari, atau %4$d per hari setelah membeli setidaknya %3$d kredit.</string>
     <string name="ai_setup_create_account">Buat akun</string>
     <string name="ai_setup_view_limits">Cek limit saat ini</string>
@@ -2456,7 +2456,7 @@
     <string name="listen_together_server_name">Nama server</string>
     <string name="listen_together_edit_server">Edit detail server</string>
     <string name="switch_to_audio">Ganti ke audio</string>
-    <string name="discord_continue_in_browser">Lanjutkan login ke Discord di browser Anda. Kembali ke Metrolist jika Anda selesai.</string>
+    <string name="discord_continue_in_browser">Lanjutkan login ke Discord di browser Anda. Kembali ke Meld jika Anda selesai.</string>
     <string name="discord_open_browser_again">Buka lagi</string>
     <string name="discord_browser_open_failed">Browser tidak dapat dibuka. Coba buka ulang.</string>
     <string name="channel_switch_recovery_hint">Tidak dapat memuat saluran YouTube Anda. Login ulang untuk memuat ulang sesi Anda, lalu pilih saluran.</string>

@@ -617,10 +617,10 @@ private fun startupRuntimeAvailable(): Boolean {
         if (error !is Exception && error !is LinkageError) throw error
         val location = System.getProperty("java.io.tmpdir")
         val message =
-            "Metrolist cannot initialize its native runtime or temporary storage.\n\n" +
+            "Meld cannot initialize its native runtime or temporary storage.\n\n" +
                 "Location: $location\n" +
                 "Error: ${error.message ?: error::class.simpleName}\n\n" +
-                "Free disk space or adjust the temporary directory, then restart Metrolist."
+                "Free disk space or adjust the temporary directory, then restart Meld."
         System.err.println(message)
         error.printStackTrace(System.err)
         if (!GraphicsEnvironment.isHeadless()) {
@@ -628,7 +628,7 @@ private fun startupRuntimeAvailable(): Boolean {
                 JOptionPane.showMessageDialog(
                     null,
                     message,
-                    "Metrolist startup error",
+                    "Meld startup error",
                     JOptionPane.ERROR_MESSAGE,
                 )
             }
@@ -1193,7 +1193,7 @@ private fun runDesktopApp(args: Array<String>) {
             onCloseRequest = {
                 shutdownApp { exitProcess(0) }
             },
-            title = if (BuildConfig.DEBUG) "Metrolist Debug" else "Metrolist",
+            title = if (BuildConfig.DEBUG) "Meld Debug" else "Meld",
             state = windowState,
             undecorated = isLinux && !useSystemWindowFrame,
             transparent = false,

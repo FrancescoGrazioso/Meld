@@ -248,7 +248,7 @@
     <string name="credits_license_name">Licenca</string>
     <string name="discord_rich_presence">Bogata prisutnost</string>
     <string name="discord_state">Status</string>
-    <string name="discord_button2_text_default">Poseti Metrolist</string>
+    <string name="discord_button2_text_default">Poseti Meld</string>
     <string name="discord_status_authorizing">Autorizuje se…</string>
     <string name="discord_status_not_initialized">Nije inicijalizovano</string>
     <string name="discord_status_authorized">Autorizovano</string>
@@ -258,7 +258,7 @@
     <string name="settings_playback">Reprodukcija</string>
     <string name="settings_content_title">Sadržaj</string>
     <string name="settings_updates_title">Ažuriranja</string>
-    <string name="settings_about_title">O Metrolist-u</string>
+    <string name="settings_about_title">O Meld-u</string>
     <string name="settings_search_placeholder">Pretraži podešavanja</string>
     <string name="back">Nazad</string>
     <string name="appearance_title">Izgled</string>
@@ -369,7 +369,7 @@
     <string name="updates_title">Ažuriranje aplikacije</string>
     <string name="updates_changelogs">Dnevnici promena</string>
     <string name="updates_pending_title">Ažuriranje na čekanju</string>
-    <string name="updates_version">Verzija Metrolist-a</string>
+    <string name="updates_version">Verzija Meld-a</string>
     <string name="updates_size">Veličina ažuriranja</string>
     <string name="updates_date">Datum</string>
     <string name="updates_changelog">Dnevnik promena</string>
@@ -833,7 +833,7 @@
     <string name="device_connect_available">Dostupno</string>
     <string name="credits_creator">Kreator Metrolist-a</string>
     <string name="settings_color_hex">Hex boja</string>
-    <string name="startup_error_title">Грешка при покретању апликације Metrolist</string>
+    <string name="startup_error_title">Грешка при покретању апликације Meld</string>
     <string name="lyrics_show_translations">Prikaži prevode</string>
     <string name="top_tracks">Најпопуларније нумере</string>
     <plurals name="song_count">
@@ -866,7 +866,7 @@
     <string name="available_devices">Доступни уређаји</string>
     <string name="no_device_connected">Нема повезаних уређаја</string>
     <string name="no_device_found">Ниједан уређај није пронађен</string>
-    <string name="no_compatible_devices">Није пронађен уређај компатибилан са Google Cast, FCast, DLNA или Metrolist.</string>
+    <string name="no_compatible_devices">Није пронађен уређај компатибилан са Google Cast, FCast, DLNA или Meld.</string>
     <string name="show_player_cast_button">Прикажи дугме за емитовање</string>
     <string name="show_player_video_button">Прикажи бирач звука и видеа</string>
     <string name="onboarding_language_lyrics_description">Изабери језик апликације и начин приказа текстова песама.</string>
@@ -925,7 +925,7 @@
     <string name="onboarding_continue_without_migration">Nastavi s praznom bibliotekom</string>
     <string name="onboarding_migration_recovery_description">Možete pokušati ponovo ili nastaviti s praznom bibliotekom. Kopija izvorne baze podataka za oporavak ostaće na ovom uređaju. Rezervnu kopiju možete vratiti nakon podešavanja.</string>
     <string name="onboarding_migration_failed">Nije moguće pripremiti biblioteku. Izvorni podaci su sačuvani.</string>
-    <string name="onboarding_library_migrated_description">Vaše plejliste, istorija, oznake sviđanja i podaci biblioteke spremni su u ovoj verziji aplikacije Metrolist.</string>
+    <string name="onboarding_library_migrated_description">Vaše plejliste, istorija, oznake sviđanja i podaci biblioteke spremni su u ovoj verziji aplikacije Meld.</string>
     <string name="onboarding_notifications_denied">Obaveštenja su isključena. Možete ih kasnije uključiti u podešavanjima aplikacije na Androidu ili izabrati Ne za nastavak.</string>
     <string name="mini_player_video_prerequisite">Prvo uključite Pusti spotove u podešavanjima reprodukcije</string>
     <string name="download_folder_access_failed">Nije moguće sačuvati dozvolu za pristup ovoj fascikli. Izaberite fasciklu s pristupom za čitanje i pisanje.</string>
@@ -950,9 +950,9 @@
     <string name="updates_notification_settings">Podešavanja obaveštenja na Androidu</string>
     <string name="widget_recognizer_open_result">Otvori prepoznatu pesmu</string>
     <string name="statistics_load_failed">Nije moguće osvežiti statistiku. Pokušajte ponovo.</string>
-    <string name="desktop_platform_unsupported">Metrolist ne podržava ovaj operativni sistem. Koristite Windows 10 ili noviji, macOS ili distribuciju Linuxa koja nije Omarchy.</string>
+    <string name="desktop_platform_unsupported">Meld ne podržava ovaj operativni sistem. Koristite Windows 10 ili noviji, macOS ili distribuciju Linuxa koja nije Omarchy.</string>
     <string name="shortcut_toggle_expanded">Proširi ili skupi plejer</string>
-    <string name="desktop_display_unavailable">Metrolist ne može da se poveže s X prikazom ove sesije. Pokrenite ga iz sesije radne površine s podešenom promenljivom DISPLAY.</string>
+    <string name="desktop_display_unavailable">Meld ne može da se poveže s X prikazom ove sesije. Pokrenite ga iz sesije radne površine s podešenom promenljivom DISPLAY.</string>
     <string name="webkit_install_hint">Ugrađena prijava zahteva WebKitGTK 4.1 (%1$s). Instalirajte ga pomoću sistemskog upravljača paketima.</string>
     <string name="webkit_install_command">Instalirajte naredbom:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage izdanja takođe koriste sistemske WebKitGTK biblioteke za prijavu.</string>
@@ -965,7 +965,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Jačina zvuka: %2$s</string>
-    <string name="download_folder_unavailable">Nije moguće koristiti ovu fasciklu. Izaberite fasciklu u koju je moguće pisati i kojoj sistem ili izolovano okruženje dozvoljava pristup aplikaciji Metrolist.</string>
+    <string name="download_folder_unavailable">Nije moguće koristiti ovu fasciklu. Izaberite fasciklu u koju je moguće pisati i kojoj sistem ili izolovano okruženje dozvoljava pristup aplikaciji Meld.</string>
     <string name="window_maximize">Maksimizuj</string>
     <string name="window_restore">Vrati prozor</string>
     <string name="equalizer_stream_unavailable">Ekvilajzer i pretpojačalo nisu dostupni za ovaj tok. Promene će se primeniti pri reprodukciji podržane pesme.</string>
@@ -980,7 +980,7 @@
     <string name="queue_youtube_history_paused_desc">Nastavite beleženje istorije slušanja da biste reprodukcije bez interneta sačuvali u redu za sinhronizaciju</string>
     <string name="search_online_failed">Nije moguće pretraživati na internetu. Proverite vezu pa pokušajte ponovo.</string>
     <string name="search_load_more_failed">Nije moguće učitati još rezultata.</string>
-    <string name="discord_error_gateway_configuration">Discord je odbio podešavanja veze. Ažurirajte Metrolist pre ponovnog pokušaja.</string>
+    <string name="discord_error_gateway_configuration">Discord je odbio podešavanja veze. Ažurirajte Meld pre ponovnog pokušaja.</string>
     <string name="discord_preview_buttons_adjusted">Discord skraćuje duge oznake dugmadi i izostavlja dugmad s predugim linkovima. Ovaj pregled prikazuje dugmad koja će biti poslata.</string>
     <string name="discord_presence_status_warning">Detaljni status šalje status Na mreži na Discord. Može zameniti Nevidljiv ili Ne uznemiravaj, čak i kada se reprodukcija zaustavi.</string>
     <string name="discord_refresh_queued">Osvežavanje statusa je stavljeno u red.</string>
@@ -1015,8 +1015,8 @@
     <string name="theme_color_rose">Ružičasta</string>
     <string name="theme_color_red">Crvena</string>
     <string name="theme_color_gold">Zlatna</string>
-    <string name="backup_unsupported_format">Ova verzija aplikacije Metrolist ne podržava ovaj format rezervne kopije.</string>
-    <string name="backup_unsupported_database">Ova verzija aplikacije Metrolist ne podržava verziju baze podataka u ovoj rezervnoj kopiji.</string>
+    <string name="backup_unsupported_format">Ova verzija aplikacije Meld ne podržava ovaj format rezervne kopije.</string>
+    <string name="backup_unsupported_database">Ova verzija aplikacije Meld ne podržava verziju baze podataka u ovoj rezervnoj kopiji.</string>
     <string name="backup_too_large">Rezervna kopija prelazi podržano ograničenje veličine ili broja unosa.</string>
     <string name="backup_invalid_data">Nije moguće pročitati ili proveriti rezervnu kopiju. Možda je oštećena ili sadrži nepodržane podatke.</string>
     <string name="search_history_removal_failed">Nije moguće obrisati istoriju pretrage naloga. Pokušajte ponovo kada se povežete s internetom.</string>
@@ -1027,10 +1027,10 @@
     <string name="top_period_past_year">Poslednje godine</string>
     <string name="onboarding_welcome_description">Podesite privatnost i sistemske dozvole pre prvog slušanja.</string>
     <string name="onboarding_migration_title">Vaša biblioteka iz verzije v13 je ovde</string>
-    <string name="onboarding_migration_description">Pronašli smo samostalnu Metrolist bazu podataka. Prenesite plejliste, istoriju slušanja, oznake sviđanja i podatke biblioteke na istom mestu. Izvornu bazu podataka možete oporaviti ako prenos ne uspe.</string>
+    <string name="onboarding_migration_description">Pronašli smo samostalnu Meld bazu podataka. Prenesite plejliste, istoriju slušanja, oznake sviđanja i podatke biblioteke na istom mestu. Izvornu bazu podataka možete oporaviti ako prenos ne uspe.</string>
     <string name="onboarding_migration_complete_title">Vaš nalog je prenet</string>
-    <string name="onboarding_migration_complete_description">Vaš nalog, plejliste, istorija slušanja, oznake sviđanja i podaci biblioteke spremni su u ovoj verziji aplikacije Metrolist.</string>
-    <string name="onboarding_crash_reports_title">Pomozite da poboljšamo Metrolist</string>
+    <string name="onboarding_migration_complete_description">Vaš nalog, plejliste, istorija slušanja, oznake sviđanja i podaci biblioteke spremni su u ovoj verziji aplikacije Meld.</string>
+    <string name="onboarding_crash_reports_title">Pomozite da poboljšamo Meld</string>
     <string name="onboarding_crash_reports_description">Po želji podelite dijagnostičke podatke putem Sentryja kako biste nam pomogli da pronađemo i rešimo probleme. Ovo možete promeniti bilo kada u Podešavanjima.</string>
     <string name="onboarding_notifications_description">Омогућите обавештења за репродукцију и преузимања.</string>
     <string name="onboarding_migrate_library">Prenesi moju biblioteku</string>
@@ -1043,10 +1043,10 @@
     <string name="onboarding_finish_title">Sve je spremno</string>
     <string name="onboarding_finish_description">Podešavanje je završeno. Počnite da slušate ili prvo prenesite svoj nalog i podatke.</string>
     <string name="onboarding_restore_backup">Vrati iz rezervne kopije</string>
-    <string name="onboarding_settings_hint">Otvorite Podešavanja iz menija u gornjem desnom uglu da biste prilagodili Metrolist.</string>
+    <string name="onboarding_settings_hint">Otvorite Podešavanja iz menija u gornjem desnom uglu da biste prilagodili Meld.</string>
     <string name="onboarding_no_saved_accounts">Nisu pronađeni povezani nalozi.</string>
     <string name="onboarding_account_picture">Profilna slika korisnika %1$s</string>
-    <string name="onboarding_backup_picker_title">Vrati rezervnu kopiju Metrolista</string>
+    <string name="onboarding_backup_picker_title">Vrati rezervnu kopiju Melda</string>
     <string name="onboarding_backup_picker_error">Nije moguće otvoriti birač rezervne kopije: %1$s</string>
     <string name="onboarding_backup_restore_failed">Vraćanje nije uspelo: %1$s</string>
     <string name="new_badge">Novo</string>
@@ -1062,7 +1062,7 @@
     <string name="settings_appearance_overview">Tema, fontovi i izgled plejera</string>
     <string name="settings_android_auto_overview">Plejliste u automobilu i odredište za brzo dodavanje</string>
     <string name="settings_about_overview">Saradnici, veze zajednice i licence</string>
-    <string name="settings_supported_links_overview">Izaberite koje YouTube veze se otvaraju u Metrolist</string>
+    <string name="settings_supported_links_overview">Izaberite koje YouTube veze se otvaraju u Meld</string>
     <string name="settings_equalizer_overview">Zvučne postavke, frekvencijski opsezi i profili</string>
     <string name="settings_fonts_overview">Izbor i uvoz fontova</string>
     <string name="settings_artwork_overview">Animirani omoti, izvori slika i kvalitet videa</string>
@@ -1078,7 +1078,7 @@
     <string name="settings_listen_together_overview">Server, zahtevi za pridruživanje i predlozi pesama</string>
     <string name="settings_device_connect_overview">Uređaji u blizini, uparivanje i daljinska reprodukcija</string>
     <string name="settings_release_overview">Beleške o izdanju i opcije instalacije</string>
-    <string name="settings_notification_access_summary">Izaberite koja obaveštenja Android dozvoljava za Metrolist</string>
+    <string name="settings_notification_access_summary">Izaberite koja obaveštenja Android dozvoljava za Meld</string>
     <string name="settings_crash_reports_summary">Čitajte i delite sačuvane izveštaje o padovima</string>
     <string name="settings_content_language_summary">Jezik pretrage i preporuka u YouTube Music</string>
     <string name="settings_content_country_summary">Region top-lista i preporuka u YouTube Music</string>
@@ -1098,7 +1098,7 @@
     <string name="settings_canvas_playback_summary">Puštaj kratke klipove ili ceo muzički spot iza plejera</string>
     <string name="settings_normalization_summary">Ujednači jačinu zvuka pesama da ne bi bilo velikih razlika</string>
     <string name="settings_loudness_target_summary">Postavite ciljnu jačinu zvuka kada je normalizacija uključena</string>
-    <string name="settings_stop_on_close_summary">Zaustavi reprodukciju kada se Metrolist ukloni iz nedavnih aplikacija</string>
+    <string name="settings_stop_on_close_summary">Zaustavi reprodukciju kada se Meld ukloni iz nedavnih aplikacija</string>
     <string name="settings_screen_awake_summary">Izaberite da li plejer ili tekstovi drže ekran uključenim</string>
     <string name="settings_translation_mode_summary">Prevedi reči ili zapiši izgovor ciljnim pismom</string>
     <string name="settings_translation_provider_summary">Izaberite uslugu koja prevodi tekstove</string>
@@ -1118,7 +1118,7 @@
     <string name="settings_reset_download_folder_summary">Koristi podrazumevanu fasciklu za preuzete pesme</string>
     <string name="settings_diagnostic_logs_summary">Čitajte i kopirajte dijagnostički dnevnik aplikacije</string>
     <string name="settings_log_directory_summary">Pregledajte sačuvane dnevnike u upravljaču datoteka</string>
-    <string name="settings_check_releases_summary">Potražite noviju verziju Metrolist na GitHub</string>
+    <string name="settings_check_releases_summary">Potražite noviju verziju Meld na GitHub</string>
     <string name="settings_share_apk_summary">Podeli paket instalirane aplikacije kao datoteku</string>
     <string name="settings_system_font_summary">Koristi font koji obezbeđuje operativni sistem</string>
     <string name="settings_thumbnail_shape_summary">Izaberite oblik omota u proširenom plejeru</string>

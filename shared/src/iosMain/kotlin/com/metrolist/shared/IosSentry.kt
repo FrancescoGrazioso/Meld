@@ -4,3 +4,5 @@ package com.metrolist.shared
 fun iosSentryRelease(): String = "com.metrolist.ios@${BuildConfig.APP_VERSION}"
 
 fun iosSentrySourceRevision(): String = BuildConfig.SOURCE_REVISION
+
+fun iosSentryDsn(): String = BuildConfig.SENTRY_DSN

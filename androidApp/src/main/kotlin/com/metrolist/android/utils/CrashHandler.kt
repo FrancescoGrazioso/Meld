@@ -19,7 +19,7 @@ import java.io.File
 
 object CrashHandler {
     const val EXTRA_CRASH_ID = "crash_id"
-    const val ACTION_LOGS = "com.metrolist.music.action.CRASH_LOGS"
+    const val ACTION_LOGS = "com.meld.app.action.CRASH_LOGS"
     const val EXTRA_FAILED_PROCESS = "failed_process"
 
     fun store(context: Context) = FileCrashStore(File(context.filesDir, "crashes"))

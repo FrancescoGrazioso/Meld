@@ -143,7 +143,14 @@ java {
     }
 }
 
-val sentryAuthToken = providers.environmentVariable("SENTRY_AUTH_TOKEN").filter(String::isNotBlank)
+val sentryOrg = providers.environmentVariable("SENTRY_ORG").filter(String::isNotBlank)
+val sentryProject = providers.environmentVariable("SENTRY_PROJECT").filter(String::isNotBlank)
+// Uploads need an explicit org and project so a token alone can never publish to another Sentry org.
+val sentryAuthToken =
+    providers
+        .environmentVariable("SENTRY_AUTH_TOKEN")
+        .filter(String::isNotBlank)
+        .zip(sentryOrg.zip(sentryProject) { org, _ -> org }) { token, _ -> token }
 val appVersion = providers.gradleProperty("appVersion").get()
 val bundledLanguageTags =
     rootProject
@@ -185,8 +192,8 @@ sentry {
     }
     ignoredBuildTypes.set(setOf("debug", "benchmark"))
     tracingInstrumentation.enabled.set(false)
-    org.set("metrolistgroup")
-    projectName.set("metrolist-kmp")
+    org.set(sentryOrg)
+    projectName.set(sentryProject)
     authToken.set(sentryAuthToken)
 }
 
@@ -204,10 +211,10 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.metrolist.music"
+        applicationId = "com.meld.app"
         minSdk = 24
         targetSdk = 37
-        versionCode = 154
+        versionCode = 28
         versionName = appVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -245,7 +252,7 @@ android {
             isShrinkResources = true
             ndk.debugSymbolLevel = "FULL"
             optimization.keepRules { ignoreFrom("com.materialkolor:material-kolor-android:5.0.1") }
-            manifestPlaceholders["appLabel"] = "Metrolist"
+            manifestPlaceholders["appLabel"] = "Meld"
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
@@ -262,7 +269,7 @@ android {
         }
         debug {
             applicationIdSuffix = ".debug"
-            manifestPlaceholders["appLabel"] = "Metrolist KMP Debug"
+            manifestPlaceholders["appLabel"] = "Meld Debug"
         }
     }
 

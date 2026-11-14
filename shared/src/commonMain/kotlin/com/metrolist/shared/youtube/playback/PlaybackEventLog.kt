@@ -150,7 +150,7 @@ object PlaybackEventLog {
         val snapshot = allEvents.takeLast(maxEvents.coerceAtLeast(0))
         val header =
             buildString {
-                appendLine("Metrolist playback event log")
+                appendLine("Meld playback event log")
                 appendLine("Exported: ${Instant.fromEpochMilliseconds(Clock.System.now().toEpochMilliseconds())}")
                 appendLine("Events: ${snapshot.size} of ${allEvents.size}")
                 appendLine("Environment:")
