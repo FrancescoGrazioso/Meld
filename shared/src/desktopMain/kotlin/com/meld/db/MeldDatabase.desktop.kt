@@ -5,21 +5,13 @@ import androidx.room3.RoomDatabase
 import com.metrolist.shared.db.JdbcSQLiteDriver
 import com.metrolist.shared.utils.XdgUtils
 import kotlinx.coroutines.Dispatchers
-import org.koin.dsl.module
 import java.io.File
 
-fun getMeldDatabaseBuilder(
-    dbFile: File = File(XdgUtils.getXdgDataHome(), "meld/$MELD_DATABASE_NAME"),
-): RoomDatabase.Builder<MeldDatabase> {
+actual fun getMeldDatabaseBuilder(context: Any?): RoomDatabase.Builder<MeldDatabase> {
+    val dbFile = context as? File ?: File(XdgUtils.getXdgDataHome(), "meld/$MELD_DATABASE_NAME")
     dbFile.parentFile.mkdirs()
     return Room
         .databaseBuilder<MeldDatabase>(name = dbFile.absolutePath)
         .setDriver(JdbcSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
 }
-
-val meldDatabaseModule =
-    module {
-        single<MeldDatabase> { getMeldDatabaseBuilder().build() }
-        single<SpotifyMatchDao> { get<MeldDatabase>().spotifyMatchDao() }
-    }

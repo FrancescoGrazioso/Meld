@@ -5,18 +5,14 @@ import androidx.room3.Room
 import androidx.room3.RoomDatabase
 import androidx.sqlite.driver.AndroidSQLiteDriver
 import kotlinx.coroutines.Dispatchers
-import org.koin.dsl.module
+import org.koin.mp.KoinPlatform
 
-fun getMeldDatabaseBuilder(context: Context): RoomDatabase.Builder<MeldDatabase> =
-    Room
+actual fun getMeldDatabaseBuilder(context: Any?): RoomDatabase.Builder<MeldDatabase> {
+    val appContext = (context as? Context ?: KoinPlatform.getKoin().get<Context>()).applicationContext
+    return Room
         .databaseBuilder<MeldDatabase>(
-            context = context.applicationContext,
-            name = context.getDatabasePath(MELD_DATABASE_NAME).absolutePath,
+            context = appContext,
+            name = appContext.getDatabasePath(MELD_DATABASE_NAME).absolutePath,
         ).setDriver(AndroidSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
-
-val meldDatabaseModule =
-    module {
-        single<MeldDatabase> { getMeldDatabaseBuilder(get<Context>()).build() }
-        single<SpotifyMatchDao> { get<MeldDatabase>().spotifyMatchDao() }
-    }
+}
