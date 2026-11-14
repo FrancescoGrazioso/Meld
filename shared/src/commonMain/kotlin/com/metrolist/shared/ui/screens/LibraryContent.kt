@@ -73,6 +73,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.meld.spotify.ui.LibraryExtras
+import com.meld.spotify.ui.spotifyLibraryExtras
 import com.metrolist.shared.constants.GridRowSpacing
 import com.metrolist.shared.constants.GridScreenPadding
 import com.metrolist.shared.constants.GridTileSpacing
@@ -217,6 +218,7 @@ internal class LibraryReorderScrollConnection(
 }
 
 @Composable
+@Suppress("NAME_SHADOWING")
 fun LibraryContent(
     text: LibraryContentText,
     items: List<YTItem>,
@@ -254,8 +256,12 @@ fun LibraryContent(
     onSearchDescendingChange: (Boolean) -> Unit = {},
     onPlayAlbum: ((AlbumItem) -> Unit)? = null,
     presentation: LibraryPresentation = remember { LibraryPresentation() },
-    extras: LibraryExtras = LibraryExtras.None,
+    extras: LibraryExtras = spotifyLibraryExtras(selectedFilter, onFilterChange),
 ) {
+    val items = if (extras.spotifyOnly) emptyList() else items
+    val autoPlaylists = if (extras.spotifyOnly) emptyList() else autoPlaylists
+    val isLoading = isLoading && !extras.spotifyOnly
+    val error = error && !extras.spotifyOnly
     val currentSongIdState = rememberUpdatedState(currentSongId)
     val isPlayingState = rememberUpdatedState(isPlaying)
     val rootActive = LocalRootContentActive.current
