@@ -5476,4 +5476,28 @@
     <string name="meld_spotify_error_unavailable">Spotify is having problems right now. Try again later.</string>
     <string name="meld_spotify_error_rejected">Spotify did not accept the sign-in. Try again.</string>
     <string name="meld_spotify_error_changed">Spotify changed something Meld relies on. Update Meld and try again.</string>
+    <string name="meld_spotify_error_forbidden">Spotify does not allow this account to open that.</string>
+    <string name="meld_spotify_library_description">Playlists, albums and artists from your Spotify account</string>
+    <string name="meld_spotify_library_expired">Session expired. Open to sign in again.</string>
+    <string name="meld_spotify_not_connected">Connect your Spotify account to see your library here.</string>
+    <string name="meld_spotify_open_settings">Spotify settings</string>
+    <string name="meld_spotify_liked_songs">Liked Songs</string>
+    <string name="meld_spotify_liked_songs_description">Songs you saved on Spotify</string>
+    <string name="meld_spotify_folder">Folder</string>
+    <plurals name="meld_spotify_n_items">
+        <item quantity="one">%1$d item</item>
+        <item quantity="other">%1$d items</item>
+    </plurals>
+    <string name="meld_spotify_order_spotify">Spotify order</string>
+    <string name="meld_spotify_empty_playlists">There are no playlists in your Spotify library.</string>
+    <string name="meld_spotify_empty_albums">You have not saved any album on Spotify.</string>
+    <string name="meld_spotify_empty_artists">You do not follow any artist on Spotify.</string>
+    <string name="meld_spotify_empty_folder">This folder is empty.</string>
+    <string name="meld_spotify_empty_tracks">There are no songs here.</string>
+    <string name="meld_spotify_loaded_of_total">Loaded %1$d of %2$d.</string>
+    <string name="meld_spotify_item_unavailable">Unavailable item</string>
+    <string name="meld_spotify_item_unavailable_description">Episode, local file or removed song</string>
+    <string name="meld_spotify_track_unavailable">Not available on Spotify</string>
+    <string name="meld_spotify_popular">Popular</string>
+    <string name="meld_spotify_preparing_shuffle">Loading every song to shuffle…</string>
 </resources>
