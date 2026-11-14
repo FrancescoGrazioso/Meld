@@ -70,6 +70,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowScope
+import com.meld.spotify.library.refreshSpotifyInLibrary
 import com.metrolist.desktop.state.app.DesktopNavigation
 import com.metrolist.desktop.state.app.UiState
 import com.metrolist.desktop.state.content.HomeState
@@ -147,7 +148,10 @@ private fun refreshActionFor(route: Screen): (() -> Unit)? =
         }
 
         Screen.Library -> {
-            { LibraryContentState.fetchLibraryData(force = true) }
+            {
+                LibraryContentState.fetchLibraryData(force = true)
+                refreshSpotifyInLibrary()
+            }
         }
 
         Screen.History,

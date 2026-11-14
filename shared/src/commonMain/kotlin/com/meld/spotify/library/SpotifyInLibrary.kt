@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.koin.mp.KoinPlatform
 
 /** The Spotify library as the app's own library screen shows it, each list with what has loaded so far. */
 data class SpotifyInLibraryState(
@@ -108,6 +109,11 @@ class SpotifyInLibrary(
     }
 
     private fun pagers() = listOf(store.playlists(null), store.albums(), store.artists())
+}
+
+/** For a host whose library refresh is not part of its library screen (the desktop toolbar). */
+fun refreshSpotifyInLibrary() {
+    KoinPlatform.getKoin().getOrNull<SpotifyInLibrary>()?.refresh()
 }
 
 /** The cells of the library grid: the app's own items with the Spotify rows placed among them. */
