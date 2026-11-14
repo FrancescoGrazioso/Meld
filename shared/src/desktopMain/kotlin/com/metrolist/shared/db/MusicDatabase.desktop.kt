@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import java.io.File
 
 actual fun getDatabaseBuilder(context: Any?): RoomDatabase.Builder<MusicDatabase> {
-    val dbFile = context as? File ?: File(XdgUtils.getXdgDataHome(), "metrolist/metrolist.db")
+    val dbFile = context as? File ?: File(XdgUtils.getXdgDataHome(), "meld/metrolist.db")
     dbFile.parentFile.mkdirs()
     return getDesktopDatabaseBuilder(dbFile)
 }

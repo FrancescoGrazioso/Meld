@@ -1,11 +1,11 @@
 [Desktop Entry]
 Type=Application
-Name=Metrolist
+Name=Meld
 Comment=Stream and manage your YouTube Music library
-Exec=com.metrolist.desktop %u
-Icon=com.metrolist.desktop
+Exec=com.meld.desktop %u
+Icon=com.meld.desktop
 Terminal=false
 Categories=AudioVideo;Player;Music;
-StartupWMClass=Metrolist
+StartupWMClass=Meld
 Keywords=music;player;youtube;streaming;
 MimeType=x-scheme-handler/metrolist;x-scheme-handler/metrolist-auth;

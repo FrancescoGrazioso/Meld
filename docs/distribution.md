@@ -6,13 +6,13 @@
 
 ```sh
 mkdir -p build
-gh release view "$tag" --repo MetrolistGroup/Metrolist \
+gh release view "$tag" --repo FrancescoGrazioso/Meld \
   --json tagName,isDraft,isPrerelease,url,publishedAt,body,assets > build/release.json
-gh release download "$tag" --repo MetrolistGroup/Metrolist \
+gh release download "$tag" --repo FrancescoGrazioso/Meld \
   --dir build/distribution-assets --pattern SHA256SUMS \
-  --pattern 'metrolist-installer-windows-*.exe' \
-  --pattern 'metrolist-desktop-linux-*.AppImage' \
-  --pattern 'metrolist-desktop-macos-*.dmg'
+  --pattern 'meld-installer-windows-*.exe' \
+  --pattern 'meld-desktop-linux-*.AppImage' \
+  --pattern 'meld-desktop-macos-*.dmg'
 python3 scripts/generate_distribution.py \
   --assets build/distribution-assets --release build/release.json \
   --output build/distribution
@@ -22,7 +22,7 @@ The workflow keeps `distribution-recipes` for 30 days. Cleanup removes only inte
 
 ## WinGet
 
-`packaging/winget/` defines version, locale and installer manifests under `manifests/m/MetrolistGroup/Metrolist/VERSION/`. WinGet uses the release-bound MetrolistManager executable, not the portable ZIP. Its silent options and per-user uninstall identity must match that pinned manager.
+`packaging/winget/` defines version, locale and installer manifests under `manifests/f/FrancescoGrazioso/Meld/VERSION/`. WinGet uses the release-bound MetrolistManager executable, not the portable ZIP. Its silent options and per-user uninstall identity must match that pinned manager.
 
 Run `winget validate --manifest PATH` on Windows, then test clean install, upgrade and uninstall before submission. Do not request elevation or purge user data.
 
@@ -57,7 +57,7 @@ The root flake reads the committed `packaging/release.json`, so `nix run github:
 
 ## Flatpak
 
-Metrolist is distributed as a Flatpak only through [flatpark](https://github.com/flatpark/flatpark), which repackages the release AppImage as `com.metrolist.desktop` and diffs its permissions against [our source manifest](../flatpak/com.metrolist.desktop.yaml). Keep that manifest's path, app ID and permissions current. Metrolist is not submitted to Flathub.
+Metrolist is distributed as a Flatpak only through [flatpark](https://github.com/flatpark/flatpark), which repackages the release AppImage as `com.meld.desktop` and diffs its permissions against [our source manifest](../flatpak/com.meld.desktop.yaml). Keep that manifest's path, app ID and permissions current. Metrolist is not submitted to Flathub.
 
 The `flatpark` job in `release.yml` runs [flatpark/publish-action](https://github.com/flatpark/publish-action) after publication, so flatpark picks up the release within minutes instead of at its twice-daily sweep. It needs no secret.
 

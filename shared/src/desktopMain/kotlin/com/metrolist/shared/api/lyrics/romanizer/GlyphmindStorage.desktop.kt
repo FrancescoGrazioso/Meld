@@ -11,5 +11,5 @@ import java.io.File
 internal actual fun glyphmindStorageDirectory(): String = File(XdgUtils.getXdgDataHome(), "metrolist/glyphmind").absolutePath
 
 internal actual fun removeLegacyJapaneseDictionary() {
-    File(XdgUtils.getXdgDataHome(), "metrolist/japanese-dictionary").deleteRecursively()
+    File(XdgUtils.getXdgDataHome(), "meld/japanese-dictionary").deleteRecursively()
 }

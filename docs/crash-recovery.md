@@ -8,7 +8,7 @@ Android legacy migration recovery can preserve the unreadable original under `fi
 
 ## Reports
 
-Crash storage is independent of Room and settings. Android uses `files/crashes`, desktop uses the XDG data directory's `metrolist/crashes`, and iOS uses Application Support's `metrolist/crashes`.
+Crash storage is independent of Room and settings. Android uses `files/crashes`, desktop uses the XDG data directory's `meld/crashes`, and iOS uses Application Support's `metrolist/crashes`.
 
 Reports record timestamp, app version, platform/device and stack trace. The store keeps the newest 50 and limits stack traces to 256 KiB of characters. It redacts credentials, authorization headers, cookie tails and signed URL queries before atomic publication. Invalid records are ignored. Files stay private until explicit sharing or upload.
 

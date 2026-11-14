@@ -8,7 +8,7 @@ import kotlin.system.exitProcess
 internal fun configureDesktopJvmErrorFile() {
     if (System.getProperty("jpackage.app-path").isNullOrBlank() && System.getenv("APPIMAGE").isNullOrBlank()) return
     runCatching {
-        val directory = File(XdgUtils.getXdgStateHome(), "metrolist/logs")
+        val directory = File(XdgUtils.getXdgStateHome(), "meld/logs")
         check(directory.isDirectory || directory.mkdirs()) { "Cannot create JVM crash log directory: $directory" }
         val pattern = jvmErrorFilePattern(directory)
         val configured = ManagementFactory.getRuntimeMXBean().inputArguments.lastOrNull { it.startsWith("-XX:ErrorFile=") }

@@ -33,7 +33,7 @@ def propose(kind, generated, repository, version):
     paths = sorted(path.relative_to(source) for path in source.rglob("*") if path.is_file())
     if not paths or any((source / path).is_symlink() for path in paths):
         raise ValueError("Generated recipe tree is missing or contains symlinks")
-    branch = f"build/metrolist-{version}"
+    branch = f"build/meld-{version}"
     proposal_state = run("gh", "pr", "list", "--repo", repository, "--head", branch,
                          "--state", "all", "--json", "state", "--jq", '.[0].state // ""')
     if proposal_state in ("CLOSED", "MERGED"):
@@ -64,7 +64,7 @@ def propose(kind, generated, repository, version):
         if run("git", "diff", "--cached", "--name-only", cwd=checkout):
             run("git", "-c", "user.name=github-actions[bot]", "-c",
                 "user.email=41898282+github-actions[bot]@users.noreply.github.com",
-                "commit", "-m", f"build(packaging): update Metrolist to {version}", cwd=checkout)
+                "commit", "-m", f"build(packaging): update Meld to {version}", cwd=checkout)
             run(*git, "push", "origin", branch, cwd=checkout)
         elif not remote:
             print(f"Recipes already match {repository}:{base}")
@@ -73,9 +73,9 @@ def propose(kind, generated, repository, version):
             print(f"Proposal already exists for {repository}:{branch}")
             return
         body = Path(temporary) / "body.md"
-        body.write_text(f"Update Metrolist to {version} using checksums verified against the published release assets.\n")
+        body.write_text(f"Update Meld to {version} using checksums verified against the published release assets.\n")
         run("gh", "pr", "create", "--repo", repository, "--base", base, "--head", branch,
-            "--draft", "--title", f"build(packaging): update Metrolist to {version}",
+            "--draft", "--title", f"build(packaging): update Meld to {version}",
             "--body-file", str(body))
 
 

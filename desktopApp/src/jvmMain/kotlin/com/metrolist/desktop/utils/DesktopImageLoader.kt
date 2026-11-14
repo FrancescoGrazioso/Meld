@@ -43,7 +43,7 @@ object DesktopImageLoader {
     @Synchronized
     fun create(context: PlatformContext): ImageLoader {
         imageLoader?.let { return it }
-        val cacheDir = File(XdgUtils.getXdgCacheHome(), "metrolist/image_cache").also { check(it.mkdirs() || it.isDirectory) }
+        val cacheDir = File(XdgUtils.getXdgCacheHome(), "meld/image_cache").also { check(it.mkdirs() || it.isDirectory) }
 
         return build(context, cacheDir).also { imageLoader = it }
     }

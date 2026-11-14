@@ -79,7 +79,7 @@ private suspend fun exportPlaybackLog(context: Context) {
             withContext(Dispatchers.IO) {
                 val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
                 val dir = File(context.cacheDir, "playback_logs").apply { mkdirs() }
-                val file = File.createTempFile("metrolist-playback-$timestamp-", ".txt", dir)
+                val file = File.createTempFile("meld-playback-$timestamp-", ".txt", dir)
                 file.writeText(PlaybackEventLog.exportText())
                 FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", file)
             }

@@ -13,9 +13,9 @@ tasks.register("createAppImageLocal") {
 
     val toolsDir = rootProject.file("tools")
     val appImageTool = rootProject.file("tools/appimagetool.AppImage")
-    val packageAppDir = file("${layout.buildDirectory.get()}/compose/binaries/main-release/app/Metrolist")
-    val appDir = file("${layout.buildDirectory.get()}/appimage/Metrolist.AppDir")
-    val outFile = rootProject.file("dist/Metrolist.AppImage")
+    val packageAppDir = file("${layout.buildDirectory.get()}/compose/binaries/main-release/app/Meld")
+    val appDir = file("${layout.buildDirectory.get()}/appimage/Meld.AppDir")
+    val outFile = rootProject.file("dist/Meld.AppImage")
 
     doFirst {
         toolsDir.mkdirs()
@@ -39,17 +39,17 @@ tasks.register("createAppImageLocal") {
             .forEach { source -> File(appDir, source.relativeTo(packageAppDir).path).setExecutable(true, false) }
 
         // Compose desktop files can omit the AudioVideo category.
-        val desktopFile = file("${appDir.absolutePath}/Metrolist.desktop")
+        val desktopFile = file("${appDir.absolutePath}/Meld.desktop")
         desktopFile.parentFile.mkdirs()
         desktopFile.writeText(
             """
 [Desktop Entry]
 Type=Application
-Name=Metrolist
-Exec=Metrolist %u
-Icon=Metrolist
-StartupWMClass=Metrolist
-Comment=Metrolist music client
+Name=Meld
+Exec=Meld %u
+Icon=Meld
+StartupWMClass=Meld
+Comment=Meld music client
 Categories=AudioVideo;Player;
 Terminal=false
 MimeType=x-scheme-handler/metrolist;x-scheme-handler/metrolist-auth;
@@ -60,7 +60,7 @@ MimeType=x-scheme-handler/metrolist;x-scheme-handler/metrolist-auth;
         rootProject.file("scripts/linux-appimage-apprun.sh").copyTo(appRunFile, overwrite = true)
         appRunFile.setExecutable(true, false)
 
-        val appIconFile = file("${appDir.absolutePath}/Metrolist.png")
+        val appIconFile = file("${appDir.absolutePath}/Meld.png")
         val sourceIcon = file("src/desktopMain/resources/logo.png")
         if (!sourceIcon.exists()) {
             throw GradleException("Missing AppImage icon source at ${sourceIcon.absolutePath}")
@@ -100,17 +100,17 @@ tasks.register("patchLinuxLauncher") {
     notCompatibleWithConfigurationCache("File operations are not cached.")
     mustRunAfter(tasks.matching { it.name == "createReleaseDistributable" || it.name == "packageReleaseAppImage" })
 
-    val packageAppDir = file("${layout.buildDirectory.get()}/compose/binaries/main-release/app/Metrolist")
+    val packageAppDir = file("${layout.buildDirectory.get()}/compose/binaries/main-release/app/Meld")
     val linkedRuntimeDirectory = layout.buildDirectory.dir("compose/tmp/main-release/runtime")
     dependsOn("createReleaseRuntimeImage")
 
     doLast {
         val binDir = packageAppDir.resolve("bin")
-        val launcher = binDir.resolve("Metrolist")
-        val realBinary = binDir.resolve("Metrolist.bin")
+        val launcher = binDir.resolve("Meld")
+        val realBinary = binDir.resolve("Meld.bin")
         val libAppDir = packageAppDir.resolve("lib/app")
-        val cfgFile = libAppDir.resolve("Metrolist.cfg")
-        val newCfgFile = binDir.resolve("Metrolist.bin.cfg")
+        val cfgFile = libAppDir.resolve("Meld.cfg")
+        val newCfgFile = binDir.resolve("Meld.bin.cfg")
 
         fun patchCfgFile(file: File) {
             if (!file.exists()) return
@@ -155,10 +155,10 @@ tasks.register("patchLinuxLauncher") {
         if (cfgFile.exists()) {
             patchCfgFile(cfgFile)
             cfgFile.copyTo(newCfgFile, overwrite = true)
-            cfgFile.copyTo(libAppDir.resolve("Metrolist.bin.cfg"), overwrite = true)
+            cfgFile.copyTo(libAppDir.resolve("Meld.bin.cfg"), overwrite = true)
         } else {
             patchCfgFile(newCfgFile)
-            patchCfgFile(libAppDir.resolve("Metrolist.bin.cfg"))
+            patchCfgFile(libAppDir.resolve("Meld.bin.cfg"))
         }
 
         // Write the wrapper script
@@ -234,21 +234,21 @@ export METROLIST_CURSOR_CONFIGURED=1
 
 # Keep archives outside read-only installations, including AppImage mounts and Flatpak's /app.
 case "$XDG_CACHE_HOME" in
-    /*) METROLIST_CDS_CACHE="$XDG_CACHE_HOME/metrolist" ;;
-    *) METROLIST_CDS_CACHE="$HOME/.cache/metrolist" ;;
+    /*) METROLIST_CDS_CACHE="$XDG_CACHE_HOME/meld" ;;
+    *) METROLIST_CDS_CACHE="$HOME/.cache/meld" ;;
 esac
 export METROLIST_CDS_CACHE
 
 case "$XDG_STATE_HOME" in
-    /*) METROLIST_LOG_DIR="$XDG_STATE_HOME/metrolist/logs" ;;
-    *) METROLIST_LOG_DIR="$HOME/.local/state/metrolist/logs" ;;
+    /*) METROLIST_LOG_DIR="$XDG_STATE_HOME/meld/logs" ;;
+    *) METROLIST_LOG_DIR="$HOME/.local/state/meld/logs" ;;
 esac
 METROLIST_JVM_ERROR_FILE="$(printf '%s' "$METROLIST_LOG_DIR" | sed 's/%/%%/g')/hs_err_pid%p.log"
 export METROLIST_JVM_ERROR_FILE
 
 # ── Launch ───────────────────────────────────────────────────────────────────
 DIR="$(cd "$(dirname "$(readlink -f "$0")")" && pwd)"
-exec "$DIR/Metrolist.bin" "$@"
+exec "$DIR/Meld.bin" "$@"
                 """.trimIndent(),
         )
         launcher.setExecutable(true, false)
@@ -279,16 +279,16 @@ fun registerWindowsPortableArchive(
                 val manifest =
                     mapOf(
                         "schema" to 1,
-                        "appId" to "com.metrolist.desktop",
+                        "appId" to "com.meld.desktop",
                         "version" to manifestVersion,
                         "platform" to "windows",
                         "architecture" to "x86_64",
-                        "launcher" to "Metrolist.exe",
+                        "launcher" to "Meld.exe",
                     )
                 output.writeText(JsonOutput.prettyPrint(JsonOutput.toJson(manifest)) + "\n")
             }
         }
-    val appDir = layout.buildDirectory.dir("compose/binaries/$appDirectory/app/Metrolist")
+    val appDir = layout.buildDirectory.dir("compose/binaries/$appDirectory/app/Meld")
     tasks.register<Zip>(taskName) {
         group = "distribution"
         description = "Assembles the $buildType portable Windows ZIP."
@@ -317,7 +317,7 @@ fun registerWindowsPortableArchive(
                 throw GradleException("$taskName can only run on Windows")
             }
             val directory = appDir.get().asFile
-            if (!directory.isDirectory || !directory.resolve("Metrolist.exe").isFile) {
+            if (!directory.isDirectory || !directory.resolve("Meld.exe").isFile) {
                 throw GradleException("Windows application directory is incomplete at ${directory.absolutePath}")
             }
             val requiredLoginHelperResources =
@@ -346,7 +346,7 @@ registerWindowsPortableArchive(
     buildType = "Release",
     distributableTask = "createReleaseDistributable",
     appDirectory = "main-release",
-    archiveName = "Metrolist-Desktop-Windows.zip",
+    archiveName = "Meld-Desktop-Windows.zip",
 )
 
 registerWindowsPortableArchive(
@@ -354,5 +354,5 @@ registerWindowsPortableArchive(
     buildType = "Debug",
     distributableTask = "createDistributable",
     appDirectory = "main",
-    archiveName = "Metrolist-Desktop-Windows-Debug.zip",
+    archiveName = "Meld-Desktop-Windows-Debug.zip",
 )

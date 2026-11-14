@@ -64,7 +64,7 @@ private fun formatPlaybackTimestamp(timestampMs: Long): String =
 private fun exportPlaybackLog(): Boolean =
     runCatching {
         val timestamp = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss").format(LocalDateTime.now())
-        File(AppLogger.getLogDirectory(), "metrolist-playback-$timestamp.txt").apply {
+        File(AppLogger.getLogDirectory(), "meld-playback-$timestamp.txt").apply {
             parentFile?.mkdirs()
             writeText(PlaybackEventLog.exportText())
         }

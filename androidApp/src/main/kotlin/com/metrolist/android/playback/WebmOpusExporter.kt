@@ -111,7 +111,7 @@ internal fun exportWebmOpus(
     }.getOrDefault(false)
 
 internal fun opusTagsPacket(metadata: AudioExportMetadata): ByteArray {
-    val vendor = "Metrolist".encodeToByteArray()
+    val vendor = "Meld".encodeToByteArray()
     val comments =
         buildList {
             add("TITLE=${metadata.title}")

@@ -5,7 +5,7 @@ set -euo pipefail
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$root_dir"
 gradle="${GRADLE:-$root_dir/gradlew}"
-app_image="$root_dir/dist/Metrolist.AppImage"
+app_image="$root_dir/dist/Meld.AppImage"
 tools_dir="$root_dir/tools"
 appimagetool="$tools_dir/appimagetool.AppImage"
 appimagetool_version="1.9.1"

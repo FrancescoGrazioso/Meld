@@ -35,7 +35,7 @@ internal fun registerDesktopDiscordCallback(displayName: String): Boolean =
                 if (!System.getenv("FLATPAK_ID").isNullOrBlank()) return@runCatching true
                 val query = listOf("xdg-mime", "query", "default", DISCORD_MIME_TYPE)
                 val packagedHandler = runRegistrationCommand(query)?.trim()
-                if (packagedHandler in setOf("metrolist.desktop", "Metrolist.desktop", "com.metrolist.desktop.desktop")) {
+                if (packagedHandler in setOf("meld.desktop", "Meld.desktop", "com.meld.desktop.desktop")) {
                     return@runCatching true
                 }
                 val executable = linuxDiscordLauncher(System.getenv("APPIMAGE"), launcher) ?: return@runCatching false
@@ -62,8 +62,8 @@ internal fun linuxDiscordLauncher(
     ) {
         return null
     }
-    val wrapper = File(executable.parentFile, "Metrolist")
-    return if (appImage.isNullOrBlank() && executable.name == "Metrolist.bin" && wrapper.canExecute()) wrapper else executable
+    val wrapper = File(executable.parentFile, "Meld")
+    return if (appImage.isNullOrBlank() && executable.name == "Meld.bin" && wrapper.canExecute()) wrapper else executable
 }
 
 internal fun linuxDiscordDesktopEntry(
@@ -108,5 +108,5 @@ private fun runRegistrationCommand(command: List<String>): String? {
     return if (process.exitValue() == 0) process.inputStream.bufferedReader().use { it.readText() } else null
 }
 
-private const val DISCORD_DESKTOP_FILE = "com.metrolist.desktop.discord-auth.desktop"
+private const val DISCORD_DESKTOP_FILE = "com.meld.desktop.discord-auth.desktop"
 private const val DISCORD_MIME_TYPE = "x-scheme-handler/metrolist-auth"

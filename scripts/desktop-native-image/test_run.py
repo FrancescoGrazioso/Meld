@@ -23,7 +23,7 @@ class ExperimentTest(unittest.TestCase):
             self.assertTrue(Path(env["TMPDIR"]).is_relative_to(profile))
             for kind in ("CONFIG", "DATA", "CACHE", "STATE"):
                 self.assertTrue(Path(env[f"XDG_{kind}_HOME"]).is_relative_to(profile))
-            config = profile / "config/metrolist/settings.properties"
+            config = profile / "config/meld/settings.properties"
             self.assertIn("sentryEnabled=false", config.read_text())
             config.write_text("saved=true\n")
             run.environment(profile)
@@ -69,7 +69,7 @@ class ExperimentTest(unittest.TestCase):
                               "java-options=-XX:ErrorFile=$METROLIST_JVM_ERROR_FILE\n")
             options, classpath = run.release_options(config, work / "profile")
             self.assertEqual(classpath, str(jar))
-            self.assertIn(f"-XX:SharedArchiveFile={work / 'profile/cache/metrolist/app.jsa'}", options)
+            self.assertIn(f"-XX:SharedArchiveFile={work / 'profile/cache/meld/app.jsa'}", options)
             self.assertTrue(all("$" not in option for option in options))
             config.write_text("app.classpath=$APPDIR/*\n")
             self.assertEqual(run.release_options(config, work / "profile")[1], str(work / "*"))

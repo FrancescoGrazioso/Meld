@@ -54,7 +54,7 @@ def environment(profile):
         path = profile / kind.lower()
         path.mkdir(exist_ok=True)
         env[f"XDG_{kind}_HOME"] = str(path)
-    config = profile / "config/metrolist/settings.properties"
+    config = profile / "config/meld/settings.properties"
     config.parent.mkdir(exist_ok=True)
     if not config.exists():
         config.write_text("desktopOnboardingComplete=true\ndesktopOnboardingInitialized=true\n"
@@ -130,7 +130,7 @@ def window_image(connection):
         if window.get_attributes().map_state != X.IsViewable:
             continue
         identity = " ".join(window.get_wm_class() or ()) + " " + str(window.get_wm_name() or "")
-        if "metrolist" not in identity.lower():
+        if "meld" not in identity.lower():
             continue
         size = window.get_geometry()
         if size.width < 300 or size.height < 300:
@@ -142,8 +142,8 @@ def window_image(connection):
 
 
 def release_options(config, profile):
-    cache = profile / "cache/metrolist"
-    logs = profile / "state/metrolist/logs"
+    cache = profile / "cache/meld"
+    logs = profile / "state/meld/logs"
     cache.mkdir(parents=True, exist_ok=True)
     logs.mkdir(parents=True, exist_ok=True)
     variables = {"APPDIR": str(config.resolve().parent), "METROLIST_CDS_CACHE": str(cache),

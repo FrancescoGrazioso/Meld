@@ -48,7 +48,7 @@ object SystemMediaManager {
                         mutex.withLock {
                             if (!MediaControlService.isAvailable()) return@withLock false
                             MediaControlService.configure(
-                                dbusName = "org.mpris.MediaPlayer2.metrolist",
+                                dbusName = "org.mpris.MediaPlayer2.meld",
                                 displayName = getString(Res.string.app_name),
                             )
                             MediaControlService.attach { event ->

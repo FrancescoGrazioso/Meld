@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 
 object ArtistPhotoSaver {
-    private const val RELATIVE_DIR = "Metrolist"
+    private const val RELATIVE_DIR = "Meld"
 
     val needsStoragePermission: Boolean get() = Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
 

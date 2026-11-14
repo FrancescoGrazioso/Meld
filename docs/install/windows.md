@@ -8,7 +8,7 @@ Use Windows 10 or later on x64. Choose the stable installer when available, or t
 
 1. [Verify the checksum](README.md#verify-a-download).
 2. Run the installer, or extract the complete portable ZIP to a writable directory.
-3. Launch Metrolist and check playback and login.
+3. Launch Meld and check playback and login.
 4. Restart and confirm that saved credentials return.
 
 Keep the extracted runtime and helper files with the executable. A portable ZIP does not register an installed application or Start Menu entry.

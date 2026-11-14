@@ -168,7 +168,7 @@ fun SongMenu(
             onAltShare =
                 onAltShare ?: {
                     val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
-                    clipboard?.setPrimaryClip(ClipData.newPlainText("Metrolist", ShareUrls.song(song.id)))
+                    clipboard?.setPrimaryClip(ClipData.newPlainText("Meld", ShareUrls.song(song.id)))
                     Unit
                 },
             onSuggestToHost = {

@@ -157,7 +157,7 @@ fun ApplicationLogsDialog(onDismiss: () -> Unit) {
                                         java.time.format.DateTimeFormatter
                                             .ofPattern("yyyyMMdd-HHmmss"),
                                     )
-                            val zipFile = java.io.File(logDir, "metrolist-logs-$timestamp.zip")
+                            val zipFile = java.io.File(logDir, "meld-logs-$timestamp.zip")
 
                             val success = withContext(Dispatchers.IO) { AppLogger.exportLogs(zipFile) }
                             exportMessage =

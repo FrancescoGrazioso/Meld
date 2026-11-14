@@ -1,4 +1,4 @@
-# Contributing to Metrolist
+# Contributing to Meld
 
 To install the app, use the [installation guides](install/README.md): [Android](install/android.md), [iOS](install/ios.md), [Windows](install/windows.md), [macOS](install/macos.md) and [Linux](install/linux.md).
 

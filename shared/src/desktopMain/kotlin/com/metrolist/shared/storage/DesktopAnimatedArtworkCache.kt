@@ -65,16 +65,16 @@ class DesktopAnimatedArtworkCache internal constructor(
                     System.getProperty("os.name").startsWith("Windows", ignoreCase = true) -> {
                         File(
                             System.getenv("LOCALAPPDATA")?.takeIf(String::isNotBlank)?.let(::File) ?: File(home, "AppData/Local"),
-                            "Metrolist",
+                            "Meld",
                         )
                     }
 
                     System.getProperty("os.name").startsWith("Mac", ignoreCase = true) -> {
-                        File(home, "Library/Application Support/Metrolist")
+                        File(home, "Library/Application Support/Meld")
                     }
 
                     else -> {
-                        File(XdgUtils.getXdgDataHome(), "metrolist")
+                        File(XdgUtils.getXdgDataHome(), "meld")
                     }
                 }
             DesktopAnimatedArtworkCache(File(directory, "animated_artwork_cache"), Settings.shared.animatedArtworkCacheSize * 1024L * 1024)

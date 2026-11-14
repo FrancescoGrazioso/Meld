@@ -1,5 +1,5 @@
 {
-  description = "Metrolist desktop release packages";
+  description = "Meld desktop release packages";
 
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/6f06d204d8f2d8761d9da78778745974a3216381";
 
@@ -17,12 +17,12 @@
         let
           pkgs = import nixpkgs { inherit system; };
           recipe = if pkgs.stdenv.hostPlatform.isDarwin then ./packaging/nix/darwin.nix else ./packaging/nix/package.nix;
-          metrolist = pkgs.callPackage recipe { inherit release; };
-        in { inherit metrolist; default = metrolist; });
+          meld = pkgs.callPackage recipe { inherit release; };
+        in { inherit meld; default = meld; });
       apps = forSystems (system: {
         default = {
           type = "app";
-          program = "${self.packages.${system}.default}/bin/metrolist";
+          program = "${self.packages.${system}.default}/bin/meld";
         };
       });
     };
