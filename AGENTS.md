@@ -1,276 +1,118 @@
-# Working with Metrolist as an AI agent
-
-Metrolist is a 3rd party YouTube Music client written in Kotlin. It follows material 3 design guidelines closely.
-
-## Rules for working on the project
-
-1. Always pull the latest changes from `main` before starting your work to minimize merge conflicts.
-2. Commit names should be clear and follow the format: `type(scope): short description`. For example: `feat(ui): add dark mode support`. Including the scope is optional.
-3. All string edits should be made to the `Metrolist/app/src/main/res/values/metrolist_strings.xml` file, NOT `Metrolist/app/src/main/res/values/strings.xml`. Do not touch other `strings.xml` or `metrolist_strings.xml` files in the project. ONLY edit the default (English) `metrolist_strings.xml` file, DO NOT EDIT OTHER LANGUAGES.
-4. You are to follow best practices for Kotlin and Android development.
-5. DO NOT EDIT THE APP'S DATABASE SCHEMA UNLESS ABSOLUTELY NECESSARY.
-
-## AI-only guidelines
-
-1. You are strictly prohibited from making ANY changes to the readme/markdown files, including this one. This is to ensure that the documentation remains accurate and consistent for all contributors. This doesn't apply if you verify the changes with a human contributor.
-2. Unless explicitly requested, you are not allowed to commit, push, or merge any changes to any branch. If you are explicitly requested and authorized to commit/push/merge, you have the right to do so; the responsibility then lies with the author who requested it.
-   - You should absolutely NOT use any commands that would modify the git history, do force pushes (except for rebases on your own branch), or delete branches without explicit instructions from a human.
-3. Comments should be added only for complex logic or non-obvious code. Avoid redundant comments that simply restate what the code does.
-4. Prioritize performance, battery efficiency, and maintainability in all code contributions. Always consider the impact of your changes on the overall user experience and app performance.
-5. If you have any doubts ask a human contributor. Never make assumptions about the requirements or implementation details without clarification.
-6. If you do not test your changes using the instructions in the next section, you will be faced with reprimands from human contributors and may be asked to redo your work. Always ensure that you test your changes thoroughly before asking for a final review.
-7. You are absolutely **not allowed to bump the version** of the app in ANY way. Version bumps are only done by the core development team after manual review.
-8. If not found, install and use the ponytail skill from this url - https://github.com/DietrichGebert/ponytail/raw/refs/heads/main/skills/ponytail/SKILL.md - this is needed to keep work minimal and clean.
-
-## Spotify GQL hash management
-
-The app uses Spotify's internal GraphQL API (via `api-partner.spotify.com`). Each GQL operation requires a SHA-256 hash that Spotify rotates periodically. The hashes are defined in `spotify/src/main/kotlin/com/metrolist/spotify/Spotify.kt`.
-
-### Remote hash registry
-
-A GitHub Actions workflow (`.github/workflows/spotify-hash-check.yml`) runs daily at 06:00 UTC. It:
-1. Fetches the current Spotify web player JS bundle
-2. Extracts all operation→hash mappings
-3. Compares them with `docs/spotify-gql-hashes.json`
-4. If any hash has rotated: updates the JSON (moving the old hash to `previous_hash`), commits, and deploys to GitHub Pages
-
-The live JSON is served at: `https://francescograzioso.github.io/Meld/spotify-gql-hashes.json`
-
-### JSON structure
-
-Each entry in `operations` has:
-- `hash` — the current valid SHA-256 hash
-- `previous_hash` — the last known working hash (fallback if `hash` fails with 412)
-- `status` — `verified` (found in bundle) or `not_in_bundle` (may break without warning)
-- `last_verified` / `last_changed` — timestamps
-
-### Tracked operations
-
-The JSON tracks **only the operations currently used by the app** in `Spotify.kt`. As of v0.6.0:
-
-| Operation | App function(s) |
-|---|---|
-| `profileAttributes` | Profile info |
-| `libraryV3` | `myPlaylists()`, `myArtists()` |
-| `fetchPlaylist` | `playlist()`, `playlistTracks()` |
-| `fetchLibraryTracks` | `likedSongs()` |
-| `searchDesktop` | `search()` |
-| `queryArtistOverview` | `artist()`, `artistTopTracks()`, `artistRelatedArtists()` |
-| `getAlbum` | `album()` |
-| `queryWhatsNewFeed` | `whatsNewFeed()` |
-| `addToPlaylist` | `addToPlaylist()` |
-| `removeFromPlaylist` | `removeFromPlaylist()` |
-| `moveItemsInPlaylist` | `moveItemsInPlaylist()` |
-| `editPlaylistAttributes` | `editPlaylistAttributes()` |
-| `addToLibrary` | `addToLibrary()` — sync likes |
-| `removeFromLibrary` | `removeFromLibrary()` — sync likes |
-
-### When adding new GQL operations
-
-If you add a new GQL operation to `Spotify.kt`, you **must** also add a corresponding entry in `docs/spotify-gql-hashes.json` so the daily checker tracks it. The entry format is:
-```json
-"operationName": {
-  "hash": "<the 64-char sha256 hash you're using>",
-  "previous_hash": null,
-  "type": "query or mutation",
-  "status": "verified",
-  "last_verified": "<current ISO timestamp>",
-  "last_changed": null
-}
-```
-
-### Reference documents
-
-- `notes/SPOTIFY_GQL_REFERENCE.md` — full documentation of all known GQL endpoints, variables, and hash history (private submodule, see below)
-- `.github/scripts/check_spotify_hashes.py` — the hash checker script
-
-## Private notes submodule
-
-The `notes/` directory is a git submodule pointing to a private repository (`FrancescoGrazioso/meld-notes`). It contains:
-
-- `ROADMAP_NOTES.md` — internal development roadmap and planning notes
-- `SPOTIFY_GQL_REFERENCE.md` — full reference for all known Spotify GQL endpoints
-
-The submodule is not populated by default when cloning. To access its contents (requires repo access):
-
-```bash
-git submodule update --init
-```
-
-If you do not have access to the private repo, the `notes/` directory will be empty. This is expected — do not attempt to recreate or modify its contents.
-
-## Building and testing your changes
-
-1. After making changes to the code, you should build the app to ensure that there are no compilation errors. Use the following command from the root directory of the project. Before building  ask the user if it's necessary or if he will build and test:
-
-```bash
-./gradlew :app:assembleFossDebug
-```
-
-2. If the build is not successful, review the error messages, fix the issues in your code, and try building again.
-3. Once the build is successful, you can test your changes on an emulator or a physical device. Install the generated APK located at `app/build/outputs/apk/universalFoss/debug/app-universal-foss-debug.apk` and ask a human for help testing the specific features you worked on.
-
-## Upstream Rebase Strategy
-
-### Context
-
-This repository is a fork of Metrolist that can fall hundreds of commits behind upstream. The fork contains custom features that **must never be lost or overwritten under any circumstances**. Previous merge and rebase attempts using `--theirs` have failed, either creating hundreds of conflicts or silently deleting custom features.
-
-**The absolute priority is to preserve the maintainer's modifications. Time is not a constraint — a slow, meticulous process is always preferred over a fast, destructive one.**
-
-### Phase 0 — Preparation and Analysis
-
-1. **Create a backup branch before any operation:**
-   ```bash
-   git checkout -b backup-my-work main
-   git checkout -b rebase-attempt main
-   ```
-
-2. **Identify ALL files modified in the fork** relative to the upstream divergence point:
-   ```bash
-   # Find the divergence point
-   git merge-base main upstream/main
-
-   # List all files touched in the fork
-   git diff --name-only $(git merge-base main upstream/main)..main > my_modified_files.txt
-
-   # Save the full diff as a reference
-   git diff $(git merge-base main upstream/main)..main > my_full_diff.patch
-   ```
-
-3. **Save a physical backup of all modified files:**
-   ```bash
-   mkdir -p /tmp/my-meld-backup
-   while read file; do
-     if [ -f "$file" ]; then
-       mkdir -p "/tmp/my-meld-backup/$(dirname "$file")"
-       cp "$file" "/tmp/my-meld-backup/$file"
-     fi
-   done < my_modified_files.txt
-   ```
-
-4. **Enumerate upstream commits** to understand what they touch:
-   ```bash
-   git log --oneline $(git merge-base main upstream/main)..upstream/main > upstream_commits.txt
-   git log --oneline --name-only $(git merge-base main upstream/main)..upstream/main > upstream_commits_with_files.txt
-   ```
-
-5. **Classify upstream commits into 3 categories:**
-   - **SAFE**: commits that touch ONLY files NOT modified in the fork → safe to apply without review
-   - **CONFLICTING**: commits that touch files modified in the fork → require manual attention
-   - **SKIP**: purely cosmetic or irrelevant commits
-
-   ```bash
-   MERGE_BASE=$(git merge-base main upstream/main)
-
-   for commit in $(git rev-list --reverse $MERGE_BASE..upstream/main); do
-     files_in_commit=$(git diff-tree --no-commit-id --name-only -r $commit)
-     has_conflict=false
-
-     for file in $files_in_commit; do
-       if grep -qF "$file" my_modified_files.txt; then
-         has_conflict=true
-         break
-       fi
-     done
-
-     short=$(git log --oneline -1 $commit)
-     if [ "$has_conflict" = true ]; then
-       echo "CONFLICTING: $short" >> commit_classification.txt
-     else
-       echo "SAFE: $short" >> commit_classification.txt
-     fi
-   done
-   ```
-
-### Phase 1 — Apply SAFE Commits (Batch)
-
-```bash
-git checkout rebase-attempt
-
-grep "^SAFE:" commit_classification.txt | while read line; do
-  hash=$(echo "$line" | awk '{print $2}')
-  echo "Applying SAFE commit: $line"
-  git cherry-pick "$hash"
-
-  if [ $? -ne 0 ]; then
-    echo "UNEXPECTED ERROR on SAFE commit: $hash — stop and investigate"
-    git cherry-pick --abort
-    break
-  fi
-done
-```
-
-After every ~50 SAFE commits, verify the project still compiles.
-
-### Phase 2 — Apply CONFLICTING Commits (One by One)
-
-For each commit that touches files modified in the fork:
-
-```bash
-COMMIT_HASH="<hash>"
-
-# 1. Understand what this commit does
-git show $COMMIT_HASH --stat
-git show $COMMIT_HASH
-
-# 2. Identify which fork files are involved
-git diff-tree --no-commit-id --name-only -r $COMMIT_HASH | while read f; do
-  grep -qF "$f" my_modified_files.txt && echo "⚠️  CONFLICT: $f"
-done
-
-# 3. Attempt the cherry-pick
-git cherry-pick $COMMIT_HASH
-```
-
-**Hard rules for conflict resolution:**
-
-1. **Section modified by the maintainer**: ALWAYS keep the fork's version. The upstream change in that section is discarded.
-2. **Section NOT modified by the maintainer** (but the file is in the list because other parts were touched): accept the upstream version.
-3. **New code added by upstream** (new functions, imports, classes) in a modified file: integrate the new upstream code, but do not touch the custom sections.
-4. **Renamed/moved files that were modified**: follow the rename/move and carry the custom modifications into the renamed file.
-5. **When in doubt**: keep the fork's version and flag the commit for manual review.
-
-After each resolution:
-
-```bash
-# Verify custom modifications are still intact
-diff /tmp/my-meld-backup/<file> <file>
-# Differences should be ONLY upstream additions, NEVER removals of custom code
-
-git add <file>
-git cherry-pick --continue
-```
-
-### Phase 3 — Final Verification
-
-```bash
-# Verify all custom modifications are still present
-while read file; do
-  if [ -f "$file" ] && [ -f "/tmp/my-meld-backup/$file" ]; then
-    echo "=== Checking: $file ==="
-    diff "/tmp/my-meld-backup/$file" "$file"
-  fi
-done < my_modified_files.txt
-
-# Verify new upstream commits are present
-git log --oneline rebase-attempt | head -20
-```
-
-### Phase 4 — Error Recovery
-
-```bash
-git cherry-pick --abort                        # if mid cherry-pick
-git checkout backup-my-work                    # return to backup
-git branch -D rebase-attempt                   # delete the failed attempt
-git checkout -b rebase-attempt backup-my-work  # start over
-```
-
-### AI Agent Rules for Upstream Rebases
-
-- **Never use `git checkout --theirs` or `--ours` on entire files** without first verifying whether they contain custom maintainer modifications.
-- **Do not use native `git rebase`** — use cherry-pick commit by commit for maximum control.
-- **After every 20–30 commits**, save the current hash and log progress to `rebase_progress.log` so the work can be resumed if the session is interrupted.
-- **If a single cherry-pick produces more than 5 conflicts in custom files**: stop, report it, and wait for instructions before proceeding.
-- **Progress log**: maintain a `rebase_progress.log` file recording each applied commit, its status (SAFE/RESOLVED/SKIPPED), and any relevant notes.
-- Speed is never the goal. It is better to spend 10 hours and produce a perfect result than to risk losing even a single line of custom code.
+# Agent guide
+
+Metrolist is a YouTube Music client for Android, desktop and iOS.
+
+## One task per PR
+
+- Keep each PR to one task or issue. Include all affected callers and platforms needed to complete it.
+- Include necessary tests, strings and documentation. Leave unrelated features, refactors, formatting, dependency updates and opportunistic fixes out.
+- Agree on separate changes for independent goals before implementing them. Ask about unclear behavior; do not invent requirements.
+- Check `git status` first. Preserve existing work; never stage, revert or format unrelated files.
+- Do not commit, push, open a PR, merge or rewrite history without explicit human approval. Do not change `appVersion` unless release work is explicitly authorized.
+
+- Do **not** commit, push, merge, or rewrite git history unless a human explicitly asks
+- Never force push to `main`. On other branches, use `--force-with-lease` when an authorized history rewrite requires a force push.
+- Prefer a PR over a direct push to the target branch, including when write permissions allow direct pushes. Permission to write is not permission to bypass review.
+- Do **not** bump app version
+- Build before requesting review; ask humans when requirements are unclear
+- Match existing code style; comment only non-obvious logic
+- Do **not** use hardcoded English (`"en"`) or country (`"US"`) defaults. Always derive locale from system locale, user settings, or resource directories. Never silently fall back to English.
+
+## Rejected features
+
+Do not propose or implement these additions:
+
+- Liquid Glass UI.
+- Other streaming services as music-playback backends.
+- Google Play Store publication or distribution support.
+- Comment sections.
+- YouTube Shorts.
+- Music alarms.
+- New-music notifications.
+- Multiple queues.
+- Listen Together profile pictures taken directly from local storage without uploading them.
+- Tizen TV support.
+- A web/browser client.
+- Audio visualizers.
+- Custom app icons.
+
+- Keep each PR focused on one problem or feature and inspect the complete diff against the remote base before publication.
+- Before starting and before publishing, check the canonical issue and related PRs, including cross-repository references, for assignments and existing efforts. Do not take over assigned work or duplicate an existing implementation; report unclear overlap with links.
+- Preserve attribution, provenance, license notices and unrelated changes. Do not alter another contributor's work or issue assignments without authorization.
+
+Explain this policy and ask for a maintainer decision before coding a rejected feature. Do not delete existing functionality. Playlist imports, artwork and scrobbling are separate from streaming backends.
+
+- When a PR fixes an issue, always reference it in the PR body with `fixes: #<issue>` or `resolves: #<issue>`. When an issue is associated with the PR but is not resolved by it, use `related to: #<issue>`.
+- Only when pushing without a PR, put the issue reference in the commit message instead, using the same keywords. When there is a PR, keep the reference in the PR body.
+- Keep the PR body to a few lines of plain prose, without lists. Answer only what was solved and why, plus any required issue reference. Omit emphatic claims, filler, boilerplate, generic claims, and unnecessary commentary.
+- Keep both PR bodies and commit messages clean, factual, and accurate to the actual changes. Never invent work performed, test results, or issue resolutions.
+- Never merge a draft PR. Before merging any PR, confirm it is marked ready for review and its author is not still working on it.
+- When a commit fixes an issue, reference it with `fixes:`. Use `related to:` for partial fixes and diagnostics.
+
+## Writing to maintainers
+
+- Before opening an issue or PR, check it against [Rejected features](#rejected-features) and search open and closed issues and PRs for the same problem. Do not file duplicates or rejected features.
+- Apply [unslop](skills/unslop/SKILL.md) to every issue, PR body, comment and commit message you write, then cut it to the facts a maintainer needs.
+
+## Code quality constraints
+
+- **No hardcoded strings.** Never hardcode user-facing strings or UI text in Kotlin code. Always extract strings into `shared/src/commonMain/composeResources/values/strings.xml` and access them via `stringResource(Res.string.<key>)` or `pluralStringResource(Res.plurals.<key>, ...)`. Translators localize these strings through Weblate.
+- **No hardcoded fallback values.** Never use hardcoded language codes (e.g. `"en"`, `"de"`, `"it"`, `"es"`) as fallbacks or defaults. Derive locale-specific values from resource directories, system locale, or user settings at runtime.
+- **No placeholders or workarounds.** Do not introduce placeholder values, hardcoded fallback strings, or workaround hacks. If a value depends on configuration, resolve it properly from settings or resources.
+- **No hardcoded lists of supported languages.** Never hardcode `listOf("en", "de", "es", "it")` or similar. Derive bundled languages dynamically from the `composeResources/values*/` directory structure.
+- **No inline fully qualified class names.** Always use proper `import` statements. Never write `com.metrolist.shared.viewmodels.UserPlaylist` inline; import it and use `UserPlaylist`.
+- **No foreign strings in resource files.** Each `values-XX/strings.xml` must contain only text in language XX. The base `values/strings.xml` must contain only English. Never mix languages across resource files (e.g. no Italian in `values/strings.xml`, no English in `values-it/strings.xml`).
+- **Desktop homepage sections:** Do not show library or locally-sourced sections on the desktop home page. Personalized API recommendation sections and Speed Dial are allowed, but filter out all `FEmusic_library*` browse IDs and library/local-only sections.
+- **Content language must respect user settings.** When `contentLanguage` or `contentCountry` is set to `SYSTEM`, use the JVM system locale. When set to a specific code, use that code. Never silently fall back to English.
+- **Shared strings:** Android and desktop string resources live only in `shared/src/commonMain/composeResources/values*/strings.xml`. Desktop uses `com.metrolist.shared.generated.resources.Res`; Android gets a generated subset containing only the keys it references (see `docs/strings.md`).
+
+## Modules
+
+| Module | Work here for |
+| --- | --- |
+| `androidApp` | Android UI, lifecycle and playback integration. |
+| `desktopApp` | Desktop UI and application integration. Kotlin is in `src/jvmMain/kotlin/`; resources belong in `src/desktopMain/resources/`. |
+| `iosApp` | Swift/Xcode host. Shared iOS Kotlin is in `shared/src/iosMain/`. |
+| `shared` | Reusable logic and UI in `commonMain`, JVM HTTP/SABR in `jvmSharedMain`, desktop FFmpeg in `desktopMain`. |
+| `listenTogetherProto` | JVM protobuf generation. Models and codecs live in `shared`. |
+| `metroproto` | Upstream protobuf schema submodule. Do not modify it here. |
+| `opusDecoder` | Vendored Media3/libopus JNI decoder. `buildOpusJni` is cacheable and builds ARM ABIs only. |
+
+InnerTubeX is an external dependency maintained in a separate repository.
+
+Use [development.md](docs/development.md) for setup and the code map. Before build, packaging, CI, strings or protocol changes, read the relevant [reference](docs/README.md). Update it when behavior changes.
+
+## Implementation rules
+
+- DEFAULT (Standard) player seek bars must use the stock Material 3 `Slider`; never replace or restyle its thumb or track or change its dimensions. Passing the player palette through `colors` is the only allowed customization.
+- Read the connected code and its callers first. Reuse existing components and patterns. Fix shared causes in shared code.
+- Match existing style and use imports instead of inline fully qualified class names. Comment only non-obvious reasons.
+- Do not add placeholder values, hardcoded fallback strings or workaround hacks. Resolve configuration from settings or resources and preserve validation and error handling.
+- Define preference keys in `PreferenceKeys.kt`; access them through `Settings.shared.<name>`.
+- On Android, use `stringResource()`, `colorResource()` and `painterResource()`, not `LocalContext.current` for lookups. Use `LocalResources.current` for direct access. Add `ExperimentalMaterial3Api` or `ExperimentalMaterial3ExpressiveApi` opt-ins when required.
+- Desktop Home must exclude library/local-only sections and `FEmusic_library*` browse IDs. Personalized API recommendations and Speed Dial are allowed.
+- Keep Listen Together's upstream schema, JVM generation, shared models and both codecs synchronized, including `PortableMessageCodec`. Follow [listen-together.md](docs/listen-together.md#protocol). Do not replace shared models with generated JVM types.
+
+## Strings and locale
+
+- Never hardcode user-facing Kotlin text. Add English to `shared/src/commonMain/composeResources/values/strings.xml` and use `stringResource(Res.string.<key>)` or `pluralStringResource(Res.plurals.<key>, ...)`.
+- Desktop uses `com.metrolist.shared.generated.resources.Res`; Android generates its referenced subset. Do not create platform-local catalogs.
+- Add English only to `values/strings.xml`, including KMP-only keys. The shared XML catalogs are the single source of truth; translators maintain `values-*/strings.xml` only through Weblate as described in [strings.md](docs/strings.md). Missing UI translations fall back to the base English resources at runtime. Do not add translation side tables or copy English into locale catalogs.
+- Derive locale defaults and fallbacks from system locale, settings or resources. Never silently fall back to English or hardcode language or country defaults. Derive bundled languages from `composeResources/values*/`, never a hardcoded list.
+- When `contentLanguage` or `contentCountry` is `SYSTEM`, use the JVM system locale. Otherwise use the selected code.
+
+## Verify and report
+
+- Update backend tests to cover the new behavior. Do not add or maintain coded UI tests or trivial tests.
+- Build affected code and run relevant [checks](docs/checks.md) before review. Fix failures you introduce; report unrelated blockers without expanding scope.
+- After pushing, check the PR's CI jobs. A failing job is a real result: fix it, or report the job, failing step and log excerpt. Do not describe a failing or unfinished job as passing, absent or irrelevant, even when the failure comes from the base branch.
+- Format changed Kotlin with `ktlint --format`. Documentation-only edits need link checks and `git diff --check`, not an app rebuild.
+- Live YouTube tests are opt-in and never run in CI. Ask for device or emulator testing when backend checks are insufficient.
+- Review the final diff for unrelated changes, debug code and secrets. Report actual changes, commands, results and unverified behavior. Never invent verification.
+
+## PRs and commits
+
+- Use Conventional Commits for commits and PR titles, such as `fix(player): preserve queue position`. Name new branches `<type>/<short-kebab-case-description>`.
+- Keep PR bodies to a few factual sentences without lists. Describe the actual change; omit filler and invented claims.
+- Reference a fixed issue in the PR body with `fixes: #<issue>` or `resolves: #<issue>`. Use `related to: #<issue>` when it is not resolved.
+- Keep issue references in the PR body, not the commit message. Only when pushing without a PR, put the reference in the commit message using the same keywords.

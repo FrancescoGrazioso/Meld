@@ -1,271 +1,300 @@
-<div align="center">
-<img src="fastlane/metadata/android/en-US/images/icon.png" width="160" height="160" style="display: block; margin: 0 auto"/>
-<h1>Meld</h1>
-<p>A music client that fuses Spotify and YouTube Music into one seamless experience</p>
-
-[![Latest release](https://img.shields.io/github/v/release/FrancescoGrazioso/Meld?style=for-the-badge)](https://github.com/FrancescoGrazioso/Meld/releases/latest)
-[![GitHub license](https://img.shields.io/github/license/FrancescoGrazioso/Meld?style=for-the-badge)](https://github.com/FrancescoGrazioso/Meld/blob/main/LICENSE)
-[![Downloads](https://img.shields.io/github/downloads/FrancescoGrazioso/Meld/total?style=for-the-badge)](https://github.com/FrancescoGrazioso/Meld/releases)
-
+<div style="display: flex; gap: 1rem;">
+  <img src="fastlane/metadata/android/en-US/images/icon.png" alt="Metrolist app icon" width="200" height="200" />
+  <div>
+      <h1>Metrolist [KMP]</h1>
+      <h3>A Material Design YouTube Music client for Android, iOS and desktop</h3>
+      <div style="display: flex; gap: 1rem;">
+        <a href="https://github.com/MetrolistGroup/Metrolist/releases"><img src="https://img.shields.io/github/v/release/MetrolistGroup/Metrolist?style=for-the-badge&labelColor=0d1117" alt="Latest release" /></a>
+        <a href="https://github.com/MetrolistGroup/Metrolist/blob/main/LICENSE"><img src="https://img.shields.io/github/license/MetrolistGroup/metrolist?style=for-the-badge&labelColor=0d1117" alt="License" /></a>
+        <a href="https://github.com/MetrolistGroup/Metrolist/releases"><img src="https://img.shields.io/github/downloads/MetrolistGroup/Metrolist/total?style=for-the-badge&labelColor=0d1117" alt="Downloads" /></a>
+      </div>
+  </div>
 </div>
 
-## What is Meld?
+<br>
 
-**Meld** is an Android music client that brings together the best of Spotify and YouTube Music. It uses your Spotify account to power personalized recommendations, search, and home content — while streaming audio through YouTube Music.
-
-The name "Meld" reflects the core idea: **melding** two music platforms into a single, unified listening experience.
-
-### Why Meld?
-
-- **Spotify's personalization** — Your top tracks, favorite artists, and curated playlists from Spotify drive the recommendations
-- **YouTube Music's catalog** — Access YouTube Music's vast library for streaming, including rare tracks, live performances, and remixes
-- **No setup required** — Just log in with your Spotify account directly in the app. No developer dashboard, no Client ID, no extra steps
-- **No Spotify Premium required** — Meld uses Spotify's data APIs (not streaming), so a free Spotify account is all you need
-- **Built-in recommendation engine** — A custom algorithm builds personalized queues using your Spotify listening history, without relying on deprecated API endpoints
-
-## Features
-
-### Spotify Integration
-- **Spotify as search source** — Search results powered by Spotify, with automatic YouTube Music matching for playback
-- **Spotify as home source** — Home screen populated with your Spotify top tracks, top artists, playlists, and new releases
-- **Spotify-only mode** — Option to hide all YouTube-based content and show exclusively Spotify-powered sections on the home screen
-- **Smart queue generation** — Custom recommendation engine that builds radio-like queues from your Spotify taste profile (top tracks/artists across 3 time ranges, genre similarity, popularity matching)
-- **Spotify library sync** — Access your Spotify playlists and liked songs directly in the app
-- **Spotify-to-YouTube matching** — Fuzzy matching algorithm with local caching for fast, accurate track resolution
-- **Manual match override** — If a Spotify track is matched to the wrong YouTube video, you can manually fix it by pasting the correct YouTube link. The override is saved permanently and takes priority over automatic matching
-- **Spotify album browsing** — Dedicated album screen for Spotify albums with full tracklist, metadata, and one-tap playback
-- **Hybrid profile cache** — 3-tier data strategy (GraphQL → REST API → local DB) with persistent caching for instant home screen loading on app restart, automatic rate-limit handling, and parallel artist image enrichment
-- **Artist navigation** — Tap any Spotify artist on the home screen to navigate directly to their YouTube Music artist page
-
-### Lossless Audio (Experimental)
-- **Qobuz backend** — Optional FLAC and Hi-Res (up to 24-bit / 192 kHz) streaming via the Qobuz catalog, replacing YouTube Music's lossy audio
-- **Deterministic matching** — Uses ISRC (the universal track identifier shared by Spotify and Qobuz) so Spotify-sourced tracks resolve to their exact Qobuz counterpart without ambiguity
-- **Persistent match cache** — Once a track has been resolved on Qobuz, the match is saved locally so subsequent plays skip the search step entirely
-- **Multi-backend fallback** — Three independent Qobuz resolvers (Monokenny, Jumo, Squid) are tried in sequence if the primary one is rate-limited or unavailable
-- **Quality tiers** — Choose between AAC 320 kbps, CD quality (16-bit / 44.1 kHz), or Hi-Res (up to 24-bit / 192 kHz) per your preference and connection
-- **Automatic YouTube fallback** — If a track isn't on Qobuz, or all resolvers fail, playback falls back silently to the standard YouTube Music stream — no error, no skip
-- **Hidden behind a toggle** — Disabled by default; opt-in from the Spotify integration settings
-
-### Core Music Features
-- Play any song or video from YouTube Music
-- Background playback
-- Personalized quick picks
-- Library management
-- Listen together with friends
-- Download and cache songs for offline playback
-- Search for songs, albums, artists, videos and playlists
-- Live lyrics
-- YouTube Music account login support
-- Syncing of songs, artists, albums and playlists, from and to your account
-- Skip silence
-- Import playlists
-- Audio normalization
-- Adjust tempo/pitch
-- Local playlist management
-- Reorder songs in playlist or queue
-- Home screen widget with playback controls
-- Light / Dark / Black / Dynamic theme
-- Sleep timer
-- Material 3 design
-- Discord Rich Presence
-
-## Download
-
-<div align="center">
-<a href="https://github.com/FrancescoGrazioso/Meld/releases/latest/download/Meld.apk"><img src="https://github.com/machiav3lli/oandbackupx/blob/034b226cea5c1b30eb4f6a6f313e4dadcbb0ece4/badge_github.png" alt="Get it on GitHub" height="82"></a>
+<div style="display: flex; gap: 0.5rem; align-items: center;">
+  <a href="https://www.blacksmith.sh"><img src="assets/blacksmith-powered.svg" alt="CI powered by Blacksmith" height="32" /></a>
+  <a href="https://dsc.gg/metrolist"><img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" height="32" /></a>
+  <a href="https://t.me/metrolistapp"><img src="https://img.shields.io/badge/Telegram-2CA5E0?style=for-the-badge&logo=telegram&logoColor=white" alt="Telegram" height="32" /></a>
 </div>
 
-> **First time here?** Tap the badge above or go to the [Releases page](https://github.com/FrancescoGrazioso/Meld/releases), then download the **Meld.apk** file and open it on your Android device. You may need to allow installation from unknown sources in your phone's settings.
+<br>
+
+> [!WARNING]
+> <details>
+>   <summary>The use of Metrolist to access YouTube Music may violate YouTube's Terms of Service.</summary>
+>   <p>You use Metrolist at your own risk. You are solely responsible for any consequences. Metrolist's contributors are not liable for damages, claims or actions against your account. We have received no reports of bans or restrictions for using Metrolist, but that does not guarantee your account's safety.</p>
+> </details>
+>
+> YouTube Music is region-restricted. If the service is unavailable in your region, you need a [VPN or proxy in a supported region](https://one.one.one.one/) to use the app. [Changing your DNS](https://developers.cloudflare.com/1.1.1.1/setup/) can bypass some blocks.
+
+<!---
+
+DO NOT REMOVE THIS SECTION, I WANT TO ADD IT LATER!!!
+---
+<div align="center">
+
+<h1><a id="screenshots"></a>Screenshots</h1>
+
+<img src="fastlane/metadata/android/en-US/images/screenshots/screenshot_1.png" alt="Home screen" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/screenshots/screenshot_2.png" alt="Artist screen" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/screenshots/screenshot_3.png" alt="Recognize music screen" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/screenshots/screenshot_4.png" alt="Listen together screen" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/screenshots/screenshot_5.png" alt="Player screen" width="30%" />
+<img src="fastlane/metadata/android/en-US/images/screenshots/screenshot_6.png" alt="Player lyrics screen" width="30%" />
+
+</div>
+-->
+
+<div align="center">
+<h1>Features</h1>
+</div>
+
+- YouTube Music playback with or without signing in
+- Android 7+, iOS 17+, Windows 10+, macOS 15+ and Linux support
+- Material 3 Expressive design
+- Discord Rich Presence and scrobbling through Last.fm and ListenBrainz
+- No ads
+- Listen Together for shared playback online
+- Casting to Google Cast, F-Cast and SONOS devices, and over DLNA (Android and desktop)
+- Backup and playlist imports from 30+ clients and 6 services
+- Music recognition through Shazam
+- Lyrics with translation and romanization
+- Translations in over 15 languages
+- Video playback (Android and desktop)
+- Content filters for AI-generated content, explicit-only playback and SFW-only playback
+- Canvas from Apple Music, Spotify and YouTube Music
+- Player, thumbnail, miniplayer and background styles
+- Custom fonts and app icons
+
+> [!TIP]
+> <p>See the <a href="https://metrolist.cc/#faq">FAQ</a> for common questions.</p>
+
+<br>
 
 <div align="center">
 
-**Enjoying Meld?** Consider supporting the project
+<h1><a id="download-now"></a>Download now</h1>
 
-<a href="https://buymeacoffee.com/francescogm"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-ffdd00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black" alt="Buy Me a Coffee"></a>
+<p>Install Metrolist KMP: <a href="docs/install/android.md">Android</a>, <a href="docs/install/ios.md">iOS</a>, <a href="docs/install/windows.md">Windows</a>, <a href="docs/install/macos.md">macOS</a> or <a href="docs/install/linux.md">Linux</a>. Check <a href="docs/install/README.md#get-the-package">KMP download availability</a> before choosing a package.</p>
+
+<p>
+  <a href="https://github.com/MetrolistGroup/Metrolist/releases/latest">Choose a KMP release for your device</a>
+</p>
+
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <h2>Windows</h2>
+      <p>Windows 10+ · pick your chip</p>
+      <p><sub>x64 · installer and portable</sub></p>
+      <p>
+        <a href="https://github.com/MetrolistGroup/Metrolist/releases/latest">
+          <img alt="Download the Windows installer (.exe)" src="assets/badges/platform/windows-installer.svg">
+        </a>
+      </p>
+      <p>
+        <a href="https://github.com/MetrolistGroup/Metrolist/releases/latest/download/Metrolist-Desktop-windows.zip"><img alt="Download the portable Windows x64 package (.zip)" src="assets/badges/platform/windows-portable.svg"></a>
+      </p>
+      <p><sub>ARM64 · portable only</sub></p>
+      <p>
+        <a href="https://github.com/MetrolistGroup/Metrolist/releases/latest"><img alt="Download the portable Windows ARM64 package (.zip)" src="assets/badges/platform/windows-portable.svg"></a>
+      </p>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <h2>macOS</h2>
+      <p>macOS 15+ · pick your chip</p>
+      <p>
+        <a href="https://github.com/MetrolistGroup/Metrolist/releases/latest">
+          <img alt="Download Metrolist for macOS on Apple silicon (.dmg)" src="assets/badges/platform/macos-apple-silicon.svg">
+        </a>
+      </p>
+      <p>
+        <a href="https://github.com/MetrolistGroup/Metrolist/releases/latest">
+          <img alt="Download Metrolist for macOS on Intel (.dmg)" src="assets/badges/platform/macos-intel.svg">
+        </a>
+      </p>
+      <p><sub>Unsigned app, you need to trust it first</sub></p>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <h2>iOS</h2>
+      <p>iPhone &amp; iPad · iOS 17+</p>
+      <p>
+        <a href="https://github.com/MetrolistGroup/Metrolist/releases/latest/download/Metrolist.ipa">
+          <img alt="Download the iOS IPA package" src="assets/badges/platform/ios-ipa.svg">
+        </a>
+      </p>
+      <p><sub>AltStore, SideStore, TrollStore or Sideloadly</sub></p>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <h2>Android</h2>
+      <p>Android 7+</p>
+      <p>
+        <a href="https://github.com/MetrolistGroup/Metrolist/releases/latest/download/Metrolist.apk">
+          <img alt="Download the stable Android APK" src="assets/badges/platform/android-stable.svg">
+        </a>
+      </p>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <h2>Linux</h2>
+      <p>glibc · pick your chip</p>
+      <p><sub>x86_64 · AppImage or packages</sub></p>
+      <p>
+        <a href="https://github.com/MetrolistGroup/Metrolist/releases/latest"><img alt="Download the x86_64 Linux AppImage" src="assets/badges/platform/linux-appimage.svg"></a>
+      </p>
+      <p>
+        <a href="https://aur.archlinux.org/packages/metrolist-bin"><img alt="Get the AUR PKGBUILD for Metrolist" src="assets/badges/platform/linux-aur.svg"></a>
+      </p>
+      <p>
+        <a href="https://github.com/MetrolistGroup/Metrolist#nix"><img alt="Get the Nix flake" src="assets/badges/platform/linux-nix.svg"></a>
+      </p>
+      <p><sub>ARM64 · AppImage only</sub></p>
+      <p>
+        <a href="https://github.com/MetrolistGroup/Metrolist/releases/latest"><img alt="Download the ARM64 Linux AppImage" src="assets/badges/platform/linux-appimage.svg"></a>
+      </p>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <h2>Android stores</h2>
+      <p>The app already has a built-in updater.</p>
+      <p>
+        <a href="https://apps.obtainium.imranr.dev/redirect?r=obtainium://add/https://github.com/MetrolistGroup/Metrolist/">
+          <img alt="Add the Metrolist KMP repository to Obtainium" src="assets/badges/platform/store-obtainium.svg">
+        </a>
+      </p>
+      <p>
+        <a href="https://apt.izzysoft.de/fdroid/index/apk/com.metrolist.music">
+          <img alt="Find Metrolist in the IzzyOnDroid F-Droid repository" src="assets/badges/platform/store-izzyondroid.svg">
+        </a>
+      </p>
+      <p>
+        <a href="https://www.openapk.net/metrolist/com.metrolist.music/">
+          <img alt="Find the Metrolist APK on OpenAPK" src="assets/badges/platform/store-openapk.svg">
+        </a>
+      </p>
+    </td>
+  </tr>
+</table>
 
 </div>
 
-## How the Spotify Integration Works
+<br>
+
+<div align="center">
+
+<h1><a id="support-the-project"></a>Support the project</h1>
+
+Metrolist is free and open-source. Donations support its development.
+
+<p>
+  <a href="https://github.com/sponsors/nyxiereal">
+    <img src="https://img.shields.io/badge/Sponsor-nyxiereal-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor nyxiereal" />
+  </a>
+  <a href="https://www.buymeacoffee.com/mostafaalagamy">
+    <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-mostafaalagamy-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee" />
+  </a>
+  <a href="https://github.com/sponsors/l6t9">
+    <img src="https://img.shields.io/badge/Sponsor-l6t9-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor l6t9" />
+  </a>
+  <a href="https://github.com/sponsors/adrielggmotion">
+    <img src="https://img.shields.io/badge/Sponsor-adrielggmotion-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor adrielggmotion" />
+  </a>
+</p>
+
+<details>
+  <summary>Donate Monero to Mostafa Alagamy</summary>
+  <p>
+    <img src="assets/XMR.png" alt="Monero QR code" width="150" />
+  </p>
+
+```text
+44XjSELSWcgJTZiCKzjpCQWyXhokrH9RqH3rpp35FkSKi57T25hniHWHQNhLeXyFn3DDYqufmfRB1iEtENerZpJc7xJCcqt
+```
+
+</details>
+</div>
+
+<br>
+
+<div align="center">
+
+<h1>Special thanks</h1>
+
+Metrolist uses these projects and services.
+
+<table>
+  <thead>
+    <tr>
+      <th align="center">Project</th>
+      <th align="center">Contribution</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td align="center"><a href="https://github.com/aleksey-saenko/MusicRecognizer">MusicRecognizer</a></td>
+      <td>Music recognition through the Shazam API</td>
+    </tr>
+    <tr>
+      <td align="center"><a href="https://github.com/MetrolistGroup/innertubex">InnerTubeX</a></td>
+      <td>YouTube streaming engine, developed with help from <a href="https://github.com/ZemerTeam/">ZemerTeam</a></td>
+    </tr>
+    <tr>
+      <td align="center">Lyprio</td>
+      <td>Lyrics provider</td>
+    </tr>
+    <tr>
+      <td align="center"><a href="https://github.com/MetrolistGroup/metroserver">metroserver</a></td>
+      <td>Listen Together real-time synchronization backend</td>
+    </tr>
+    <tr>
+      <td align="center"><a href="https://www.blacksmith.sh">Blacksmith</a></td>
+      <td>GitHub Actions runners for CI</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<br>
+
+<div align="center">
+
+<h1><a id="translations"></a>Translations</h1>
+
+[![Translation status](https://img.shields.io/weblate/progress/metrolist?style=for-the-badge&labelColor=0d1117)](https://hosted.weblate.org/engage/metrolist/)
+
+<p>We use Weblate to translate Metrolist. <a href="https://hosted.weblate.org/projects/Metrolist/">Contribute a translation</a>.</p>
+
+<a href="https://hosted.weblate.org/projects/Metrolist/">
+  <img src="https://hosted.weblate.org/widget/Metrolist/horizontal-auto.svg" alt="Translation status" />
+</a>
+</div>
+
+<br>
+
+<div align="center">
+<h1>Contributors</h1>
+<p>To contribute code, start with the <a href="docs/README.md">developer docs</a>.</p>
+<a href="https://github.com/MetrolistGroup/Metrolist/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=MetrolistGroup/Metrolist" alt="Contributors" />
+</a>
+</div>
+
+<br>
 
-Meld connects to your Spotify account through a built-in WebView login — no developer setup or Client ID required. Here's what happens under the hood:
+> [!WARNING]
+> <h2>Legal disclaimer</h2>
+> <p>This project is not affiliated with, funded, authorized or endorsed by YouTube, Google LLC, MetroList MLS, or their affiliates and subsidiaries.</p>
+>
+> <p>All trademarks, service marks, and intellectual property rights referenced in this project belong to their respective owners.</p>
 
-1. **Authentication** — You log in with your regular Spotify credentials (email, Google, Facebook, or Apple) directly inside the app. Meld extracts session cookies and generates access tokens using TOTP, keeping you logged in without manual token management.
-2. **Data layer** — Meld communicates with Spotify primarily through GraphQL endpoints (for playlists, liked songs, artist details, albums, new releases, and search) with REST API fallbacks for top tracks and top artists. GraphQL avoids the aggressive rate limits that affect REST endpoints.
-3. **Home screen** — When "Use Spotify for Home" is enabled, Meld builds a personalized home feed from your top tracks, top artists, playlists, and new releases. Enable "Spotify only" to hide all YouTube-based sections for a fully Spotify-driven experience.
-4. **Profile caching** — Your Spotify profile data (top tracks, top artists with images) is persisted locally and served instantly on app restart. Background network refreshes only happen when the cache is stale (6-hour TTL), keeping the home screen fast and responsive.
-5. **Search** — When "Use Spotify for Search" is enabled, search queries go through Spotify's GraphQL search. Results are displayed as Spotify content; tapping a song resolves it to YouTube Music for playback.
-6. **Queue generation** — When you play a Spotify-sourced song, Meld's recommendation engine builds a queue by:
-   - Fetching top tracks from the song's artists
-   - Finding genre-similar artists from your taste profile
-   - Mixing in tracks from your personal top tracks pool
-   - Scoring candidates by artist affinity (30%), genre overlap (20%), source relevance (25%), recency (15%), and popularity similarity (10%)
-   - Diversifying the queue to avoid repetition (max 3 tracks per artist)
-7. **Playback** — Each Spotify track is matched to its YouTube Music equivalent using fuzzy title/artist/duration matching, then streamed via YouTube Music's infrastructure. Matched results are cached locally for instant resolution on subsequent plays. If a match is wrong, you can manually override it from the player's three-dot menu → "Change YouTube version" by pasting the correct YouTube link.
+<br/>
 
-## How the Qobuz Lossless Integration Works
+<div align="center">
 
-When the Qobuz toggle is enabled (Settings → Integrations → Spotify → "Use Qobuz for lossless playback"), Meld routes audio through Qobuz's FLAC catalog instead of YouTube Music's lossy AAC streams. The integration is fully opt-in and falls back to YouTube Music whenever Qobuz can't deliver — there's no playback interruption either way.
+**Developed by [the Metrolist development team](https://github.com/MetrolistGroup)**
 
-1. **Match resolution** — For every track about to play, Meld looks up the song on Qobuz. Spotify-sourced tracks include the **ISRC** (the universal track identifier — the same ISRC points to the same recording across Spotify, Qobuz, Tidal, etc.) which produces an exact, deterministic match. YT-native tracks fall back to fuzzy title/artist/album matching using the cached song metadata.
-2. **Backend cycling** — Qobuz is accessed through three independent open community resolvers (Monokenny, Jumo, Squid). The primary backend is configurable; if it returns a preview, captcha challenge, or any other failure, Meld automatically retries on the alternates before giving up. Backends that hit a captcha are skipped for five minutes to avoid wasted retries.
-3. **Persistent caching** — A successful match (the Qobuz track ID, hi-res tier, bit depth, sample rate) is saved in the local database keyed by the YouTube ID, so the next play of the same song skips the search step entirely and resolves in a few hundred milliseconds. ISRCs discovered during a Qobuz resolve are also written back to the song's row, which improves the accuracy of future matches across the whole library.
-4. **Quality tier downgrade** — When the saved match knows the track only exists at CD quality on Qobuz (not Hi-Res), Meld caps the requested quality automatically to avoid the wasted "preview returned" round-trip.
-5. **YouTube fallback** — If every Qobuz backend fails (track not in catalog, all resolvers down, network issue, etc.), playback proceeds through the standard YouTube Music pipeline with the lossy AAC stream. The fallback is silent and instant; subsequent plays will try Qobuz again.
+**This project stands with Palestine 🇵🇸**
 
-> **Important — third-party services:** The Qobuz resolvers are run by independent community projects, not by us. They may go down, get rate-limited, or stop working at any time without notice. When they do, playback automatically falls back to YouTube Music — but you may notice slower start times during the failed Qobuz attempt.
-
-> **Bandwidth and storage:** FLAC streams use 3–10× more data than the standard AAC. Hi-Res (24-bit / 96+ kHz) can exceed 1.5 Mbit/s and use ~30 MB per song downloaded. Consider this if you're on a limited mobile plan or have tight storage.
-
-## Setup
-
-### Spotify Integration
-
-1. In Meld, go to **Settings → Integrations → Spotify**
-2. Tap **Login** — a Spotify login page will open directly inside the app
-3. Sign in with your Spotify account (email/password, Google, Facebook, or Apple)
-4. Once logged in, enable **"Use Spotify for Search"** and/or **"Use Spotify for Home"** — these are off by default
-5. Optionally enable **"Spotify only"** to hide all YouTube-based content from the home screen
-6. Go back to the home screen and **pull down to refresh**. Your Spotify playlists, top tracks, and recommendations should appear within a few seconds.
-
-> **Note:** No developer account, Client ID, or any external setup is required. Just log in with your regular Spotify account — free or Premium.
-
-> **Important:** For reliable playback, disable battery optimization for Meld in your phone settings (**Settings → Apps → Meld → Battery → Unrestricted**). Without this, Android may throttle the app and cause long delays before songs start playing.
-
-### Qobuz Lossless (Optional)
-
-1. Make sure Spotify integration is set up first (see above) — Qobuz lives under the same settings screen
-2. Scroll to the **"Audio quality (experimental)"** section at the bottom of **Settings → Integrations → Spotify**
-3. Enable **"Use Qobuz for lossless playback"**
-4. Pick a **quality tier** — AAC 320, CD (recommended default), or Hi-Res
-5. Pick a **resolver backend** — Monokenny is the recommended default; Jumo and Squid are alternates that the app also rotates through automatically on failure
-6. Set the **country code** (ISO two-letter, e.g. `US`, `IT`, `FR`) — this affects which regional Qobuz catalog is queried
-
-That's it — the next time you play a song, Meld will try Qobuz first and fall back to YouTube Music if the track isn't available there. The toggle can be turned off at any time to revert to YouTube-only playback.
-
-> **Hot-reload:** Toggling Qobuz on/off, switching backend, quality, or country code automatically reloads the currently playing track so the new source takes effect immediately. **No app restart is required.**
-
-### Building from source
-
-For GitHub Actions builds, add these secrets to your repository:
-- `LASTFM_API_KEY` / `LASTFM_SECRET` — from [last.fm/api/account/create](https://www.last.fm/api/account/create)
-
-## FAQ
-
-### Q: How do I download and install Meld?
-
-Go to the [latest release](https://github.com/FrancescoGrazioso/Meld/releases/latest) and download the **Meld.apk** file. Open it on your Android device — you may need to allow "Install from unknown sources" in your phone's settings when prompted. You do **not** need to download the source code files.
-
-### Q: I saw a Meld APK on a third-party website, is it safe?
-
-No, GitHub is the only place officially supported for Meld releases. Any other place is not official and thus can be dangerous.
-
-### Q: I saw Meld flagged by Malwarebytes or another antivirus, is it infected?
-
-No, it's a false positive. Meld is based on [Metrolist](https://github.com/metrolistgroup/metrolist) which is sometimes flagged with the same false positive. Both Meld and Metrolist are fully open-source projects using the GPL-3.0 license, with the entire source code accessible through [GitHub](https://github.com/FrancescoGrazioso/Meld).
-
-### Q: Is there a Meld PC app? When will it release?
-
-Not yet, but it is in the works and should release soon. No date is set in stone, but we estimate the release to be before the end of this year. (So if you ask "Meld PC?", the current answer is NO, but it's coming!)
-
-### Q: I logged into Spotify but my playlists aren't showing
-
-After logging in, make sure you've enabled **"Use Spotify for Home"** and/or **"Use Spotify for Search"** in **Settings → Integrations → Spotify**. These are off by default. Then go back to the home screen and **pull down to refresh**. The first load may take a few seconds; subsequent launches will be instant thanks to local caching.
-
-### Q: Songs aren't playing / playback is very slow to start
-
-If songs aren't playing or take a long time to start, try the following possible fixes:
-
-1. **Disable battery optimization for Meld** — Go to your phone's **Settings → Apps → Meld → Battery → Unrestricted** (or "No restrictions"). This is the most common fix. Android aggressively throttles background network and CPU usage for battery-optimized apps.
-2. Go to **Settings → Player → Audio Quality** → set to low, wait a few seconds, then set to high.
-3. Force stop the app, clear the cache, then open it again.
-4. Log out of your Google account, then log back in again.
-5. Wait a moment — the first playback after a fresh launch requires initializing the streaming engine. Subsequent plays are much faster.
-6. Check your internet connection.
-
-In general, the first time you play a song it's normal for it to take a longer time (downloading metadata, YouTube matching). From the second time it will be stored in a local DB and this process won't be needed. If it's still broken, go to the support channel.
-
-### Q: Does Meld work with Bluetooth headphones / AirPods?
-
-Yes. Meld streams audio through YouTube Music's infrastructure like any other music player. It works with any audio output device including Bluetooth headphones, AirPods, car stereos, and speakers.
-
-### Q: Why isn't Meld showing in Android Auto?
-
-1. Go to Android Auto's settings and tap multiple times on the version in the bottom to enable developer settings
-2. In the three dots menu at the top-right of the screen, click "Developer settings"
-3. Enable "Unknown sources"
-
-### Q: Do I need Spotify Premium?
-
-No. Meld uses Spotify for data only (your library, top tracks, search results) — not for audio streaming. Audio is streamed through YouTube Music. A free Spotify account works perfectly.
-
-### Q: Some songs won't play — I get a playback error or age/country restriction
-
-This is a YouTube Music limitation and Meld can't do anything about it directly. Certain tracks on YouTube may be age-restricted or region-locked. If you're not logged into YouTube, some of these tracks cannot be played because YouTube requires authentication. To fix this:
-
-1. Go to **Settings → Account** and log in with your YouTube / Google account
-2. Go back and try playing the song again
-
-If the track still doesn't play after logging in, it may be restricted in your country or permanently unavailable.
-
-### Q: I get the wrong song, a cover, or just want to change the song version (matching issues)
-
-The Spotify-to-YouTube matching uses fuzzy matching. You can manually fix an incorrect match:
-
-1. Play the song that has the wrong match
-2. Tap the **three-dot menu (⋮)** at the bottom-right of the Now Playing screen
-3. Tap **"Change YouTube version"** (this option only appears for Spotify-sourced tracks)
-4. Paste the correct YouTube or YouTube Music link in the input field
-5. A preview of the new match will appear — verify it's the right one and tap **OK**
-6. The player will automatically switch to the new version
-
-*P.S. This does not work if you have Qobuz enabled.*
-
-### Q: How does Qobuz lossless playback work?
-
-When enabled, Meld looks up each track on Qobuz and streams the FLAC file directly. Spotify-sourced tracks are matched via ISRC (the universal track identifier) for an exact match; YouTube-native tracks fall back to fuzzy title/artist matching. If the track isn't on Qobuz, or all backend resolvers are temporarily down, playback falls back silently to the standard YouTube Music stream.
-
-The Qobuz resolvers are run by independent community projects — they're not affiliated with us. They can go down or get rate-limited at any time. When that happens, the fallback to YouTube Music is automatic and instant, but you may notice a delay on the first attempt while the failed resolvers are skipped.
-
-Also note that FLAC streams use 3–10× more data than the standard AAC. Hi-Res files can exceed 30 MB per song. If you're on a metered mobile plan or tight on storage, stick to CD quality or keep the feature off on cellular.
-
-### Q: Why did some songs play in lossless and others didn't?
-
-Not every track exists on Qobuz, and not every track exists at every quality tier. If Qobuz returns only a preview (no full stream available) or all resolvers fail, Meld falls back to YouTube Music silently and remembers the result. Less popular tracks, indie releases, and rare regional versions are the most common cases. The fallback is the intended behavior and the audio will keep playing — just not in FLAC for that specific track.
-
-### Q: Can my Spotify or YouTube account get banned?
-
-**Spotify:** Meld uses Spotify's APIs in read-only mode to access your library, playlists, and recommendations. It does **not** stream audio from Spotify, generate artificial plays, or modify your account data. While using unofficial API clients technically falls outside Spotify's Terms of Service, the risk of account action is considered low — similar apps have operated for years without widespread bans. That said, **use Meld at your own risk** and consider using a secondary Spotify account if you're concerned.
-
-**YouTube/Google:** Audio is streamed through YouTube Music's infrastructure using the InnerTube API. Google has historically been more aggressive with unofficial clients. To minimize risk:
-- Avoid logging into your Google account in Meld unless needed for age-restricted content
-- Using Meld without a Google login carries minimal risk to your Google account
-- If you do log in, be aware this carries a small but nonzero risk
-
-**Bottom line:** No bans have been reported by Meld users to date. However, as with any third-party client, we cannot guarantee that platform policies won't change in the future.
-
-### Q: I have a niche request that is not fulfilled by the dev
-
-The app is only maintained by one dev and he also has a life. Just enjoy the free music and please don't DM/email the dev if you have any questions or enquiries — keep it in its designated channel in the server.
-
-## Credits
-
-Meld is a fork of [Metrolist](https://github.com/MetrolistGroup/Metrolist), originally created by [Mo Agamy](https://github.com/mostafaalagamy).
-
-### Upstream Projects
-
-- **InnerTune** — [Zion Huang](https://github.com/z-huang) · [Malopieds](https://github.com/Malopieds)
-- **OuterTune** — [Davide Garberi](https://github.com/DD3Boh) · [Michael Zh](https://github.com/mikooomich)
-
-### Libraries and Integrations
-
-- [**Kizzy**](https://github.com/dead8309/Kizzy) — Discord Rich Presence implementation
-- [**Better Lyrics**](https://better-lyrics.boidu.dev) — Time-synced lyrics with word-by-word highlighting
-- [**SimpMusic Lyrics**](https://github.com/maxrave-dev/SimpMusic) — Lyrics data through the SimpMusic Lyrics API
-- [**metroserver**](https://github.com/MetrolistGroup/metroserver) — Listen Together implementation
-- [**MusicRecognizer**](https://github.com/aleksey-saenko/MusicRecognizer) — Music recognition and Shazam API integration
-
-## Disclaimer
-
-This project and its contents are not affiliated with, funded, authorized, endorsed by, or in any way associated with YouTube, Google LLC, Spotify AB, or any of their affiliates and subsidiaries.
-
-Any trademark, service mark, trade name, or other intellectual property rights used in this project are owned by the respective owners.
+</div>
