@@ -2,7 +2,7 @@ package com.meld.spotify
 
 import com.metrolist.shared.network.ExpectedHttpFailureStatusCodes
 import com.metrolist.shared.network.TextResponse
-import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.header
 import io.ktor.client.request.parameter
@@ -10,7 +10,6 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
-import io.ktor.http.Url
 import io.ktor.http.contentType
 import io.ktor.http.fromHttpToGmtDate
 import io.ktor.http.isSuccess
@@ -19,6 +18,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.TimeZone
 import kotlinx.io.IOException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonNull
@@ -29,19 +29,12 @@ import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import kotlinx.serialization.json.putJsonObject
-import meow.nyx.spotlib.ApiHttp
-import meow.nyx.spotlib.AuthHttp
-import meow.nyx.spotlib.LogLevel
-import meow.nyx.spotlib.Queries
-import meow.nyx.spotlib.SpotifyConfig
-import meow.nyx.spotlib.SpotifyCookieJar
 import meow.nyx.spotlib.SpotifyException
-import meow.nyx.spotlib.SpotifyHttp
-import meow.nyx.spotlib.SpotifyLogger
 import meow.nyx.spotlib.SpotifySession
 import meow.nyx.spotlib.SpotifySessionExpiredException
-import java.util.TimeZone
+import kotlin.concurrent.Volatile
 import kotlin.random.Random
+import kotlin.time.Clock
 
 /** Emits every page from offset 0 on, following [SpotifyPage.nextOffset]. */
 fun <T> spotifyPages(fetch: suspend (offset: Int) -> SpotifyPage<T>): Flow<SpotifyPage<T>> =
@@ -60,13 +53,13 @@ fun <T> spotifyPages(fetch: suspend (offset: Int) -> SpotifyPage<T>): Flow<Spoti
  * upstream's playlist import. Nothing here deletes a stored session except [logout].
  */
 class SpotifyApi(
-    engine: HttpClientEngine,
+    http: HttpClient,
     private val loadSession: () -> String?,
     private val saveSession: (String) -> Unit,
     loadHashes: () -> String? = { null },
     saveHashes: (String) -> Unit = {},
     hashesUrl: String? = SpotifyHashRegistry.DEFAULT_URL,
-    private val clock: () -> Long = System::currentTimeMillis,
+    private val clock: () -> Long = { Clock.System.now().toEpochMilliseconds() },
     private val logger: (String) -> Unit = {},
 ) : AutoCloseable {
     private class Tokens(
@@ -79,19 +72,7 @@ class SpotifyApi(
         val errors: List<String>,
     )
 
-    // spotlib logs the token response body at LogLevel.BODIES: never raise this level.
-    private val config =
-        SpotifyConfig(
-            engine = engine,
-            logLevel = LogLevel.SUMMARY,
-            logger = SpotifyLogger { _, message -> logger(message) },
-        )
-    private val http = SpotifyHttp.create(config)
-    private val jar = SpotifyCookieJar()
-    private val api = ApiHttp(http, jar)
-
-    // shortcut: TOTP secret is spotlib's bundled constant, add an override fed by the registry JSON when Spotify rotates it.
-    private val auth = AuthHttp(api, config, jar)
+    private val api = SpotifyWebClient(http, clock, logger)
     private val hashes =
         SpotifyHashRegistry(
             fetch = hashesUrl?.let { url -> { api.get(url).takeIf { it.status.isSuccess() }?.body } },
@@ -139,7 +120,7 @@ class SpotifyApi(
     /** Downloads the remote hash registry (debounced). Worth calling once at startup. */
     suspend fun refreshHashes(): Boolean = hashes.refresh()
 
-    override fun close() = http.close()
+    override fun close() = api.close()
 
     suspend fun profile(): SpotifyUser = query("profileAttributes", buildJsonObject {}, ::parseUser)
 
@@ -257,7 +238,7 @@ class SpotifyApi(
     }
 
     suspend fun home(
-        timeZone: String = TimeZone.getDefault().id,
+        timeZone: String = TimeZone.currentSystemDefault().id,
         sectionItemsLimit: Int = 10,
     ): SpotifyHomeFeed {
         val variables =
@@ -439,10 +420,10 @@ class SpotifyApi(
             // A mutation is not repeated after a network or server error: it may already have been applied.
             val response =
                 execute(retryTransient = !mutation, maxRateLimitWaitMs = MAX_RATE_LIMIT_WAIT_MS) { tokens ->
-                    api.post(Queries.PATHFINDER_URL, MAX_RESPONSE_BYTES) {
+                    api.post(SPOTIFY_PATHFINDER_URL, MAX_RESPONSE_BYTES) {
                         attributes.put(ExpectedHttpFailureStatusCodes, setOf(401, 412, 429))
                         webPlayerHeaders(tokens)
-                        header("spotify-app-version", config.appVersion)
+                        header("spotify-app-version", SPOTIFY_APP_VERSION)
                         header("client-token", tokens.client)
                         contentType(ContentType.Application.Json)
                         setBody(body)
@@ -582,7 +563,7 @@ class SpotifyApi(
                 var trustedUntil = accessUsableUntil
                 var access = current.accessToken?.takeIf { now < trustedUntil }
                 if (access == null) {
-                    val token = auth.fetchAccessToken()
+                    val token = api.fetchAccessToken()
                     access = token.accessToken ?: throw SpotifyError.Changed("Spotify returned no access token")
                     current = current.copy(accessToken = access, accessTokenExpiresAtMs = token.accessTokenExpirationTimestampMs)
                     // The floor keeps a device clock set ahead from refreshing on every request; a
@@ -591,7 +572,7 @@ class SpotifyApi(
                 }
                 var client = current.clientToken?.takeIf { now - (current.clientTokenFetchedAtMs ?: 0) < CLIENT_TOKEN_TTL_MS }
                 if (client == null) {
-                    client = auth.fetchClientToken()
+                    client = api.fetchClientToken()
                     current = current.copy(clientToken = client, clientTokenFetchedAtMs = now)
                 }
                 if (current != session) {
@@ -625,14 +606,14 @@ class SpotifyApi(
 
     private fun attach(attached: SpotifySession) {
         detach()
-        attached.cookies.forEach { (name, value) -> jar.store(OPEN_URL, name, value) }
+        attached.cookies.forEach { (name, value) -> api.storeCookie(name, value) }
         accessUsableUntil = usableUntil(attached.accessTokenExpiresAtMs)
         session = attached
     }
 
     private fun detach() {
         session = null
-        jar.clear()
+        api.clearCookies()
     }
 
     private fun storedSession(): SpotifySession? =
@@ -642,7 +623,6 @@ class SpotifyApi(
             ?.takeIf(SpotifySession::hasLoginCookie)
 
     private companion object {
-        val OPEN_URL = Url("https://open.spotify.com/")
         val json = Json { ignoreUnknownKeys = true }
         const val MAX_RESPONSE_BYTES = 2 * 1024 * 1024
         const val ALBUM_PAGE_SIZE = 50

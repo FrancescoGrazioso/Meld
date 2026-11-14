@@ -4,6 +4,7 @@ import com.meld.spotify.SpotifyConnectionState.Connected
 import com.meld.spotify.SpotifyConnectionState.Disconnected
 import com.meld.spotify.SpotifyConnectionState.Expired
 import com.meld.spotify.SpotifyConnectionState.Failed
+import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.http.HttpHeaders
@@ -49,7 +50,7 @@ private class SpotifyBackend {
 
     fun owner(scope: CoroutineScope) =
         SpotifySessionOwner(
-            engine = engine,
+            http = HttpClient(engine),
             scope = scope,
             loadSession = { session },
             saveSession = { session = it },

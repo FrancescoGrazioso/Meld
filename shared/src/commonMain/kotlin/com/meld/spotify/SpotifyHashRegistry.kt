@@ -1,12 +1,15 @@
 package com.meld.spotify
 
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
-import java.time.Instant
-import java.util.concurrent.ConcurrentHashMap
+import kotlin.concurrent.Volatile
+import kotlin.time.Clock
+import kotlin.time.Instant
 
 /**
  * Persisted-query hashes per GraphQL operation. Candidates are tried in the order: last hash
@@ -16,7 +19,7 @@ internal class SpotifyHashRegistry(
     private val fetch: (suspend () -> String?)? = null,
     load: () -> String? = { null },
     private val save: (String) -> Unit = {},
-    private val clock: () -> Long = System::currentTimeMillis,
+    private val clock: () -> Long = { Clock.System.now().toEpochMilliseconds() },
     private val log: (String) -> Unit = {},
 ) {
     private data class Entry(
@@ -30,7 +33,7 @@ internal class SpotifyHashRegistry(
     )
 
     private val mutex = Mutex()
-    private val accepted = ConcurrentHashMap<String, String>()
+    private val accepted = MutableStateFlow(emptyMap<String, String>())
     private var lastRefreshAt: Long? = null
 
     @Volatile
@@ -40,7 +43,7 @@ internal class SpotifyHashRegistry(
         val remoteEntry = remote?.operations?.get(operation)
         val bundled = BUNDLED[operation]
         return listOfNotNull(
-            accepted[operation],
+            accepted.value[operation],
             remoteEntry?.hash,
             remoteEntry?.previous,
             bundled?.hash,
@@ -52,7 +55,7 @@ internal class SpotifyHashRegistry(
         operation: String,
         hash: String,
     ) {
-        accepted[operation] = hash
+        accepted.update { it + (operation to hash) }
     }
 
     /** Returns true when a newer valid registry was downloaded. At most one attempt per [REFRESH_INTERVAL_MS]. */
@@ -79,7 +82,7 @@ internal class SpotifyHashRegistry(
             }
             if (downloaded.operations == current?.operations) return false
             remote = downloaded
-            accepted.clear()
+            accepted.value = emptyMap()
             save(text)
             log("Hash registry updated: ${downloaded.operations.size} operations")
             true
@@ -98,7 +101,7 @@ internal class SpotifyHashRegistry(
                         name to Entry(hash, entry.str("previous_hash")?.takeIf(HASH::matches))
                     }.toMap()
             require(operations.isNotEmpty())
-            Registry(Instant.parse(root.str("last_updated")), operations)
+            Registry(Instant.parse(requireNotNull(root.str("last_updated"))), operations)
         }.getOrNull()
 
     companion object {

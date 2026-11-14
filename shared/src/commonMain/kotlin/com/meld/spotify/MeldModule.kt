@@ -14,7 +14,7 @@ import com.meld.spotify.playback.SpotifyQueueTarget
 import com.meld.spotify.playback.SpotifyTrackResolver
 import com.metrolist.shared.model.SearchFilter
 import com.metrolist.shared.model.SongItem
-import com.metrolist.shared.network.sharedHttpEngine
+import com.metrolist.shared.network.createHttpClient
 import com.metrolist.shared.settings.Settings
 import com.metrolist.shared.state.GlobalYouTubeRepository
 import com.metrolist.shared.youtube.logging.YtLogger
@@ -43,7 +43,7 @@ fun meldModule(
         single {
             val settings = Settings.shared
             SpotifySessionOwner(
-                engine = sharedHttpEngine,
+                http = createHttpClient(),
                 scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
                 loadSession = { settings.spotifySession },
                 saveSession = { settings.spotifySession = it },
