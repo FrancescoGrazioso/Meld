@@ -150,7 +150,10 @@ internal class FakeTarget : SpotifyQueueTarget {
 
     override fun playNext(songs: List<SongItem>) = queue.playNext(songs)
 
-    override fun reorder(entryKeys: List<Long>) = queue.reorder(queue.state.value.indicesOf(entryKeys))
+    override fun reorder(entryKeys: List<Long>): Boolean {
+        queue.reorder(queue.state.value.indicesOf(entryKeys))
+        return true
+    }
 
     /** The queue screen's shuffle button. */
     fun toggleShuffle() = queue.toggleShuffle(legacyShuffle = legacyShuffle)
