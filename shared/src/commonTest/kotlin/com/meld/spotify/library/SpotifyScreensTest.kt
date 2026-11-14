@@ -1,7 +1,7 @@
 package com.meld.spotify.library
 
 import com.metrolist.shared.ui.navigation.Screen
-import com.metrolist.shared.ui.navigation.SpotifyLibraryScreen
+import com.metrolist.shared.ui.navigation.SpotifyFolderScreen
 import com.metrolist.shared.ui.navigation.SpotifySettingsScreen
 import com.metrolist.shared.ui.navigation.SpotifyTracksScreen
 import kotlinx.serialization.json.Json
@@ -14,7 +14,7 @@ class SpotifyScreensTest {
     fun routesSurviveTheBackStackSerializer() {
         val routes =
             listOf(
-                SpotifyLibraryScreen("spotify:folder:f1", "Folder"),
+                SpotifyFolderScreen("spotify:folder:f1", "Folder"),
                 SpotifyTracksScreen(SpotifyCollectionType.PLAYLIST, "p1", "Mix"),
                 SpotifySettingsScreen,
             )

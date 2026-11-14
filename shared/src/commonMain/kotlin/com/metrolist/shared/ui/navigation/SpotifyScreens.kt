@@ -6,10 +6,10 @@ import kotlinx.serialization.Serializable
 // Meld's routes. They live in this package because `Screen` is sealed; keeping them out of Screen.kt
 // keeps that upstream file untouched.
 
-/** The Spotify library, or one playlist folder of it when [folderUri] is set. */
+/** One playlist folder of the Spotify library. */
 @Serializable
-data class SpotifyLibraryScreen(
-    val folderUri: String? = null,
+data class SpotifyFolderScreen(
+    val folderUri: String,
     val title: String? = null,
 ) : Screen()
 

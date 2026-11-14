@@ -1,6 +1,7 @@
 package com.meld.spotify
 
 import com.meld.spotify.library.SessionSpotifyLibrary
+import com.meld.spotify.library.SpotifyInLibrary
 import com.meld.spotify.library.SpotifyLibrary
 import com.meld.spotify.library.SpotifyLibraryStore
 import com.meld.spotify.match.SearchScope
@@ -57,6 +58,7 @@ fun spotifyModule(onLogout: () -> Unit = {}): Module =
         }
         single<SpotifyLibrary> { SessionSpotifyLibrary(get()) }
         single { SpotifyLibraryStore(get(), get(), CoroutineScope(SupervisorJob() + Dispatchers.Default)) }
+        single { SpotifyInLibrary(CoroutineScope(SupervisorJob() + Dispatchers.Default), get(), get()) }
     }
 
 /** Where upstream's playlist import saves the shared session instead of writing the setting itself. */

@@ -28,11 +28,11 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.meld.spotify.SpotifyConnection
 import com.meld.spotify.library.SpotifyCollectionType
+import com.meld.spotify.library.SpotifyFolderViewModel
 import com.meld.spotify.library.SpotifyLibraryStore
-import com.meld.spotify.library.SpotifyLibraryViewModel
 import com.meld.spotify.library.SpotifyTracksViewModel
 import com.meld.spotify.playback.SpotifyPlayback
-import com.meld.spotify.ui.SpotifyLibraryContent
+import com.meld.spotify.ui.SpotifyFolderContent
 import com.meld.spotify.ui.SpotifyTracksContent
 import com.metrolist.android.LocalMiniPlayerBottomInset
 import com.metrolist.android.ui.detailViewModelMetadata
@@ -45,7 +45,7 @@ import com.metrolist.shared.generated.resources.meld_spotify_liked_songs
 import com.metrolist.shared.ui.icons.MetrolistIcons
 import com.metrolist.shared.ui.navigation.Navigator
 import com.metrolist.shared.ui.navigation.Screen
-import com.metrolist.shared.ui.navigation.SpotifyLibraryScreen
+import com.metrolist.shared.ui.navigation.SpotifyFolderScreen
 import com.metrolist.shared.ui.navigation.SpotifySettingsScreen
 import com.metrolist.shared.ui.navigation.SpotifyTracksScreen
 import com.metrolist.shared.ui.settings.SettingsPageId
@@ -57,12 +57,12 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.core.parameter.parametersOf
 import org.koin.dsl.module
 
-class SpotifyLibraryHostViewModel(
+class SpotifyFolderHostViewModel(
     store: SpotifyLibraryStore,
     connection: SpotifyConnection,
-    folderUri: String?,
+    folderUri: String,
 ) : ViewModel() {
-    val shared = SpotifyLibraryViewModel(viewModelScope, store, connection, folderUri)
+    val shared = SpotifyFolderViewModel(viewModelScope, store, connection, folderUri)
 }
 
 class SpotifyTracksHostViewModel(
@@ -77,23 +77,22 @@ class SpotifyTracksHostViewModel(
 
 val spotifyScreensModule: Module =
     module {
-        viewModel { (folderUri: String) -> SpotifyLibraryHostViewModel(get(), get(), folderUri.ifEmpty { null }) }
+        viewModel { (folderUri: String) -> SpotifyFolderHostViewModel(get(), get(), folderUri) }
         // Playback is looked up, not required: without it the lists still open and only the play actions are missing.
         viewModel { (type: SpotifyCollectionType, id: String) -> SpotifyTracksHostViewModel(get(), get(), getOrNull(), type, id) }
     }
 
 /** Meld's Spotify routes, added to the app's entry provider. */
 fun EntryProviderScope<NavKey>.spotifyEntries(navigator: Navigator) {
-    entry<SpotifyLibraryScreen>(metadata = navTabMetadata + detailViewModelMetadata) { screen ->
+    entry<SpotifyFolderScreen>(metadata = navTabMetadata + detailViewModelMetadata) { screen ->
         val folderUri = screen.folderUri
         SpotifyScreenHost(screen.title ?: stringResource(Res.string.import_provider_spotify), navigator) { padding ->
-            SpotifyLibraryContent(
+            SpotifyFolderContent(
                 viewModel =
-                    koinViewModel<SpotifyLibraryHostViewModel>(
-                        key = "spotify-library:$folderUri",
-                        parameters = { parametersOf(folderUri.orEmpty()) },
+                    koinViewModel<SpotifyFolderHostViewModel>(
+                        key = "spotify-folder:$folderUri",
+                        parameters = { parametersOf(folderUri) },
                     ).shared,
-                isFolder = folderUri != null,
                 contentPadding = padding,
             )
         }
