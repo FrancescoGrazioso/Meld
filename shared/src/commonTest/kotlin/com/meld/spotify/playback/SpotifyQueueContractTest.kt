@@ -1,5 +1,6 @@
 package com.meld.spotify.playback
 
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runCurrent
@@ -25,8 +26,10 @@ class SpotifyQueueContractTest {
             this.queueLocked = queueLocked
         }
 
-    private fun TestScope.playback(player: FakePlayer): SpotifyQueuePlayback {
-        val youtube = FakeYouTube()
+    private fun TestScope.playback(
+        player: FakePlayer,
+        youtube: FakeYouTube = FakeYouTube(),
+    ): SpotifyQueuePlayback {
         val resolver = SpotifyTrackResolver(FakeMatchDao(), youtube::search, youtube::songsById, backgroundScope, { 0 })
         return SpotifyQueuePlayback(resolver, player.target(backgroundScope), backgroundScope, Random(7))
     }
@@ -76,55 +79,94 @@ class SpotifyQueueContractTest {
             assertEquals("mix0", player.ids.last())
         }
 
-    @Test
-    fun androidShuffleFromTheStartPlaysEveryTrackOnce() = runTest { shuffleFromTheStartPlaysEveryTrackOnce(android) }
+    private fun eachPlayer(test: TestScope.(FakePlayer) -> Unit) =
+        listOf(android, desktop(queueLocked = false), desktop(queueLocked = true)).forEach { runTest { test(it) } }
 
     @Test
-    fun desktopShuffleFromTheStartPlaysEveryTrackOnce() = runTest { shuffleFromTheStartPlaysEveryTrackOnce(desktop(queueLocked = false)) }
-
-    @Test
-    fun lockedDesktopShuffleFromTheStartPlaysEveryTrackOnce() = runTest { shuffleFromTheStartPlaysEveryTrackOnce(desktop(queueLocked = true)) }
-
-    private fun TestScope.shuffleFromTheStartPlaysEveryTrackOnce(player: FakePlayer) {
-        playback(player).play(tracks(0..27), startIndex = 4, shuffle = true)
-        runCurrent()
-        assertTrue(player.queue.isShuffled, "the player's shuffle is on, not only the feeder's")
-        val played = playedToTheEnd(player)
-        assertEquals("yt4", played.first())
-        assertEquals(yt(0..27).toSet(), played.toSet())
-        assertEquals(28, played.size)
-    }
-
-    @Test
-    fun androidShuffleSwitchedOnInTheQueue() = runTest { shuffleIsSwitchedOnInTheQueue(android) }
-
-    @Test
-    fun desktopShuffleSwitchedOnInTheQueue() = runTest { shuffleIsSwitchedOnInTheQueue(desktop(queueLocked = false)) }
-
-    @Test
-    fun lockedDesktopShuffleSwitchedOnInTheQueue() = runTest { shuffleIsSwitchedOnInTheQueue(desktop(queueLocked = true)) }
+    fun shuffleFromTheStartQueuesTheWholeSourceAtOnce() =
+        eachPlayer { player ->
+            playback(player).play(tracks(0..27), startIndex = 4, shuffle = true)
+            runCurrent()
+            assertTrue(player.queue.isShuffled, "the player's shuffle is on, not only the feeder's")
+            assertEquals("yt4", player.ids.first())
+            wholeSourceIsQueuedOnce(player)
+        }
 
     /** The reported case: 28 tracks started from the fifth, then the queue's shuffle button. */
-    private fun TestScope.shuffleIsSwitchedOnInTheQueue(player: FakePlayer) {
-        playback(player).play(tracks(0..27), startIndex = 4)
-        runCurrent()
-        player.toggleShuffle()
-        runCurrent()
-        // known defect, see 10-DA-FARE.md §16/§17: the queue shows 15 of the 28 tracks (the tapped one, a window of
-        // ten ahead and the four before it) until the listener is three tracks from its end; then ten more.
-        assertEquals(15, player.ids.size)
-        assertTrue(spotifySourcePending())
-        val played = mutableListOf("yt4")
-        repeat(10) { played += next(player)!! }
-        assertEquals(15, player.ids.size)
-        played += next(player)!!
-        assertEquals(25, player.ids.size)
+    @Test
+    fun shuffleSwitchedOnInTheQueueQueuesTheRestOfTheSourceAtOnce() =
+        eachPlayer { player ->
+            playback(player).play(tracks(0..27), startIndex = 4)
+            runCurrent()
+            // In order the queue is fed ahead of the listener: the tapped track, ten ahead and the four before it.
+            assertEquals(yt(0..14), player.ids)
+            assertFalse(player.continuation(listOf("mix0")))
 
-        // What the listener hears is right all the same: every track of the source, once.
-        played += playedToTheEnd(player).drop(1)
+            player.toggleShuffle()
+            runCurrent()
+            assertEquals("yt4", player.queue.currentItem()?.id)
+            wholeSourceIsQueuedOnce(player)
+        }
+
+    /** Every track of the 28 is in the queue once, then the continuation, and the listener hears each once. */
+    private fun TestScope.wholeSourceIsQueuedOnce(player: FakePlayer) {
+        assertEquals(yt(0..27), player.ids.sortedBy { it.drop(2).toInt() })
+        assertFalse(spotifySourcePending())
+        assertTrue(player.continuation(listOf("mix0", "mix1")))
+        assertEquals(listOf("mix0", "mix1"), player.ids.drop(28))
+        repeat(2) {
+            player.toggleShuffle()
+            runCurrent()
+            assertTrue(player.recommendationsAreLast, player.ids.toString())
+        }
+        val played = playedToTheEnd(player).dropLast(2)
         assertEquals(yt(0..27).toSet(), played.toSet())
         assertEquals(28, played.size)
     }
+
+    @Test
+    fun aNewerPlayCancelsTheBulkResolutionAndLeavesNoStrayTrack() =
+        eachPlayer { player ->
+            val youtube = FakeYouTube().apply { gate = CompletableDeferred() }
+            youtube.ungated += "Song 0"
+            val playback = playback(player, youtube)
+            playback.play(tracks(0..27), shuffle = true)
+            runCurrent()
+            assertEquals(listOf("yt0"), player.ids)
+            val asked = youtube.calls.size
+
+            youtube.ungated += (100..104).map { "Song $it" }
+            playback.play(tracks(100..104))
+            runCurrent()
+            youtube.gate?.complete(Unit)
+            runCurrent()
+            assertEquals(yt(100..104), player.ids)
+            assertFalse(spotifySourcePending())
+            assertEquals(asked + 5, youtube.calls.size, "the older request looks nothing more up")
+        }
+
+    @Test
+    fun aFailingPageIsAskedAgainDuringBulkResolutionAndDoesNotTruncateTheQueue() =
+        eachPlayer { player ->
+            var asked = 0
+            playback(player).play(tracks(0..9), shuffle = true) {
+                when (++asked) {
+                    1 -> tracks(10..19)
+                    2, 3 -> error("Spotify is unreachable")
+                    4 -> tracks(20..27)
+                    else -> null
+                }
+            }
+            runCurrent()
+            assertEquals(listOf("yt0"), player.ids)
+            assertTrue(spotifySourcePending())
+            assertFalse(player.continuation(listOf("mix0")))
+
+            testScheduler.advanceTimeBy(6_000)
+            runCurrent()
+            assertEquals(5, asked)
+            wholeSourceIsQueuedOnce(player)
+        }
 
     private fun TestScope.next(player: FakePlayer): String? = player.queue.getNext()?.id.also { runCurrent() }
 

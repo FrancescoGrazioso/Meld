@@ -72,7 +72,8 @@ data class SpotifyPlaybackSummary(
 /**
  * Feeds the player queue with YouTube songs matched to Spotify tracks: the tapped track first, then
  * a few ahead of the listener and every track before the tapped one. While the player shuffles,
- * the next tracks are drawn at random from all that is not queued yet, so each plays once.
+ * all that is left of the source is queued at once, drawn at random: the queue shows every track
+ * and each plays once.
  * [scope] must be single-threaded and the thread the public functions are called from (the main
  * thread): that is what makes "is this request still current, then touch the queue" atomic.
  */
@@ -149,25 +150,26 @@ class SpotifyQueuePlayback(
                 var low = true
                 var shuffled = false
                 if (started) {
-                    // The tracks ahead wait for the listener; the ones before the tapped track do not.
+                    // In order, the tracks ahead wait for the listener; the ones before the tapped track
+                    // and a shuffled source do not.
                     val (state, shuffleOn) =
                         combine(target.queueState, target.shuffleEnabled, ::Pair).first { (queue, on) ->
-                            !queue.has(tag) || queue.upcoming(tag) < LOW_WATER || (!on && before.isNotEmpty())
+                            !queue.has(tag) || on || queue.upcoming(tag) < LOW_WATER || before.isNotEmpty()
                         }
                     if (!state.has(tag)) return
                     low = state.upcoming(tag) < LOW_WATER
                     shuffled = shuffleOn
                 }
-                // A shuffled source is drawn from as a whole, so its pages are read ahead of the listener.
-                val page = nextPage
-                if (low && page != null && (after.isEmpty() || shuffled)) {
-                    val loaded =
-                        loadPage(page) {
-                            val queue = target.queueState.value
-                            if (started) queue.has(tag) else !queue.replacedSince(queueAtRequest)
-                        }
-                    if (loaded == null) nextPage = null else after += loaded
+                val current = {
+                    val queue = target.queueState.value
+                    if (started) queue.has(tag) else !queue.replacedSince(queueAtRequest)
                 }
+                // A shuffled source is drawn from as a whole, so all its pages are read before the next draw.
+                do {
+                    val page = nextPage?.takeIf { shuffled || (low && after.isEmpty()) } ?: break
+                    val loaded = loadPage(page, current)
+                    if (loaded == null) nextPage = null else after += loaded
+                } while (shuffled && current())
                 if (!started && after.isEmpty()) return
                 val earlier = started && !shuffled && !(low && after.isNotEmpty())
                 val batch =

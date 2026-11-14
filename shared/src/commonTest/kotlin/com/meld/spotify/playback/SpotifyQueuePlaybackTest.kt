@@ -305,8 +305,8 @@ class SpotifyQueuePlaybackTest {
             val pages = ArrayDeque(listOf(tracks(1..20), null))
             playback().play(tracks(0..0), shuffle = true) { pages.removeFirst() }
             runCurrent()
-            assertEquals(11, player.ids.size)
-            assertNotEquals(yt(0..10), player.ids)
+            assertEquals(21, player.ids.size)
+            assertNotEquals(yt(0..20), player.ids)
         }
 
     @Test
