@@ -34,19 +34,6 @@ class SpotifyCollection(
     val tracks: SpotifyPager<SpotifyTrackItem>,
 )
 
-enum class SpotifyLibraryTab {
-    PLAYLISTS,
-    ALBUMS,
-    ARTISTS,
-}
-
-/** How the library lists are shown; kept here so it survives leaving the screen. */
-data class SpotifyLibraryView(
-    val tab: SpotifyLibraryTab = SpotifyLibraryTab.PLAYLISTS,
-    val byName: Boolean = false,
-    val descending: Boolean = false,
-)
-
 // shortcut: nothing is evicted, add a size bound if memory use of very large libraries becomes a problem.
 
 /**
@@ -63,7 +50,6 @@ class SpotifyLibraryStore(
     private val mutableGeneration = MutableStateFlow(0)
 
     val generation: StateFlow<Int> = mutableGeneration.asStateFlow()
-    val view = MutableStateFlow(SpotifyLibraryView())
 
     init {
         scope.launch {

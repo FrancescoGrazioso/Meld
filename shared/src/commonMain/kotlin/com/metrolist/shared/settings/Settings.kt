@@ -277,6 +277,7 @@ class Settings(
     var spotifySession by preference("")
     var meldSpotifyAccount by preference(MeldSpotifyAccountKey, "")
     var meldSpotifyHashes by preference(MeldSpotifyHashesKey, "")
+    var meldLibrarySpotifyOnly by preference(false)
 
     private var storedAppLanguage by preference(AppLanguageKey, "SYSTEM")
     var appLanguage: String

@@ -68,6 +68,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.round
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.meld.spotify.ui.LibraryExtras
 import com.metrolist.shared.constants.GridRowSpacing
 import com.metrolist.shared.constants.GridScreenPadding
 import com.metrolist.shared.constants.GridTileSpacing
@@ -237,7 +238,7 @@ fun LibraryContent(
     onSearchDescendingChange: (Boolean) -> Unit = {},
     onPlayAlbum: ((AlbumItem) -> Unit)? = null,
     presentation: LibraryPresentation = remember { LibraryPresentation() },
-    leadingItem: (@Composable () -> Unit)? = null,
+    extras: LibraryExtras = LibraryExtras.None,
 ) {
     val currentSongIdState = rememberUpdatedState(currentSongId)
     val isPlayingState = rememberUpdatedState(isPlaying)
@@ -354,6 +355,7 @@ fun LibraryContent(
                 if (reorderEnabled) orderLibraryItems(prepared, reorderOrder) else prepared
             }
 
+        val cells = extras.cells(searchedItems, effectiveSortType, sortDirection, searchQuery)
         val haptics = rememberMetrolistHaptics()
 
         fun moveItem(
@@ -441,6 +443,7 @@ fun LibraryContent(
                             onSearchToggle = toggleSearch,
                             onFilterChange = onFilterChange,
                             onGridViewChange = onGridViewChange,
+                            leadingChip = extras.chip,
                         )
                     }
                     if (onSearchQueryChange != null) {
@@ -467,8 +470,8 @@ fun LibraryContent(
                             }
                         }
                     }
-                    if (leadingItem != null && searchQuery.isBlank()) {
-                        item(key = "library_leading", contentType = "leading", span = { GridItemSpan(maxLineSpan) }) { leadingItem() }
+                    extras.status?.let { status ->
+                        item(key = "library_extras", contentType = "status", span = { GridItemSpan(maxLineSpan) }) { status() }
                     }
                     items(
                         count = searchedAutoPlaylists.size,
@@ -493,7 +496,7 @@ fun LibraryContent(
                             }
                         }
                     }
-                    if (searchedItems.isEmpty() && searchedAutoPlaylists.isEmpty() && !error) {
+                    if (cells.isEmpty && searchedAutoPlaylists.isEmpty() && !error) {
                         item(key = "library_empty", contentType = "status", span = { GridItemSpan(maxLineSpan) }) {
                             Box(Modifier.fillMaxWidth().padding(48.dp), contentAlignment = Alignment.Center) {
                                 if (isLoading) {
@@ -515,11 +518,13 @@ fun LibraryContent(
                         }
                     } else {
                         items(
-                            count = searchedItems.size,
-                            key = { index -> searchedItems[index].libraryReorderKey },
-                            contentType = { index -> searchedItems[index]::class },
+                            count = cells.size,
+                            key = { cell -> cells.key(cell) ?: searchedItems[cells.index(cell)].libraryReorderKey },
+                            contentType = { cell -> if (cells.index(cell) < 0) "extra" else searchedItems[cells.index(cell)]::class },
                             span = { GridItemSpan(if (isGridView) 1 else maxLineSpan) },
-                        ) { index ->
+                        ) { cell ->
+                            val index = cells.index(cell)
+                            if (index < 0) return@items extras.Row(cells, cell, isGridView)
                             val item = searchedItems[index]
                             val playback by rememberItemPlayback(item.id, currentSongIdState, isPlayingState)
 
@@ -625,6 +630,7 @@ private fun LibraryHeader(
     onSearchToggle: () -> Unit,
     onFilterChange: (LibraryFilter?) -> Unit,
     onGridViewChange: (Boolean) -> Unit,
+    leadingChip: (@Composable () -> Unit)? = null,
 ) {
     var sortExpanded by remember { mutableStateOf(false) }
     var sortMenuOffset by remember { mutableStateOf(IntOffset.Zero) }
@@ -641,6 +647,7 @@ private fun LibraryHeader(
             label = { text.filterLabels.getValue(it) },
             modifier = Modifier.padding(top = 1.dp),
             contentPadding = PaddingValues(horizontal = 2.dp),
+            leadingContent = leadingChip,
         )
         Row(
             // LazyVerticalGrid supplies unbounded height, which can inflate expressive buttons under release optimizations.
