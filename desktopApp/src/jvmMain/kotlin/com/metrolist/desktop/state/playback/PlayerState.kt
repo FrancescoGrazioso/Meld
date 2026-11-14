@@ -3548,8 +3548,12 @@ object PlayerState {
         )
     }
 
-    fun reorderQueue(order: List<Int>): Boolean {
-        if (isListenTogetherGuest() || Settings.shared.isQueueLocked) return false
+    // Meld: ignoreLock is for the Spotify feeder's own reorder; the lock is for the user's drags.
+    fun reorderQueue(
+        order: List<Int>,
+        ignoreLock: Boolean = false,
+    ): Boolean {
+        if (isListenTogetherGuest() || (Settings.shared.isQueueLocked && !ignoreLock)) return false
         val expectedQueue = queue.snapshots.value
         if (order.size != expectedQueue.displayedItems.size || order.toSet() != expectedQueue.displayedItems.indices.toSet()) return false
         if (deviceConnect.intercept(
