@@ -1,5 +1,6 @@
 package com.metrolist.android.spotifyimport
 
+import com.meld.spotify.saveSpotifyGuestSession
 import com.metrolist.shared.network.sharedHttpEngine
 import com.metrolist.shared.settings.Settings
 import com.metrolist.shared.spotifyimport.SpotifyImportManager
@@ -23,5 +24,5 @@ private fun createAndroidSpotifyImportManager(): SpotifyImportManager =
             )
         },
         loadStoredSession = { Settings.shared.spotifySession },
-        saveStoredSession = { Settings.shared.spotifySession = it },
+        saveStoredSession = ::saveSpotifyGuestSession,
     )

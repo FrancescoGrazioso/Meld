@@ -21,6 +21,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
+import com.meld.android.meldModule
 import com.metrolist.android.backup.BackupRestoreManager
 import com.metrolist.android.deviceconnect.AndroidDeviceConnect
 import com.metrolist.android.di.appModule
@@ -243,7 +244,7 @@ class App :
         val koinStart = SystemClock.elapsedRealtime()
         startKoin {
             androidContext(this@App)
-            modules(coreModule, sharedModule, appModule)
+            modules(coreModule, sharedModule, appModule, meldModule)
         }
         Timber.tag(TAG).d("Koin init complete elapsed=%dms", SystemClock.elapsedRealtime() - koinStart)
 
