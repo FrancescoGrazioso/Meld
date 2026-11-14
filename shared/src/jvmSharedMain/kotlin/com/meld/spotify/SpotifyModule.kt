@@ -1,7 +1,12 @@
 package com.meld.spotify
 
+import com.meld.spotify.match.SearchScope
+import com.meld.spotify.playback.SpotifyTrackResolver
+import com.metrolist.shared.model.SearchFilter
+import com.metrolist.shared.model.SongItem
 import com.metrolist.shared.network.sharedHttpEngine
 import com.metrolist.shared.settings.Settings
+import com.metrolist.shared.state.GlobalYouTubeRepository
 import com.metrolist.shared.youtube.logging.YtLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -10,6 +15,7 @@ import org.koin.core.module.Module
 import org.koin.dsl.bind
 import org.koin.dsl.module
 import org.koin.mp.KoinPlatform
+import kotlin.time.Clock
 
 /** [onLogout] lets a platform drop Spotify clients it keeps alive outside the session owner. */
 fun spotifyModule(onLogout: () -> Unit = {}): Module =
@@ -29,6 +35,23 @@ fun spotifyModule(onLogout: () -> Unit = {}): Module =
                 logger = { YtLogger.d("MeldSpotify", it) },
             )
         } bind SpotifyConnection::class
+        single {
+            SpotifyTrackResolver(
+                dao = get(),
+                search = { step ->
+                    GlobalYouTubeRepository.instance
+                        .searchFiltered(
+                            step.text,
+                            if (step.scope == SearchScope.SONGS) SearchFilter.SONG else SearchFilter.VIDEO,
+                            allowOfflineFallback = false,
+                        ).items
+                        .filterIsInstance<SongItem>()
+                },
+                songsById = { GlobalYouTubeRepository.instance.getSongsMetadata(it) },
+                scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+                now = { Clock.System.now().toEpochMilliseconds() },
+            )
+        }
     }
 
 /** Where upstream's playlist import saves the shared session instead of writing the setting itself. */
