@@ -7,8 +7,8 @@ Choose the ARM64 DMG for Apple Silicon or x64 for Intel from [the download chann
 ## Install and verify
 
 1. [Verify the checksum](README.md#verify-a-download).
-2. Open the DMG and drag Metrolist to Applications.
-3. Eject the image and open Metrolist.
+2. Open the DMG and drag Meld to Applications.
+3. Eject the image and open Meld.
 4. If macOS blocks the unsigned app, use its per-app Open Anyway option only after verifying the download. Follow [Apple's instructions](https://support.apple.com/en-us/102445).
 5. Check playback, login and credential restoration after restart.
 

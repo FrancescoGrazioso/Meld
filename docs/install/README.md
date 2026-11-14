@@ -1,21 +1,21 @@
-# Install Metrolist KMP
+# Install Meld
 
 Choose your platform: [Android](android.md), [iOS and iPadOS](ios.md), [Windows](windows.md), [macOS](macos.md), or [Linux](linux.md).
 
 ## Get the package
 
-Use [Metrolist releases](https://github.com/MetrolistGroup/Metrolist/releases) for downloads. The table describes workflow outputs, not a guarantee that every package is published.
+Use [Meld releases](https://github.com/FrancescoGrazioso/Meld/releases) for downloads. The table describes workflow outputs, not a guarantee that every package is published.
 
 The [release workflow](../../.github/workflows/release.yml) defines these packages. `VERSION` below means the version in the download's filename.
 
 | Platform | Release asset |
 | --- | --- |
-| Android | `Metrolist.apk` |
+| Android | `Meld.apk` |
 | iOS | `Metrolist.ipa` |
-| Windows x64 | `Metrolist-Desktop-windows.zip`, `metrolist-installer-windows-x64-VERSION.exe` |
-| Windows ARM64 | `metrolist-desktop-windows-arm64-VERSION.zip` |
-| macOS | `metrolist-desktop-macos-arm64-VERSION.dmg`, `metrolist-desktop-macos-x64-VERSION.dmg` |
-| Linux | `metrolist-desktop-linux-x64-VERSION.AppImage`, `metrolist-desktop-linux-arm64-VERSION.AppImage` |
+| Windows x64 | `Meld-Desktop-Windows.zip`, `meld-installer-windows-x64-VERSION.exe` |
+| Windows ARM64 | `meld-desktop-windows-arm64-VERSION.zip` |
+| macOS | `meld-desktop-macos-arm64-VERSION.dmg`, `meld-desktop-macos-x64-VERSION.dmg` |
+| Linux | `meld-desktop-linux-x64-VERSION.AppImage`, `meld-desktop-linux-arm64-VERSION.AppImage` |
 
 The workflows do not publish MSI, DEB, RPM or Flatpak files. DEB/RPM Gradle targets and a local Flatpak build exist, but they are not release downloads. See the [desktop reference](../desktop.md#native-packages) for local packaging.
 
@@ -50,12 +50,12 @@ Compare all 64 hexadecimal characters with the matching entry in the checksum fi
 
 A mismatch means you should download the file again. Do not install a mismatched file. If the publisher supplies no checksum, you cannot perform this comparison. A checksum confirms that the file matches the publisher's copy; it is not a code-signing certificate.
 
-For Android or iOS, you can verify the APK or IPA on a computer before transferring it unchanged to the device. After installation, check the version in Metrolist's settings, open a song and confirm audible playback. Platform guides add checks for login and signing.
+For Android or iOS, you can verify the APK or IPA on a computer before transferring it unchanged to the device. After installation, check the version in Meld's settings, open a song and confirm audible playback. Platform guides add checks for login and signing.
 
 ## Before updating or uninstalling
 
-Export a backup from Metrolist's settings and keep it outside the installation directory or mobile app storage. Keep downloaded music separately if you need it. Do not assume a backup includes every downloaded audio file.
+Export a backup from Meld's settings and keep it outside the installation directory or mobile app storage. Keep downloaded music separately if you need it. Do not assume a backup includes every downloaded audio file.
 
 Use the same platform, architecture and installation method for updates. Avoid downgrading a database created by a newer version; see [downgrade safety](../crash-recovery.md). Uninstalling a mobile app deletes its local data. Removing a desktop application can leave settings, credentials, caches and downloaded music behind.
 
-If installation or startup still fails, include the package filename, app version, OS version, CPU architecture and exact error in a report to the [issue tracker](https://github.com/MetrolistGroup/Metrolist/issues). For desktop failures, collect the [application log](../desktop.md#logs-and-profiling). Remove account details and tokens before sharing logs.
+If installation or startup still fails, include the package filename, app version, OS version, CPU architecture and exact error in a report to the [issue tracker](https://github.com/FrancescoGrazioso/Meld/issues). For desktop failures, collect the [application log](../desktop.md#logs-and-profiling). Remove account details and tokens before sharing logs.

@@ -13,13 +13,13 @@ Follow your tool's setup and refresh instructions. Its OS support and signing li
 - [Sideloadly](https://sideloadly.io/faq.html).
 - [TrollStore](https://github.com/opa334/TrollStore), only where its supported OS versions overlap this app's minimum.
 
-Use the same signing account and resulting bundle ID for updates. Check the expiry shown by the tool and refresh before it expires. Refresh renews signing; download a new IPA separately to update Metrolist. Keep pairing files private.
+Use the same signing account and resulting bundle ID for updates. Check the expiry shown by the tool and refresh before it expires. Refresh renews signing; download a new IPA separately to update Meld. Keep pairing files private.
 
-To receive updates in AltStore or SideStore, add the source `https://github.com/MetrolistGroup/Metrolist/releases/latest/download/metrolist-altstore.json`. Each stable release regenerates it. Metrolist also shows a notice once per new stable release and opens its release page; it does not install anything.
+To receive updates in AltStore or SideStore, add the source `https://github.com/FrancescoGrazioso/Meld/releases/latest/download/metrolist-altstore.json`. Each stable release regenerates it. Meld also shows a notice once per new stable release and opens its release page; it does not install anything.
 
 ## Signing and entitlements
 
-The source bundle ID is `com.metrolist.MetrolistApp`. Tools may rewrite it. The Xcode project defines one app target without extensions. No app group is required.
+The source bundle ID is `com.meld.app`. Tools may rewrite it. The Xcode project defines one app target without extensions. No app group is required.
 
 `iosApp/Configuration/iosApp.entitlements` requests Associated Domains for `applinks:metrolist.cc`. `Info.plist` declares background audio and `metrolist`/`metrolist-auth` URL schemes. A signing profile may omit Associated Domains; do not assume HTTPS invitations work after re-signing. See [invitation delivery](../listen-together.md#invitation-links).
 

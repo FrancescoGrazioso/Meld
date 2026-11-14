@@ -38,7 +38,7 @@ import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 import com.russhwolf.settings.Settings as KmpSettings
 
-private const val APP_DIR_NAME = "metrolist"
+private const val APP_DIR_NAME = "meld"
 private const val SETTINGS_FILE_NAME = "settings.properties"
 private const val SECRETS_FILE_NAME = "secrets.properties"
 private const val WINDOWS_SECRET_ENTROPY = "MetrolistDesktopSecretsV1"

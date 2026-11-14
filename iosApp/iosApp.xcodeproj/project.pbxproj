@@ -17,7 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		C2DBF4EF9D605889B54F6416 /* Metrolist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Metrolist.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C2DBF4EF9D605889B54F6416 /* Meld.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Meld.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E06ED7E670B5D21A160DA9E /* iosApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iosApp.swift; sourceTree = "<group>"; };
 		0418C23F19355BB18E625B53 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Configuration/Config.xcconfig; sourceTree = "<group>"; };
 		B0FD6575DF35547EA4A7F264 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Configuration/Info.plist; sourceTree = "<group>"; };
@@ -72,7 +72,7 @@
 		92C43B9FC0E65F6DB2CAB38E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				C2DBF4EF9D605889B54F6416 /* Metrolist.app */,
+				C2DBF4EF9D605889B54F6416 /* Meld.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -97,8 +97,8 @@
 				9FE61069A71042D393E7AA0C /* Sentry */,
 			);
 			name = iosApp;
-			productName = Metrolist;
-			productReference = C2DBF4EF9D605889B54F6416 /* Metrolist.app */;
+			productName = Meld;
+			productReference = C2DBF4EF9D605889B54F6416 /* Meld.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */

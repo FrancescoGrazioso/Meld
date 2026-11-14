@@ -249,7 +249,7 @@ object DownloadManager {
     private val _downloadTitles = MutableStateFlow<Map<String, String>>(emptyMap())
     val downloadTitles: StateFlow<Map<String, String>> = _downloadTitles.asStateFlow()
 
-    fun getDefaultDownloadDir(): File = File(XdgUtils.getXdgDataHome(), "metrolist/downloads").also { it.mkdirs() }
+    fun getDefaultDownloadDir(): File = File(XdgUtils.getXdgDataHome(), "meld/downloads").also { it.mkdirs() }
 
     fun getDownloadDir(): File =
         Settings.shared.customDownloadPath
@@ -271,7 +271,7 @@ object DownloadManager {
         get() = getDownloadDir()
 
     private val downloadMetadataFile: File by lazy {
-        val dir = File(XdgUtils.getXdgStateHome(), "metrolist").also { check(it.mkdirs() || it.isDirectory) }
+        val dir = File(XdgUtils.getXdgStateHome(), "meld").also { check(it.mkdirs() || it.isDirectory) }
         File(dir, "downloads.json")
     }
 

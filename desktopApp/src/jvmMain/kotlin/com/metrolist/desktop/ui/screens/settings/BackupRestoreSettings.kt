@@ -653,7 +653,7 @@ fun BackupRestoreSettingsScreen(colorScheme: ColorScheme) {
                                                 file.inputStream().use { input ->
                                                     database.importForeignBackup(
                                                         input,
-                                                        File(XdgUtils.getXdgCacheHome(), "metrolist/foreign-import"),
+                                                        File(XdgUtils.getXdgCacheHome(), "meld/foreign-import"),
                                                         JdbcSQLiteDriver(),
                                                     )
                                                 }

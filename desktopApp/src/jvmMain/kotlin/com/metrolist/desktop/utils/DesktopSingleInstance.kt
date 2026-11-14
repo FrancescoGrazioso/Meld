@@ -129,8 +129,8 @@ internal class SingleInstanceLock(
 object DesktopSingleInstance {
     private val lock =
         SingleInstanceLock(
-            directory = XdgUtils.getXdgStateHome().toPath().resolve("metrolist"),
-            identifier = "metrolist",
+            directory = XdgUtils.getXdgStateHome().toPath().resolve("meld"),
+            identifier = "meld",
         )
     private val pendingPayloads = ConcurrentLinkedQueue<String>()
 

@@ -286,7 +286,7 @@ class BackupRestoreManager(
                     } ?: error("Could not open backup")
 
                     if (!foundDb && !foundSettings && !foundLegacySettings && aliasJson == null) {
-                        error("Backup does not contain Metrolist data")
+                        error("Backup does not contain Meld data")
                     }
                     check(!stagedWal.exists() || foundDb) { "Backup WAL has no database" }
                     manifest?.requireSupportedFormat()

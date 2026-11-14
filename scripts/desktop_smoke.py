@@ -43,13 +43,13 @@ def profile_environment(profile):
         directory = profile / kind.lower()
         directory.mkdir(parents=True)
         env[f"XDG_{kind}_HOME"] = str(directory)
-    config = profile / "config/metrolist"
+    config = profile / "config/meld"
     config.mkdir()
     (config / "settings.properties").write_text(
         "desktopOnboardingComplete=true\ndesktopOnboardingInitialized=true\n"
         "sentryEnabled=false\nenableLogging=true\n", encoding="utf-8"
     )
-    logs = profile / "state/metrolist/logs"
+    logs = profile / "state/meld/logs"
     logs.mkdir(parents=True)
     # XdgUtils honors these paths on every OS. Isolate legacy home-directory files too.
     # Setting ErrorFile now avoids the app's crash-log configuration relaunch.
@@ -66,7 +66,7 @@ def packaged_command(package, work, system, stdout):
         app = work / "app"
         with zipfile.ZipFile(package) as archive:
             archive.extractall(app)
-        yield [str(app / "Metrolist.exe")]
+        yield [str(app / "Meld.exe")]
     elif system == "darwin" and package.suffix == ".zip":
         app = work / "app"
         with zipfile.ZipFile(package) as archive:
@@ -74,7 +74,7 @@ def packaged_command(package, work, system, stdout):
             for entry in archive.infolist():
                 if entry.external_attr >> 16 and not entry.is_dir():
                     (app / entry.filename).chmod((entry.external_attr >> 16) & 0o777)
-        yield [str(app / "Metrolist.app/Contents/MacOS/Metrolist")]
+        yield [str(app / "Meld.app/Contents/MacOS/Meld")]
     elif system == "darwin":
         mount = work / "dmg"
         mount.mkdir()
@@ -83,7 +83,7 @@ def packaged_command(package, work, system, stdout):
                 ["hdiutil", "attach", str(package), "-mountpoint", str(mount), "-readonly", "-nobrowse"],
                 check=True, timeout=30, stdout=stdout, stderr=subprocess.STDOUT,
             )
-            yield [str(mount / "Metrolist.app/Contents/MacOS/Metrolist")]
+            yield [str(mount / "Meld.app/Contents/MacOS/Meld")]
         finally:
             subprocess.run(
                 ["hdiutil", "detach", "-force", str(mount)], check=True, timeout=15,
@@ -189,7 +189,7 @@ def quit_app(process, launcher, system, java_trace=False):
                 path = launcher.replace("'", "''")
                 # jpackage can keep a parent launcher waiting for the GUI process.
                 close = (
-                    f"$apps = @(Get-Process Metrolist | Where-Object {{ $_.Path -eq '{path}' -and $_.MainWindowHandle -ne 0 }}); "
+                    f"$apps = @(Get-Process Meld | Where-Object {{ $_.Path -eq '{path}' -and $_.MainWindowHandle -ne 0 }}); "
                     "if ($apps.Count -eq 0) { throw 'Packaged app has no main window to close' }; "
                     "foreach ($app in $apps) { if (-not $app.CloseMainWindow()) { throw 'Window close failed' } }"
                 )
@@ -223,7 +223,7 @@ def quit_app(process, launcher, system, java_trace=False):
 
 def collect_logs(work, output, native=False):
     errors = []
-    logs = work / "profile/state/metrolist/logs"
+    logs = work / "profile/state/meld/logs"
     if not (logs / "app.log").is_file():
         errors.append("app.log is missing; startup did not reach the logger")
     for log in sorted(logs.glob("app.log*")):

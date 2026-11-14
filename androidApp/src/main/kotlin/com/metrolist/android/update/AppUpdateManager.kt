@@ -242,8 +242,8 @@ object AppUpdateManager {
                 check(asset.size in 1..MAX_APK_BYTES) { "Invalid update size" }
                 val updateDir = File(context.cacheDir, "updates").apply { mkdirs() }
                 updateDir.listFiles()?.forEach(File::delete)
-                val partial = File(updateDir, "Metrolist-${release.version}.apk.part")
-                val output = File(updateDir, "Metrolist-${release.version}.apk")
+                val partial = File(updateDir, "Meld-${release.version}.apk.part")
+                val output = File(updateDir, "Meld-${release.version}.apk")
                 val request =
                     Request
                         .Builder()

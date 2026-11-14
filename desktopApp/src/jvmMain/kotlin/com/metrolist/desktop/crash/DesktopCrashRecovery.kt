@@ -48,7 +48,7 @@ import kotlin.system.exitProcess
 
 object DesktopCrashRecovery {
     const val ARGUMENT = "--crash-report"
-    val store get() = FileCrashStore(File(XdgUtils.getXdgDataHome(), "metrolist/crashes"))
+    val store get() = FileCrashStore(File(XdgUtils.getXdgDataHome(), "meld/crashes"))
 
     fun install() {
         val fallback =
@@ -176,7 +176,7 @@ object DesktopCrashRecovery {
     }
 
     fun share(report: String) {
-        val chooser = JFileChooser().apply { selectedFile = File("metrolist-crash.txt") }
+        val chooser = JFileChooser().apply { selectedFile = File("meld-crash.txt") }
         if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) chooser.selectedFile.writeText(report)
     }
 }

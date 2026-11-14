@@ -57,7 +57,7 @@ class LegacyInstallMigration(
         }
 
     private suspend fun startFreshBlocking() {
-        check(hasLegacyInstallation()) { "No legacy Metrolist database was found" }
+        check(hasLegacyInstallation()) { "No legacy library database was found" }
         val recovery = File(context.filesDir, "legacy-library-recovery/${UUID.randomUUID()}")
         check(recovery.mkdirs()) { "Could not create library recovery directory" }
         migrationMarker.writeText(MARKER_STAGING)
@@ -108,7 +108,7 @@ class LegacyInstallMigration(
     }
 
     private suspend fun migrateBlocking() {
-        check(hasLegacyInstallation()) { "No legacy Metrolist database was found" }
+        check(hasLegacyInstallation()) { "No legacy library database was found" }
         val current = context.getDatabasePath(DATABASE_NAME)
         val snapshot = File(context.cacheDir, "onboarding-legacy-$BACKUP_DATABASE_ENTRY")
         snapshot.delete()

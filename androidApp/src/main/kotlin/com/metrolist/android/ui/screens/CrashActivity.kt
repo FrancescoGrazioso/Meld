@@ -236,7 +236,7 @@ class CrashActivity : ComponentActivity() {
     private fun shareCrashLog(crashLog: String) {
         try {
             val timestamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val fileName = "metrolist_crash_$timestamp.txt"
+            val fileName = "meld_crash_$timestamp.txt"
             val crashDir = File(cacheDir, "crashes").apply { mkdirs() }
             val crashFile = File(crashDir, fileName)
             crashFile.writeText(crashLog)

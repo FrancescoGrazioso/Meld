@@ -1,10 +1,10 @@
 //
 // Config.xcconfig
-// Metrolist iOS App Scaffold Configuration
+// Meld iOS App Scaffold Configuration
 //
 
-PRODUCT_NAME = Metrolist
-PRODUCT_BUNDLE_IDENTIFIER = com.metrolist.MetrolistApp
+PRODUCT_NAME = Meld
+PRODUCT_BUNDLE_IDENTIFIER = com.meld.app
 CODE_SIGN_ENTITLEMENTS = Configuration/iosApp.entitlements
 INFOPLIST_PREPROCESS = YES
 INFOPLIST_PREFIX_HEADER = $(DERIVED_FILE_DIR)/MetrolistVersion.h

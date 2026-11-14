@@ -35,8 +35,8 @@ def main():
     xcconfig_path = repository / "iosApp/Configuration/Config.xcconfig"
     xcconfig = xcconfig_path.read_text()
     inherited_settings = {
-        "PRODUCT_NAME": "Metrolist",
-        "PRODUCT_BUNDLE_IDENTIFIER": "com.metrolist.MetrolistApp",
+        "PRODUCT_NAME": "Meld",
+        "PRODUCT_BUNDLE_IDENTIFIER": "com.meld.app",
         "CODE_SIGN_ENTITLEMENTS": "Configuration/iosApp.entitlements",
         "SWIFT_VERSION": "5.9",
         "IPHONEOS_DEPLOYMENT_TARGET": "17.0",

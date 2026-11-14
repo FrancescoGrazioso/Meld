@@ -12,7 +12,7 @@ internal fun windowsWebViewDataDirectory(
     userHome: String,
 ): File {
     val baseDirectory = localAppData?.takeIf(String::isNotBlank)?.let(::File) ?: File(userHome, "AppData/Local")
-    return File(baseDirectory, "Metrolist/WebView2")
+    return File(baseDirectory, "Meld/WebView2")
 }
 
 internal fun desktopWebViewDataDirectory(
@@ -27,12 +27,12 @@ internal fun desktopWebViewDataDirectory(
         }
 
         osName.contains("mac", ignoreCase = true) -> {
-            File(userHome, "Library/Application Support/Metrolist/WebView")
+            File(userHome, "Library/Application Support/Meld/WebView")
         }
 
         else -> {
             val xdgDirectory = xdgDataHome?.takeIf(String::isNotBlank)?.let(::File)?.takeIf(File::isAbsolute)
-            File(xdgDirectory ?: File(userHome, ".local/share"), "Metrolist/WebView")
+            File(xdgDirectory ?: File(userHome, ".local/share"), "Meld/WebView")
         }
     }
 
@@ -84,7 +84,7 @@ internal fun prepareAppOwnedDirectory(
         }
     }
     check(Files.isWritable(directoryPath)) {
-        "Metrolist cannot create a writable WebView data directory at ${directory.absolutePath}"
+        "Meld cannot create a writable WebView data directory at ${directory.absolutePath}"
     }
 }
 

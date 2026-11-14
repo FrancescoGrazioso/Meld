@@ -9,7 +9,7 @@ import org.koin.dsl.module
 import java.io.File
 
 fun getMeldDatabaseBuilder(
-    dbFile: File = File(XdgUtils.getXdgDataHome(), "metrolist/$MELD_DATABASE_NAME"),
+    dbFile: File = File(XdgUtils.getXdgDataHome(), "meld/$MELD_DATABASE_NAME"),
 ): RoomDatabase.Builder<MeldDatabase> {
     dbFile.parentFile.mkdirs()
     return Room

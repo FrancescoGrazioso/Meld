@@ -9,5 +9,7 @@
     <exclude domain="root" path="app_webview" />
     <exclude domain="database" path="exoplayer_internal.db" />
     <exclude domain="external" path="Metrolist/Downloads" />
+    <exclude domain="external" path="Meld/Downloads" />
     <exclude domain="external" path="Metrolist/Cache" />
+    <exclude domain="external" path="Meld/Cache" />
 </full-backup-content>

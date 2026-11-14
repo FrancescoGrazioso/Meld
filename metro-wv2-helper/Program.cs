@@ -62,7 +62,7 @@ namespace MetroWv2Helper
             _outputPath = outputPath;
             _provider = provider;
             _loginUrl = loginUrl;
-            Text = provider == "spotify" ? "Metrolist login for Spotify" : "Metrolist login for YouTube Music";
+            Text = provider == "spotify" ? "Meld login for Spotify" : "Meld login for YouTube Music";
             Size = new System.Drawing.Size(800, 800);
             StartPosition = FormStartPosition.CenterScreen;
 

@@ -28,7 +28,7 @@ With logging enabled, `WindowsWindow` records native minimize and restore sizes 
 
 Desktop uses bundled FFmpeg to decode audio and Java Sound to send PCM through ALSA. Automatic output selection tries `default`, `pipewire` and `pulse` mixers. It does not select arbitrary hardware, loopback or null outputs.
 
-PipeWire and PulseAudio hosts need their distribution's ALSA integration. On Arch with PipeWire, install `pipewire-alsa`. If playback progresses silently, check the default ALSA route and restart Metrolist after changing it. An explicit `javax.sound.sampled.SourceDataLine` property delegates selection to Java Sound.
+PipeWire and PulseAudio hosts need their distribution's ALSA integration. On Arch with PipeWire, install `pipewire-alsa`. If playback progresses silently, check the default ALSA route and restart Meld after changing it. An explicit `javax.sound.sampled.SourceDataLine` property delegates selection to Java Sound.
 
 For microcuts, export the playback event log immediately. Output-underrun records describe the buffer and time between writes; they do not identify the cause by themselves.
 
@@ -52,7 +52,7 @@ Appearance's Display density scales text, icons and controls on top of the syste
 
 Linux uses X11 or Xwayland by default. Scale setup runs before AWT window identity, URL-handler registration and Swing dispatcher initialization. In Wayland sessions, scale detection checks the compositor before toolkit environment variables, so a neutral `GDK_SCALE=1` cannot hide KDE's fractional output scale. Without compositor tools, detection uses `QT_SCALE_FACTOR`, the product of `GDK_SCALE` and `GDK_DPI_SCALE`, `XDG_SCALE`, Xft DPI from `xrdb -query`, or `[KScreen] ScaleFactor` in `kdeglobals`. Configuration follows `XDG_CONFIG_HOME`. X11 sessions also use these fallbacks.
 
-KDE's Xwayland clients use one global scale, the largest output scale. When `[KScreen] XwaylandClientsScale=false`, KWin scales legacy windows itself, so Metrolist leaves client density at 100% before applying the user's preset. See [KWin's Xwayland scale selection](https://github.com/KDE/kwin/blob/master/src/workspace.cpp). GNOME, Hyprland and Sway use per-monitor correction and monitor refresh. Native Wayland, enabled with `METROLIST_USE_WAKEFIELD=1`, and Windows and macOS use the toolkit's density before applying the user's preset.
+KDE's Xwayland clients use one global scale, the largest output scale. When `[KScreen] XwaylandClientsScale=false`, KWin scales legacy windows itself, so Meld leaves client density at 100% before applying the user's preset. See [KWin's Xwayland scale selection](https://github.com/KDE/kwin/blob/master/src/workspace.cpp). GNOME, Hyprland and Sway use per-monitor correction and monitor refresh. Native Wayland, enabled with `METROLIST_USE_WAKEFIELD=1`, and Windows and macOS use the toolkit's density before applying the user's preset.
 
 Disable Wayland scale fix bypasses Linux's automatic scale probes and per-window correction in Wayland sessions. It requires a restart because startup also configures the JVM and Skiko scale. It does not disable the user's Display density preset. X11 system-scale changes require a restart; Wayland monitor changes refresh while the app runs.
 
@@ -101,7 +101,7 @@ Bytedeco publishes no `windows-arm64` FFmpeg natives. `scripts/build_windows_arm
 ./gradlew :desktopApp:packageReleaseDmg
 ```
 
-The AppImage script writes `dist/Metrolist.AppImage` and accepts `GRADLE` to select the Gradle command. The DMG task requires macOS and writes under `desktopApp/build/compose/binaries/main-release/dmg/`. Packages include their own runtime.
+The AppImage script writes `dist/Meld.AppImage` and accepts `GRADLE` to select the Gradle command. The DMG task requires macOS and writes under `desktopApp/build/compose/binaries/main-release/dmg/`. Packages include their own runtime.
 
 The Arch recipe is in [`aur/`](../aur/). `make aur-install` builds from the local tree. Standalone recipes fetch remote source. `bash aur/test-recipe.sh` checks recipe behavior without building the app.
 
@@ -123,7 +123,7 @@ Linux cannot validate DMG packaging or Rosetta. Before release, inspect Finder b
 
 ### Flatpak
 
-The local manifest is `flatpak/com.metrolist.desktop.yaml`, with app ID `com.metrolist.desktop`. It builds the working tree and needs initialized submodules.
+The local manifest is `flatpak/com.meld.desktop.yaml`, with app ID `com.meld.desktop`. It builds the working tree and needs initialized submodules.
 
 ```sh
 make flatpak-deps
@@ -140,9 +140,9 @@ make flatpak-bundle
 
 | OS | CDS cache |
 | --- | --- |
-| Linux | `$XDG_CACHE_HOME/metrolist`, default `~/.cache/metrolist` |
-| macOS | `~/Library/Caches/com.metrolist.desktop` |
-| Windows | `%LOCALAPPDATA%/Metrolist/cache` |
+| Linux | `$XDG_CACHE_HOME/meld`, default `~/.cache/meld` |
+| macOS | `~/Library/Caches/com.meld.desktop` |
+| Windows | `%LOCALAPPDATA%/Meld/cache` |
 
 Archives stay outside read-only app mounts and installation directories. On Windows, both portable ZIP and installer launchers use `%LOCALAPPDATA%`, which [JDK 25's launcher expands](https://github.com/openjdk/jdk/blob/jdk-25-ga/src/jdk.jpackage/share/native/applauncher/CfgFile.cpp). Close the app before removing a corrupt archive. An unwritable cache can cause a nonzero exit when HotSpot saves it at shutdown. Use `-Xlog:cds=info` to check archive mapping.
 
@@ -154,7 +154,7 @@ AppImage packaging uses `createReleaseRuntimeImage`. A second jpackage runtime l
 
 `Main.kt` runs crash-report handoff, JVM crash-file configuration, allocator setup, CDS cache creation, platform/display checks and the single-instance lock before the window. Pending backup restore and settings/credential migration finish before database access or logging. Saved locale, geometry, window frame and Wayland scale also apply before creating the window. Secure-store reads stay in this settings step; they must not race restore or credential migration.
 
-The CDS directory is created before crash recovery or a JVM relaunch can exit. Otherwise HotSpot fails with `Unable to create shared archive file` followed by an unrecoverable archive-loading error. The Linux wrapper resolves the HotSpot error-file path from an absolute `XDG_STATE_HOME` before starting the VM, which avoids a crash-path relaunch for custom profiles. Other launcher overrides keep the relaunch guard. Windows uses `$USERPROFILE/.local/state/metrolist/logs` by default and guards custom profiles.
+The CDS directory is created before crash recovery or a JVM relaunch can exit. Otherwise HotSpot fails with `Unable to create shared archive file` followed by an unrecoverable archive-loading error. The Linux wrapper resolves the HotSpot error-file path from an absolute `XDG_STATE_HOME` before starting the VM, which avoids a crash-path relaunch for custom profiles. Other launcher overrides keep the relaunch guard. Windows uses `$USERPROFILE/.local/state/meld/logs` by default and guards custom profiles.
 
 Initial Linux scale detection has a shared 2 s command-probe budget before AWT, including `xrdb`, `gsettings` and compositor queries through `gdbus`. These results configure JVM/Skiko scaling; deferring them would initialize AWT at the wrong scale. The Swing application scope stays lazy until after this step. Monitor refresh runs on a background watcher. Both the loading frame and full window use `DesktopDensityProvider`, so the user's density preset also applies to the first frame. Linux URL-handler registration waits for the full app frame.
 
@@ -168,7 +168,7 @@ After that frame, consent-controlled Sentry, enabled Discord integration, native
 
 ## Credentials and settings files
 
-`shared/src/desktopMain/kotlin/com/metrolist/shared/settings/PlatformSettings.desktop.kt` owns settings persistence. Public preferences use `$XDG_CONFIG_HOME/metrolist/settings.properties`, defaulting to `~/.config/metrolist/settings.properties`. A complete pending snapshot takes precedence after failed replacement. See [corrupt-file recovery](crash-recovery.md#settings-recovery).
+`shared/src/desktopMain/kotlin/com/metrolist/shared/settings/PlatformSettings.desktop.kt` owns settings persistence. Public preferences use `$XDG_CONFIG_HOME/meld/settings.properties`, defaulting to `~/.config/meld/settings.properties`. A complete pending snapshot takes precedence after failed replacement. See [corrupt-file recovery](crash-recovery.md#settings-recovery).
 
 Windows protects credentials with DPAPI. macOS uses AES-GCM with a Keychain key. An unavailable Keychain is retried; never replace an existing encrypted file with plaintext. Authentication failure preserves a unique encrypted backup. Only the original key can decrypt it.
 
@@ -213,7 +213,7 @@ The preference takes effect on restart, before AWT and Skiko initialize. An expl
 
 ## Logs and profiling
 
-Sanitized warnings and errors go to `$XDG_STATE_HOME/metrolist/logs/app.log`, defaulting to `~/.local/state/metrolist/logs/app.log`. On Windows the default is `%USERPROFILE%\.local\state\metrolist\logs\app.log`. Detailed logging adds lower severities. Rotation keeps five 10 MiB archives.
+Sanitized warnings and errors go to `$XDG_STATE_HOME/meld/logs/app.log`, defaulting to `~/.local/state/meld/logs/app.log`. On Windows the default is `%USERPROFILE%\.local\state\meld\logs\app.log`. Detailed logging adds lower severities. Rotation keeps five 10 MiB archives.
 
 With detailed logging enabled before launch, Skiko logs its selected renderer and GPU when it initializes a rendering context. An explicit `skiko.hardwareInfo.enabled` property overrides this behavior. After the first visible frame, `Runtime` records the JVM vendor, build, architecture, VM mode, selected JIT/CDS arguments and requested Skiko backend. HotSpot's `emulated-client` mode describes its C1 configuration, not CPU emulation. Requested options do not prove which backend or CDS archives are active. Use Skiko's `Renderer info` for the active backend and `-Xlog:cds=info` for archive mapping. These diagnostics leave rendering and JVM defaults unchanged.
 
@@ -229,7 +229,7 @@ Desktop playback installs FFmpeg's native log callback. Warnings and errors go t
 
 ### Crash reports
 
-After a crash, restart the app once so the previous-exit diagnostic is written. Then collect `app.log`, its recent archives, any `hs_err_pid<PID>.log`, and `session-running.txt` if present. On Windows these are in `%USERPROFILE%\.local\state\metrolist\logs`, or `%XDG_STATE_HOME%\metrolist\logs` when `XDG_STATE_HOME` is set. After a video-load failure, export the playback event log. Include the build ID, exact failure time, track link, OS version, GPU and driver version. On Windows, also include the Event Viewer Application Error entry.
+After a crash, restart the app once so the previous-exit diagnostic is written. Then collect `app.log`, its recent archives, any `hs_err_pid<PID>.log`, and `session-running.txt` if present. On Windows these are in `%USERPROFILE%\.local\state\meld\logs`, or `%XDG_STATE_HOME%\meld\logs` when `XDG_STATE_HOME` is set. After a video-load failure, export the playback event log. Include the build ID, exact failure time, track link, OS version, GPU and driver version. On Windows, also include the Event Viewer Application Error entry.
 
 ### Account sync failures
 
@@ -245,6 +245,6 @@ A useful report also includes the app version, the song's YouTube Music URL, the
 
 ## Updates and restore
 
-Desktop checks the public Metrolist release list and keeps cached notes after failures. Registered Windows installations can download and verify stable installers. Portable installations, other systems and prereleases open the release page.
+Desktop checks the public Meld release list and keeps cached notes after failures. Registered Windows installations can download and verify stable installers. Portable installations, other systems and prereleases open the release page.
 
 Restore accepts `.zip` and `.backup` with the same validation. Preserve original databases, sidecars and settings until installation succeeds or rollback completes. Failed restart-helper launch disarms restore and reports the error. Use disposable profiles for recovery checks.

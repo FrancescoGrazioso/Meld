@@ -231,13 +231,13 @@ The benchmark also holds the shared Gradle lock for the whole comparison. The de
 The release package has a linked runtime without the command-line launcher. Clone that runtime into a new destination for the control and add `java` from the exact JDK version used to create it. This leaves the packaged runtime untouched. On this machine the matching JDK is `/usr/lib/jvm/java-25-temurin`.
 
 ```sh
-cp -a desktopApp/build/compose/binaries/main-release/app/Metrolist/lib/runtime \
+cp -a desktopApp/build/compose/binaries/main-release/app/Meld/lib/runtime \
   /tmp/r6-native-image/jvm-runtime
 mkdir -p /tmp/r6-native-image/jvm-runtime/bin
 cp /usr/lib/jvm/java-25-temurin/bin/java /tmp/r6-native-image/jvm-runtime/bin/java
 python3 scripts/desktop-native-image/benchmark.py \
   --java /tmp/r6-native-image/jvm-runtime/bin/java \
-  --jvm-config desktopApp/build/compose/binaries/main-release/app/Metrolist/lib/app/Metrolist.cfg \
+  --jvm-config desktopApp/build/compose/binaries/main-release/app/Meld/lib/app/Meld.cfg \
   --local-media /tmp/r6-native-image/tone.opus \
   --youtube 'https://music.youtube.com/watch?v=IgxYypxZDTQ' \
   --name comparison-serial \

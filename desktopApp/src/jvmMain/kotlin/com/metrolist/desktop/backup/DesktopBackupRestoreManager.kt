@@ -63,8 +63,8 @@ object DesktopBackupRestoreManager {
     private val json = Json { ignoreUnknownKeys = true }
     internal var databaseFileOverride: File? = null
     internal var restoreDirOverride: File? = null
-    private val databaseFile get() = databaseFileOverride ?: File(XdgUtils.getXdgDataHome(), "metrolist/metrolist.db")
-    private val restoreDir get() = restoreDirOverride ?: File(XdgUtils.getXdgStateHome(), "metrolist/pending-restore")
+    private val databaseFile get() = databaseFileOverride ?: File(XdgUtils.getXdgDataHome(), "meld/metrolist.db")
+    private val restoreDir get() = restoreDirOverride ?: File(XdgUtils.getXdgStateHome(), "meld/pending-restore")
 
     fun backup(destination: File): Result<Unit> =
         runCatching {
@@ -168,7 +168,7 @@ object DesktopBackupRestoreManager {
                     entry = zip.nextEntry
                 }
             }
-            check(foundData) { "Backup does not contain Metrolist data" }
+            check(foundData) { "Backup does not contain Meld data" }
             val stagedWal = File(restoreDir, "$BACKUP_DATABASE_ENTRY-wal")
             check(!stagedWal.exists() || File(restoreDir, BACKUP_DATABASE_ENTRY).exists()) { "Backup WAL has no database" }
             val portableSettings = File(restoreDir, BACKUP_SETTINGS_ENTRY).takeIf(File::exists)

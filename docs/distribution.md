@@ -6,13 +6,13 @@
 
 ```sh
 mkdir -p build
-gh release view "$tag" --repo MetrolistGroup/Metrolist \
+gh release view "$tag" --repo FrancescoGrazioso/Meld \
   --json tagName,isDraft,isPrerelease,url,publishedAt,body,assets > build/release.json
-gh release download "$tag" --repo MetrolistGroup/Metrolist \
+gh release download "$tag" --repo FrancescoGrazioso/Meld \
   --dir build/distribution-assets --pattern SHA256SUMS \
-  --pattern 'metrolist-installer-windows-*.exe' \
-  --pattern 'metrolist-desktop-linux-*.AppImage' \
-  --pattern 'metrolist-desktop-macos-*.dmg'
+  --pattern 'meld-installer-windows-*.exe' \
+  --pattern 'meld-desktop-linux-*.AppImage' \
+  --pattern 'meld-desktop-macos-*.dmg'
 python3 scripts/generate_distribution.py \
   --assets build/distribution-assets --release build/release.json \
   --output build/distribution
@@ -22,13 +22,13 @@ The workflow keeps `distribution-recipes` for 30 days. Cleanup removes only inte
 
 ## WinGet
 
-`packaging/winget/` defines version, locale and installer manifests under `manifests/m/MetrolistGroup/Metrolist/VERSION/`. WinGet uses the release-bound MetrolistManager executable, not the portable ZIP. Its silent options and per-user uninstall identity must match that pinned manager.
+`packaging/winget/` defines version, locale and installer manifests under `manifests/f/FrancescoGrazioso/Meld/VERSION/`. WinGet uses the release-bound MetrolistManager executable, not the portable ZIP. Its silent options and per-user uninstall identity must match that pinned manager.
 
 Run `winget validate --manifest PATH` on Windows, then test clean install, upgrade and uninstall before submission. Do not request elevation or purge user data.
 
 ## Homebrew
 
-`packaging/homebrew/metrolist.rb.in` selects a checksummed DMG by architecture and installs `Metrolist.app`. Output belongs at `Casks/metrolist.rb` in the configured tap. Preserve Gatekeeper and user data.
+`packaging/homebrew/meld.rb.in` selects a checksummed DMG by architecture and installs `Meld.app`. Output belongs at `Casks/meld.rb` in the configured tap. Preserve Gatekeeper and user data.
 
 Run `brew style --cask PATH` and `brew audit --cask --online TOKEN` in the tap. Test both architectures and follow [unsigned-app installation](install/macos.md#install-and-verify).
 
@@ -49,17 +49,17 @@ To use the root flake, copy generated `release.json` to `packaging/release.json`
 
 ## Flatpak and Flathub
 
-The [local source manifest](../flatpak/com.metrolist.desktop.yaml) builds the checkout with Gradle and network access. The [release template](../packaging/flatpak/com.metrolist.desktop.json.in) extracts checksum-pinned AppImages without Gradle or build-time network. Read each manifest's runtime pin; they are separate build paths.
+The [local source manifest](../flatpak/com.meld.desktop.yaml) builds the checkout with Gradle and network access. The [release template](../packaging/flatpak/com.meld.desktop.json.in) extracts checksum-pinned AppImages without Gradle or build-time network. Read each manifest's runtime pin; they are separate build paths.
 
 After generation:
 
 ```sh
-flatpak-builder --show-manifest build/distribution/flatpak/com.metrolist.desktop.json
-flatpak-builder-lint manifest build/distribution/flatpak/com.metrolist.desktop.json
-appstreamcli validate --no-net build/distribution/flatpak/com.metrolist.desktop.metainfo.xml
-desktop-file-validate build/distribution/flatpak/com.metrolist.desktop.desktop
+flatpak-builder --show-manifest build/distribution/flatpak/com.meld.desktop.json
+flatpak-builder-lint manifest build/distribution/flatpak/com.meld.desktop.json
+appstreamcli validate --no-net build/distribution/flatpak/com.meld.desktop.metainfo.xml
+desktop-file-validate build/distribution/flatpak/com.meld.desktop.desktop
 flatpak-builder --user --install-deps-from=flathub --force-clean \
-  build/flatpak-release build/distribution/flatpak/com.metrolist.desktop.json
+  build/flatpak-release build/distribution/flatpak/com.meld.desktop.json
 ```
 
 Permissions cover X11, IPC, DRI, PulseAudio, network, Secret Service, the app's MPRIS name, Downloads and Music. Neither manifest grants the whole home directory or session bus. Check login, credentials, local files, downloads, audio and GPU rendering in the sandbox.
@@ -81,7 +81,7 @@ Generation needs no extra secret. External proposals need `PACKAGING_PR_TOKEN` p
 
 The token needs Contents/Pull requests write permission and source visibility access. The script refuses writes while the source repository is private. Flatpak also requires screenshots and `FLATPAK_BINARY_EXCEPTION=true` after explicit Flathub approval. No AUR publishing token is consumed.
 
-`scripts/propose_distribution.py` creates or updates `build/metrolist-VERSION` and opens a draft PR against the destination's default branch. It never force-pushes or merges. WinGet staging PRs need a separate upstream submission.
+`scripts/propose_distribution.py` creates or updates `build/meld-VERSION` and opens a draft PR against the destination's default branch. It never force-pushes or merges. WinGet staging PRs need a separate upstream submission.
 
 ## Verification
 
@@ -91,7 +91,7 @@ python3 scripts/test_build_appimage.py
 python3 .github/tests/test_release_workflows.py
 python3 .github/tests/test_repository_checks.py
 bash -n scripts/build_appimage.sh
-shellcheck scripts/build_appimage.sh packaging/flatpak/com.metrolist.desktop
+shellcheck scripts/build_appimage.sh packaging/flatpak/com.meld.desktop
 actionlint .github/workflows/release.yml .github/workflows/verify-repository-checks.yml
 ```
 

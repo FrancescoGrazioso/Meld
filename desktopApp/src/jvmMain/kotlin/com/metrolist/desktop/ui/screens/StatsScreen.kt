@@ -146,7 +146,7 @@ fun StatsScreen() {
     }
     StatisticsScreen(
         exportLabel = exportLabel,
-        onExport = { saveImage(it, exportLabel, "metrolist-statistics.png") },
+        onExport = { saveImage(it, exportLabel, "meld-statistics.png") },
         modifier = Modifier.cursorContextMenu(songMenu, openOnSecondaryClick = false),
         state =
             StatisticsUiState(

@@ -9,7 +9,7 @@ build_dir="$root_dir/iosApp/build"
 derived_data_dir="$root_dir/iosApp/DerivedData"
 scheme="iosApp"
 project_path="$root_dir/iosApp/iosApp.xcodeproj"
-bundle_id="com.metrolist.MetrolistApp"
+bundle_id="com.meld.app"
 
 mode="sim"
 configuration="Debug"
@@ -61,7 +61,7 @@ marketing_version="$(bash "$root_dir/scripts/ios_version.sh")"
 build_version="$marketing_version"
 
 echo "=================================================="
-echo " Building Metrolist iOS ($configuration - Mode: $mode)"
+echo " Building Meld iOS ($configuration - Mode: $mode)"
 echo "=================================================="
 
 if [[ "$mode" == "ipa" ]]; then

@@ -218,7 +218,7 @@ fun PlaylistScreen(colorScheme: ColorScheme) {
     val editCoverLabel = stringResource(Res.string.edit_playlist_cover)
 
     fun coverFiles(id: String): List<File> {
-        val dir = File(XdgUtils.getXdgDataHome(), "metrolist/playlist_covers")
+        val dir = File(XdgUtils.getXdgDataHome(), "meld/playlist_covers")
         return dir
             .listFiles { _, name ->
                 name == "$id.jpg" || (name.startsWith("${id}_") && name.endsWith(".jpg"))
@@ -231,7 +231,7 @@ fun PlaylistScreen(colorScheme: ColorScheme) {
         id: String,
     ): String? =
         runCatching {
-            val coversDir = File(XdgUtils.getXdgDataHome(), "metrolist/playlist_covers").apply { mkdirs() }
+            val coversDir = File(XdgUtils.getXdgDataHome(), "meld/playlist_covers").apply { mkdirs() }
             val dest = File(coversDir, "${id}_${System.currentTimeMillis()}.jpg")
             dest.outputStream().use { output -> output.write(bytes) }
             dest.absolutePath

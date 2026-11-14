@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.9.0.schema.json
+PackageIdentifier: FrancescoGrazioso.Meld
+PackageVersion: '@VERSION@'
+PackageLocale: en-US
+Publisher: FrancescoGrazioso
+PublisherUrl: https://github.com/FrancescoGrazioso
+PublisherSupportUrl: https://github.com/FrancescoGrazioso/Meld/issues
+PackageName: Meld Desktop
+PackageUrl: https://github.com/FrancescoGrazioso/Meld
+License: GPL-3.0
+LicenseUrl: https://github.com/FrancescoGrazioso/Meld/blob/v@VERSION@/LICENSE
+ShortDescription: YouTube Music desktop client
+ReleaseNotesUrl: https://github.com/FrancescoGrazioso/Meld/releases/tag/v@VERSION@
+ManifestType: defaultLocale
+ManifestVersion: 1.9.0

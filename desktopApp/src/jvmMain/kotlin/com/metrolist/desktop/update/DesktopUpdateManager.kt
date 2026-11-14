@@ -38,7 +38,7 @@ import java.security.MessageDigest
 object DesktopUpdateManager {
     private const val API_BASE = "https://api.github.com/repos/FrancescoGrazioso/Meld"
     internal const val RELEASES_URL = "$API_BASE/releases?per_page=50"
-    private const val REGISTRY_PATH = "Software\\Metrolist\\Desktop"
+    private const val REGISTRY_PATH = "Software\\Meld\\Desktop"
     private const val MAX_MANAGER_BYTES = 128L * 1024 * 1024
 
     private val client = sharedOkHttpClient
@@ -121,11 +121,11 @@ object DesktopUpdateManager {
         withContext(Dispatchers.IO) {
             mutableDownloadProgress.value = null
             runCatching {
-                val root = checkNotNull(installationRoot()) { "Metrolist installation was not found" }.root
+                val root = checkNotNull(installationRoot()) { "Meld installation was not found" }.root
                 val release = getRelease("$API_BASE/releases/tags/v$version")
                 val errorMsg = getString(Res.string.update_not_published_stable)
                 check(release.tagName == "v$version" && release.canInstall(registeredInstallation = true)) { errorMsg }
-                val expectedName = "metrolist-installer-windows-x64-$version.exe"
+                val expectedName = "meld-installer-windows-x64-$version.exe"
                 val asset =
                     checkNotNull(release.installer) {
                         "Release v$version does not contain $expectedName"
@@ -136,8 +136,8 @@ object DesktopUpdateManager {
 
                 val managerDirectory = root.resolve("manager")
                 Files.createDirectories(managerDirectory)
-                val partial = managerDirectory.resolve("MetrolistManager.new.exe")
-                val destination = managerDirectory.resolve("MetrolistManager.exe")
+                val partial = managerDirectory.resolve("MeldManager.new.exe")
+                val destination = managerDirectory.resolve("MeldManager.exe")
                 Files.deleteIfExists(partial)
                 try {
                     download(asset, partial, expectedDigest)
@@ -232,10 +232,10 @@ object DesktopUpdateManager {
                     "Version",
                 )
             val marker = json.decodeFromString<DesktopInstallMarker>(Files.readString(root.resolve("manager/install.json")))
-            check(marker.schema == 1 && marker.appId == "com.metrolist.desktop" && marker.version == registeredVersion) {
-                "Metrolist installation metadata is invalid"
+            check(marker.schema == 1 && marker.appId == "com.meld.desktop" && marker.version == registeredVersion) {
+                "Meld installation metadata is invalid"
             }
-            check(Files.isRegularFile(root.resolve("app/Metrolist.exe"))) { "Metrolist installation is incomplete" }
+            check(Files.isRegularFile(root.resolve("app/Meld.exe"))) { "Meld installation is incomplete" }
             check(
                 isRunningRegisteredDesktop(
                     root,
@@ -270,7 +270,7 @@ data class GitHubDesktopRelease(
 ) {
     val version: String get() = tagName.removePrefix("v")
     val installer: GitHubDesktopAsset?
-        get() = assets.singleOrNull { it.name == "metrolist-installer-windows-x64-$version.exe" }
+        get() = assets.singleOrNull { it.name == "meld-installer-windows-x64-$version.exe" }
     val url: String get() = "https://github.com/FrancescoGrazioso/Meld/releases/tag/$tagName"
 
     internal fun canInstall(registeredInstallation: Boolean): Boolean =
@@ -311,7 +311,7 @@ private data class DesktopInstallation(
 internal fun isRunningRegisteredDesktop(
     root: Path,
     command: String?,
-): Boolean = command != null && runCatching { Files.isSameFile(root.resolve("app/Metrolist.exe"), Path.of(command)) }.getOrDefault(false)
+): Boolean = command != null && runCatching { Files.isSameFile(root.resolve("app/Meld.exe"), Path.of(command)) }.getOrDefault(false)
 
 internal suspend fun copyVerifiedUpdate(
     input: InputStream,

@@ -316,5 +316,5 @@ object DesktopFontManager {
 
     private fun backupDirectory(option: FontOption): File = File(fontRoot(), ".${option.name.lowercase()}.previous")
 
-    private fun fontRoot(): File = File(XdgUtils.getXdgDataHome(), "metrolist/fonts").apply { check(mkdirs() || isDirectory) }
+    private fun fontRoot(): File = File(XdgUtils.getXdgDataHome(), "meld/fonts").apply { check(mkdirs() || isDirectory) }
 }

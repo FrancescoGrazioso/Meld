@@ -724,7 +724,7 @@ class AudioCacheManager(
                                 (isContentUri(entry.filePath) && entry.cacheLocation == audioLocation(KIND_DOWNLOAD)) ||
                                     (
                                         Build.VERSION.SDK_INT < Build.VERSION_CODES.Q &&
-                                            File(entry.filePath).parentFile == sharedMediaDirectory(KIND_DOWNLOAD)
+                                            File(entry.filePath).parentFile in sharedDownloadDirectories()
                                     )
                             }
 
@@ -1341,13 +1341,20 @@ class AudioCacheManager(
 
     private fun internalDirectory(kind: String): File = File(context.filesDir, if (kind == KIND_DOWNLOAD) "downloads" else "audio_cache")
 
+    // Downloads written before the rename stay in Music/Metrolist/Downloads and must not be moved.
+    @Suppress("DEPRECATION")
+    private fun sharedDownloadDirectories(): List<File> =
+        listOf(SHARED_DOWNLOAD_RELATIVE_DIR, "Metrolist/Downloads").map {
+            File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), it)
+        }
+
     @Suppress("DEPRECATION")
     private fun sharedMediaDirectory(kind: String): File {
         if (kind == KIND_DOWNLOAD) {
             return File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC), SHARED_DOWNLOAD_RELATIVE_DIR)
         }
         val base = context.externalMediaDirs.firstOrNull { it != null } ?: context.getExternalFilesDir(Environment.DIRECTORY_MUSIC)
-        return File(base ?: internalDirectory(kind), "Metrolist/Cache")
+        return File(base ?: internalDirectory(kind), "Meld/Cache")
     }
 
     private fun audioLocation(kind: String): String =
@@ -1607,7 +1614,7 @@ class AudioCacheManager(
                 }
             }.getOrDefault(uriString)
 
-        private const val SHARED_DOWNLOAD_RELATIVE_DIR = "Metrolist/Downloads"
+        private const val SHARED_DOWNLOAD_RELATIVE_DIR = "Meld/Downloads"
         private const val DOWNLOAD_BUFFER_BYTES = 64 * 1024
         private const val MIN_RANGE_CHUNK_BYTES = 1024 * 1024L
         private const val PARALLEL_RANGE_DOWNLOADS = 4

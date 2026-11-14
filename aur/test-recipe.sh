@@ -37,16 +37,16 @@ if RECIPE_BUILD_EXIT=7 build; then
   exit 1
 fi
 
-appdir="$test_dir/project/desktopApp/build/compose/binaries/main-release/app/Metrolist"
+appdir="$test_dir/project/desktopApp/build/compose/binaries/main-release/app/Meld"
 mkdir -p "$appdir/bin" "$test_dir/project/desktopApp/src/desktopMain/resources"
-printf '#!/bin/sh\nexit 0\n' > "$appdir/bin/Metrolist"
-chmod +x "$appdir/bin/Metrolist"
+printf '#!/bin/sh\nexit 0\n' > "$appdir/bin/Meld"
+chmod +x "$appdir/bin/Meld"
 printf 'Test license\n' > "$test_dir/project/LICENSE"
 printf 'Test icon\n' > "$test_dir/project/desktopApp/src/desktopMain/resources/logo.png"
 cp "$recipe_dir/metrolist.desktop" "$srcdir/"
 package
-[[ -x "$pkgdir/opt/metrolist/bin/Metrolist" ]]
-[[ "$(readlink "$pkgdir/usr/bin/metrolist")" == /opt/metrolist/bin/Metrolist ]]
+[[ -x "$pkgdir/opt/metrolist/bin/Meld" ]]
+[[ "$(readlink "$pkgdir/usr/bin/metrolist")" == /opt/metrolist/bin/Meld ]]
 cmp "$test_dir/project/LICENSE" "$pkgdir/usr/share/licenses/metrolist-git/LICENSE"
 cmp "$srcdir/metrolist.desktop" "$pkgdir/usr/share/applications/metrolist.desktop"
 cmp "$test_dir/project/desktopApp/src/desktopMain/resources/logo.png" "$pkgdir/usr/share/icons/hicolor/512x512/apps/metrolist.png"

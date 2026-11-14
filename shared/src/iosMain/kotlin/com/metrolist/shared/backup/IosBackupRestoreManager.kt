@@ -322,7 +322,7 @@ class IosBackupRestoreManager(
             val legacySettingsEntry = entries.singleOrNull { it.name == LEGACY_SETTINGS_ENTRY }
             check(
                 databaseEntry != null || settingsEntry != null || legacySettingsEntry != null,
-            ) { "Backup does not contain Metrolist data" }
+            ) { "Backup does not contain Meld data" }
             databaseEntry?.let {
                 accountExtracted(copyEntry(archive, it, stagedDatabase, BackupArchiveLimits.DATABASE_BYTES))
             }

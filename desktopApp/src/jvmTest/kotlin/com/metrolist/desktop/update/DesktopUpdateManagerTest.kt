@@ -50,8 +50,8 @@ class DesktopUpdateManagerTest {
     fun portableAndDevelopmentProcessesCannotUpdateRegisteredInstallation() {
         val directory = Files.createTempDirectory("installed-desktop")
         try {
-            val installed = Files.createDirectories(directory.resolve("installed/app")).resolve("Metrolist.exe")
-            val portable = Files.createDirectories(directory.resolve("portable/app")).resolve("Metrolist.exe")
+            val installed = Files.createDirectories(directory.resolve("installed/app")).resolve("Meld.exe")
+            val portable = Files.createDirectories(directory.resolve("portable/app")).resolve("Meld.exe")
             Files.createFile(installed)
             Files.createFile(portable)
             val root = installed.parent.parent

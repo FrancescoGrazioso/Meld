@@ -641,12 +641,12 @@ private fun startupRuntimeAvailable(): Boolean {
 
 private fun configureLinuxWindowIdentity() {
     if (!OsUtil.isLinux) return
-    System.setProperty("awt.app.id", "Metrolist")
+    System.setProperty("awt.app.id", "Meld")
     runCatching {
         val xToolkit = Class.forName("sun.awt.X11.XToolkit")
         xToolkit.getDeclaredField("awtAppClassName").apply {
             isAccessible = true
-            set(null, "Metrolist")
+            set(null, "Meld")
         }
     }
 }
@@ -801,7 +801,7 @@ private fun runDesktopApp(args: Array<String>) {
         DesktopUrlHandler.handleUrl(url)
     }
     if (!settings.desktopOnboardingInitialized) {
-        settings.desktopOnboardingComplete = File(XdgUtils.getXdgDataHome(), "metrolist/metrolist.db").isFile
+        settings.desktopOnboardingComplete = File(XdgUtils.getXdgDataHome(), "meld/metrolist.db").isFile
         settings.desktopOnboardingInitialized = true
     }
     settings.desktopPendingOnboardingSentryConsent.takeIf(String::isNotBlank)?.let { consent ->
@@ -822,7 +822,7 @@ private fun runDesktopApp(args: Array<String>) {
     flushDesktopCredentialWarnings()
     startup.trace("settings")
 
-    AppLogger.info("Main", "Metrolist starting up")
+    AppLogger.info("Main", "Meld starting up")
     AppLogger.info("Main", "OS: ${OsUtil.name}")
     val javaVersion = Runtime.version()
     AppLogger.info(

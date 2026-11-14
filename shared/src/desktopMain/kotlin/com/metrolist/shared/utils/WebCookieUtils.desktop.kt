@@ -15,7 +15,7 @@ actual suspend fun clearWebCookies() {
             osName.contains("win", ignoreCase = true) -> {
                 val localAppData = System.getenv("LOCALAPPDATA")?.takeIf(String::isNotBlank)
                 val baseDirectory = localAppData?.let(::File) ?: File(userHome, "AppData/Local")
-                val appDirectory = File(baseDirectory, "Metrolist")
+                val appDirectory = File(baseDirectory, "Meld")
                 listOf(
                     File(appDirectory, "WebView2"),
                     File(appDirectory, "login-helper"),
@@ -24,7 +24,7 @@ actual suspend fun clearWebCookies() {
             }
 
             osName.contains("mac", ignoreCase = true) -> {
-                val appDirectory = File(userHome, "Library/Application Support/Metrolist")
+                val appDirectory = File(userHome, "Library/Application Support/Meld")
                 listOf(File(appDirectory, "WebView")) to appDirectory
             }
 
@@ -36,7 +36,7 @@ actual suspend fun clearWebCookies() {
                         ?.let(::File)
                         ?.takeIf(File::isAbsolute)
                 val baseDirectory = xdgDataHome ?: File(userHome, ".local/share")
-                val appDirectory = File(baseDirectory, "Metrolist")
+                val appDirectory = File(baseDirectory, "Meld")
                 listOf(File(appDirectory, "WebView")) to appDirectory
             }
         }

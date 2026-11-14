@@ -11,7 +11,7 @@ final class NativeCrashLog {
     static void configure() {
         if (configured) return;
         try {
-            File directory = new File(XdgUtils.INSTANCE.getXdgStateHome(), "metrolist/logs");
+            File directory = new File(XdgUtils.INSTANCE.getXdgStateHome(), "meld/logs");
             if (!directory.isDirectory() && !directory.mkdirs()) {
                 throw new IllegalStateException("Cannot create native crash log directory: " + directory);
             }

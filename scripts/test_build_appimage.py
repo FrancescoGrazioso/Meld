@@ -115,7 +115,7 @@ Path(sys.argv[sys.argv.index("--output") + 1]).write_bytes(b"corrupted download"
                     command.chmod(0o755)
                 gradle = root / "serialized-gradle"
                 gradle.write_text("#!/bin/sh\npwd > gradle-cwd\nprintf '%s\\n' \"$@\" > gradle-args\n" +
-                                  ("mkdir -p dist\nprintf image > dist/Metrolist.AppImage\n" if produces_output else ""))
+                                  ("mkdir -p dist\nprintf image > dist/Meld.AppImage\n" if produces_output else ""))
                 gradle.chmod(0o755)
                 result = subprocess.run(
                     ["bash", str(root / "scripts/build_appimage.sh"), "--offline"],
@@ -128,7 +128,7 @@ Path(sys.argv[sys.argv.index("--output") + 1]).write_bytes(b"corrupted download"
                 self.assertIn("--offline", (root / "gradle-args").read_text().splitlines())
                 self.assertTrue(os.access(tool, os.X_OK))
                 if produces_output:
-                    self.assertTrue(os.access(root / "dist/Metrolist.AppImage", os.X_OK))
+                    self.assertTrue(os.access(root / "dist/Meld.AppImage", os.X_OK))
                 else:
                     self.assertIn("AppImage build produced no output", result.stderr)
 
@@ -138,7 +138,7 @@ Path(sys.argv[sys.argv.index("--output") + 1]).write_bytes(b"corrupted download"
             for directory in ('scripts','tools','commands','dist','native app'):
                 (root/directory).mkdir()
             shutil.copyfile(Path(__file__).with_name('build_appimage.sh'),root/'scripts/build_appimage.sh')
-            (root/'dist/Metrolist.AppImage').write_text('JVM artifact')
+            (root/'dist/Meld.AppImage').write_text('JVM artifact')
             (root/'native app/AppRun').write_text('#!/bin/sh\n');(root/'native app/AppRun').chmod(0o755)
             tool=root/'tools/appimagetool.AppImage'
             tool.write_text('#!/bin/sh\ntest -z "${SOURCE_DATE_EPOCH+x}" || exit 2\nprintf native > "$3"\n')
@@ -149,7 +149,7 @@ Path(sys.argv[sys.argv.index("--output") + 1]).write_bytes(b"corrupted download"
             result=subprocess.run(['bash',str(root/'scripts/build_appimage.sh'),'--native-appdir',str(root/'native app'),str(output)],capture_output=True,text=True,env={**os.environ,'PATH':str(root/'commands')+':'+os.environ['PATH'],'SOURCE_DATE_EPOCH':'1','GRADLE':str(root/'commands/gradle')})
             self.assertEqual(result.returncode,0,result.stderr)
             self.assertEqual(output.read_text(),'native')
-            self.assertEqual((root/'dist/Metrolist.AppImage').read_text(),'JVM artifact')
+            self.assertEqual((root/'dist/Meld.AppImage').read_text(),'JVM artifact')
 
     def test_selects_native_asset_and_rejects_untrusted_download(self):
         for architecture, asset in [("x86_64", "x86_64"), ("amd64", "x86_64"), ("aarch64", "aarch64"), ("arm64", "aarch64")]:

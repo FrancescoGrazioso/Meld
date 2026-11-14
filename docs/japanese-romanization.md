@@ -6,7 +6,7 @@ Kuromoji 0.9.0 supplies tokenizer classes. The build strips dictionary `.bin` re
 
 The first request downloads the pinned Maven Central artifact over HTTPS. Verify its SHA-256 before opening it, extract only the eight required dictionary files, validate the complete set and install by atomic directory rename. Never load classes from the downloaded JAR.
 
-Store the dictionary in Android's `noBackupFilesDir/japanese-dictionary` or desktop's `$XDG_DATA_HOME/metrolist/japanese-dictionary`, outside cache directories. Discard partial or invalid downloads and retry later. Without a verified dictionary, leave kanji unchanged; kana-only text can use the existing converter.
+Store the dictionary in Android's `noBackupFilesDir/japanese-dictionary` or desktop's `$XDG_DATA_HOME/meld/japanese-dictionary`, outside cache directories. Discard partial or invalid downloads and retry later. Without a verified dictionary, leave kanji unchanged; kana-only text can use the existing converter.
 
 ## iOS
 

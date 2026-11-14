@@ -54,16 +54,16 @@ Idle work has no periodic timer:
 
 Media3 owns playback wake locks; native checks must confirm their release after pause and service shutdown. Playback CPU measurements do not establish idle behavior; measure each separately on the same device, settings, queue and network.
 
-Use the installed package name, such as `com.metrolist.music`, in these commands:
+Use the installed package name, such as `com.meld.app`, in these commands:
 
 ```bash
 adb shell dumpsys batterystats --reset
-adb shell dumpsys batterystats com.metrolist.music > batterystats-before.txt
-adb shell dumpsys activity services com.metrolist.music > services-before.txt
+adb shell dumpsys batterystats com.meld.app > batterystats-before.txt
+adb shell dumpsys activity services com.meld.app > services-before.txt
 adb shell dumpsys power > power-before.txt
 # Reproduce one scenario for at least 15 minutes, then collect the same snapshots.
-adb shell dumpsys batterystats com.metrolist.music > batterystats-after.txt
-adb shell dumpsys activity services com.metrolist.music > services-after.txt
+adb shell dumpsys batterystats com.meld.app > batterystats-after.txt
+adb shell dumpsys activity services com.meld.app > services-after.txt
 adb shell dumpsys power > power-after.txt
 adb bugreport background-power.zip
 ```
@@ -84,4 +84,4 @@ Preference writes update memory immediately and persist on one ordered worker. `
 
 Run Android [platform checks](checks.md#platform-checks). On a device, check cold browsing without service creation, playback before queue restoration finishes, process recreation, deep links, Android Auto browsing and projection disconnection, background playback and recovery startup. Use disposable data for backup and downgrade checks. Backend tests do not establish OS lifecycle behavior.
 
-On Samsung One UI with no resumable media session, tap the quick-panel "Play music" button. Metrolist must appear once in the chooser and open when selected, both from a cold start and with the app running. Repeat after changing the app icon.
+On Samsung One UI with no resumable media session, tap the quick-panel "Play music" button. Meld must appear once in the chooser and open when selected, both from a cold start and with the app running. Repeat after changing the app icon.
