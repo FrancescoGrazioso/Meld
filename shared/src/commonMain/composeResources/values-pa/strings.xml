@@ -156,7 +156,7 @@
     <string name="import_error_unsupported_playlist_entries">ਇਸ ਪਲੇਲਿਸਟ ਵਿੱਚ ਲੋਕਲ ਫ਼ਾਈਲਾਂ ਜਾਂ ਸਿੱਧੇ ਲਿੰਕ ਹਨ ਜਿਨ੍ਹਾਂ ਤੱਕ Android ਪਹੁੰਚ ਨਹੀਂ ਕਰ ਸਕਦਾ। YouTube ਲਿੰਕਾਂ ਵਾਲੀ ਪਲੇਲਿਸਟ ਇੰਪੋਰਟ ਕਰੋ ਜਾਂ ਡੈਸਕਟਾਪ ਉੱਤੇ ਲੋਕਲ ਫ਼ਾਈਲਾਂ ਚੁਣੋ।</string>
     <string name="import_error_local_files_require_local_playlist">ਲੋਕਲ ਆਡੀਓ ਫ਼ਾਈਲਾਂ ਸਿਰਫ਼ ਲੋਕਲ ਪਲੇਲਿਸਟ ਵਿੱਚ ਇੰਪੋਰਟ ਕੀਤੀਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ।</string>
     <string name="import_error_file_read_failed">ਪਲੇਲਿਸਟ ਫ਼ਾਈਲ ਪੜ੍ਹੀ ਨਹੀਂ ਜਾ ਸਕੀ। ਇਸ ਨੂੰ ਦੁਬਾਰਾ ਚੁਣੋ ਅਤੇ ਫ਼ਾਈਲ ਦੀ ਪਹੁੰਚ ਦਿਓ।</string>
-    <string name="startup_error_title">Metrolist ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਗਲਤੀ</string>
+    <string name="startup_error_title">Meld ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਗਲਤੀ</string>
     <string name="lyrics_show_translations">ਅਨੁਵਾਦ ਦਿਖਾਓ</string>
     <string name="artist_latest_release">ਨਵੀਨਤਮ ਰਿਲੀਜ਼</string>
     <string name="top_tracks">ਪ੍ਰਮੁੱਖ ਟਰੈਕ</string>
@@ -198,7 +198,7 @@
     <string name="available_devices">ਉਪਲਬਧ ਡਿਵਾਈਸ</string>
     <string name="no_device_connected">ਕੋਈ ਡਿਵਾਈਸ ਜੁੜਿਆ ਨਹੀਂ ਹੈ</string>
     <string name="no_device_found">ਕੋਈ ਡਿਵਾਈਸ ਨਹੀਂ ਮਿਲਿਆ</string>
-    <string name="no_compatible_devices">Google Cast, FCast, DLNA ਜਾਂ Metrolist ਨਾਲ ਅਨੁਕੂਲ ਕੋਈ ਡਿਵਾਈਸ ਨਹੀਂ ਮਿਲਿਆ।</string>
+    <string name="no_compatible_devices">Google Cast, FCast, DLNA ਜਾਂ Meld ਨਾਲ ਅਨੁਕੂਲ ਕੋਈ ਡਿਵਾਈਸ ਨਹੀਂ ਮਿਲਿਆ।</string>
     <string name="show_player_cast_button">ਕਾਸਟ ਬਟਨ ਦਿਖਾਓ</string>
     <string name="show_player_video_button">ਆਡੀਓ/ਵੀਡੀਓ ਚੋਣਕਾਰ ਦਿਖਾਓ</string>
     <string name="onboarding_language_lyrics_description">ਐਪ ਦੀ ਭਾਸ਼ਾ ਅਤੇ ਬੋਲ ਦਿਖਾਉਣ ਦਾ ਤਰੀਕਾ ਚੁਣੋ।</string>
@@ -265,7 +265,7 @@
     <string name="onboarding_continue_without_migration">ਖ਼ਾਲੀ ਲਾਇਬ੍ਰੇਰੀ ਨਾਲ ਅੱਗੇ ਵਧੋ</string>
     <string name="onboarding_migration_recovery_description">ਤੁਸੀਂ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਖ਼ਾਲੀ ਲਾਇਬ੍ਰੇਰੀ ਨਾਲ ਅੱਗੇ ਵਧ ਸਕਦੇ ਹੋ। ਤੁਹਾਡੇ ਮੂਲ ਡਾਟਾਬੇਸ ਦੀ ਬਹਾਲੀ ਲਈ ਇੱਕ ਕਾਪੀ ਇਸ ਡਿਵਾਈਸ ਉੱਤੇ ਰਹੇਗੀ। ਸੈੱਟਅੱਪ ਤੋਂ ਬਾਅਦ ਤੁਸੀਂ ਬੈਕਅੱਪ ਬਹਾਲ ਕਰ ਸਕਦੇ ਹੋ।</string>
     <string name="onboarding_migration_failed">ਤੁਹਾਡੀ ਲਾਇਬ੍ਰੇਰੀ ਤਿਆਰ ਨਹੀਂ ਹੋ ਸਕੀ। ਤੁਹਾਡਾ ਮੂਲ ਡਾਟਾ ਸੁਰੱਖਿਅਤ ਰੱਖਿਆ ਗਿਆ ਹੈ।</string>
-    <string name="onboarding_library_migrated_description">ਤੁਹਾਡੀਆਂ ਪਲੇਲਿਸਟਾਂ, ਅਤੀਤ, ਪਸੰਦ ਕੀਤੇ ਗੀਤ ਅਤੇ ਲਾਇਬ੍ਰੇਰੀ ਦਾ ਡਾਟਾ Metrolist ਦੇ ਇਸ ਵਰਜਨ ਵਿੱਚ ਤਿਆਰ ਹਨ।</string>
+    <string name="onboarding_library_migrated_description">ਤੁਹਾਡੀਆਂ ਪਲੇਲਿਸਟਾਂ, ਅਤੀਤ, ਪਸੰਦ ਕੀਤੇ ਗੀਤ ਅਤੇ ਲਾਇਬ੍ਰੇਰੀ ਦਾ ਡਾਟਾ Meld ਦੇ ਇਸ ਵਰਜਨ ਵਿੱਚ ਤਿਆਰ ਹਨ।</string>
     <string name="onboarding_notifications_denied">ਸੂਚਨਾਵਾਂ ਬੰਦ ਹਨ। ਤੁਸੀਂ ਬਾਅਦ ਵਿੱਚ Android ਦੀਆਂ ਐਪ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਇਹਨਾਂ ਨੂੰ ਚਾਲੂ ਕਰ ਸਕਦੇ ਹੋ ਜਾਂ ਅੱਗੇ ਵਧਣ ਲਈ “ਨਹੀਂ” ਚੁਣ ਸਕਦੇ ਹੋ।</string>
     <string name="mini_player_video_prerequisite">ਪਹਿਲਾਂ ਪਲੇਬੈਕ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੰਗੀਤ ਵੀਡੀਓ ਚਲਾਉਣ ਦਾ ਵਿਕਲਪ ਚਾਲੂ ਕਰੋ</string>
     <string name="download_folder_access_failed">ਇਸ ਫੋਲਡਰ ਦੀ ਪਹੁੰਚ ਦੀ ਇਜਾਜ਼ਤ ਸੰਭਾਲੀ ਨਹੀਂ ਜਾ ਸਕੀ। ਪੜ੍ਹਨ ਅਤੇ ਲਿਖਣ ਦੀ ਇਜਾਜ਼ਤ ਵਾਲਾ ਫੋਲਡਰ ਚੁਣੋ।</string>
@@ -290,9 +290,9 @@
     <string name="updates_notification_settings">Android ਸੂਚਨਾ ਸੈਟਿੰਗਾਂ</string>
     <string name="widget_recognizer_open_result">ਪਛਾਣਿਆ ਗੀਤ ਖੋਲ੍ਹੋ</string>
     <string name="statistics_load_failed">ਅੰਕੜੇ ਤਾਜ਼ਾ ਨਹੀਂ ਹੋ ਸਕੇ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
-    <string name="desktop_platform_unsupported">Metrolist ਇਸ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। Windows 10 ਜਾਂ ਨਵਾਂ ਵਰਜਨ, macOS ਜਾਂ Omarchy ਤੋਂ ਇਲਾਵਾ ਕੋਈ Linux ਡਿਸਟ੍ਰਿਬਿਊਸ਼ਨ ਵਰਤੋ।</string>
+    <string name="desktop_platform_unsupported">Meld ਇਸ ਓਪਰੇਟਿੰਗ ਸਿਸਟਮ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ। Windows 10 ਜਾਂ ਨਵਾਂ ਵਰਜਨ, macOS ਜਾਂ Omarchy ਤੋਂ ਇਲਾਵਾ ਕੋਈ Linux ਡਿਸਟ੍ਰਿਬਿਊਸ਼ਨ ਵਰਤੋ।</string>
     <string name="shortcut_toggle_expanded">ਪਲੇਅਰ ਵੱਡਾ ਜਾਂ ਛੋਟਾ ਕਰੋ</string>
-    <string name="desktop_display_unavailable">Metrolist ਇਸ ਸੈਸ਼ਨ ਦੇ X ਡਿਸਪਲੇ ਨਾਲ ਜੁੜ ਨਹੀਂ ਸਕਿਆ। DISPLAY ਸੈੱਟ ਕਰਕੇ ਇਸ ਨੂੰ ਆਪਣੇ ਡੈਸਕਟਾਪ ਸੈਸ਼ਨ ਤੋਂ ਚਲਾਓ।</string>
+    <string name="desktop_display_unavailable">Meld ਇਸ ਸੈਸ਼ਨ ਦੇ X ਡਿਸਪਲੇ ਨਾਲ ਜੁੜ ਨਹੀਂ ਸਕਿਆ। DISPLAY ਸੈੱਟ ਕਰਕੇ ਇਸ ਨੂੰ ਆਪਣੇ ਡੈਸਕਟਾਪ ਸੈਸ਼ਨ ਤੋਂ ਚਲਾਓ।</string>
     <string name="webkit_install_hint">ਐਪ ਦੇ ਅੰਦਰ ਸਾਈਨ ਇਨ ਕਰਨ ਲਈ WebKitGTK 4.1 (%1$s) ਚਾਹੀਦਾ ਹੈ। ਇਸ ਨੂੰ ਆਪਣੇ ਸਿਸਟਮ ਦੇ ਪੈਕੇਜ ਮੈਨੇਜਰ ਨਾਲ ਇੰਸਟਾਲ ਕਰੋ।</string>
     <string name="webkit_install_command">ਇਸ ਕਮਾਂਡ ਨਾਲ ਇੰਸਟਾਲ ਕਰੋ:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage ਵਰਜਨ ਵੀ ਸਾਈਨ ਇਨ ਲਈ ਸਿਸਟਮ ਦੀਆਂ WebKitGTK ਲਾਇਬ੍ਰੇਰੀਆਂ ਵਰਤਦੇ ਹਨ।</string>
@@ -305,7 +305,7 @@
     <string name="video_stats_latency_value">%1$s ਮਿਲੀਸਕਿੰਟ</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s ਐੱਮਬੀ (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | ਆਵਾਜ਼: %2$s</string>
-    <string name="download_folder_unavailable">ਇਹ ਫੋਲਡਰ ਵਰਤਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਲਿਖਣ ਦੀ ਇਜਾਜ਼ਤ ਵਾਲਾ ਫੋਲਡਰ ਚੁਣੋ ਜਿਸ ਤੱਕ ਤੁਹਾਡਾ ਸਿਸਟਮ ਜਾਂ ਸੈਂਡਬਾਕਸ Metrolist ਨੂੰ ਪਹੁੰਚ ਦਿੰਦਾ ਹੋਵੇ।</string>
+    <string name="download_folder_unavailable">ਇਹ ਫੋਲਡਰ ਵਰਤਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਲਿਖਣ ਦੀ ਇਜਾਜ਼ਤ ਵਾਲਾ ਫੋਲਡਰ ਚੁਣੋ ਜਿਸ ਤੱਕ ਤੁਹਾਡਾ ਸਿਸਟਮ ਜਾਂ ਸੈਂਡਬਾਕਸ Meld ਨੂੰ ਪਹੁੰਚ ਦਿੰਦਾ ਹੋਵੇ।</string>
     <string name="window_maximize">ਪੂਰਾ ਵੱਡਾ ਕਰੋ</string>
     <string name="window_restore">ਵਿੰਡੋ ਦਾ ਪਿਛਲਾ ਆਕਾਰ ਬਹਾਲ ਕਰੋ</string>
     <string name="equalizer_stream_unavailable">ਇਸ ਸਟ੍ਰੀਮ ਲਈ ਈਕੋਲਾਈਜ਼ਰ ਅਤੇ ਪ੍ਰੀਐਂਪ ਉਪਲਬਧ ਨਹੀਂ ਹਨ। ਸਮਰਥਿਤ ਗੀਤ ਚੱਲਣ ਉੱਤੇ ਬਦਲਾਅ ਲਾਗੂ ਹੋਣਗੇ।</string>
@@ -319,7 +319,7 @@
     <string name="queue_youtube_history_paused_desc">ਆਫ਼ਲਾਈਨ ਸੁਣੇ ਗੀਤਾਂ ਦਾ ਰਿਕਾਰਡ ਕਤਾਰ ਵਿੱਚ ਰੱਖਣ ਲਈ ਸੁਣਨ ਦਾ ਅਤੀਤ ਮੁੜ ਚਾਲੂ ਕਰੋ</string>
     <string name="search_online_failed">ਆਨਲਾਈਨ ਖੋਜ ਨਹੀਂ ਹੋ ਸਕੀ। ਆਪਣਾ ਕਨੈਕਸ਼ਨ ਜਾਂਚੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
     <string name="search_load_more_failed">ਹੋਰ ਨਤੀਜੇ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕੇ।</string>
-    <string name="discord_error_gateway_configuration">Discord ਨੇ ਕਨੈਕਸ਼ਨ ਦੀ ਸੰਰਚਨਾ ਰੱਦ ਕਰ ਦਿੱਤੀ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ Metrolist ਅੱਪਡੇਟ ਕਰੋ।</string>
+    <string name="discord_error_gateway_configuration">Discord ਨੇ ਕਨੈਕਸ਼ਨ ਦੀ ਸੰਰਚਨਾ ਰੱਦ ਕਰ ਦਿੱਤੀ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ Meld ਅੱਪਡੇਟ ਕਰੋ।</string>
     <string name="discord_preview_buttons_adjusted">Discord ਬਟਨਾਂ ਦੇ ਲੰਬੇ ਲੇਬਲ ਛੋਟੇ ਕਰਦਾ ਹੈ ਅਤੇ ਬਹੁਤ ਲੰਬੇ ਲਿੰਕ ਵਾਲੇ ਬਟਨ ਛੱਡ ਦਿੰਦਾ ਹੈ। ਇਹ ਝਲਕ ਭੇਜੇ ਜਾਣ ਵਾਲੇ ਬਟਨ ਦਿਖਾਉਂਦੀ ਹੈ।</string>
     <string name="discord_presence_status_warning">ਵਿਸਤ੍ਰਿਤ ਸਰਗਰਮੀ ਦੀ ਜਾਣਕਾਰੀ ਚਾਲੂ ਕਰਨ ਨਾਲ Discord ਨੂੰ ਆਨਲਾਈਨ ਹਾਲਤ ਭੇਜੀ ਜਾਂਦੀ ਹੈ। ਇਹ ਅਦਿੱਖ ਜਾਂ ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ ਹਾਲਤ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ, ਭਾਵੇਂ ਪਲੇਬੈਕ ਰੁਕ ਗਿਆ ਹੋਵੇ।</string>
     <string name="discord_refresh_queued">ਮੌਜੂਦਗੀ ਦੀ ਜਾਣਕਾਰੀ ਤਾਜ਼ਾ ਕਰਨ ਦੀ ਬੇਨਤੀ ਕਤਾਰ ਵਿੱਚ ਹੈ।</string>
@@ -354,8 +354,8 @@
     <string name="theme_color_rose">ਗੁਲਾਬੀ</string>
     <string name="theme_color_red">ਲਾਲ</string>
     <string name="theme_color_gold">ਸੁਨਹਿਰੀ</string>
-    <string name="backup_unsupported_format">Metrolist ਦਾ ਇਹ ਵਰਜਨ ਇਸ ਬੈਕਅੱਪ ਫਾਰਮੈਟ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ।</string>
-    <string name="backup_unsupported_database">Metrolist ਦਾ ਇਹ ਵਰਜਨ ਇਸ ਬੈਕਅੱਪ ਦੇ ਡਾਟਾਬੇਸ ਵਰਜਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ।</string>
+    <string name="backup_unsupported_format">Meld ਦਾ ਇਹ ਵਰਜਨ ਇਸ ਬੈਕਅੱਪ ਫਾਰਮੈਟ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ।</string>
+    <string name="backup_unsupported_database">Meld ਦਾ ਇਹ ਵਰਜਨ ਇਸ ਬੈਕਅੱਪ ਦੇ ਡਾਟਾਬੇਸ ਵਰਜਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ।</string>
     <string name="backup_too_large">ਬੈਕਅੱਪ ਦਾ ਆਕਾਰ ਜਾਂ ਇਸ ਵਿੱਚ ਐਂਟਰੀਆਂ ਦੀ ਗਿਣਤੀ ਸਮਰਥਿਤ ਹੱਦ ਤੋਂ ਵੱਧ ਹੈ।</string>
     <string name="backup_invalid_data">ਬੈਕਅੱਪ ਪੜ੍ਹਿਆ ਜਾਂ ਤਸਦੀਕ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਇਹ ਖ਼ਰਾਬ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਇਸ ਵਿੱਚ ਅਸਮਰਥਿਤ ਡਾਟਾ ਹੋ ਸਕਦਾ ਹੈ।</string>
     <string name="search_history_removal_failed">ਖਾਤੇ ਦਾ ਖੋਜ ਅਤੀਤ ਸਾਫ਼ ਨਹੀਂ ਹੋ ਸਕਿਆ। ਇੰਟਰਨੈੱਟ ਨਾਲ ਜੁੜ ਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
@@ -366,10 +366,10 @@
     <string name="top_period_past_year">ਪਿਛਲਾ ਸਾਲ</string>
     <string name="onboarding_welcome_description">ਪਹਿਲੀ ਵਾਰ ਸੁਣਨ ਤੋਂ ਪਹਿਲਾਂ ਨਿੱਜਤਾ ਅਤੇ ਸਿਸਟਮ ਦੀਆਂ ਇਜਾਜ਼ਤਾਂ ਸੈੱਟ ਕਰੋ।</string>
     <string name="onboarding_migration_title">ਤੁਹਾਡੀ v13 ਲਾਇਬ੍ਰੇਰੀ ਇੱਥੇ ਹੈ</string>
-    <string name="onboarding_migration_description">ਸਾਨੂੰ ਇੱਕ ਵੱਖਰਾ Metrolist ਡਾਟਾਬੇਸ ਮਿਲਿਆ ਹੈ। ਪਲੇਲਿਸਟਾਂ, ਅਤੀਤ, ਪਸੰਦ ਕੀਤੇ ਗੀਤ ਅਤੇ ਲਾਇਬ੍ਰੇਰੀ ਦਾ ਡਾਟਾ ਇੱਥੇ ਹੀ ਤਬਦੀਲ ਕਰੋ। ਜੇ ਤਬਦੀਲੀ ਅਸਫਲ ਰਹਿੰਦੀ ਹੈ ਤਾਂ ਤੁਸੀਂ ਅਸਲ ਡਾਟਾਬੇਸ ਮੁੜ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।</string>
+    <string name="onboarding_migration_description">ਸਾਨੂੰ ਇੱਕ ਵੱਖਰਾ Meld ਡਾਟਾਬੇਸ ਮਿਲਿਆ ਹੈ। ਪਲੇਲਿਸਟਾਂ, ਅਤੀਤ, ਪਸੰਦ ਕੀਤੇ ਗੀਤ ਅਤੇ ਲਾਇਬ੍ਰੇਰੀ ਦਾ ਡਾਟਾ ਇੱਥੇ ਹੀ ਤਬਦੀਲ ਕਰੋ। ਜੇ ਤਬਦੀਲੀ ਅਸਫਲ ਰਹਿੰਦੀ ਹੈ ਤਾਂ ਤੁਸੀਂ ਅਸਲ ਡਾਟਾਬੇਸ ਮੁੜ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ।</string>
     <string name="onboarding_migration_complete_title">ਤੁਹਾਡਾ ਖਾਤਾ ਤਬਦੀਲ ਹੋ ਗਿਆ</string>
-    <string name="onboarding_migration_complete_description">ਤੁਹਾਡਾ ਖਾਤਾ, ਪਲੇਲਿਸਟਾਂ, ਅਤੀਤ, ਪਸੰਦ ਕੀਤੇ ਗੀਤ ਅਤੇ ਲਾਇਬ੍ਰੇਰੀ ਦਾ ਡਾਟਾ Metrolist ਦੇ ਇਸ ਵਰਜਨ ਵਿੱਚ ਤਿਆਰ ਹਨ।</string>
-    <string name="onboarding_crash_reports_title">Metrolist ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</string>
+    <string name="onboarding_migration_complete_description">ਤੁਹਾਡਾ ਖਾਤਾ, ਪਲੇਲਿਸਟਾਂ, ਅਤੀਤ, ਪਸੰਦ ਕੀਤੇ ਗੀਤ ਅਤੇ ਲਾਇਬ੍ਰੇਰੀ ਦਾ ਡਾਟਾ Meld ਦੇ ਇਸ ਵਰਜਨ ਵਿੱਚ ਤਿਆਰ ਹਨ।</string>
+    <string name="onboarding_crash_reports_title">Meld ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਵਿੱਚ ਮਦਦ ਕਰੋ</string>
     <string name="onboarding_crash_reports_description">ਸਮੱਸਿਆਵਾਂ ਲੱਭਣ ਅਤੇ ਠੀਕ ਕਰਨ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਲਈ ਆਪਣੀ ਮਰਜ਼ੀ ਨਾਲ Sentry ਰਾਹੀਂ ਜਾਂਚ ਜਾਣਕਾਰੀ ਸਾਂਝੀ ਕਰੋ। ਤੁਸੀਂ ਇਸਨੂੰ ਕਿਸੇ ਵੀ ਸਮੇਂ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬਦਲ ਸਕਦੇ ਹੋ।</string>
     <string name="onboarding_notifications_title">ਸੂਚਨਾਵਾਂ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</string>
     <string name="onboarding_notifications_description">ਪਲੇਬੈਕ ਅਤੇ ਡਾਊਨਲੋਡ ਲਈ ਸੂਚਨਾਵਾਂ ਚਾਲੂ ਕਰੋ।</string>
@@ -385,10 +385,10 @@
     <string name="onboarding_finish_title">ਸਭ ਤਿਆਰ ਹੈ</string>
     <string name="onboarding_finish_description">ਸੈੱਟਅੱਪ ਪੂਰਾ ਹੋ ਗਿਆ ਹੈ। ਸੁਣਨਾ ਸ਼ੁਰੂ ਕਰੋ ਜਾਂ ਪਹਿਲਾਂ ਆਪਣਾ ਖਾਤਾ ਅਤੇ ਡਾਟਾ ਲਿਆਓ।</string>
     <string name="onboarding_restore_backup">ਬੈਕਅੱਪ ਤੋਂ ਬਹਾਲ ਕਰੋ</string>
-    <string name="onboarding_settings_hint">Metrolist ਨੂੰ ਆਪਣੇ ਮੁਤਾਬਕ ਬਣਾਉਣ ਲਈ ਉੱਪਰ ਸੱਜੇ ਪਾਸੇ ਮੀਨੂ ਤੋਂ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ।</string>
+    <string name="onboarding_settings_hint">Meld ਨੂੰ ਆਪਣੇ ਮੁਤਾਬਕ ਬਣਾਉਣ ਲਈ ਉੱਪਰ ਸੱਜੇ ਪਾਸੇ ਮੀਨੂ ਤੋਂ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ।</string>
     <string name="onboarding_no_saved_accounts">ਕੋਈ ਜੁੜੇ ਹੋਏ ਖਾਤੇ ਨਹੀਂ ਮਿਲੇ।</string>
     <string name="onboarding_account_picture">%1$s ਦੀ ਪ੍ਰੋਫ਼ਾਈਲ ਤਸਵੀਰ</string>
-    <string name="onboarding_backup_picker_title">Metrolist ਬੈਕਅੱਪ ਬਹਾਲ ਕਰੋ</string>
+    <string name="onboarding_backup_picker_title">Meld ਬੈਕਅੱਪ ਬਹਾਲ ਕਰੋ</string>
     <string name="onboarding_backup_picker_error">ਬੈਕਅੱਪ ਚੁਣਨ ਵਾਲੀ ਵਿੰਡੋ ਨਹੀਂ ਖੁੱਲ੍ਹ ਸਕੀ: %1$s</string>
     <string name="onboarding_backup_restore_failed">ਬਹਾਲੀ ਅਸਫਲ ਰਹੀ: %1$s</string>
     <string name="new_badge">ਨਵਾਂ</string>

@@ -160,7 +160,7 @@
     <string name="import_error_unsupported_playlist_entries">Гэты плэйліст змяшчае лакальныя файлы або прамыя спасылкі, да якіх Android не мае доступу. Імпартуйце плэйліст са спасылкамі YouTube або выберыце лакальныя файлы на камп’ютары.</string>
     <string name="import_error_local_files_require_local_playlist">Лакальныя аўдыяфайлы можна імпартаваць толькі ў лакальны плэйліст.</string>
     <string name="import_error_file_read_failed">Не ўдалося прачытаць файл плэйліста. Выберыце яго яшчэ раз і дайце доступ да файла.</string>
-    <string name="startup_error_title">Памылка запуску Metrolist</string>
+    <string name="startup_error_title">Памылка запуску Meld</string>
     <string name="lyrics_show_translations">Паказаць пераклады</string>
     <string name="artist_latest_release">Апошні рэліз</string>
     <string name="top_tracks">Найлепшыя трэкі</string>
@@ -204,7 +204,7 @@
     <string name="available_devices">Даступныя прылады</string>
     <string name="no_device_connected">Няма падключаных прылад</string>
     <string name="no_device_found">Прылады не знойдзены</string>
-    <string name="no_compatible_devices">Сумяшчальныя прылады Google Cast, FCast, DLNA або Metrolist не знойдзены.</string>
+    <string name="no_compatible_devices">Сумяшчальныя прылады Google Cast, FCast, DLNA або Meld не знойдзены.</string>
     <string name="show_player_cast_button">Паказваць кнопку трансляцыі</string>
     <string name="show_player_video_button">Паказваць пераключальнік аўдыя і відэа</string>
     <string name="onboarding_language_lyrics_description">Выберыце мову праграмы і выгляд тэкстаў песень.</string>
@@ -274,7 +274,7 @@
     <string name="onboarding_continue_without_migration">Працягнуць з пустой бібліятэкай</string>
     <string name="onboarding_migration_recovery_description">Вы можаце паўтарыць спробу або працягнуць з пустой бібліятэкай. Копія зыходнай базы даных для аднаўлення застанецца на гэтай прыладзе. Пасля наладжвання вы зможаце аднавіць рэзервовую копію.</string>
     <string name="onboarding_migration_failed">Не ўдалося падрыхтаваць бібліятэку. Вашы зыходныя даныя захаваны.</string>
-    <string name="onboarding_library_migrated_description">Вашы плэй-лісты, гісторыя, упадабаныя кампазіцыі і даныя бібліятэкі гатовыя ў гэтай версіі Metrolist.</string>
+    <string name="onboarding_library_migrated_description">Вашы плэй-лісты, гісторыя, упадабаныя кампазіцыі і даныя бібліятэкі гатовыя ў гэтай версіі Meld.</string>
     <string name="onboarding_notifications_denied">Апавяшчэнні адключаны. Вы можаце ўключыць іх пазней у наладах праграмы ў Android або выбраць «Не», каб працягнуць.</string>
     <string name="mini_player_video_prerequisite">Спачатку ўключыце «Прайграваць музычныя відэа» ў наладах прайгравання</string>
     <string name="download_folder_access_failed">Не ўдалося захаваць дазвол на доступ да гэтай папкі. Выберыце папку з доступам для чытання і запісу.</string>
@@ -299,9 +299,9 @@
     <string name="updates_notification_settings">Налады апавяшчэнняў Android</string>
     <string name="widget_recognizer_open_result">Адкрыць распазнаную песню</string>
     <string name="statistics_load_failed">Не ўдалося абнавіць статыстыку. Паўтарыце спробу.</string>
-    <string name="desktop_platform_unsupported">Metrolist не падтрымлівае гэтую аперацыйную сістэму. Выкарыстоўвайце Windows 10 або навейшую версію, macOS ці дыстрыбутыў Linux, акрамя Omarchy.</string>
+    <string name="desktop_platform_unsupported">Meld не падтрымлівае гэтую аперацыйную сістэму. Выкарыстоўвайце Windows 10 або навейшую версію, macOS ці дыстрыбутыў Linux, акрамя Omarchy.</string>
     <string name="shortcut_toggle_expanded">Разгарнуць або згарнуць прайгравальнік</string>
-    <string name="desktop_display_unavailable">Metrolist не ўдалося падключыцца да дысплея X гэтага сеанса. Запусціце праграму з сеанса працоўнага стала з зададзенай зменнай DISPLAY.</string>
+    <string name="desktop_display_unavailable">Meld не ўдалося падключыцца да дысплея X гэтага сеанса. Запусціце праграму з сеанса працоўнага стала з зададзенай зменнай DISPLAY.</string>
     <string name="webkit_install_hint">Для ўваходу ў праграме патрэбны WebKitGTK 4.1 (%1$s). Усталюйце яго праз менеджар пакетаў вашай сістэмы.</string>
     <string name="webkit_install_command">Усталюйце камандай:\n%1$s</string>
     <string name="webkit_appimage_hint">Зборкі AppImage таксама выкарыстоўваюць сістэмныя бібліятэкі WebKitGTK для ўваходу.</string>
@@ -314,7 +314,7 @@
     <string name="video_stats_latency_value">%1$s мс</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s МБ (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Гучнасць: %2$s</string>
-    <string name="download_folder_unavailable">Не ўдалося выкарыстаць гэтую папку. Выберыце папку з правам запісу, да якой сістэма або пясочніца дазваляе доступ Metrolist.</string>
+    <string name="download_folder_unavailable">Не ўдалося выкарыстаць гэтую папку. Выберыце папку з правам запісу, да якой сістэма або пясочніца дазваляе доступ Meld.</string>
     <string name="window_maximize">Разгарнуць</string>
     <string name="window_restore">Аднавіць памер акна</string>
     <string name="equalizer_stream_unavailable">Эквалайзер і папярэдні ўзмацняльнік недаступныя для гэтага патоку. Змены ўжывуцца пры прайграванні трэка, які падтрымліваецца.</string>
@@ -330,7 +330,7 @@
     <string name="queue_youtube_history_paused_desc">Аднавіце запіс гісторыі праслухоўванняў, каб ставіць праслухоўванні па-за сеткай у чаргу на адпраўку</string>
     <string name="search_online_failed">Не ўдалося выканаць пошук у сетцы. Праверце злучэнне і паўтарыце спробу.</string>
     <string name="search_load_more_failed">Не ўдалося загрузіць больш вынікаў.</string>
-    <string name="discord_error_gateway_configuration">Discord адхіліў налады злучэння. Абнавіце Metrolist перад паўторнай спробай.</string>
+    <string name="discord_error_gateway_configuration">Discord адхіліў налады злучэння. Абнавіце Meld перад паўторнай спробай.</string>
     <string name="discord_preview_buttons_adjusted">Discord скарачае доўгія подпісы кнопак і прапускае кнопкі з занадта доўгімі спасылкамі. Тут паказаны кнопкі, якія будуць адпраўлены.</string>
     <string name="discord_presence_status_warning">Пашыраны статус перадае Discord статус «У сетцы». Можа замяніць «Нябачны» або «Не турбаваць», нават калі прайграванне спынена.</string>
     <string name="discord_refresh_queued">Абнаўленне статусу пастаўлена ў чаргу.</string>
@@ -365,8 +365,8 @@
     <string name="theme_color_rose">Ружовы</string>
     <string name="theme_color_red">Чырвоны</string>
     <string name="theme_color_gold">Залаты</string>
-    <string name="backup_unsupported_format">Гэтая версія Metrolist не падтрымлівае фармат гэтай рэзервовай копіі.</string>
-    <string name="backup_unsupported_database">Гэтая версія Metrolist не падтрымлівае версію базы даных у гэтай рэзервовай копіі.</string>
+    <string name="backup_unsupported_format">Гэтая версія Meld не падтрымлівае фармат гэтай рэзервовай копіі.</string>
+    <string name="backup_unsupported_database">Гэтая версія Meld не падтрымлівае версію базы даных у гэтай рэзервовай копіі.</string>
     <string name="backup_too_large">Рэзервовая копія перавышае дапушчальны памер або колькасць запісаў.</string>
     <string name="backup_invalid_data">Не ўдалося прачытаць або праверыць рэзервовую копію. Яна можа быць пашкоджана або змяшчаць даныя, якія не падтрымліваюцца.</string>
     <string name="search_history_removal_failed">Не ўдалося ачысціць гісторыю пошуку ўліковага запісу. Паўтарыце спробу пасля падключэння да сеткі.</string>
@@ -377,10 +377,10 @@
     <string name="top_period_past_year">За апошні год</string>
     <string name="onboarding_welcome_description">Наладзьце прыватнасць і сістэмныя дазволы перад першым праслухоўваннем.</string>
     <string name="onboarding_migration_title">Ваша бібліятэка з v13 тут</string>
-    <string name="onboarding_migration_description">Мы знайшлі асобную базу даных Metrolist. Перанясіце плэй-лісты, гісторыю, упадабаныя кампазіцыі і даныя бібліятэкі на месцы. Калі перанос не ўдасца, вы зможаце аднавіць зыходную базу даных.</string>
+    <string name="onboarding_migration_description">Мы знайшлі асобную базу даных Meld. Перанясіце плэй-лісты, гісторыю, упадабаныя кампазіцыі і даныя бібліятэкі на месцы. Калі перанос не ўдасца, вы зможаце аднавіць зыходную базу даных.</string>
     <string name="onboarding_migration_complete_title">Ваш уліковы запіс перанесены</string>
-    <string name="onboarding_migration_complete_description">Ваш уліковы запіс, плэй-лісты, гісторыя, упадабаныя кампазіцыі і даныя бібліятэкі гатовыя ў гэтай версіі Metrolist.</string>
-    <string name="onboarding_crash_reports_title">Дапамажыце палепшыць Metrolist</string>
+    <string name="onboarding_migration_complete_description">Ваш уліковы запіс, плэй-лісты, гісторыя, упадабаныя кампазіцыі і даныя бібліятэкі гатовыя ў гэтай версіі Meld.</string>
+    <string name="onboarding_crash_reports_title">Дапамажыце палепшыць Meld</string>
     <string name="onboarding_crash_reports_description">Дасылайце неабавязковыя дыягнастычныя даныя праз Sentry, каб дапамагчы нам знаходзіць і выпраўляць праблемы. Вы можаце змяніць гэта ў любы час у наладах.</string>
     <string name="onboarding_notifications_title">Дазволіць апавяшчэнні</string>
     <string name="onboarding_notifications_description">Уключыце апавяшчэнні пра прайграванне і спампоўкі.</string>
@@ -396,10 +396,10 @@
     <string name="onboarding_finish_title">Усё гатова</string>
     <string name="onboarding_finish_description">Наладжванне завершана. Пачніце слухаць або спачатку перанясіце свой уліковы запіс і даныя.</string>
     <string name="onboarding_restore_backup">Аднавіць з рэзервовай копіі</string>
-    <string name="onboarding_settings_hint">Адкрыйце налады ў меню справа ўверсе, каб наладзіць Metrolist пад сябе.</string>
+    <string name="onboarding_settings_hint">Адкрыйце налады ў меню справа ўверсе, каб наладзіць Meld пад сябе.</string>
     <string name="onboarding_no_saved_accounts">Звязаныя ўліковыя запісы не знойдзены.</string>
     <string name="onboarding_account_picture">Відарыс профілю %1$s</string>
-    <string name="onboarding_backup_picker_title">Аднавіць рэзервовую копію Metrolist</string>
+    <string name="onboarding_backup_picker_title">Аднавіць рэзервовую копію Meld</string>
     <string name="onboarding_backup_picker_error">Не ўдалося адкрыць выбар рэзервовай копіі: %1$s</string>
     <string name="onboarding_backup_restore_failed">Не ўдалося аднавіць: %1$s</string>
     <string name="new_badge">Новае</string>

@@ -88,7 +88,7 @@ object ListenBrainz {
                             "additional_info",
                             buildJsonObject {
                                 put("duration_ms", seconds * 1000L)
-                                put("submission_client", "Metrolist")
+                                put("submission_client", "Meld")
                             },
                         )
                     }

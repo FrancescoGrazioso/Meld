@@ -9,30 +9,30 @@ import org.junit.Test
 class AppUpdateManagerTest {
     @Test
     fun apkSelectionPicksTheUniversalApk() {
-        assertEquals("Metrolist.apk", releaseWithAssets("Metrolist.apk", "metrolist-android-14.0.0-arm64-v8a.apk").apk?.name)
+        assertEquals("Meld.apk", releaseWithAssets("Meld.apk", "meld-android-14.0.0-arm64-v8a.apk").apk?.name)
         assertEquals(
-            "Metrolist.apk",
-            releaseWithAssets("Metrolist-izzy.apk", "Metrolist-with-Google-Cast.apk", "Metrolist.apk").apk?.name,
+            "Meld.apk",
+            releaseWithAssets("Meld-izzy.apk", "Meld-with-Google-Cast.apk", "Meld.apk").apk?.name,
         )
-        assertEquals("metrolist-android-14.0.0.apk", releaseWithAssets("metrolist-android-14.0.0.apk").apk?.name)
-        assertEquals("metrolist-android-14.0.0-universal.apk", releaseWithAssets("metrolist-android-14.0.0-universal.apk").apk?.name)
+        assertEquals("meld-android-14.0.0.apk", releaseWithAssets("meld-android-14.0.0.apk").apk?.name)
+        assertEquals("meld-android-14.0.0-universal.apk", releaseWithAssets("meld-android-14.0.0-universal.apk").apk?.name)
     }
 
     @Test
     fun apkSelectionRejectsAbiSpecificIncompleteAndAmbiguousAssets() {
-        assertNull(releaseWithAssets("metrolist-android-14.0.0-arm64-v8a.apk").apk)
-        assertNull(releaseWithAssets("metrolist-android-14.0.0-debug.apk").apk)
-        assertNull(releaseWithAssets("metrolist-android-13.0.0.apk").apk)
+        assertNull(releaseWithAssets("meld-android-14.0.0-arm64-v8a.apk").apk)
+        assertNull(releaseWithAssets("meld-android-14.0.0-debug.apk").apk)
+        assertNull(releaseWithAssets("meld-android-13.0.0.apk").apk)
         assertNull(releaseWithAssets("unknown.apk").apk)
-        val incomplete = releaseWithAssets("Metrolist.apk")
+        val incomplete = releaseWithAssets("Meld.apk")
         assertNull(incomplete.copy(assets = incomplete.assets.map { it.copy(state = "new") }).apk)
-        assertNull(releaseWithAssets("Metrolist.apk", "METROLIST.APK").apk)
+        assertNull(releaseWithAssets("Meld.apk", "MELD.APK").apk)
     }
 
     private fun releaseWithAssets(vararg names: String) =
         GitHubRelease(
             tagName = "v14.0.0",
-            htmlUrl = "https://github.com/MetrolistGroup/Metrolist/releases/tag/v14.0.0",
+            htmlUrl = "https://github.com/FrancescoGrazioso/Meld/releases/tag/v14.0.0",
             assets = names.map { GitHubReleaseAsset(it, "uploaded", 100, downloadUrl = "https://example.com/$it") },
         )
 

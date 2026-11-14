@@ -8,3 +8,4 @@ fun iosSentryRelease(): String = "com.metrolist.ios@${BuildConfig.APP_VERSION}"
 fun iosSentrySourceRevision(): String = BuildConfig.SOURCE_REVISION
 
 fun iosCrashReportingAvailable(): Boolean = isCrashReportingAvailable()
+fun iosSentryDsn(): String = BuildConfig.SENTRY_DSN

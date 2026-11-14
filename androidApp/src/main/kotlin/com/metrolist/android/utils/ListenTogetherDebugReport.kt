@@ -32,7 +32,7 @@ internal fun buildListenTogetherDebugReport(
     val logs = manager.logs.value
 
     return buildString {
-        appendLine("=== Metrolist Listen Together debug report ===")
+        appendLine("=== Meld Listen Together debug report ===")
         appendLine()
 
         appendLine("-- Report --")

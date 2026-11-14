@@ -80,6 +80,7 @@ import com.metrolist.shared.generated.resources.app_name
 import com.metrolist.shared.generated.resources.back
 import com.metrolist.shared.generated.resources.build_type_debug
 import com.metrolist.shared.generated.resources.build_type_release
+import com.metrolist.shared.generated.resources.credits_based_on_metrolist
 import com.metrolist.shared.generated.resources.devmode_already_active
 import com.metrolist.shared.generated.resources.devtools_enabled
 import com.metrolist.shared.generated.resources.play
@@ -213,6 +214,23 @@ fun AboutScreen(
             CommunitySection(
                 text = text,
                 onOpenLink = openCommunityLink,
+            )
+
+            CollaboratorsList(
+                contributors = listOf(AboutContributors.meld),
+                text = text,
+                title = appName.ifBlank { stringResource(Res.string.app_name) },
+                avatarSize = 64.dp,
+                colorScheme = colorScheme,
+                onContributorClick = { selectedContributor = it },
+                onContributorLongClick = onContributorLongClick,
+            )
+
+            Text(
+                text = stringResource(Res.string.credits_based_on_metrolist),
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Center,
+                color = colorScheme.onSurfaceVariant,
             )
 
             CollaboratorsList(

@@ -177,7 +177,7 @@
     <string name="import_error_unsupported_playlist_entries">Denne spelelista inneheld lokale filer eller direkte lenkjer som Android ikkje har tilgang til. Importer ei speleliste med YouTube-lenkjer, eller vel dei lokale filene på ei datamaskin.</string>
     <string name="import_error_local_files_require_local_playlist">Lokale lydfiler kan berre importerast til ei lokal speleliste.</string>
     <string name="import_error_file_read_failed">Klarte ikkje å lese spelelistefila. Vel henne på nytt og gje tilgang til fila.</string>
-    <string name="startup_error_title">Feil ved oppstart av Metrolist</string>
+    <string name="startup_error_title">Feil ved oppstart av Meld</string>
     <string name="lyrics_show_translations">Vis omsetjingar</string>
     <string name="artist_latest_release">Nyaste utgjeving</string>
     <string name="top_tracks">Mest populære spor</string>
@@ -219,7 +219,7 @@
     <string name="available_devices">Tilgjengelege einingar</string>
     <string name="no_device_connected">Inga eining er tilkopla</string>
     <string name="no_device_found">Fann inga eining</string>
-    <string name="no_compatible_devices">Fann inga eining som er kompatibel med Google Cast, FCast, DLNA eller Metrolist.</string>
+    <string name="no_compatible_devices">Fann inga eining som er kompatibel med Google Cast, FCast, DLNA eller Meld.</string>
     <string name="show_player_cast_button">Vis castingknapp</string>
     <string name="show_player_video_button">Vis lyd-/videoveljar</string>
     <string name="onboarding_language_lyrics_description">Vel språket i appen og korleis songtekstar blir viste.</string>
@@ -290,7 +290,7 @@
     <string name="onboarding_continue_without_migration">Hald fram med eit tomt bibliotek</string>
     <string name="onboarding_migration_recovery_description">Du kan prøve på nytt eller halde fram med eit tomt bibliotek. Ein gjenopprettingskopi av den opphavlege databasen vert verande på denne eininga. Du kan gjenopprette ein tryggleikskopi etter oppsettet.</string>
     <string name="onboarding_migration_failed">Klarte ikkje å klargjere biblioteket ditt. Dei opphavlege dataa er tekne vare på.</string>
-    <string name="onboarding_library_migrated_description">Spelelistene, historikken, dei lika songane og bibliotekdataa dine er klare i denne versjonen av Metrolist.</string>
+    <string name="onboarding_library_migrated_description">Spelelistene, historikken, dei lika songane og bibliotekdataa dine er klare i denne versjonen av Meld.</string>
     <string name="onboarding_notifications_denied">Varsel er slått av. Du kan slå dei på seinare i appinnstillingane i Android, eller velje Nei for å halde fram.</string>
     <string name="mini_player_video_prerequisite">Slå fyrst på Spel av musikkvideoar i avspelingsinnstillingane</string>
     <string name="download_folder_access_failed">Klarte ikkje å lagre tilgangen til denne mappa. Vel ei mappe med lese- og skrivetilgang.</string>
@@ -315,9 +315,9 @@
     <string name="updates_notification_settings">Varselinnstillingar i Android</string>
     <string name="widget_recognizer_open_result">Opne attkjend song</string>
     <string name="statistics_load_failed">Klarte ikkje å oppdatere statistikken. Prøv på nytt.</string>
-    <string name="desktop_platform_unsupported">Metrolist støttar ikkje dette operativsystemet. Bruk Windows 10 eller nyare, macOS eller ein annan Linux-distribusjon enn Omarchy.</string>
+    <string name="desktop_platform_unsupported">Meld støttar ikkje dette operativsystemet. Bruk Windows 10 eller nyare, macOS eller ein annan Linux-distribusjon enn Omarchy.</string>
     <string name="shortcut_toggle_expanded">Veksle utvida spelar</string>
-    <string name="desktop_display_unavailable">Metrolist kunne ikkje kople til X-skjermen i denne økta. Start appen frå skrivebordsøkta di med DISPLAY sett.</string>
+    <string name="desktop_display_unavailable">Meld kunne ikkje kople til X-skjermen i denne økta. Start appen frå skrivebordsøkta di med DISPLAY sett.</string>
     <string name="webkit_install_hint">Innebygd innlogging krev WebKitGTK 4.1 (%1$s). Installer det med pakkehandsamaren til systemet.</string>
     <string name="webkit_install_command">Installer med:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage-utgåver brukar òg WebKitGTK-biblioteka i systemet til innlogging.</string>
@@ -330,7 +330,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Volum: %2$s</string>
-    <string name="download_folder_unavailable">Klarte ikkje å bruke denne mappa. Vel ei skrivbar mappe som systemet eller sandkassa gjev Metrolist tilgang til.</string>
+    <string name="download_folder_unavailable">Klarte ikkje å bruke denne mappa. Vel ei skrivbar mappe som systemet eller sandkassa gjev Meld tilgang til.</string>
     <string name="window_maximize">Maksimer</string>
     <string name="window_restore">Gjenopprett vindauget</string>
     <string name="equalizer_stream_unavailable">Tonekontroll og forforsterkar er ikkje tilgjengelege for denne straumen. Endringane vert tekne i bruk når ein støtta song vert spela.</string>
@@ -344,7 +344,7 @@
     <string name="queue_youtube_history_paused_desc">Slå på lyttehistorikken att for å lagre avspelingar i kø når du er fråkopla</string>
     <string name="search_online_failed">Klarte ikkje å søkje på nettet. Sjekk sambandet og prøv på nytt.</string>
     <string name="search_load_more_failed">Klarte ikkje å laste inn fleire resultat.</string>
-    <string name="discord_error_gateway_configuration">Discord avviste tilkoplingsoppsettet. Oppdater Metrolist før du prøver på nytt.</string>
+    <string name="discord_error_gateway_configuration">Discord avviste tilkoplingsoppsettet. Oppdater Meld før du prøver på nytt.</string>
     <string name="discord_preview_buttons_adjusted">Discord kortar ned lange knappetekstar og utelèt knappar med for lange lenkjer. Denne førehandsvisinga syner knappane som vert sende.</string>
     <string name="discord_presence_status_warning">Utvida status sender Pålogga-status til Discord og kan overstyre Usynleg eller Ikkje forstyrr, òg når avspelinga stoppar</string>
     <string name="discord_refresh_queued">Statusoppdateringa er sett i kø.</string>
@@ -379,8 +379,8 @@
     <string name="theme_color_rose">Rosa</string>
     <string name="theme_color_red">Raud</string>
     <string name="theme_color_gold">Gull</string>
-    <string name="backup_unsupported_format">Denne versjonen av Metrolist støttar ikkje dette tryggleikskopiformatet.</string>
-    <string name="backup_unsupported_database">Denne versjonen av Metrolist støttar ikkje databaseversjonen i denne tryggleikskopien.</string>
+    <string name="backup_unsupported_format">Denne versjonen av Meld støttar ikkje dette tryggleikskopiformatet.</string>
+    <string name="backup_unsupported_database">Denne versjonen av Meld støttar ikkje databaseversjonen i denne tryggleikskopien.</string>
     <string name="backup_too_large">Tryggleikskopien overskrid grensa for storleik eller tal på oppføringar.</string>
     <string name="backup_invalid_data">Klarte ikkje å lese eller validere tryggleikskopien. Han kan vere skadd eller innehalde data som ikkje er støtta.</string>
     <string name="search_history_removal_failed">Klarte ikkje å tømme søkjehistorikken for kontoen. Prøv på nytt når du er tilkopla.</string>
@@ -391,10 +391,10 @@
     <string name="top_period_past_year">Siste år</string>
     <string name="onboarding_welcome_description">Set opp personvern og systemløyve før du lyttar for første gong.</string>
     <string name="onboarding_migration_title">Biblioteket ditt frå v13 er her</string>
-    <string name="onboarding_migration_description">Vi fann ein frittståande Metrolist-database. Overfør spelelister, soge, lika songar og bibliotekdata på staden. Du kan gjenopprette den opphavlege databasen viss overføringa mislukkast.</string>
+    <string name="onboarding_migration_description">Vi fann ein frittståande Meld-database. Overfør spelelister, soge, lika songar og bibliotekdata på staden. Du kan gjenopprette den opphavlege databasen viss overføringa mislukkast.</string>
     <string name="onboarding_migration_complete_title">Kontoen din er overført</string>
-    <string name="onboarding_migration_complete_description">Kontoen, spelelistene, soga, dei lika songane og bibliotekdataa dine er klare i denne versjonen av Metrolist.</string>
-    <string name="onboarding_crash_reports_title">Hjelp oss å forbetre Metrolist</string>
+    <string name="onboarding_migration_complete_description">Kontoen, spelelistene, soga, dei lika songane og bibliotekdataa dine er klare i denne versjonen av Meld.</string>
+    <string name="onboarding_crash_reports_title">Hjelp oss å forbetre Meld</string>
     <string name="onboarding_crash_reports_description">Del valfrie diagnosedata via Sentry for å hjelpe oss med å finne og rette problem. Du kan endre dette når som helst i Innstillingar.</string>
     <string name="onboarding_notifications_title">Tillat varsel</string>
     <string name="onboarding_notifications_description">Slå på varsel for avspeling og nedlastingar.</string>
@@ -410,10 +410,10 @@
     <string name="onboarding_finish_title">Alt er klart</string>
     <string name="onboarding_finish_description">Oppsettet er fullført. Byrj å lytte, eller overfør kontoen og dataa dine først.</string>
     <string name="onboarding_restore_backup">Gjenopprett frå tryggleikskopi</string>
-    <string name="onboarding_settings_hint">Opne Innstillingar frå menyen øvst til høgre for å tilpasse Metrolist.</string>
+    <string name="onboarding_settings_hint">Opne Innstillingar frå menyen øvst til høgre for å tilpasse Meld.</string>
     <string name="onboarding_no_saved_accounts">Fann ingen tilknytte kontoar.</string>
     <string name="onboarding_account_picture">Profilbiletet til %1$s</string>
-    <string name="onboarding_backup_picker_title">Gjenopprett Metrolist-tryggleikskopi</string>
+    <string name="onboarding_backup_picker_title">Gjenopprett Meld-tryggleikskopi</string>
     <string name="onboarding_backup_picker_error">Klarte ikkje å opne veljaren for tryggleikskopiar: %1$s</string>
     <string name="onboarding_backup_restore_failed">Gjenoppretting mislukkast: %1$s</string>
     <string name="new_badge">Ny</string>

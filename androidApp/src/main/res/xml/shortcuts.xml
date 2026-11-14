@@ -5,20 +5,20 @@
         android:icon="@drawable/shortcut_search"
         android:shortcutId="search"
         android:shortcutShortLabel="@string/search">
-        <intent android:action="com.metrolist.music.action.SEARCH" />
+        <intent android:action="com.meld.app.action.SEARCH" />
     </shortcut>
     <shortcut
         android:enabled="true"
         android:icon="@drawable/shortcut_library"
         android:shortcutId="library"
         android:shortcutShortLabel="@string/filter_library">
-        <intent android:action="com.metrolist.music.action.LIBRARY" />
+        <intent android:action="com.meld.app.action.LIBRARY" />
     </shortcut>
     <shortcut
         android:enabled="true"
         android:icon="@drawable/shortcut_library"
         android:shortcutId="crash_logs"
         android:shortcutShortLabel="@string/crash_logs">
-        <intent android:action="com.metrolist.music.action.CRASH_LOGS" />
+        <intent android:action="com.meld.app.action.CRASH_LOGS" />
     </shortcut>
 </shortcuts>

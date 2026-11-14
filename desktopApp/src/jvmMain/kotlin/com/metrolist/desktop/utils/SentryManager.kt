@@ -42,7 +42,7 @@ object SentryManager {
     }
 
     private fun applyEnabled(enabled: Boolean) {
-        if (!enabled || !isCrashReportingAvailable() || !isPackagedApplication()) {
+        if (!enabled || !isCrashReportingAvailable() || BuildConfig.SENTRY_DSN.isBlank() || !isPackagedApplication()) {
             shutdown()
             return
         }
@@ -98,8 +98,9 @@ internal fun configureDesktopSentry(
     release: String,
     environment: String,
     sourceRevision: String = BuildConfig.SOURCE_REVISION,
+    dsn: String = BuildConfig.SENTRY_DSN,
 ) {
-    options.dsn = "https://fe4474514a54a507252b26c60e229016@o4511744603193344.ingest.de.sentry.io/4511744608436304"
+    options.dsn = dsn
     options.sampleRate = 1.0
     options.tracesSampleRate = 0.0
     options.isDebug = System.getenv("SENTRY_DEBUG").toBoolean()

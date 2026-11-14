@@ -51,6 +51,7 @@ import com.metrolist.shared.generated.resources.credits_license_desc
 import com.metrolist.shared.generated.resources.credits_license_name
 import com.metrolist.shared.generated.resources.credits_lyrics_ui_services
 import com.metrolist.shared.generated.resources.credits_macos_developer
+import com.metrolist.shared.generated.resources.credits_meld_developer
 import com.metrolist.shared.generated.resources.credits_multiplatform_developer
 import com.metrolist.shared.generated.resources.credits_wearos_designer
 import com.metrolist.shared.generated.resources.credits_windows_developer
@@ -73,6 +74,7 @@ fun rememberAboutScreenText(): AboutScreenText =
         creatorSection = sharedStringResource(Res.string.credits_creator_section),
         leadsSection = sharedStringResource(Res.string.credits_leads_section),
         collaborators = sharedStringResource(Res.string.credits_collaborators_section),
+        meldDeveloperRole = sharedStringResource(Res.string.credits_meld_developer),
         creatorRole = sharedStringResource(Res.string.credits_creator),
         androidLeadRole = sharedStringResource(Res.string.credits_android_lead),
         desktopLeadRole = sharedStringResource(Res.string.credits_desktop_lead),
@@ -93,6 +95,7 @@ fun rememberAboutScreenText(): AboutScreenText =
     )
 
 enum class AboutContributorRole {
+    MELD_DEVELOPER,
     CREATOR,
     ANDROID_LEAD,
     DESKTOP_LEAD,
@@ -135,6 +138,14 @@ data class AboutContributor(
 }
 
 object AboutContributors {
+    val meld: AboutContributor =
+        AboutContributor(
+            name = "Francesco Grazioso",
+            role = AboutContributorRole.MELD_DEVELOPER,
+            githubHandle = "FrancescoGrazioso",
+            avatarShape = AboutAvatarShape.COOKIE_9_SIDED,
+        )
+
     val lead: AboutContributor =
         AboutContributor(
             name = "Mo Agamy",
@@ -226,7 +237,7 @@ object AboutContributors {
             ),
         ).sortedBy { it.name.lowercase() }
 
-    val all: List<AboutContributor> = listOf(lead) + leads + collaborators
+    val all: List<AboutContributor> = listOf(meld, lead) + leads + collaborators
 }
 
 enum class AboutCommunityLinkKind {
@@ -243,19 +254,19 @@ data class AboutCommunityLink(
 
 val aboutCommunityLinks: List<AboutCommunityLink> =
     listOf(
-        AboutCommunityLink(AboutCommunityLinkKind.DISCORD, "https://discord.com/invite/zrdbeRG2Mt"),
-        AboutCommunityLink(AboutCommunityLinkKind.TELEGRAM, "https://t.me/metrolistapp"),
-        AboutCommunityLink(AboutCommunityLinkKind.REPOSITORY, "https://github.com/MetrolistGroup/Metrolist"),
+        AboutCommunityLink(AboutCommunityLinkKind.DISCORD, "https://discord.gg/sAErRUVbsK"),
+        AboutCommunityLink(AboutCommunityLinkKind.REPOSITORY, "https://github.com/FrancescoGrazioso/Meld"),
     )
 
 val aboutLicenseLink: AboutCommunityLink =
-    AboutCommunityLink(AboutCommunityLinkKind.LICENSE, "https://github.com/MetrolistGroup/Metrolist/blob/main/LICENSE")
+    AboutCommunityLink(AboutCommunityLinkKind.LICENSE, "https://github.com/FrancescoGrazioso/Meld/blob/main/LICENSE")
 
 data class AboutScreenText(
     val title: String,
     val creatorSection: String,
     val leadsSection: String,
     val collaborators: String,
+    val meldDeveloperRole: String,
     val creatorRole: String,
     val androidLeadRole: String,
     val desktopLeadRole: String,
@@ -276,6 +287,7 @@ data class AboutScreenText(
 ) {
     fun roleLabel(role: AboutContributorRole): String =
         when (role) {
+            AboutContributorRole.MELD_DEVELOPER -> meldDeveloperRole
             AboutContributorRole.CREATOR -> creatorRole
             AboutContributorRole.ANDROID_LEAD -> androidLeadRole
             AboutContributorRole.DESKTOP_LEAD -> desktopLeadRole
@@ -332,6 +344,7 @@ fun AuthorInfoSheet(
 ) {
     val roleLabel =
         when (contributor.role) {
+            AboutContributorRole.MELD_DEVELOPER -> sharedStringResource(Res.string.credits_meld_developer)
             AboutContributorRole.CREATOR -> sharedStringResource(Res.string.credits_creator)
             AboutContributorRole.ANDROID_LEAD -> sharedStringResource(Res.string.credits_android_lead)
             AboutContributorRole.DESKTOP_LEAD -> sharedStringResource(Res.string.credits_desktop_lead)

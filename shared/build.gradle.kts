@@ -539,6 +539,15 @@ val generateBuildConfig =
                 .get()
                 .trim()
         val isIzzyTask = gradle.startParameter.taskNames.any { it.contains("Izzy", ignoreCase = true) }
+        val sentryDsn =
+            providers
+                .gradleProperty("SENTRY_DSN")
+                .filter { it.isNotEmpty() }
+                .orElse(providers.environmentVariable("SENTRY_DSN").filter { it.isNotEmpty() })
+                .orElse(providers.provider { localProperties.getProperty("SENTRY_DSN").orEmpty() }.filter { it.isNotEmpty() })
+                .orElse(providers.provider { "" })
+                .get()
+                .trim()
         val isReleaseTask =
             gradle.startParameter.taskNames.any { name ->
                 name.contains("Izzy", ignoreCase = true) ||
@@ -600,6 +609,7 @@ val generateBuildConfig =
         // shortcut: BuildConfig is per invocation, so an Izzy build leaves Lyprio out of every APK it assembles; build Izzy alone.
         inputs.property("lyprioBaseUrl", if (isIzzyTask) "" else lyprioBaseUrl)
         inputs.property("lyprioHmacKey", if (isIzzyTask) "" else lyprioHmacKey)
+        inputs.property("sentryDsn", sentryDsn)
         val sourceRevision =
             providers
                 .gradleProperty("metrolist.sourceRevision")
@@ -632,6 +642,7 @@ val generateBuildConfig =
                 object BuildConfig {
                     const val LASTFM_API_KEY = "${inputs.properties["lastFmKey"]}"
                     const val LASTFM_SECRET = "${inputs.properties["lastFmSecret"]}"
+                    const val SENTRY_DSN = "${inputs.properties["sentryDsn"]}"
                     const val LYPRIO_BASE_URL = "${inputs.properties["lyprioBaseUrl"]}"
                     const val LYPRIO_HMAC_KEY = "${inputs.properties["lyprioHmacKey"]}"
                     const val APP_VERSION = "${inputs.properties["appVersion"]}"

@@ -7,7 +7,7 @@
     <string name="import_error_unsupported_playlist_entries">මෙම ධාවන ලැයිස්තුවේ Android හට ප්‍රවේශ විය නොහැකි දේශීය ගොනු හෝ සෘජු සබැඳි ඇත. YouTube සබැඳි සහිත ධාවන ලැයිස්තුවක් ආයාත කරන්න, නැතහොත් පරිගණකයේ දේශීය ගොනු තෝරන්න.</string>
     <string name="import_error_local_files_require_local_playlist">දේශීය ශ්‍රව්‍ය ගොනු ආයාත කළ හැක්කේ දේශීය ධාවන ලැයිස්තුවකට පමණි.</string>
     <string name="import_error_file_read_failed">ධාවන ලැයිස්තු ගොනුව කියවිය නොහැකි විය. එය නැවත තෝරා ගොනු ප්‍රවේශය ලබා දෙන්න.</string>
-    <string name="startup_error_title">Metrolist ආරම්භ කිරීමේ දෝෂය</string>
+    <string name="startup_error_title">Meld ආරම්භ කිරීමේ දෝෂය</string>
     <string name="lyrics_show_translations">පරිවර්තන පෙන්වන්න</string>
     <string name="artist_latest_release">නවතම නිකුතුව</string>
     <string name="top_tracks">ජනප්‍රිය ගීත</string>
@@ -49,7 +49,7 @@
     <string name="available_devices">ලබා ගත හැකි උපාංග</string>
     <string name="no_device_connected">උපාංගයක් සම්බන්ධ කර නැත</string>
     <string name="no_device_found">උපාංගයක් හමු නොවීය</string>
-    <string name="no_compatible_devices">Google Cast, FCast, DLNA හෝ Metrolist සමඟ ගැළපෙන උපාංගයක් හමු නොවීය.</string>
+    <string name="no_compatible_devices">Google Cast, FCast, DLNA හෝ Meld සමඟ ගැළපෙන උපාංගයක් හමු නොවීය.</string>
     <string name="show_player_cast_button">විකාශන බොත්තම පෙන්වන්න</string>
     <string name="show_player_video_button">ශ්‍රව්‍ය/දෘශ්‍ය තේරීම පෙන්වන්න</string>
     <string name="onboarding_language_lyrics_description">යෙදුමේ භාෂාව සහ ගී පද පෙන්වන ආකාරය තෝරන්න.</string>
@@ -122,7 +122,7 @@
     <string name="onboarding_continue_without_migration">හිස් පුස්තකාලයක් සමඟ ඉදිරියට යන්න</string>
     <string name="onboarding_migration_recovery_description">ඔබට නැවත උත්සාහ කිරීමට හෝ හිස් පුස්තකාලයක් සමඟ ඉදිරියට යාමට හැක. ඔබගේ මුල් දත්ත සමුදායේ ප්‍රතිසාධන පිටපතක් මෙම උපාංගයේ රැඳෙනු ඇත. සැකසීමෙන් පසු උපස්ථයක් ප්‍රතිසාධනය කළ හැක.</string>
     <string name="onboarding_migration_failed">ඔබගේ පුස්තකාලය සූදානම් කළ නොහැකි විය. මුල් දත්ත සුරැකිව ඇත.</string>
-    <string name="onboarding_library_migrated_description">ඔබගේ ධාවන ලැයිස්තු, ඉතිහාසය, කැමැත්ත පළ කළ සිංදු සහ පුස්තකාල දත්ත මෙම Metrolist අනුවාදයේ සූදානම්ව ඇත.</string>
+    <string name="onboarding_library_migrated_description">ඔබගේ ධාවන ලැයිස්තු, ඉතිහාසය, කැමැත්ත පළ කළ සිංදු සහ පුස්තකාල දත්ත මෙම Meld අනුවාදයේ සූදානම්ව ඇත.</string>
     <string name="onboarding_notifications_denied">දැනුම්දීම් අක්‍රිය කර ඇත. පසුව Android යෙදුම් සැකසුම් තුළින් ඒවා සක්‍රිය කළ හැක, නැතහොත් ඉදිරියට යාමට නැත තෝරන්න.</string>
     <string name="mini_player_video_prerequisite">පළමුව වාදන සැකසුම් තුළ සංගීත වීඩියෝ වාදනය කරන්න සක්‍රිය කරන්න</string>
     <string name="download_folder_access_failed">මෙම ෆෝල්ඩරයට ප්‍රවේශ අවසරය සුරැකිය නොහැකි විය. කියවීමට සහ ලිවීමට අවසර ඇති ෆෝල්ඩරයක් තෝරන්න.</string>
@@ -147,9 +147,9 @@
     <string name="updates_notification_settings">Android දැනුම්දීම් සැකසුම්</string>
     <string name="widget_recognizer_open_result">හඳුනාගත් සිංදුව විවෘත කරන්න</string>
     <string name="statistics_load_failed">සංඛ්‍යාලේඛන නැවුම් කළ නොහැකි විය. නැවත උත්සාහ කරන්න.</string>
-    <string name="desktop_platform_unsupported">Metrolist මෙම මෙහෙයුම් පද්ධතියට සහාය නොදක්වයි. Windows 10 හෝ ඊට නව අනුවාදයක්, macOS හෝ Omarchy හැර වෙනත් Linux බෙදාහැරීමක් භාවිත කරන්න.</string>
+    <string name="desktop_platform_unsupported">Meld මෙම මෙහෙයුම් පද්ධතියට සහාය නොදක්වයි. Windows 10 හෝ ඊට නව අනුවාදයක්, macOS හෝ Omarchy හැර වෙනත් Linux බෙදාහැරීමක් භාවිත කරන්න.</string>
     <string name="shortcut_toggle_expanded">වාදකය විහිදුවන්න හෝ හකුළන්න</string>
-    <string name="desktop_display_unavailable">Metrolist හට මෙම සැසියේ X සංදර්ශකයට සම්බන්ධ විය නොහැකි විය. DISPLAY සකසා ඔබගේ වැඩතල සැසියෙන් එය ආරම්භ කරන්න.</string>
+    <string name="desktop_display_unavailable">Meld හට මෙම සැසියේ X සංදර්ශකයට සම්බන්ධ විය නොහැකි විය. DISPLAY සකසා ඔබගේ වැඩතල සැසියෙන් එය ආරම්භ කරන්න.</string>
     <string name="webkit_install_hint">යෙදුම තුළින් පිවිසීමට WebKitGTK 4.1 (%1$s) අවශ්‍ය වේ. පද්ධතියේ පැකේජ කළමනාකරු භාවිතයෙන් එය ස්ථාපනය කරන්න.</string>
     <string name="webkit_install_command">මෙය භාවිතයෙන් ස්ථාපනය කරන්න:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage අනුවාද ද පිවිසීම සඳහා පද්ධතියේ WebKitGTK පුස්තකාල භාවිත කරයි.</string>
@@ -162,7 +162,7 @@
     <string name="video_stats_latency_value">%1$s මිලිතත්පර</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s මෙබ (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | ශබ්ද මට්ටම: %2$s</string>
-    <string name="download_folder_unavailable">මෙම ෆෝල්ඩරය භාවිත කළ නොහැකි විය. පද්ධතිය හෝ සීමා කළ ධාවන පරිසරය Metrolist හට ප්‍රවේශ වීමට ඉඩ දෙන, ලිවිය හැකි ෆෝල්ඩරයක් තෝරන්න.</string>
+    <string name="download_folder_unavailable">මෙම ෆෝල්ඩරය භාවිත කළ නොහැකි විය. පද්ධතිය හෝ සීමා කළ ධාවන පරිසරය Meld හට ප්‍රවේශ වීමට ඉඩ දෙන, ලිවිය හැකි ෆෝල්ඩරයක් තෝරන්න.</string>
     <string name="window_maximize">උපරිම කරන්න</string>
     <string name="window_restore">කවුළුව පෙර ප්‍රමාණයට ගන්න</string>
     <string name="equalizer_stream_unavailable">මෙම ප්‍රවාහය සඳහා සමකරනය සහ පූර්ව වර්ධකය ලබාගත නොහැක. සහාය දක්වන සිංදුවක් වාදනය වන විට වෙනස්කම් යෙදේ.</string>
@@ -176,7 +176,7 @@
     <string name="queue_youtube_history_paused_desc">නොබැඳිව සිටියදී වාදන තොරතුරු පසුව යැවීමට පෙළගැස්වීම සඳහා සවන්දීමේ ඉතිහාසය නැවත සක්‍රිය කරන්න</string>
     <string name="search_online_failed">මාර්ගගතව සෙවිය නොහැකි විය. සම්බන්ධතාව පරීක්ෂා කර නැවත උත්සාහ කරන්න.</string>
     <string name="search_load_more_failed">තවත් ප්‍රතිඵල පූරණය කළ නොහැකි විය.</string>
-    <string name="discord_error_gateway_configuration">Discord සම්බන්ධතා සැකසුම ප්‍රතික්ෂේප කළේය. නැවත උත්සාහ කිරීමට පෙර Metrolist යාවත්කාලීන කරන්න.</string>
+    <string name="discord_error_gateway_configuration">Discord සම්බන්ධතා සැකසුම ප්‍රතික්ෂේප කළේය. නැවත උත්සාහ කිරීමට පෙර Meld යාවත්කාලීන කරන්න.</string>
     <string name="discord_preview_buttons_adjusted">Discord දිගු බොත්තම් පෙළ කෙටි කරන අතර සබැඳි ඉතා දිගු බොත්තම් අත්හරියි. මෙම පෙරදසුනේ යවනු ලබන බොත්තම් පෙන්වයි.</string>
     <string name="discord_presence_status_warning">විස්තරාත්මක ක්‍රියාකාරකම් තත්ත්වය සක්‍රිය කිරීමෙන් Discord වෙත මාර්ගගත තත්ත්වය යැවෙන අතර නොපෙනෙන හෝ බාධා නොකරන්න තත්ත්ව වෙනස් විය හැක. වාදනය නවත්වන විටත් මෙය සිදු විය හැක.</string>
     <string name="discord_refresh_queued">ක්‍රියාකාරකම් තත්ත්වය නැවුම් කිරීම පෝලිමට එක් කර ඇත.</string>
@@ -211,8 +211,8 @@
     <string name="theme_color_rose">රෝස</string>
     <string name="theme_color_red">රතු</string>
     <string name="theme_color_gold">රන්</string>
-    <string name="backup_unsupported_format">Metrolist හි මෙම අනුවාදය මෙම උපස්ථ ආකෘතියට සහාය නොදක්වයි.</string>
-    <string name="backup_unsupported_database">Metrolist හි මෙම අනුවාදය මෙම උපස්ථයේ දත්ත සමුදා අනුවාදයට සහාය නොදක්වයි.</string>
+    <string name="backup_unsupported_format">Meld හි මෙම අනුවාදය මෙම උපස්ථ ආකෘතියට සහාය නොදක්වයි.</string>
+    <string name="backup_unsupported_database">Meld හි මෙම අනුවාදය මෙම උපස්ථයේ දත්ත සමුදා අනුවාදයට සහාය නොදක්වයි.</string>
     <string name="backup_too_large">උපස්ථය සහාය දක්වන ප්‍රමාණ සීමාව හෝ ඇතුළත් කිරීම් ගණනේ සීමාව ඉක්මවයි.</string>
     <string name="backup_invalid_data">උපස්ථය කියවීමට හෝ වලංගු බව තහවුරු කිරීමට නොහැකි විය. එය හානි වී තිබිය හැක හෝ සහාය නොදක්වන දත්ත අඩංගු විය හැක.</string>
     <string name="search_history_removal_failed">ගිණුමේ සෙවුම් ඉතිහාසය මැකිය නොහැකි විය. සම්බන්ධ වූ විට නැවත උත්සාහ කරන්න.</string>
@@ -223,10 +223,10 @@
     <string name="top_period_past_year">පසුගිය වසර</string>
     <string name="onboarding_welcome_description">පළමු වරට සවන් දීමට පෙර පෞද්ගලිකත්වය සහ පද්ධති අවසර සකසන්න.</string>
     <string name="onboarding_migration_title">ඔබගේ v13 පුස්තකාලය මෙහි ඇත</string>
-    <string name="onboarding_migration_description">අපට ස්වාධීන Metrolist දත්ත සමුදායක් හමු විය. ධාවන ලැයිස්තු, ඉතිහාසය, කැමැත්ත පළ කළ සිංදු සහ පුස්තකාල දත්ත එම ස්ථානයේම සංක්‍රමණය කරන්න. සංක්‍රමණය අසාර්ථක වුවහොත් මුල් දත්ත සමුදාය නැවත ලබාගත හැක.</string>
+    <string name="onboarding_migration_description">අපට ස්වාධීන Meld දත්ත සමුදායක් හමු විය. ධාවන ලැයිස්තු, ඉතිහාසය, කැමැත්ත පළ කළ සිංදු සහ පුස්තකාල දත්ත එම ස්ථානයේම සංක්‍රමණය කරන්න. සංක්‍රමණය අසාර්ථක වුවහොත් මුල් දත්ත සමුදාය නැවත ලබාගත හැක.</string>
     <string name="onboarding_migration_complete_title">ඔබගේ ගිණුම සංක්‍රමණය කරන ලදි</string>
-    <string name="onboarding_migration_complete_description">ඔබගේ ගිණුම, ධාවන ලැයිස්තු, ඉතිහාසය, කැමැත්ත පළ කළ සිංදු සහ පුස්තකාල දත්ත මෙම Metrolist අනුවාදයේ සූදානම්ව ඇත.</string>
-    <string name="onboarding_crash_reports_title">Metrolist වැඩිදියුණු කිරීමට උදවු කරන්න</string>
+    <string name="onboarding_migration_complete_description">ඔබගේ ගිණුම, ධාවන ලැයිස්තු, ඉතිහාසය, කැමැත්ත පළ කළ සිංදු සහ පුස්තකාල දත්ත මෙම Meld අනුවාදයේ සූදානම්ව ඇත.</string>
+    <string name="onboarding_crash_reports_title">Meld වැඩිදියුණු කිරීමට උදවු කරන්න</string>
     <string name="onboarding_crash_reports_description">ගැටලු සොයා විසඳීමට අපට උදවු කිරීම සඳහා කැමති නම් Sentry හරහා දෝෂ හඳුනාගැනීමේ දත්ත බෙදාගන්න. සැකසුම් තුළ මෙය ඕනෑම වේලාවක වෙනස් කළ හැක.</string>
     <string name="onboarding_notifications_title">දැනුම්දීම්වලට අවසර දෙන්න</string>
     <string name="onboarding_notifications_description">ධාවනය සහ බාගැනීම් සඳහා දැනුම්දීම් සක්‍රිය කරන්න.</string>
@@ -242,10 +242,10 @@
     <string name="onboarding_finish_title">සියල්ල සූදානම්</string>
     <string name="onboarding_finish_description">සැකසීම සම්පූර්ණයි. සවන් දීම අරඹන්න, නැතහොත් මුලින් ඔබගේ ගිණුම සහ දත්ත රැගෙන එන්න.</string>
     <string name="onboarding_restore_backup">උපස්ථයකින් ප්‍රතිසාධනය කරන්න</string>
-    <string name="onboarding_settings_hint">Metrolist අභිරුචිකරණය කිරීමට ඉහළ දකුණු මෙනුවෙන් සැකසුම් විවෘත කරන්න.</string>
+    <string name="onboarding_settings_hint">Meld අභිරුචිකරණය කිරීමට ඉහළ දකුණු මෙනුවෙන් සැකසුම් විවෘත කරන්න.</string>
     <string name="onboarding_no_saved_accounts">සම්බන්ධ කළ ගිණුම් හමු නොවීය.</string>
     <string name="onboarding_account_picture">%1$s ගේ පැතිකඩ රූපය</string>
-    <string name="onboarding_backup_picker_title">Metrolist උපස්ථය ප්‍රතිසාධනය කරන්න</string>
+    <string name="onboarding_backup_picker_title">Meld උපස්ථය ප්‍රතිසාධනය කරන්න</string>
     <string name="onboarding_backup_picker_error">උපස්ථ තෝරනය විවෘත කළ නොහැකි විය: %1$s</string>
     <string name="onboarding_backup_restore_failed">ප්‍රතිසාධනය අසාර්ථක විය: %1$s</string>
     <string name="new_badge">නව</string>

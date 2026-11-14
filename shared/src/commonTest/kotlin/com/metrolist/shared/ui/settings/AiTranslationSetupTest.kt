@@ -50,8 +50,8 @@ class AiTranslationSetupTest {
                     assertFalse(settings.lyricsShowTranslations)
                     assertEquals("existing-model", settings.lyricsAiModel)
                     assertEquals("Bearer oauth-key", request.headers["Authorization"])
-                    assertEquals("Metrolist", request.headers["X-Title"])
-                    assertEquals("https://github.com/MetrolistGroup/Metrolist", request.headers["HTTP-Referer"])
+                    assertEquals("Meld", request.headers["X-Title"])
+                    assertEquals("https://github.com/FrancescoGrazioso/Meld", request.headers["HTTP-Referer"])
                     assertEquals("https://openrouter.ai/api/v1/chat/completions", request.url.toString())
                     val body = Json.parseToJsonElement((request.body as TextContent).text).jsonObject
                     assertEquals("128", body["max_tokens"]?.jsonPrimitive?.content)

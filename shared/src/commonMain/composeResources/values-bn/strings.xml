@@ -222,7 +222,7 @@
     <string name="import_error_unsupported_playlist_entries">এই প্লেলিস্টে এমন স্থানীয় ফাইল বা সরাসরি লিংক আছে যা Android ব্যবহার করতে পারে না। YouTube লিংকসহ একটি প্লেলিস্ট আমদানি করুন, অথবা ডেস্কটপে স্থানীয় ফাইলগুলো বেছে নিন।</string>
     <string name="import_error_local_files_require_local_playlist">স্থানীয় অডিও ফাইল শুধু স্থানীয় প্লেলিস্টে আমদানি করা যায়।</string>
     <string name="import_error_file_read_failed">প্লেলিস্ট ফাইলটি পড়া যায়নি। আবার ফাইলটি বেছে নিয়ে প্রবেশাধিকার দিন।</string>
-    <string name="startup_error_title">Metrolist চালু করতে ত্রুটি</string>
+    <string name="startup_error_title">Meld চালু করতে ত্রুটি</string>
     <string name="lyrics_show_translations">অনুবাদ দেখান</string>
     <string name="artist_latest_release">সর্বশেষ প্রকাশনা</string>
     <string name="top_tracks">সেরা ট্র্যাক</string>
@@ -273,7 +273,7 @@
     <string name="available_devices">উপলব্ধ ডিভাইস</string>
     <string name="no_device_connected">কোনো ডিভাইস সংযুক্ত নেই</string>
     <string name="no_device_found">কোনো ডিভাইস পাওয়া যায়নি</string>
-    <string name="no_compatible_devices">Google Cast, FCast, DLNA বা Metrolist-এর সাথে সামঞ্জস্যপূর্ণ কোনো ডিভাইস পাওয়া যায়নি।</string>
+    <string name="no_compatible_devices">Google Cast, FCast, DLNA বা Meld-এর সাথে সামঞ্জস্যপূর্ণ কোনো ডিভাইস পাওয়া যায়নি।</string>
     <string name="show_player_cast_button">কাস্ট বোতাম দেখান</string>
     <string name="show_player_video_button">অডিও/ভিডিও নির্বাচক দেখান</string>
     <string name="onboarding_language_lyrics_description">অ্যাপের ভাষা ও গানের কথা কীভাবে দেখানো হবে তা বেছে নিন।</string>
@@ -344,7 +344,7 @@
     <string name="onboarding_continue_without_migration">খালি লাইব্রেরি নিয়ে এগিয়ে যান</string>
     <string name="onboarding_migration_recovery_description">আবার চেষ্টা করতে পারেন বা খালি লাইব্রেরি নিয়ে এগিয়ে যেতে পারেন। পুনরুদ্ধারের জন্য আপনার মূল ডেটাবেসের একটি কপি এই ডিভাইসে থাকবে। সেটআপের পরে ব্যাকআপ থেকে ফিরিয়ে আনতে পারবেন।</string>
     <string name="onboarding_migration_failed">আপনার লাইব্রেরি প্রস্তুত করা যায়নি। মূল ডেটা সংরক্ষিত আছে।</string>
-    <string name="onboarding_library_migrated_description">আপনার প্লেলিস্ট, ইতিহাস, লাইক ও লাইব্রেরির ডেটা Metrolist-এর এই সংস্করণে প্রস্তুত আছে।</string>
+    <string name="onboarding_library_migrated_description">আপনার প্লেলিস্ট, ইতিহাস, লাইক ও লাইব্রেরির ডেটা Meld-এর এই সংস্করণে প্রস্তুত আছে।</string>
     <string name="onboarding_notifications_denied">নোটিফিকেশন বন্ধ আছে। পরে Android-এর অ্যাপ সেটিংসে চালু করতে পারেন, অথবা এগিয়ে যেতে না বেছে নিন।</string>
     <string name="mini_player_video_prerequisite">আগে প্লেব্যাক সেটিংসে "মিউজিক ভিডিও চালান" চালু করুন</string>
     <string name="download_folder_access_failed">এই ফোল্ডারে অ্যাক্সেসের অনুমতি সংরক্ষণ করা যায়নি। পড়া ও লেখার অনুমতি আছে এমন একটি ফোল্ডার বেছে নিন।</string>
@@ -369,9 +369,9 @@
     <string name="updates_notification_settings">Android-এর নোটিফিকেশন সেটিংস</string>
     <string name="widget_recognizer_open_result">শনাক্ত করা গান খুলুন</string>
     <string name="statistics_load_failed">পরিসংখ্যান রিফ্রেশ করা যায়নি। আবার চেষ্টা করুন।</string>
-    <string name="desktop_platform_unsupported">Metrolist এই অপারেটিং সিস্টেম সমর্থন করে না। Windows 10 বা পরের সংস্করণ, macOS বা Omarchy ছাড়া অন্য কোনো Linux ডিস্ট্রিবিউশন ব্যবহার করুন।</string>
+    <string name="desktop_platform_unsupported">Meld এই অপারেটিং সিস্টেম সমর্থন করে না। Windows 10 বা পরের সংস্করণ, macOS বা Omarchy ছাড়া অন্য কোনো Linux ডিস্ট্রিবিউশন ব্যবহার করুন।</string>
     <string name="shortcut_toggle_expanded">প্লেয়ার বড় বা ছোট করুন</string>
-    <string name="desktop_display_unavailable">Metrolist এই সেশনের X ডিসপ্লেতে সংযোগ করতে পারেনি। DISPLAY সেট করে আপনার ডেস্কটপ সেশন থেকে চালু করুন।</string>
+    <string name="desktop_display_unavailable">Meld এই সেশনের X ডিসপ্লেতে সংযোগ করতে পারেনি। DISPLAY সেট করে আপনার ডেস্কটপ সেশন থেকে চালু করুন।</string>
     <string name="webkit_install_hint">অ্যাপের মধ্যে সাইন ইন করতে WebKitGTK 4.1 (%1$s) প্রয়োজন। সিস্টেমের প্যাকেজ ম্যানেজার দিয়ে ইনস্টল করুন।</string>
     <string name="webkit_install_command">এই কমান্ড দিয়ে ইনস্টল করুন:\n%1$s</string>
     <string name="webkit_appimage_hint">AppImage সংস্করণেও সাইন ইনের জন্য সিস্টেমের WebKitGTK লাইব্রেরি ব্যবহৃত হয়।</string>
@@ -384,7 +384,7 @@
     <string name="video_stats_latency_value">%1$s মিলিসেকেন্ড</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s এমবি (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | ভলিউম: %2$s</string>
-    <string name="download_folder_unavailable">এই ফোল্ডার ব্যবহার করা যায়নি। এমন একটি লেখার অনুমতিযুক্ত ফোল্ডার বেছে নিন যেখানে সিস্টেম বা স্যান্ডবক্স Metrolist-কে অ্যাক্সেসের অনুমতি দেয়।</string>
+    <string name="download_folder_unavailable">এই ফোল্ডার ব্যবহার করা যায়নি। এমন একটি লেখার অনুমতিযুক্ত ফোল্ডার বেছে নিন যেখানে সিস্টেম বা স্যান্ডবক্স Meld-কে অ্যাক্সেসের অনুমতি দেয়।</string>
     <string name="window_maximize">উইন্ডো বড় করুন</string>
     <string name="window_restore">উইন্ডো আগের আকারে আনুন</string>
     <string name="equalizer_stream_unavailable">এই স্ট্রিমে অডিও টিউনার ও প্রিঅ্যাম্প ব্যবহার করা যায় না। সমর্থিত গান চললে পরিবর্তনগুলো প্রয়োগ হবে।</string>
@@ -398,7 +398,7 @@
     <string name="queue_youtube_history_paused_desc">অফলাইনে শোনার তথ্য জমা রাখতে শোনার ইতিহাস আবার চালু করুন</string>
     <string name="search_online_failed">অনলাইনে খোঁজা যায়নি। সংযোগ পরীক্ষা করে আবার চেষ্টা করুন।</string>
     <string name="search_load_more_failed">আরও ফলাফল লোড করা যায়নি।</string>
-    <string name="discord_error_gateway_configuration">Discord সংযোগের কনফিগারেশন প্রত্যাখ্যান করেছে। আবার চেষ্টা করার আগে Metrolist আপডেট করুন।</string>
+    <string name="discord_error_gateway_configuration">Discord সংযোগের কনফিগারেশন প্রত্যাখ্যান করেছে। আবার চেষ্টা করার আগে Meld আপডেট করুন।</string>
     <string name="discord_preview_buttons_adjusted">Discord লম্বা বোতামের লেখা ছোট করে এবং অতিরিক্ত লম্বা লিংকের বোতাম বাদ দেয়। এই প্রিভিউতে পাঠানো হবে এমন বোতামগুলো দেখানো হচ্ছে।</string>
     <string name="discord_presence_status_warning">বিস্তারিত কার্যকলাপের স্ট্যাটাস Discord-এ অনলাইন স্ট্যাটাস পাঠায়। এটি অদৃশ্য বা বিরক্ত করবেন না স্ট্যাটাস বদলাতে পারে, এমনকি গান বন্ধ থাকলেও।</string>
     <string name="discord_refresh_queued">স্ট্যাটাস রিফ্রেশ কিউতে রাখা হয়েছে।</string>
@@ -433,8 +433,8 @@
     <string name="theme_color_rose">গোলাপি</string>
     <string name="theme_color_red">লাল</string>
     <string name="theme_color_gold">সোনালি</string>
-    <string name="backup_unsupported_format">Metrolist-এর এই সংস্করণে এই ব্যাকআপ ফরম্যাট সমর্থিত নয়।</string>
-    <string name="backup_unsupported_database">এই ব্যাকআপের ডেটাবেস সংস্করণ Metrolist-এর এই সংস্করণে সমর্থিত নয়।</string>
+    <string name="backup_unsupported_format">Meld-এর এই সংস্করণে এই ব্যাকআপ ফরম্যাট সমর্থিত নয়।</string>
+    <string name="backup_unsupported_database">এই ব্যাকআপের ডেটাবেস সংস্করণ Meld-এর এই সংস্করণে সমর্থিত নয়।</string>
     <string name="backup_too_large">ব্যাকআপের আকার বা এন্ট্রির সংখ্যা সমর্থিত সীমা ছাড়িয়েছে।</string>
     <string name="backup_invalid_data">ব্যাকআপ পড়া বা যাচাই করা যায়নি। এটি ক্ষতিগ্রস্ত হতে পারে বা এতে অসমর্থিত ডেটা থাকতে পারে।</string>
     <string name="search_history_removal_failed">অ্যাকাউন্টের সার্চের ইতিহাস মোছা যায়নি। সংযোগ থাকলে আবার চেষ্টা করুন।</string>
@@ -445,10 +445,10 @@
     <string name="top_period_past_year">গত বছর</string>
     <string name="onboarding_welcome_description">প্রথমবার শোনার আগে গোপনীয়তা ও সিস্টেমের অনুমতি সেট আপ করুন।</string>
     <string name="onboarding_migration_title">আপনার v13 লাইব্রেরি এখানে আছে</string>
-    <string name="onboarding_migration_description">আমরা একটি স্বতন্ত্র Metrolist ডেটাবেস পেয়েছি। প্লেলিস্ট, শোনার ইতিহাস, লাইক ও লাইব্রেরির ডেটা এখানেই স্থানান্তর করুন। স্থানান্তর ব্যর্থ হলে আপনি মূল ডেটাবেস পুনরুদ্ধার করতে পারবেন।</string>
+    <string name="onboarding_migration_description">আমরা একটি স্বতন্ত্র Meld ডেটাবেস পেয়েছি। প্লেলিস্ট, শোনার ইতিহাস, লাইক ও লাইব্রেরির ডেটা এখানেই স্থানান্তর করুন। স্থানান্তর ব্যর্থ হলে আপনি মূল ডেটাবেস পুনরুদ্ধার করতে পারবেন।</string>
     <string name="onboarding_migration_complete_title">আপনার অ্যাকাউন্ট স্থানান্তর করা হয়েছে</string>
-    <string name="onboarding_migration_complete_description">আপনার অ্যাকাউন্ট, প্লেলিস্ট, শোনার ইতিহাস, লাইক ও লাইব্রেরির ডেটা Metrolist-এর এই সংস্করণে প্রস্তুত আছে।</string>
-    <string name="onboarding_crash_reports_title">Metrolist উন্নত করতে সাহায্য করুন</string>
+    <string name="onboarding_migration_complete_description">আপনার অ্যাকাউন্ট, প্লেলিস্ট, শোনার ইতিহাস, লাইক ও লাইব্রেরির ডেটা Meld-এর এই সংস্করণে প্রস্তুত আছে।</string>
+    <string name="onboarding_crash_reports_title">Meld উন্নত করতে সাহায্য করুন</string>
     <string name="onboarding_crash_reports_description">সমস্যা খুঁজে বের করতে ও সমাধান করতে আমাদের সাহায্য করার জন্য Sentry-এর মাধ্যমে ঐচ্ছিক ডায়াগনস্টিক তথ্য শেয়ার করুন। সেটিংস থেকে যেকোনো সময় এটি পরিবর্তন করতে পারবেন।</string>
     <string name="onboarding_notifications_title">বিজ্ঞপ্তির অনুমতি দিন</string>
     <string name="onboarding_notifications_description">প্লেব্যাক ও ডাউনলোডের জন্য বিজ্ঞপ্তি চালু করুন।</string>
@@ -464,10 +464,10 @@
     <string name="onboarding_finish_title">সব প্রস্তুত</string>
     <string name="onboarding_finish_description">সেটআপ সম্পূর্ণ। শুনতে শুরু করুন অথবা আগে আপনার অ্যাকাউন্ট ও ডেটা নিয়ে আসুন।</string>
     <string name="onboarding_restore_backup">ব্যাকআপ থেকে পুনরুদ্ধার করুন</string>
-    <string name="onboarding_settings_hint">Metrolist নিজের মতো সাজাতে উপরের ডানদিকের মেনু থেকে সেটিংস খুলুন।</string>
+    <string name="onboarding_settings_hint">Meld নিজের মতো সাজাতে উপরের ডানদিকের মেনু থেকে সেটিংস খুলুন।</string>
     <string name="onboarding_no_saved_accounts">কোনো সংযুক্ত অ্যাকাউন্ট পাওয়া যায়নি।</string>
     <string name="onboarding_account_picture">%1$s-এর প্রোফাইলের ছবি</string>
-    <string name="onboarding_backup_picker_title">Metrolist ব্যাকআপ পুনরুদ্ধার করুন</string>
+    <string name="onboarding_backup_picker_title">Meld ব্যাকআপ পুনরুদ্ধার করুন</string>
     <string name="onboarding_backup_picker_error">ব্যাকআপ বেছে নেওয়ার উইন্ডো খোলা যায়নি: %1$s</string>
     <string name="onboarding_backup_restore_failed">পুনরুদ্ধার ব্যর্থ হয়েছে: %1$s</string>
     <string name="new_badge">নতুন</string>

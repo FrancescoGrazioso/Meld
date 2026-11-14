@@ -88,8 +88,10 @@ private struct AppHostView: View {
 
 private func startSentryReporting() {
     guard IosSentryKt.iosCrashReportingAvailable() else { return }
+    let dsn = IosSentryKt.iosSentryDsn()
+    guard !dsn.isEmpty else { return }
     SentrySDK.start { options in
-        options.dsn = "https://fe4474514a54a507252b26c60e229016@o4511744603193344.ingest.de.sentry.io/4511744608436304"
+        options.dsn = dsn
         options.debug = false
         options.environment = "production"
         options.sendDefaultPii = false

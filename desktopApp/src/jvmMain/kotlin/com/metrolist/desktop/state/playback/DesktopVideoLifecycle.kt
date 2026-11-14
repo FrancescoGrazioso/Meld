@@ -751,7 +751,7 @@ internal class DesktopVideoLifecycle(
         val syncStr = "${stats.avSyncOffsetMs} ms (PTS: ${stats.videoPtsMs} ms, Audio: ${stats.audioClockMs} ms)"
 
         val sb = StringBuilder()
-        sb.appendLine("=== Metrolist Video Stats for Nerds ===")
+        sb.appendLine("=== Meld Video Stats for Nerds ===")
         sb.appendLine("Video ID: ${stats.videoId.ifBlank { "N/A" }}")
         sb.appendLine("Track: ${track?.title ?: "Unknown"} - $artistNames")
         if (stats.counterpartSource.isNotBlank()) {

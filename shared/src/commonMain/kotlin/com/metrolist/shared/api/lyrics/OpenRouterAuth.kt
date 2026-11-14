@@ -44,7 +44,7 @@ class OpenRouterAuth(
             .apply {
                 parameters.append("code_challenge", challenge)
                 parameters.append("code_challenge_method", "S256")
-                parameters.append("key_label", "Metrolist")
+                parameters.append("key_label", "Meld")
             }.buildString()
     }
 

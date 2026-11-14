@@ -5,7 +5,7 @@
     <string name="import_error_unsupported_playlist_entries">Šajā atskaņošanas sarakstā ir lokāli faili vai tiešas saites, kam Android nevar piekļūt. Importējiet sarakstu ar YouTube saitēm vai izvēlieties lokālos failus datorā.</string>
     <string name="import_error_local_files_require_local_playlist">Lokālus audiofailus var importēt tikai lokālā atskaņošanas sarakstā.</string>
     <string name="import_error_file_read_failed">Neizdevās nolasīt atskaņošanas saraksta failu. Izvēlieties to vēlreiz un piešķiriet piekļuvi failam.</string>
-    <string name="startup_error_title">Metrolist palaišanas kļūda</string>
+    <string name="startup_error_title">Meld palaišanas kļūda</string>
     <string name="lyrics_show_translations">Rādīt tulkojumus</string>
     <string name="artist_latest_release">Jaunākais izdevums</string>
     <string name="top_tracks">Populārākie ieraksti</string>
@@ -49,7 +49,7 @@
     <string name="available_devices">Pieejamās ierīces</string>
     <string name="no_device_connected">Nav pievienotu ierīču</string>
     <string name="no_device_found">Neviena ierīce nav atrasta</string>
-    <string name="no_compatible_devices">Nav atrasta neviena ar Google Cast, FCast, DLNA vai Metrolist saderīga ierīce.</string>
+    <string name="no_compatible_devices">Nav atrasta neviena ar Google Cast, FCast, DLNA vai Meld saderīga ierīce.</string>
     <string name="show_player_cast_button">Rādīt apraides pogu</string>
     <string name="show_player_video_button">Rādīt audio/video pārslēgu</string>
     <string name="onboarding_language_lyrics_description">Izvēlieties lietotnes valodu un dziesmu vārdu rādīšanas veidu.</string>
@@ -122,7 +122,7 @@
     <string name="onboarding_continue_without_migration">Turpināt ar tukšu bibliotēku</string>
     <string name="onboarding_migration_recovery_description">Varat mēģināt vēlreiz vai turpināt ar tukšu bibliotēku. Sākotnējās datubāzes atkopšanas kopija paliks šajā ierīcē. Pēc iestatīšanas varat atjaunot datus no dublējuma.</string>
     <string name="onboarding_migration_failed">Neizdevās sagatavot bibliotēku. Sākotnējie dati ir saglabāti.</string>
-    <string name="onboarding_library_migrated_description">Jūsu atskaņošanas saraksti, vēsture, atzīmes Patīk un bibliotēkas dati ir gatavi lietošanai šajā Metrolist versijā.</string>
+    <string name="onboarding_library_migrated_description">Jūsu atskaņošanas saraksti, vēsture, atzīmes Patīk un bibliotēkas dati ir gatavi lietošanai šajā Meld versijā.</string>
     <string name="onboarding_notifications_denied">Paziņojumi ir izslēgti. Varat tos vēlāk ieslēgt Android lietotnes iestatījumos vai izvēlēties Nē, lai turpinātu.</string>
     <string name="mini_player_video_prerequisite">Vispirms atskaņošanas iestatījumos ieslēdziet Atskaņot mūzikas videoklipus</string>
     <string name="download_folder_access_failed">Neizdevās saglabāt piekļuves atļauju šai mapei. Izvēlieties mapi ar lasīšanas un rakstīšanas piekļuvi.</string>
@@ -147,9 +147,9 @@
     <string name="updates_notification_settings">Android paziņojumu iestatījumi</string>
     <string name="widget_recognizer_open_result">Atvērt atpazīto dziesmu</string>
     <string name="statistics_load_failed">Neizdevās atsvaidzināt statistiku. Mēģiniet vēlreiz.</string>
-    <string name="desktop_platform_unsupported">Metrolist neatbalsta šo operētājsistēmu. Izmantojiet Windows 10 vai jaunāku versiju, macOS vai Linux izplatījumu, kas nav Omarchy.</string>
+    <string name="desktop_platform_unsupported">Meld neatbalsta šo operētājsistēmu. Izmantojiet Windows 10 vai jaunāku versiju, macOS vai Linux izplatījumu, kas nav Omarchy.</string>
     <string name="shortcut_toggle_expanded">Izvērst vai sakļaut atskaņotāju</string>
-    <string name="desktop_display_unavailable">Metrolist neizdevās izveidot savienojumu ar šīs sesijas X displeju. Palaidiet to no darbvirsmas sesijas ar iestatītu DISPLAY mainīgo.</string>
+    <string name="desktop_display_unavailable">Meld neizdevās izveidot savienojumu ar šīs sesijas X displeju. Palaidiet to no darbvirsmas sesijas ar iestatītu DISPLAY mainīgo.</string>
     <string name="webkit_install_hint">Iebūvētajai pierakstīšanās funkcijai nepieciešams WebKitGTK 4.1 (%1$s). Instalējiet to ar sistēmas pakotņu pārvaldnieku.</string>
     <string name="webkit_install_command">Instalējiet ar komandu:\n%1$s</string>
     <string name="webkit_appimage_hint">Arī AppImage versijās pierakstīšanai tiek izmantotas sistēmas WebKitGTK bibliotēkas.</string>
@@ -162,7 +162,7 @@
     <string name="video_stats_latency_value">%1$s ms</string>
     <string name="video_stats_media_stream_value">%1$s / %2$s MB (%3$s%)</string>
     <string name="video_stats_position_volume_value">%1$s | Skaļums: %2$s</string>
-    <string name="download_folder_unavailable">Neizdevās izmantot šo mapi. Izvēlieties mapi ar rakstīšanas piekļuvi, kurai sistēma vai izolētā vide ļauj piekļūt lietotnei Metrolist.</string>
+    <string name="download_folder_unavailable">Neizdevās izmantot šo mapi. Izvēlieties mapi ar rakstīšanas piekļuvi, kurai sistēma vai izolētā vide ļauj piekļūt lietotnei Meld.</string>
     <string name="window_maximize">Maksimizēt</string>
     <string name="window_restore">Atjaunot logu</string>
     <string name="equalizer_stream_unavailable">Ekvalaizers un priekšpastiprinātājs šai straumei nav pieejami. Izmaiņas tiks piemērotas, kad tiks atskaņota atbalstīta dziesma.</string>
@@ -177,7 +177,7 @@
     <string name="queue_youtube_history_paused_desc">Atsāciet klausīšanās vēstures saglabāšanu, lai bezsaistes atskaņošanas reizes ievietotu sinhronizācijas rindā</string>
     <string name="search_online_failed">Neizdevās meklēt tiešsaistē. Pārbaudiet savienojumu un mēģiniet vēlreiz.</string>
     <string name="search_load_more_failed">Neizdevās ielādēt vairāk rezultātu.</string>
-    <string name="discord_error_gateway_configuration">Discord noraidīja savienojuma konfigurāciju. Pirms mēģināt vēlreiz, atjauniniet Metrolist.</string>
+    <string name="discord_error_gateway_configuration">Discord noraidīja savienojuma konfigurāciju. Pirms mēģināt vēlreiz, atjauniniet Meld.</string>
     <string name="discord_preview_buttons_adjusted">Discord saīsina garus pogu nosaukumus un izlaiž pogas ar pārāk garām saitēm. Šajā priekšskatījumā ir redzamas pogas, kas tiks nosūtītas.</string>
     <string name="discord_presence_status_warning">Paplašinātais statuss nosūta Discord statusu Tiešsaistē. Tas var aizstāt Neredzams vai Netraucēt, arī pēc atskaņošanas apturēšanas.</string>
     <string name="discord_refresh_queued">Statusa atsvaidzināšana ievietota rindā.</string>
@@ -212,8 +212,8 @@
     <string name="theme_color_rose">Rozā</string>
     <string name="theme_color_red">Sarkana</string>
     <string name="theme_color_gold">Zeltaina</string>
-    <string name="backup_unsupported_format">Šī Metrolist versija neatbalsta šo dublējuma formātu.</string>
-    <string name="backup_unsupported_database">Šī Metrolist versija neatbalsta šajā dublējumā esošo datubāzes versiju.</string>
+    <string name="backup_unsupported_format">Šī Meld versija neatbalsta šo dublējuma formātu.</string>
+    <string name="backup_unsupported_database">Šī Meld versija neatbalsta šajā dublējumā esošo datubāzes versiju.</string>
     <string name="backup_too_large">Dublējums pārsniedz atbalstīto lielumu vai ierakstu skaita ierobežojumu.</string>
     <string name="backup_invalid_data">Neizdevās nolasīt vai pārbaudīt dublējumu. Tas var būt bojāts vai saturēt neatbalstītus datus.</string>
     <string name="search_history_removal_failed">Neizdevās notīrīt konta meklēšanas vēsturi. Mēģiniet vēlreiz, kad ir savienojums ar internetu.</string>
@@ -224,10 +224,10 @@
     <string name="top_period_past_year">Pēdējais gads</string>
     <string name="onboarding_welcome_description">Pirms pirmās klausīšanās iestatiet privātumu un sistēmas atļaujas.</string>
     <string name="onboarding_migration_title">Jūsu v13 bibliotēka ir šeit</string>
-    <string name="onboarding_migration_description">Mēs atradām atsevišķu Metrolist datubāzi. Pārvietojiet atskaņošanas sarakstus, vēsturi, atzīmes Patīk un bibliotēkas datus uz vietas. Ja pārvietošana neizdodas, varat atjaunot sākotnējo datubāzi.</string>
+    <string name="onboarding_migration_description">Mēs atradām atsevišķu Meld datubāzi. Pārvietojiet atskaņošanas sarakstus, vēsturi, atzīmes Patīk un bibliotēkas datus uz vietas. Ja pārvietošana neizdodas, varat atjaunot sākotnējo datubāzi.</string>
     <string name="onboarding_migration_complete_title">Jūsu konts ir pārvietots</string>
-    <string name="onboarding_migration_complete_description">Jūsu konts, atskaņošanas saraksti, vēsture, atzīmes Patīk un bibliotēkas dati ir gatavi lietošanai šajā Metrolist versijā.</string>
-    <string name="onboarding_crash_reports_title">Palīdziet uzlabot Metrolist</string>
+    <string name="onboarding_migration_complete_description">Jūsu konts, atskaņošanas saraksti, vēsture, atzīmes Patīk un bibliotēkas dati ir gatavi lietošanai šajā Meld versijā.</string>
+    <string name="onboarding_crash_reports_title">Palīdziet uzlabot Meld</string>
     <string name="onboarding_crash_reports_description">Pēc izvēles kopīgojiet diagnostikas datus, izmantojot Sentry, lai palīdzētu mums atrast un novērst problēmas. To jebkurā laikā var mainīt iestatījumos.</string>
     <string name="onboarding_notifications_title">Atļaut paziņojumus</string>
     <string name="onboarding_notifications_description">Iespējojiet paziņojumus par atskaņošanu un lejupielādēm.</string>
@@ -243,10 +243,10 @@
     <string name="onboarding_finish_title">Viss ir gatavs</string>
     <string name="onboarding_finish_description">Iestatīšana ir pabeigta. Sāciet klausīties vai vispirms pārvietojiet savu kontu un datus.</string>
     <string name="onboarding_restore_backup">Atjaunot no dublējuma</string>
-    <string name="onboarding_settings_hint">Lai pielāgotu Metrolist, atveriet iestatījumus izvēlnē augšējā labajā stūrī.</string>
+    <string name="onboarding_settings_hint">Lai pielāgotu Meld, atveriet iestatījumus izvēlnē augšējā labajā stūrī.</string>
     <string name="onboarding_no_saved_accounts">Netika atrasts neviens saistīts konts.</string>
     <string name="onboarding_account_picture">Lietotāja %1$s profila attēls</string>
-    <string name="onboarding_backup_picker_title">Atjaunot Metrolist dublējumu</string>
+    <string name="onboarding_backup_picker_title">Atjaunot Meld dublējumu</string>
     <string name="onboarding_backup_picker_error">Neizdevās atvērt dublējuma atlasītāju: %1$s</string>
     <string name="onboarding_backup_restore_failed">Atjaunošana neizdevās: %1$s</string>
     <string name="new_badge">Jauns</string>
