@@ -71,6 +71,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.meld.spotify.ui.spotifyLibraryEntry
 import com.metrolist.android.LocalMiniPlayerBottomInset
 import com.metrolist.android.extensions.isInternetConnected
 import com.metrolist.android.playback.LocalPlayerConnection
@@ -469,6 +470,7 @@ fun LibraryScreen(
         } else {
             LibraryContent(
                 presentation = viewModel.presentation,
+                leadingItem = spotifyLibraryEntry(),
                 text = libraryContentText(),
                 items = uiState.items,
                 autoPlaylists = autoPlaylists,

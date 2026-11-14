@@ -237,6 +237,7 @@ fun LibraryContent(
     onSearchDescendingChange: (Boolean) -> Unit = {},
     onPlayAlbum: ((AlbumItem) -> Unit)? = null,
     presentation: LibraryPresentation = remember { LibraryPresentation() },
+    leadingItem: (@Composable () -> Unit)? = null,
 ) {
     val currentSongIdState = rememberUpdatedState(currentSongId)
     val isPlayingState = rememberUpdatedState(isPlaying)
@@ -465,6 +466,9 @@ fun LibraryContent(
                                 }
                             }
                         }
+                    }
+                    if (leadingItem != null && searchQuery.isBlank()) {
+                        item(key = "library_leading", contentType = "leading", span = { GridItemSpan(maxLineSpan) }) { leadingItem() }
                     }
                     items(
                         count = searchedAutoPlaylists.size,

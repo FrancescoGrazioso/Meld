@@ -155,6 +155,7 @@ import androidx.navigationevent.compose.NavigationEventDispatcherOwnerHostDefaul
 import androidx.navigationevent.compose.rememberNavigationEventDispatcherOwner
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.meld.android.spotify.spotifyEntries
 import com.metrolist.android.App
 import com.metrolist.android.BuildConfig
 import com.metrolist.android.LocalListenTogetherManager
@@ -2384,6 +2385,7 @@ fun getEntryProvider(
     onSearchResultsVisible: (Boolean) -> Unit = {},
 ): (NavKey) -> NavEntry<NavKey> =
     entryProvider<NavKey> {
+        spotifyEntries(navigator)
         entry<Screen.Home>(metadata = navTabMetadata) {
             HomeScreen(
                 floatingActionsBottomInset = floatingActionsBottomInset,

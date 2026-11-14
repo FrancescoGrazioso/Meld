@@ -1,5 +1,6 @@
 package com.meld.android
 
+import com.meld.android.spotify.spotifyScreensModule
 import com.meld.db.meldDatabaseModule
 import com.meld.spotify.playback.SpotifyPlayback
 import com.meld.spotify.playback.SpotifyQueuePlayback
@@ -14,7 +15,11 @@ import org.koin.dsl.module
 val meldModule =
     module {
         // The import manager is a process-wide singleton that keeps its own signed-in client.
-        includes(meldDatabaseModule, spotifyModule(onLogout = { androidSpotifyImportManager.logout() }))
+        includes(
+            meldDatabaseModule,
+            spotifyModule(onLogout = { androidSpotifyImportManager.logout() }),
+            spotifyScreensModule,
+        )
         single {
             SpotifyQueuePlayback(get(), AndroidSpotifyQueueTarget(get()), CoroutineScope(SupervisorJob() + Dispatchers.Main))
         } bind SpotifyPlayback::class
