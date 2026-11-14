@@ -51,6 +51,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.meld.spotify.ui.spotifyLibraryEntry
 import com.metrolist.desktop.state.app.UiState
 import com.metrolist.desktop.state.content.ArtistState
 import com.metrolist.desktop.state.content.HomeState
@@ -188,6 +189,7 @@ fun LibraryScreen(
         Column(Modifier.fillMaxSize()) {
             LibraryContent(
                 presentation = LibraryContentState.presentation,
+                leadingItem = spotifyLibraryEntry(),
                 text = libraryContentText(),
                 items = items,
                 autoPlaylists = autoPlaylists,

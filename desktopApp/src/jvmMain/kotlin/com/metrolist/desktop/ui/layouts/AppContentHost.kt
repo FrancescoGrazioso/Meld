@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleStartEffect
+import com.meld.desktop.spotify.spotifyDestination
 import com.metrolist.desktop.deviceconnect.DesktopDeviceConnect
 import com.metrolist.desktop.state.app.AppState
 import com.metrolist.desktop.state.app.UiState
@@ -218,7 +219,7 @@ fun AppContentHost(
                     }
 
                     else -> {
-                        HomeScreen()
+                        if (!spotifyDestination(destination)) HomeScreen()
                     }
                 }
             }
