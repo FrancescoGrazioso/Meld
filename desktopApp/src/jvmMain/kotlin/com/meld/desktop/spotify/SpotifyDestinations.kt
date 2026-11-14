@@ -22,11 +22,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.meld.spotify.SpotifyConnection
+import com.meld.spotify.library.SpotifyFolderViewModel
 import com.meld.spotify.library.SpotifyLibraryStore
-import com.meld.spotify.library.SpotifyLibraryViewModel
 import com.meld.spotify.library.SpotifyTracksViewModel
 import com.meld.spotify.playback.SpotifyPlayback
-import com.meld.spotify.ui.SpotifyLibraryContent
+import com.meld.spotify.ui.SpotifyFolderContent
 import com.meld.spotify.ui.SpotifyTracksContent
 import com.metrolist.desktop.state.app.UiState
 import com.metrolist.shared.generated.resources.Res
@@ -36,7 +36,7 @@ import com.metrolist.shared.ui.components.CollectionHeaderNavigation
 import com.metrolist.shared.ui.icons.MetrolistIcons
 import com.metrolist.shared.ui.navigation.LocalNavigator
 import com.metrolist.shared.ui.navigation.Screen
-import com.metrolist.shared.ui.navigation.SpotifyLibraryScreen
+import com.metrolist.shared.ui.navigation.SpotifyFolderScreen
 import com.metrolist.shared.ui.navigation.SpotifySettingsScreen
 import com.metrolist.shared.ui.navigation.SpotifyTracksScreen
 import org.jetbrains.compose.resources.stringResource
@@ -51,16 +51,15 @@ import org.koin.compose.koinInject
 fun spotifyDestination(destination: Screen): Boolean {
     val navigator = LocalNavigator.current
     when (destination) {
-        is SpotifyLibraryScreen -> {
+        is SpotifyFolderScreen -> {
             val store = koinInject<SpotifyLibraryStore>()
             val connection = koinInject<SpotifyConnection>()
             val scope = rememberCoroutineScope()
-            val viewModel = remember(destination) { SpotifyLibraryViewModel(scope, store, connection, destination.folderUri) }
+            val viewModel = remember(destination) { SpotifyFolderViewModel(scope, store, connection, destination.folderUri) }
             SpotifyScreenHost(destination.title ?: stringResource(Res.string.import_provider_spotify), viewModel::refresh) {
                 Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-                    SpotifyLibraryContent(
+                    SpotifyFolderContent(
                         viewModel = viewModel,
-                        isFolder = destination.folderUri != null,
                         contentPadding = PaddingValues(bottom = 16.dp),
                         modifier = Modifier.widthIn(max = 1400.dp),
                     )

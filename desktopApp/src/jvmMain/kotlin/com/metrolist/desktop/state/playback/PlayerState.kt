@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import com.meld.spotify.playback.spotifySourcePending
 import com.metrolist.desktop.deviceconnect.DesktopDeviceConnect
 import com.metrolist.desktop.history.HistoryEntry
 import com.metrolist.desktop.history.HistoryRepository
@@ -2230,7 +2231,9 @@ object PlayerState {
 
     private fun canLoadRecommendations(song: SongItem): Boolean =
         Settings.shared.autoLoadMore && repeatMode == RepeatMode.OFF && !isListenTogetherGuest() && !deviceConnect.isFollowing &&
-            !syncSession.finite && queue.currentItem()?.id == song.id
+            !syncSession.finite && queue.currentItem()?.id == song.id &&
+            // Meld: a Spotify source is queued lazily; recommendations belong after its last track.
+            !spotifySourcePending()
 
     private fun maybePrefetchRecommendationsForCurrentQueue(song: SongItem) {
         if (repeatMode != RepeatMode.OFF || !canLoadRecommendations(song) ||

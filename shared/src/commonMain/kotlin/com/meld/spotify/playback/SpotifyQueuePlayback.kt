@@ -287,6 +287,12 @@ private fun MusicQueueState.has(tag: String): Boolean = entries.any { it.song.qu
 
 private fun MusicQueueState.upcoming(tag: String): Int = entries.drop(currentIndex + 1).count { it.song.queueSourceTitle == tag }
 
+/** The positions of [entryKeys] in the queue: an order by key as the order by index the players take. */
+fun MusicQueueState.indicesOf(entryKeys: List<Long>): List<Int> {
+    val indices = entries.withIndex().associate { it.value.key to it.index }
+    return entryKeys.mapNotNull(indices::get)
+}
+
 /** The entry keys with [keys] moved in front of the first other entry tagged [tag]. */
 private fun MusicQueueState.withInFront(
     tag: String,

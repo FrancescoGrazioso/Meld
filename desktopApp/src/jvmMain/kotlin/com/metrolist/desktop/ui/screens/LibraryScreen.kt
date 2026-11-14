@@ -51,7 +51,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.meld.spotify.ui.spotifyLibraryEntry
+import com.meld.spotify.ui.spotifyLibraryExtras
 import com.metrolist.desktop.state.app.UiState
 import com.metrolist.desktop.state.content.ArtistState
 import com.metrolist.desktop.state.content.HomeState
@@ -184,18 +184,23 @@ fun LibraryScreen(
     val hiddenItems = remember(hiddenItemVersion) { HiddenLibraryItems.all() }
     val autoPlaylists = libraryAutoPlaylists()
     val items = remember(sections) { sections.values.flatten() }
+    val spotify =
+        spotifyLibraryExtras(selectedFilter) {
+            selectedFilter = it
+            Settings.shared.libraryFilter = it?.let { filter -> LibraryFilterType.valueOf(filter.name) } ?: LibraryFilterType.ALL
+        }
 
     Box(Modifier.fillMaxSize()) {
         Column(Modifier.fillMaxSize()) {
             LibraryContent(
                 presentation = LibraryContentState.presentation,
-                leadingItem = spotifyLibraryEntry(),
+                extras = spotify,
                 text = libraryContentText(),
-                items = items,
-                autoPlaylists = autoPlaylists,
+                items = if (spotify.spotifyOnly) emptyList() else items,
+                autoPlaylists = if (spotify.spotifyOnly) emptyList() else autoPlaylists,
                 hiddenItemKeys = hiddenItemKeys,
-                isLoading = LibraryContentState.isLibraryLoading,
-                error = LibraryContentState.libraryError,
+                isLoading = LibraryContentState.isLibraryLoading && !spotify.spotifyOnly,
+                error = LibraryContentState.libraryError && !spotify.spotifyOnly,
                 onRetry = { LibraryContentState.fetchLibraryData(force = true) },
                 isGridView = isGridView,
                 selectedFilter = selectedFilter,
