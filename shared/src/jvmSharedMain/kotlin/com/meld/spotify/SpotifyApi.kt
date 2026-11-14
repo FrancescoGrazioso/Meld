@@ -578,14 +578,15 @@ class SpotifyApi(
             var current = session ?: storedSession()?.also(::attach) ?: throw SpotifyError.NotLoggedIn()
             val now = clock()
             try {
-                var access = current.accessToken?.takeIf { now < accessUsableUntil }
+                var trustedUntil = accessUsableUntil
+                var access = current.accessToken?.takeIf { now < trustedUntil }
                 if (access == null) {
                     val token = auth.fetchAccessToken()
                     access = token.accessToken ?: throw SpotifyError.Changed("Spotify returned no access token")
                     current = current.copy(accessToken = access, accessTokenExpiresAtMs = token.accessTokenExpirationTimestampMs)
                     // The floor keeps a device clock set ahead from refreshing on every request; a
                     // token used past its real expiry is caught by the 401 handling instead.
-                    accessUsableUntil = usableUntil(token.accessTokenExpirationTimestampMs).coerceAtLeast(now + MIN_TOKEN_TRUST_MS)
+                    trustedUntil = usableUntil(token.accessTokenExpirationTimestampMs).coerceAtLeast(now + MIN_TOKEN_TRUST_MS)
                 }
                 var client = current.clientToken?.takeIf { now - (current.clientTokenFetchedAtMs ?: 0) < CLIENT_TOKEN_TTL_MS }
                 if (client == null) {
@@ -594,6 +595,7 @@ class SpotifyApi(
                 }
                 if (current != session) {
                     session = current
+                    accessUsableUntil = trustedUntil
                     saveSession(json.encodeToString(SpotifySession.serializer(), current))
                 }
                 Tokens(access, client)

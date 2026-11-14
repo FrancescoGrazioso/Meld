@@ -76,6 +76,11 @@ private class FakeSpotify(
     }
 
     @Volatile
+    var onClientToken: suspend MockRequestHandleScope.(count: Int) -> HttpResponseData = { count ->
+        respond("""{"granted_token":{"token":"client-$count"}}""")
+    }
+
+    @Volatile
     var onQuery: suspend MockRequestHandleScope.(Query) -> HttpResponseData = { respond(PROFILE) }
 
     @Volatile
@@ -90,7 +95,7 @@ private class FakeSpotify(
                 }
 
                 "clienttoken.spotify.com" -> {
-                    respond("""{"granted_token":{"token":"client-${clientTokenExchanges.incrementAndGet()}"}}""")
+                    onClientToken(clientTokenExchanges.incrementAndGet())
                 }
 
                 "api-partner.spotify.com" -> {
@@ -274,6 +279,21 @@ class SpotifyApiTest {
             spotify.onToken =
                 { respond("""{"accessToken":"access-ok","accessTokenExpirationTimestampMs":$FAR_FUTURE,"isAnonymous":false}""") }
             api.profile()
+        }
+
+    @Test
+    fun accessTokenFromAHalfFailedExchangeIsNotKeptAsValid() =
+        runTest {
+            val spotify = FakeSpotify { currentTime }
+            spotify.session = Json.encodeToString(SpotifySession.serializer(), SpotifySession(mapOf("sp_dc" to COOKIE), "old", 0))
+            spotify.onClientToken = { respond("", HttpStatusCode.InternalServerError) }
+            val api = spotify.api()
+            assertFailsWith<SpotifyError.Changed> { api.profile() }
+
+            delay(30_001)
+            spotify.onClientToken = { count -> respond("""{"granted_token":{"token":"client-$count"}}""") }
+            api.profile()
+            assertEquals(listOf("Bearer access-2"), spotify.queries.map { it.bearer })
         }
 
     @Test
