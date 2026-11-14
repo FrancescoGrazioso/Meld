@@ -1,5 +1,6 @@
 package com.meld.spotify
 
+import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
 import io.ktor.client.engine.mock.respond
@@ -151,7 +152,9 @@ private class FakeSpotify(
             )
     }
 
-    fun api() = SpotifyApi(engine, { session }, { session = it }, { hashes }, { hashes = it }, clock = clock, logger = { logs += it })
+    private val http = HttpClient(engine)
+
+    fun api() = SpotifyApi(http, { session }, { session = it }, { hashes }, { hashes = it }, clock = clock, logger = { logs += it })
 }
 
 @OptIn(ExperimentalCoroutinesApi::class)

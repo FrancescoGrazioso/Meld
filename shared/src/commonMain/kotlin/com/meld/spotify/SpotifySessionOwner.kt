@@ -5,7 +5,7 @@ import com.meld.spotify.SpotifyConnectionState.Connecting
 import com.meld.spotify.SpotifyConnectionState.Disconnected
 import com.meld.spotify.SpotifyConnectionState.Expired
 import com.meld.spotify.SpotifyConnectionState.Failed
-import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +23,7 @@ import meow.nyx.spotlib.SpotifySession
  * [saveFromGuest], but only this class ever clears it.
  */
 class SpotifySessionOwner(
-    engine: HttpClientEngine,
+    http: HttpClient,
     private val scope: CoroutineScope,
     private val loadSession: () -> String,
     private val saveSession: (String) -> Unit,
@@ -45,7 +45,7 @@ class SpotifySessionOwner(
     private val mutableState = MutableStateFlow(stored())
 
     /** Use [call] instead when the caller cannot handle an expired session itself. */
-    val api = SpotifyApi(engine, loadSession, saveSession, loadHashes, saveHashes, logger = logger)
+    val api = SpotifyApi(http, loadSession, saveSession, loadHashes, saveHashes, logger = logger)
 
     override val state: StateFlow<SpotifyConnectionState> = mutableState.asStateFlow()
 
