@@ -87,7 +87,10 @@ private class FakeLibrary(
     override suspend fun playlist(
         id: String,
         offset: Int,
-    ) = SpotifyPlaylistPage(SpotifyPlaylist(id, "spotify:playlist:$id", "Mix", ownerName = "Tester", trackCount = tracks.size), page(tracks, offset))
+    ) = SpotifyPlaylistPage(
+        SpotifyPlaylist(id, "spotify:playlist:$id", "Mix", ownerName = "Tester", trackCount = tracks.size),
+        page(tracks, offset),
+    )
 
     override suspend fun album(id: String): SpotifyAlbum {
         calls++
@@ -186,18 +189,61 @@ class SpotifyLibraryTest {
     fun searchAndSortWorkOnTheLoadedItems() =
         test {
             val screen = libraryScreen()
-            assertEquals("Delta", screen.state.value.entries.first().name)
+            assertEquals(
+                "Delta",
+                screen.state.value.entries
+                    .first()
+                    .name,
+            )
 
             screen.setSort(byName = true, descending = false)
-            assertEquals(listOf("alpha", "bravo", "Charlie", "Delta", "Echo", "Folder"), screen.state.value.entries.map { it.name })
+            assertEquals(
+                listOf("alpha", "bravo", "Charlie", "Delta", "Echo", "Folder"),
+                screen.state.value.entries
+                    .map { it.name },
+            )
             screen.setSort(byName = true, descending = true)
-            assertEquals("Folder", screen.state.value.entries.first().name)
+            assertEquals(
+                "Folder",
+                screen.state.value.entries
+                    .first()
+                    .name,
+            )
 
             screen.setQuery(" CHAR ")
-            assertEquals(listOf("Charlie"), screen.state.value.entries.map { it.name })
+            assertEquals(
+                listOf("Charlie"),
+                screen.state.value.entries
+                    .map { it.name },
+            )
             screen.setQuery("owner of e")
-            assertEquals(listOf("Echo"), screen.state.value.entries.map { it.name })
+            assertEquals(
+                listOf("Echo"),
+                screen.state.value.entries
+                    .map { it.name },
+            )
             assertEquals(6, screen.state.value.list.items.size)
+        }
+
+    @Test
+    fun refreshReplacesTheWholeListAndAFailedRefreshKeepsIt() =
+        test {
+            val screen = libraryScreen()
+            library.names = listOf("Zulu", "Yankee", "Xray")
+            library.failAt = 0
+            screen.refresh()
+            assertEquals(6, screen.state.value.entries.size)
+            assertIs<SpotifyError.Offline>(screen.state.value.list.error)
+
+            library.failAt = null
+            screen.refresh()
+            assertEquals(
+                listOf("Zulu", "Yankee", "Xray", "Folder"),
+                screen.state.value.entries
+                    .map { it.name },
+            )
+            assertTrue(screen.state.value.list.complete)
+            assertEquals(false, screen.state.value.list.refreshing)
         }
 
     @Test
@@ -205,10 +251,23 @@ class SpotifyLibraryTest {
         test {
             val screen = libraryScreen()
             screen.setTab(SpotifyLibraryTab.ALBUMS)
-            assertEquals(listOf(SpotifyLibraryEntryKind.ALBUM), screen.state.value.entries.map { it.kind })
+            assertEquals(
+                listOf(SpotifyLibraryEntryKind.ALBUM),
+                screen.state.value.entries
+                    .map { it.kind },
+            )
             screen.setTab(SpotifyLibraryTab.ARTISTS)
-            assertEquals(listOf("Artist"), screen.state.value.entries.map { it.name })
-            assertEquals(listOf("Delta"), libraryScreen("spotify:folder:f1").state.value.entries.map { it.name })
+            assertEquals(
+                listOf("Artist"),
+                screen.state.value.entries
+                    .map { it.name },
+            )
+            assertEquals(
+                listOf("Delta"),
+                libraryScreen("spotify:folder:f1")
+                    .state.value.entries
+                    .map { it.name },
+            )
         }
 
     @Test
@@ -234,13 +293,25 @@ class SpotifyLibraryTest {
             libraryScreen()
             tracksScreen()
             val calls = library.calls
-            assertEquals(6, libraryScreen().state.value.entries.size)
-            assertEquals(2, tracksScreen().state.value.tracks.items.size)
+            assertEquals(
+                6,
+                libraryScreen()
+                    .state.value.entries.size,
+            )
+            assertEquals(
+                2,
+                tracksScreen()
+                    .state.value.tracks.items.size,
+            )
             assertEquals(calls, library.calls)
 
             connection.state.value = Disconnected
             connection.state.value = Connected("Someone else", null)
-            assertEquals(6, libraryScreen().state.value.entries.size)
+            assertEquals(
+                6,
+                libraryScreen()
+                    .state.value.entries.size,
+            )
             assertTrue(library.calls > calls)
         }
 
@@ -249,8 +320,16 @@ class SpotifyLibraryTest {
         test {
             val screen = tracksScreen()
             assertEquals(2, screen.state.value.tracks.items.size)
-            assertEquals("Mix", screen.state.value.info?.title)
-            assertEquals(5, screen.state.value.info?.trackCount)
+            assertEquals(
+                "Mix",
+                screen.state.value.info
+                    ?.title,
+            )
+            assertEquals(
+                5,
+                screen.state.value.info
+                    ?.trackCount,
+            )
 
             library.failAt = 2
             screen.loadMore()
@@ -320,7 +399,11 @@ class SpotifyLibraryTest {
             album.shuffle()
 
             val artist = tracksScreen(SpotifyCollectionType.ARTIST)
-            assertEquals("Artist", artist.state.value.info?.title)
+            assertEquals(
+                "Artist",
+                artist.state.value.info
+                    ?.title,
+            )
             artist.play()
             assertEquals(0, playback.startIndex)
             assertEquals(5, playback.tracks.size)

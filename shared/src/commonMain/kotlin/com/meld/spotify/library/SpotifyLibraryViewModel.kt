@@ -89,7 +89,7 @@ class SpotifyLibraryViewModel(
 
     fun retry() = pager(view.value.tab).loadAllInBackground()
 
-    fun refresh() = pager(view.value.tab).refresh()
+    fun refresh() = pager(view.value.tab).refresh(all = true)
 
     private fun pager(tab: SpotifyLibraryTab): SpotifyPager<*> =
         when (tab) {
@@ -154,8 +154,7 @@ private fun SpotifyAlbum.toEntry() =
         imageUrl = images.url(ROW_IMAGE_SIZE),
     )
 
-private fun SpotifyArtist.toEntry() =
-    SpotifyLibraryEntry(SpotifyLibraryEntryKind.ARTIST, id, name, imageUrl = images.url(ROW_IMAGE_SIZE))
+private fun SpotifyArtist.toEntry() = SpotifyLibraryEntry(SpotifyLibraryEntryKind.ARTIST, id, name, imageUrl = images.url(ROW_IMAGE_SIZE))
 
 /** Shared with the artist page, whose albums are rows of the same kind. */
 internal fun SpotifyAlbum.toLibraryEntry(): SpotifyLibraryEntry = toEntry().copy(detail = releaseDate?.take(4))

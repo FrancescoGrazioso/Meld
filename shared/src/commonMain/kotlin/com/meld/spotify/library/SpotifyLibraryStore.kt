@@ -47,12 +47,13 @@ data class SpotifyLibraryView(
     val descending: Boolean = false,
 )
 
+// shortcut: nothing is evicted, add a size bound if memory use of very large libraries becomes a problem.
+
 /**
  * Everything read from Spotify in this session, so reopening a screen does not ask again. Emptied
  * whenever the account connects or disconnects; [generation] then changes so screens pick up the
  * new lists. [scope] must be a supervisor scope: a failed page must not cancel the others.
  */
-// shortcut: nothing is evicted, add a size bound if memory use of very large libraries becomes a problem.
 class SpotifyLibraryStore(
     private val library: SpotifyLibrary,
     connection: SpotifyConnection,
