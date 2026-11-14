@@ -61,11 +61,10 @@ import org.koin.mp.KoinPlatform
  */
 @Stable
 class LibraryExtras internal constructor(
-    /** Only Spotify rows are wanted: the host passes none of its own items. */
+    /** Only Spotify rows are wanted: the library shows none of its own items. */
     val spotifyOnly: Boolean = false,
     val chip: (@Composable () -> Unit)? = null,
     val status: (@Composable () -> Unit)? = null,
-    val refresh: () -> Unit = {},
     private val entries: (query: String) -> List<SpotifyLibraryEntry> = { emptyList() },
 ) {
     /** [items] as the library sorted them, with the Spotify rows that match [query] placed among them. */
@@ -154,7 +153,6 @@ fun spotifyLibraryExtras(
                         null
                     }
                 },
-            refresh = library::refresh,
             entries = { query -> state.entries(filter, spotifyOnly, query, likedTitle) },
         )
     }

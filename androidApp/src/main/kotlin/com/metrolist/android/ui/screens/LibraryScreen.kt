@@ -71,6 +71,7 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.meld.spotify.library.refreshSpotifyInLibrary
 import com.meld.spotify.ui.spotifyLibraryExtras
 import com.metrolist.android.LocalMiniPlayerBottomInset
 import com.metrolist.android.extensions.isInternetConnected
@@ -444,7 +445,6 @@ fun LibraryScreen(
                 LibraryFilter.PODCASTS -> LibraryFilterType.PODCASTS
             }
     }
-    val spotify = spotifyLibraryExtras(selectedFilter, onFilterChange)
 
     val content: @Composable () -> Unit = {
         if (selectedFilter == LibraryFilter.PODCASTS && !Settings.shared.hidePodcasts) {
@@ -461,7 +461,7 @@ fun LibraryScreen(
                     onSelectionChange = onFilterChange,
                     label = { text.filterLabels.getValue(it) },
                     modifier = Modifier.padding(top = 1.dp),
-                    leadingContent = spotify.chip,
+                    leadingContent = spotifyLibraryExtras(selectedFilter, onFilterChange).chip,
                 )
                 PodcastLibraryScreen(
                     onNavigateToPodcast = onNavigateToPodcast,
@@ -472,13 +472,12 @@ fun LibraryScreen(
         } else {
             LibraryContent(
                 presentation = viewModel.presentation,
-                extras = spotify,
                 text = libraryContentText(),
-                items = if (spotify.spotifyOnly) emptyList() else uiState.items,
-                autoPlaylists = if (spotify.spotifyOnly) emptyList() else autoPlaylists,
+                items = uiState.items,
+                autoPlaylists = autoPlaylists,
                 hiddenItemKeys = hiddenItemKeys,
-                isLoading = uiState.isLoading && !spotify.spotifyOnly,
-                error = uiState.error && !spotify.spotifyOnly,
+                isLoading = uiState.isLoading,
+                error = uiState.error,
                 onRetry = { viewModel.refresh() },
                 isGridView = isGridView,
                 selectedFilter = selectedFilter,
@@ -761,7 +760,7 @@ fun LibraryScreen(
                 isRefreshing = userRefreshing,
                 onRefresh = {
                     userRefreshing = true
-                    spotify.refresh()
+                    refreshSpotifyInLibrary()
                     if (networkAvailable && !isLoadingNow) viewModel.refresh()
                 },
                 state = refreshState,
