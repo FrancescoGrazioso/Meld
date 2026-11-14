@@ -41,8 +41,11 @@ interface SpotifyQueueTarget {
 
     fun playNext(songs: List<SongItem>)
 
-    /** Reorders the queue to [entryKeys], which must be exactly the keys of its entries. */
-    fun reorder(entryKeys: List<Long>)
+    /**
+     * Reorders the queue to [entryKeys], which must be exactly the keys of its entries.
+     * False when the player refused (a locked queue, a Listen Together guest) and the queue is as it was.
+     */
+    fun reorder(entryKeys: List<Long>): Boolean
 }
 
 /**
@@ -211,8 +214,12 @@ class SpotifyQueuePlayback(
                     val grown = withTimeoutOrNull(APPEND_TIMEOUT) { target.queueState.first { it.tagged(tag) != known } } ?: return
                     if (earlier && !target.shuffleEnabled.value) {
                         val order = grown.withInFront(tag, grown.tagged(tag) - known.toSet())
-                        target.reorder(order)
-                        withTimeoutOrNull(APPEND_TIMEOUT) { target.queueState.first { state -> state.entries.map { it.key } == order } }
+                        if (target.reorder(order)) {
+                            withTimeoutOrNull(APPEND_TIMEOUT) { target.queueState.first { state -> state.entries.map { it.key } == order } }
+                        } else {
+                            // Nothing to wait for: the tracks stay where the player appended them, after the queued ones.
+                            YtLogger.w(TAG, "The player refused to move ${songs.size} earlier tracks in front")
+                        }
                     }
                 }
             }

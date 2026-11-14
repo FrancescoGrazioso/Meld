@@ -1,4 +1,4 @@
-package com.meld.desktop.spotify
+package com.meld.spotify.playback
 
 import com.metrolist.shared.model.SongItem
 import com.metrolist.shared.playback.MusicQueue
@@ -12,11 +12,13 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class DesktopSpotifyQueueTargetTest {
+class PlayerQueueTargetTest {
     private val queue = MusicQueue()
 
     // The player replaces the queue in a coroutine of its own; the test runs it when it says so.
     private var replaceQueue = {}
+    private val titles = mutableListOf<String?>()
+    private var reorderAllowed = true
 
     private fun song(
         id: String,
@@ -27,10 +29,12 @@ class DesktopSpotifyQueueTargetTest {
 
     /** The target over [queue], with the player's queue functions reduced to what they do to the queue. */
     private fun TestScope.target() =
-        DesktopSpotifyQueueTarget(
+        PlayerQueueTarget(
             scope = backgroundScope,
-            queue = queue,
-            play = { songs ->
+            queueState = queue.state,
+            shuffleEnabled = queue.shuffleEnabled,
+            play = { songs, title ->
+                titles += title
                 replaceQueue = {
                     val keepShuffle = queue.isShuffled
                     queue.setQueue(songs)
@@ -39,7 +43,7 @@ class DesktopSpotifyQueueTargetTest {
             },
             enqueue = { queue.addToQueue(it) },
             enqueueNext = { queue.playNext(it) },
-            reorderQueue = { queue.reorder(it) },
+            reorder = { keys -> reorderAllowed.also { if (it) queue.reorder(queue.state.value.indicesOf(keys)) } },
             toggleShuffle = { queue.toggleShuffle() },
         )
 
@@ -58,6 +62,7 @@ class DesktopSpotifyQueueTargetTest {
 
             assertEquals(listOf("s0", "next", "s1", "later"), ids)
             assertEquals(0, queue.currentIndex.value)
+            assertEquals(listOf<String?>("Mix"), titles)
             assertEquals(queue.state.value, target.queueState.value)
             assertFalse(target.shuffleEnabled.value)
         }
@@ -90,7 +95,7 @@ class DesktopSpotifyQueueTargetTest {
         }
 
     @Test
-    fun reorderTakesEntryKeys() =
+    fun reorderTakesEntryKeysAndReportsThePlayersAnswer() =
         runTest {
             val target = target()
             target.start(spotify("s2", "s3"), null, shuffle = false)
@@ -99,9 +104,13 @@ class DesktopSpotifyQueueTargetTest {
             val keys =
                 queue.state.value.entries
                     .map { it.key }
-            target.reorder(keys.drop(2) + keys.take(2))
+            assertTrue(target.reorder(keys.drop(2) + keys.take(2)))
 
             assertEquals(listOf("s0", "s1", "s2", "s3"), ids)
             assertEquals("s2", queue.currentItem()?.id)
+
+            reorderAllowed = false
+            assertFalse(target.reorder(keys))
+            assertEquals(listOf("s0", "s1", "s2", "s3"), ids)
         }
 }
