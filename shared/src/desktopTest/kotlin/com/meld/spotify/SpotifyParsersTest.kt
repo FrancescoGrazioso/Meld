@@ -229,13 +229,15 @@ class SpotifyParsersTest {
         val artistJson =
             """
             {"data":{"artistUnion":{"profile":{"name":"Artist A"},"visuals":{"avatarImage":{"sources":[{"url":"https://i.scdn.co/image/a1"}]}},
-              "discography":{"topTracks":{"items":[{"track":{"uri":"spotify:track:t1","name":"Song One","artists":{"items":[{"uri":"spotify:artist:a1","profile":{"name":"Artist A"}}]},"albumOfTrack":{"uri":"spotify:album:al1","name":"Album One"},"duration":{"totalMilliseconds":1000}}},{"track":null}]}},
+              "discography":{"topTracks":{"items":[{"track":{"uri":"spotify:track:t1","name":"Song One","artists":{"items":[{"uri":"spotify:artist:a1","profile":{"name":"Artist A"}}]},"albumOfTrack":{"uri":"spotify:album:al1","name":"Album One"},"duration":{"totalMilliseconds":1000}}},{"track":null}]},
+                "albums":{"items":[{"releases":{"items":[{"uri":"spotify:album:al1","name":"Album One","date":{"year":2020}}]}},{"releases":{"items":[{"name":"No uri"}]}}]}},
               "relatedContent":{"relatedArtists":{"items":[{"uri":"spotify:artist:a2","profile":{"name":"Artist B"}},{"uri":"spotify:artist:a3"}]}}}}}
             """.trimIndent()
         val overview = assertNotNull(parseArtistOverview(data(artistJson), "spotify:artist:a1"))
         assertEquals("Artist A", overview.artist.name)
         assertEquals(listOf("t1"), overview.topTracks.map { it.id })
         assertEquals(listOf("a2"), overview.relatedArtists.map { it.id })
+        assertEquals(listOf("al1" to "2020"), overview.albums.map { it.id to it.releaseDate })
 
         val feedJson =
             """

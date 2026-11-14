@@ -102,6 +102,7 @@ data class SpotifyArtistOverview(
     val artist: SpotifyArtist,
     val topTracks: List<SpotifyTrack>,
     val relatedArtists: List<SpotifyArtist>,
+    val albums: List<SpotifyAlbum> = emptyList(),
 )
 
 data class SpotifySearchResult(

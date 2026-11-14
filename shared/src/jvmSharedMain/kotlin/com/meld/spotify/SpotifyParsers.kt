@@ -261,11 +261,11 @@ internal fun parseArtistOverview(
 ): SpotifyArtistOverview? {
     val root = data.obj("artistUnion") ?: return null
     val artist = parseArtist(root, artistUri) ?: return null
+    val discography = root.obj("discography")
     return SpotifyArtistOverview(
         artist = artist,
         topTracks =
-            root
-                .obj("discography")
+            discography
                 ?.obj("topTracks")
                 ?.objs("items")
                 .orEmpty()
@@ -277,6 +277,14 @@ internal fun parseArtistOverview(
                 ?.objs("items")
                 .orEmpty()
                 .mapNotNull { parseArtist(it) },
+        albums =
+            discography
+                ?.obj("albums")
+                ?.objs("items")
+                .orEmpty()
+                .flatMap { group -> group.obj("releases")?.objs("items").orEmpty() }
+                .mapNotNull { parseAlbum(it) }
+                .distinctBy(SpotifyAlbum::uri),
     )
 }
 
