@@ -1,6 +1,8 @@
 package com.meld.spotify.playback
 
 import com.meld.spotify.SpotifyTrack
+import com.metrolist.shared.playback.MusicQueue
+import com.metrolist.shared.playback.QUEUE_SOURCE_AUTO_MIX
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -9,8 +11,9 @@ import kotlinx.coroutines.test.runTest
 import kotlin.random.Random
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -39,10 +42,126 @@ class SpotifyQueuePlaybackTest {
 
             youtube.gate?.complete(Unit)
             runCurrent()
-            // One window ahead of the listener and no further.
-            assertEquals(yt(5..15), target.ids)
-            assertEquals(11, youtube.calls.size)
+            // One window ahead of the listener and no further, and everything before the tapped track.
+            assertEquals(yt(0..15), target.ids)
+            assertEquals("yt5", target.queue.currentItem()?.id)
+            assertEquals(16, youtube.calls.size)
         }
+
+    @Test
+    fun startingInTheMiddleQueuesTheWholeSourceAroundTheTappedTrack() =
+        runTest {
+            playback().play(tracks(0..27), startIndex = 20)
+            runCurrent()
+            assertEquals(yt(0..27), target.ids)
+            assertEquals("yt20", target.queue.currentItem()?.id)
+            assertEquals("yt19", target.queue.getPrevious()?.id)
+            assertFalse(spotifySourcePending())
+        }
+
+    @Test
+    fun earlierAndLaterTracksLandBeforeAContinuationThatIsAlreadyThere() =
+        runTest {
+            youtube.gate = CompletableDeferred()
+            youtube.ungated += "Song 14"
+            playback().play(tracks(0..27), startIndex = 14)
+            runCurrent()
+            assertEquals(listOf("yt14"), target.ids)
+            target.continuation(listOf("mix0", "mix1"), force = true)
+
+            youtube.gate?.complete(Unit)
+            runCurrent()
+            assertEquals(yt(0..24) + listOf("mix0", "mix1"), target.ids)
+
+            repeat(7) { target.queue.getNext() }
+            runCurrent()
+            assertEquals(yt(0..27) + listOf("mix0", "mix1"), target.ids)
+            assertEquals("yt21", target.queue.currentItem()?.id)
+        }
+
+    @Test
+    fun continuationWaitsUntilTheWholeSourceIsQueued() =
+        runTest {
+            playback().play(tracks(0..27))
+            runCurrent()
+            assertEquals(yt(0..10), target.ids)
+            assertTrue(spotifySourcePending())
+            assertFalse(target.continuation(listOf("mix0")))
+
+            repeat(17) {
+                target.queue.getNext()
+                runCurrent()
+            }
+            assertEquals(yt(0..27), target.ids)
+            assertFalse(spotifySourcePending())
+            assertTrue(target.continuation(listOf("mix0")))
+            assertEquals(yt(0..27) + "mix0", target.ids)
+        }
+
+    @Test
+    fun sourceOfAReplacedQueueNoLongerHoldsContinuationBack() =
+        runTest {
+            playback().play(tracks(0..27))
+            runCurrent()
+            assertTrue(spotifySourcePending())
+
+            target.queue.setQueue(listOf(ytSong("other", "Other")))
+            assertFalse(spotifySourcePending())
+        }
+
+    @Test
+    fun legacyShuffleNeverMixesContinuationIntoTheSource() = runTest { shuffleIsToggledWhileTheSourceLoads(legacy = true) }
+
+    @Test
+    fun shuffleNeverMixesContinuationIntoTheSource() = runTest { shuffleIsToggledWhileTheSourceLoads(legacy = false) }
+
+    /** The reported case: 28 tracks, the queue's shuffle button pressed on and off, continuation offered all along. */
+    private fun TestScope.shuffleIsToggledWhileTheSourceLoads(legacy: Boolean) {
+        target.legacyShuffle = legacy
+        playback().play(tracks(0..27), startIndex = 6)
+        runCurrent()
+        var step = 0
+
+        fun advance() {
+            if (step % 3 == 0) {
+                target.toggleShuffle()
+                runCurrent()
+            }
+            target.continuation(listOf("mix$step"))
+            target.queue.getNext()
+            runCurrent()
+            assertTrue(target.recommendationsAreLast, "step $step: ${target.ids}")
+            step++
+        }
+        while (spotifySourcePending() && step < 200) advance()
+        assertFalse(spotifySourcePending())
+        repeat(8) { advance() }
+
+        assertEquals(yt(0..27).sorted(), target.ids.filter { it.startsWith("yt") }.sorted())
+        assertTrue(target.ids.count { it.startsWith("mix") } >= 8)
+    }
+
+    @Test
+    fun legacyShuffleKeepsRecommendationsAfterTheQueuedTracks() {
+        val recommendations = (0..9).map { ytSong("mix$it", "Mix $it").copy(queueSourceTitle = QUEUE_SOURCE_AUTO_MIX) }
+        val songs = (0..9).map { ytSong("yt$it", "Song $it") } + recommendations
+        val queue = MusicQueue().apply { setQueue(songs, 3) }
+        repeat(3) {
+            queue.toggleShuffle(legacyShuffle = true)
+            assertEquals("yt3", queue.currentItem()?.id)
+            assertEquals(
+                yt(0..9).toSet(),
+                queue.items.value
+                    .take(10)
+                    .map { it.id }
+                    .toSet(),
+            )
+            assertEquals(recommendations, queue.items.value.drop(10))
+
+            queue.toggleShuffle(legacyShuffle = true)
+            assertEquals(songs, queue.items.value)
+        }
+    }
 
     @Test
     fun queueIsRefilledAsTheListenerAdvances() =
@@ -63,7 +182,7 @@ class SpotifyQueuePlaybackTest {
     @Test
     fun moreIsAskedOnlyWhenTheQueueRunsLow() =
         runTest {
-            val pages = ArrayDeque(listOf(tracks(13..18), emptyList()))
+            val pages = ArrayDeque(listOf(tracks(13..18), null))
             var asked = 0
             playback().play(tracks(0..12)) {
                 asked++
@@ -138,28 +257,52 @@ class SpotifyQueuePlaybackTest {
         }
 
     @Test
-    fun shuffleOrdersTheSourceOnceAndNeverMovesQueuedTracks() =
+    fun shufflePlaysEveryTrackOnceBeforeAnyContinuationAndNeverMovesQueuedTracks() =
         runTest {
             playback().play(tracks(0..29), startIndex = 3, shuffle = true)
             runCurrent()
             assertEquals("yt3", target.ids.first())
+            assertTrue(target.queue.isShuffled)
 
+            val played = mutableListOf("yt3")
             var queued = target.ids
-            repeat(29) {
+            repeat(29) { step ->
+                target.continuation(listOf("mix$step"))
                 target.queue.getNext()
                 runCurrent()
+                played += target.queue.currentItem()!!.id
                 assertEquals(queued, target.ids.take(queued.size))
                 queued = target.ids
             }
-            assertEquals(yt(0..29).toSet(), queued.toSet())
-            assertEquals(30, queued.size)
-            assertNotEquals(listOf("yt3") + (yt(0..29) - "yt3"), queued)
+            assertEquals(yt(0..29).toSet(), played.toSet())
+            assertEquals(30, played.size)
+            assertNotEquals(listOf("yt3") + (yt(0..29) - "yt3"), played)
+            assertTrue(target.ids.any { it.startsWith("mix") })
         }
 
     @Test
-    fun laterPagesAreShuffledToo() =
+    fun shuffleSwitchedOnInTheQueueDrawsTheRestOfTheSourceAtRandom() =
         runTest {
-            val pages = ArrayDeque(listOf(tracks(1..20), emptyList()))
+            playback().play(tracks(0..39), startIndex = 5)
+            runCurrent()
+            assertEquals(yt(0..15), target.ids)
+
+            target.toggleShuffle()
+            val played = mutableListOf(target.queue.currentItem()!!.id)
+            repeat(39) {
+                target.queue.getNext()
+                runCurrent()
+                played += target.queue.currentItem()!!.id
+            }
+            assertEquals(yt(0..39).toSet(), played.toSet())
+            assertEquals(40, played.size)
+            assertNotEquals(yt(16..39), target.ids.drop(16))
+        }
+
+    @Test
+    fun pagesJoinTheShuffledSource() =
+        runTest {
+            val pages = ArrayDeque(listOf(tracks(1..20), null))
             playback().play(tracks(0..0), shuffle = true) { pages.removeFirst() }
             runCurrent()
             assertEquals(11, target.ids.size)
@@ -199,13 +342,31 @@ class SpotifyQueuePlaybackTest {
         }
 
     @Test
-    fun failingSourceIsReported() =
+    fun failedPageIsAskedAgainAndDoesNotEndTheSource() =
         runTest {
+            var asked = 0
             val playback = playback()
-            playback.play(tracks(0..1)) { error("Spotify is unreachable") }
+            playback.play(tracks(0..1)) {
+                when (++asked) {
+                    1, 2 -> error("Spotify is unreachable")
+                    3 -> tracks(2..3)
+                    else -> null
+                }
+            }
             runCurrent()
             assertEquals(yt(0..1), target.ids)
-            assertNotNull(playback.summary.value.error)
+            assertEquals(1, asked)
+            assertTrue(spotifySourcePending())
+
+            testScheduler.advanceTimeBy(2_000)
+            runCurrent()
+            assertEquals(2, asked)
+            testScheduler.advanceTimeBy(4_000)
+            runCurrent()
+            assertEquals(yt(0..3), target.ids)
+            assertEquals(4, asked)
+            assertFalse(spotifySourcePending())
+            assertNull(playback.summary.value.error)
         }
 
     @Test

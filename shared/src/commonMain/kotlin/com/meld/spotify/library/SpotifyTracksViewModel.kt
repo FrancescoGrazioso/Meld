@@ -98,7 +98,7 @@ class SpotifyTracksViewModel(
         scope.launch {
             try {
                 val tracks = collection.tracks.loadAll().mapNotNull { it.playableTrack }
-                if (tracks.isNotEmpty()) playback.play(tracks, title = title, shuffle = true)
+                if (tracks.isNotEmpty()) playback.play(tracks, tracks.indices.random(), title, shuffle = true)
             } catch (error: SpotifyError) {
                 // Already in the pager's state, where the list shows it with a retry.
             } finally {
@@ -116,16 +116,16 @@ class SpotifyTracksViewModel(
     }
 
     /**
-     * The batches after the first [handedOver] entries. A page that fails ends the batch empty
-     * instead of throwing into the player; it is asked for again on the next call.
+     * The batches after the first [handedOver] entries, null after the last. A page that fails
+     * throws its [SpotifyError]; it is asked for again on the next call.
      */
     private fun more(
         pager: SpotifyPager<SpotifyTrackItem>,
         handedOver: Int,
-    ): suspend () -> List<SpotifyTrack> {
+    ): suspend () -> List<SpotifyTrack>? {
         var taken = handedOver
 
-        suspend fun batch(): List<SpotifyTrack> {
+        suspend fun batch(): List<SpotifyTrack>? {
             while (true) {
                 val items = pager.state.value.items
                 if (taken < items.size) {
@@ -134,13 +134,7 @@ class SpotifyTracksViewModel(
                     // A page of episodes or removed tracks is not the end of the list.
                     if (tracks.isNotEmpty()) return tracks
                 } else {
-                    val loaded =
-                        try {
-                            pager.next()
-                        } catch (error: SpotifyError) {
-                            false
-                        }
-                    if (!loaded) return emptyList()
+                    if (!pager.next()) return null
                 }
             }
         }
