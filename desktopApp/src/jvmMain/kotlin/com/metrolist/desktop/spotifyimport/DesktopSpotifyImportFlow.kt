@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import com.meld.spotify.saveSpotifyGuestSession
 import com.metrolist.desktop.state.auth.AuthState
 import com.metrolist.shared.db.MusicDatabase
 import com.metrolist.shared.generated.resources.Res
@@ -92,7 +93,7 @@ internal fun DesktopSpotifyImportFlow(
                         logger = SpotifyLogger { _, message -> logger.fine(message) },
                     ),
                 )
-            }, loadStoredSession = { Settings.shared.spotifySession }, saveStoredSession = { Settings.shared.spotifySession = it })
+            }, loadStoredSession = { Settings.shared.spotifySession }, saveStoredSession = ::saveSpotifyGuestSession)
         }
     val playlistManager =
         remember(database) { PlaylistImportManager(database, GlobalYouTubeRepository.instance) }

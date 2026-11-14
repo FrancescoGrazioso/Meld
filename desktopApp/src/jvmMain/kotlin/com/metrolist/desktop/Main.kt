@@ -86,6 +86,7 @@ import androidx.compose.ui.window.rememberWindowState
 import coil3.compose.setSingletonImageLoaderFactory
 import com.materialkolor.ktx.isLight
 import com.materialkolor.utils.ColorUtils
+import com.meld.desktop.meldModule
 import com.metrolist.desktop.backup.DesktopBackupRestoreManager
 import com.metrolist.desktop.crash.DesktopCrashRecovery
 import com.metrolist.desktop.deviceconnect.DesktopDeviceConnect
@@ -983,6 +984,7 @@ private fun runDesktopApp(args: Array<String>) {
                     coreModule,
                     sharedModule,
                     composeStateModule,
+                    meldModule,
                 )
             }
             val database =
