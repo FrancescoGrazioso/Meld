@@ -285,7 +285,7 @@ class Settings(
     var meldSpotifyHashes by preference(MeldSpotifyHashesKey, "")
     var meldLibrarySpotifyOnly by preference(false)
     var meldSpotifyLikesPush by preference(MeldSpotifyLikesPushKey, true)
-    var meldSpotifyLikesPull by preference(MeldSpotifyLikesPullKey, true)
+    var meldSpotifyLikesPull by preference(MeldSpotifyLikesPullKey, false)
     var meldSpotifyLikesAccount by preference(MeldSpotifyLikesAccountKey, "")
     var meldSpotifyLikesFingerprint by preference(MeldSpotifyLikesFingerprintKey, "")
     var meldSpotifyLikesSyncedAt by preference(MeldSpotifyLikesSyncedAtKey, 0L)
