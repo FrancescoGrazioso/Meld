@@ -30,7 +30,8 @@ val SpotifyTrackItem.playableTrack: SpotifyTrack? get() = track?.takeIf { it.pla
 
 /**
  * A playlist, the liked songs, an album or an artist's top tracks. Without a [playback] the list
- * can still be browsed and [canPlay] is false.
+ * can still be browsed and [canPlay] is false. It lives as long as [scope], which is the screen's:
+ * a shuffle still loading when the screen leaves is dropped, the pages it loaded stay in the store.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
 class SpotifyTracksViewModel(
@@ -54,7 +55,12 @@ class SpotifyTracksViewModel(
             store.generation.flatMapLatest { collection.tracks.state },
             preparingShuffle,
             ::SpotifyTracksUiState,
-        ).stateIn(scope, SharingStarted.Eagerly, SpotifyTracksUiState(connection.state.value))
+        ).stateIn(
+            scope,
+            SharingStarted.Eagerly,
+            // What the store already holds: a screen that comes back draws its list, and so keeps its scroll, in the first frame.
+            SpotifyTracksUiState(connection.state.value, collection.info.value, collection.tracks.state.value),
+        )
 
     init {
         scope.launch {

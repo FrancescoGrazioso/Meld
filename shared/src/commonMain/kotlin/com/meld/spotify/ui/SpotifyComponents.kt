@@ -52,6 +52,7 @@ import com.metrolist.shared.generated.resources.meld_spotify_error_changed
 import com.metrolist.shared.generated.resources.meld_spotify_error_forbidden
 import com.metrolist.shared.generated.resources.meld_spotify_error_offline
 import com.metrolist.shared.generated.resources.meld_spotify_error_rate_limited
+import com.metrolist.shared.generated.resources.meld_spotify_error_rejected
 import com.metrolist.shared.generated.resources.meld_spotify_error_unavailable
 import com.metrolist.shared.generated.resources.meld_spotify_expired
 import com.metrolist.shared.generated.resources.meld_spotify_expired_named
@@ -72,38 +73,38 @@ import com.metrolist.shared.ui.components.ContainedLoadingIndicator
 import com.metrolist.shared.ui.components.GroupedListItem
 import com.metrolist.shared.ui.components.ListItemTitle
 import com.metrolist.shared.ui.icons.MetrolistIcons
-import com.metrolist.shared.ui.navigation.LocalNavigator
-import com.metrolist.shared.ui.navigation.SpotifySettingsScreen
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
-internal val SpotifyError.text: StringResource
-    get() =
-        when (this) {
-            is SpotifyError.Offline -> Res.string.meld_spotify_error_offline
+/**
+ * The one place a [SpotifyError] becomes text. A cookie Spotify refuses while [signingIn] was never
+ * a session, so it is "not accepted" rather than "expired".
+ */
+internal fun SpotifyError.text(signingIn: Boolean = false): StringResource =
+    when (this) {
+        is SpotifyError.Offline -> Res.string.meld_spotify_error_offline
 
-            is SpotifyError.RateLimited -> Res.string.meld_spotify_error_rate_limited
+        is SpotifyError.RateLimited -> Res.string.meld_spotify_error_rate_limited
 
-            is SpotifyError.Unavailable -> Res.string.meld_spotify_error_unavailable
+        is SpotifyError.Unavailable -> Res.string.meld_spotify_error_unavailable
 
-            is SpotifyError.Forbidden -> Res.string.meld_spotify_error_forbidden
+        is SpotifyError.Forbidden -> Res.string.meld_spotify_error_forbidden
 
-            is SpotifyError.Changed -> Res.string.meld_spotify_error_changed
+        is SpotifyError.Changed -> Res.string.meld_spotify_error_changed
 
-            is SpotifyError.SessionExpired,
-            is SpotifyError.NotLoggedIn,
-            -> Res.string.meld_spotify_expired
-        }
+        is SpotifyError.SessionExpired,
+        is SpotifyError.NotLoggedIn,
+        -> if (signingIn) Res.string.meld_spotify_error_rejected else Res.string.meld_spotify_expired
+    }
 
 /** Shows [content] to a connected account; anyone else is told why not and led to the Spotify settings. */
 @Composable
 internal fun SpotifySessionGate(
     session: SpotifyConnectionState,
     contentPadding: PaddingValues,
+    openSettings: () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    val navigator = LocalNavigator.current
-    val openSettings = { navigator.navigate(SpotifySettingsScreen) }
     when (session) {
         is SpotifyConnectionState.Connected -> {
             content()
@@ -187,7 +188,7 @@ internal fun SpotifyListStatus(
                             modifier = Modifier.padding(top = 16.dp),
                         )
                     }
-                    SpotifyNotice(stringResource(error.text), stringResource(Res.string.retry), onRetry, isError = true)
+                    SpotifyNotice(stringResource(error.text()), stringResource(Res.string.retry), onRetry, isError = true)
                 }
             }
 

@@ -49,16 +49,21 @@ data class SpotifyFolderUiState(
     val entries: List<SpotifyLibraryEntry> = emptyList(),
 )
 
-/** One playlist folder of the Spotify library. */
+/**
+ * One playlist folder of the Spotify library. It lives as long as [scope], which is the screen's;
+ * [sort] (by name, descending) and [search] are what the screen kept from the last time it was shown.
+ */
 @OptIn(ExperimentalCoroutinesApi::class)
 class SpotifyFolderViewModel(
     scope: CoroutineScope,
     private val store: SpotifyLibraryStore,
     connection: SpotifyConnection,
     private val folderUri: String,
+    sort: Pair<Boolean, Boolean> = false to false,
+    search: String = "",
 ) {
-    private val query = MutableStateFlow("")
-    private val order = MutableStateFlow(false to false)
+    private val query = MutableStateFlow(search)
+    private val order = MutableStateFlow(sort)
     private val connected = connection.state.map { it is SpotifyConnectionState.Connected }.distinctUntilChanged()
     private val pager get() = store.playlists(folderUri)
 
@@ -66,9 +71,12 @@ class SpotifyFolderViewModel(
     private val list = store.generation.flatMapLatest { pager.state.map { it.entries(SpotifyLibraryItem::toEntry) } }
 
     val state: StateFlow<SpotifyFolderUiState> =
-        combine(connection.state, order, query, list) { session, (byName, descending), query, list ->
-            SpotifyFolderUiState(session, byName, descending, query, list, list.items.shown(query, byName, descending))
-        }.stateIn(scope, SharingStarted.Eagerly, SpotifyFolderUiState(connection.state.value))
+        combine(connection.state, order, query, list, ::uiState).stateIn(
+            scope,
+            SharingStarted.Eagerly,
+            // What the store already holds: a screen that comes back draws its list, and so keeps its scroll, in the first frame.
+            uiState(connection.state.value, sort, search, pager.state.value.entries(SpotifyLibraryItem::toEntry)),
+        )
 
     init {
         scope.launch {
@@ -77,6 +85,13 @@ class SpotifyFolderViewModel(
                 .collect { if (it) pager.loadAllInBackground() }
         }
     }
+
+    private fun uiState(
+        session: SpotifyConnectionState,
+        order: Pair<Boolean, Boolean>,
+        query: String,
+        list: SpotifyPagerState<SpotifyLibraryEntry>,
+    ) = SpotifyFolderUiState(session, order.first, order.second, query, list, list.items.shown(query, order.first, order.second))
 
     fun setSort(
         byName: Boolean,

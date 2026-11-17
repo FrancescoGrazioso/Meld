@@ -44,10 +44,10 @@ import com.metrolist.shared.ui.components.ListCard
 import com.metrolist.shared.ui.components.PlaylistOrderControls
 import com.metrolist.shared.ui.components.RefreshIndicator
 import com.metrolist.shared.ui.icons.MetrolistIcons
-import com.metrolist.shared.ui.navigation.LocalNavigator
 import com.metrolist.shared.ui.navigation.NavigationBackHandler
 import com.metrolist.shared.ui.navigation.Screen
 import com.metrolist.shared.ui.navigation.SpotifyFolderScreen
+import com.metrolist.shared.ui.navigation.SpotifySettingsScreen
 import com.metrolist.shared.ui.navigation.SpotifyTracksScreen
 import com.metrolist.shared.ui.screens.playlistOrderControlsText
 import com.metrolist.shared.ui.utils.DragScrollableColumn
@@ -57,14 +57,14 @@ import org.jetbrains.compose.resources.stringResource
 /** One playlist folder of the Spotify library. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SpotifyFolderContent(
+internal fun SpotifyFolderContent(
     viewModel: SpotifyFolderViewModel,
     contentPadding: PaddingValues,
+    onOpen: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
-    val navigator = LocalNavigator.current
-    SpotifySessionGate(state.session, contentPadding) {
+    SpotifySessionGate(state.session, contentPadding, { onOpen(SpotifySettingsScreen) }) {
         var searchOpen by rememberSaveable { mutableStateOf(false) }
         val toggleSearch = {
             if (searchOpen) viewModel.setQuery("")
@@ -122,7 +122,7 @@ fun SpotifyFolderContent(
                         subtitle = entry.subtitle(),
                         imageUrl = entry.imageUrl,
                         icon = entry.kind.icon,
-                        onClick = { navigator.navigate(entry.screen()) },
+                        onClick = { onOpen(entry.screen()) },
                         modifier = Modifier.animateItem(),
                     )
                 }
