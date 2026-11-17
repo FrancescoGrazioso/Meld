@@ -233,3 +233,8 @@ val AndroidLastTrackedPlaylistSyncKey = "androidLastTrackedPlaylistSync"
 
 val MeldSpotifyAccountKey = "meldSpotifyAccount"
 val MeldSpotifyHashesKey = "meldSpotifyHashes"
+val MeldSpotifyLikesPushKey = "meldSpotifyLikesPush"
+val MeldSpotifyLikesPullKey = "meldSpotifyLikesPull"
+val MeldSpotifyLikesAccountKey = "meldSpotifyLikesAccount"
+val MeldSpotifyLikesFingerprintKey = "meldSpotifyLikesFingerprint"
+val MeldSpotifyLikesSyncedAtKey = "meldSpotifyLikesSyncedAt"

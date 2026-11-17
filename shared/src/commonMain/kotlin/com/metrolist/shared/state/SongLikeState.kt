@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import com.meld.spotify.likes.LocalVotes
 import com.metrolist.innertubex.InnerTube
 import com.metrolist.shared.api.PlaylistPage
 import com.metrolist.shared.api.SongVote
@@ -774,6 +775,8 @@ object SongLikeState {
         votes: Map<String, SongVote>,
         sync: Boolean = true,
     ) {
+        // Meld: the votes the user casts (an import passes sync = false) also go to Spotify.
+        if (sync) LocalVotes.onVotes(votes)
         remoteSyncGate.withLock {
             importVoteChanges?.addAll(votes.keys)
             successfulRefresh = null
