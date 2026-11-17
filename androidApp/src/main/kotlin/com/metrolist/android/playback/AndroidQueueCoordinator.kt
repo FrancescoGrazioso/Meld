@@ -2,6 +2,7 @@ package com.metrolist.android.playback
 
 import android.content.Context
 import androidx.media3.common.Player
+import com.meld.spotify.playback.spotifySourcePending
 import com.metrolist.android.R
 import com.metrolist.android.deviceconnect.AndroidDeviceConnect
 import com.metrolist.android.listentogether.AndroidListenTogetherManager
@@ -579,7 +580,7 @@ internal class AndroidQueueCoordinator(
             isFiniteQueue,
             Settings.shared.autoLoadMore,
             // Meld: a Spotify source is queued lazily, like a playlist with pages left.
-            playlistPage?.hasMore == true || com.meld.spotify.playback.spotifySourcePending(),
+            playlistPage?.hasMore == true || spotifySourcePending(),
         )
 
     fun selectQueueChip(chipId: String) {
