@@ -5496,4 +5496,16 @@
     <string name="meld_spotify_track_unavailable">Not available on Spotify</string>
     <string name="meld_spotify_popular">Popular</string>
     <string name="meld_spotify_preparing_shuffle">Loading every song to shuffle…</string>
+    <string name="meld_spotify_likes">Liked songs</string>
+    <string name="meld_spotify_likes_push">Like on Spotify too</string>
+    <string name="meld_spotify_likes_push_description">A song you like or un-like in Meld is saved to or removed from your Spotify Liked Songs.</string>
+    <string name="meld_spotify_likes_pull">Bring in Spotify likes</string>
+    <string name="meld_spotify_likes_pull_description">Songs in your Spotify Liked Songs are liked in Meld, and on YouTube Music when you are signed in there. A song is un-liked only after you remove it on Spotify.</string>
+    <string name="meld_spotify_likes_sync_now">Sync now</string>
+    <string name="meld_spotify_likes_never_synced">Not synced yet</string>
+    <string name="meld_spotify_likes_last_sync">Last sync %1$s</string>
+    <string name="meld_spotify_likes_pending">%1$d waiting to be sent</string>
+    <string name="meld_spotify_likes_not_found">%1$d not found on Spotify</string>
+    <string name="meld_spotify_likes_importing">Finding Spotify likes on YouTube: %1$d of %2$d</string>
+    <string name="meld_spotify_liked">Liked on Spotify</string>
 </resources>

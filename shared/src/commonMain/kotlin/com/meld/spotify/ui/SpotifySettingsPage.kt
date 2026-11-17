@@ -24,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.meld.spotify.SpotifyConnection
 import com.meld.spotify.SpotifyConnectionState
+import com.meld.spotify.likes.SpotifyLikeSync
+import com.meld.spotify.likes.SpotifyLikeSyncStatus
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.account
 import com.metrolist.shared.generated.resources.import_provider_spotify
@@ -37,18 +39,33 @@ import com.metrolist.shared.generated.resources.meld_spotify_disconnect_confirm
 import com.metrolist.shared.generated.resources.meld_spotify_disconnect_description
 import com.metrolist.shared.generated.resources.meld_spotify_expired
 import com.metrolist.shared.generated.resources.meld_spotify_expired_named
+import com.metrolist.shared.generated.resources.meld_spotify_likes
+import com.metrolist.shared.generated.resources.meld_spotify_likes_importing
+import com.metrolist.shared.generated.resources.meld_spotify_likes_last_sync
+import com.metrolist.shared.generated.resources.meld_spotify_likes_never_synced
+import com.metrolist.shared.generated.resources.meld_spotify_likes_not_found
+import com.metrolist.shared.generated.resources.meld_spotify_likes_pending
+import com.metrolist.shared.generated.resources.meld_spotify_likes_pull
+import com.metrolist.shared.generated.resources.meld_spotify_likes_pull_description
+import com.metrolist.shared.generated.resources.meld_spotify_likes_push
+import com.metrolist.shared.generated.resources.meld_spotify_likes_push_description
+import com.metrolist.shared.generated.resources.meld_spotify_likes_sync_now
 import com.metrolist.shared.generated.resources.meld_spotify_overview
 import com.metrolist.shared.generated.resources.meld_spotify_status_expired
 import com.metrolist.shared.generated.resources.meld_spotify_status_not_connected
 import com.metrolist.shared.generated.resources.retry
 import com.metrolist.shared.generated.resources.spotify_sign_in_again
+import com.metrolist.shared.settings.Settings
 import com.metrolist.shared.ui.icons.MetrolistIcons
 import com.metrolist.shared.ui.settings.SettingsPageId
 import com.metrolist.shared.ui.settings.SettingsTone
 import com.metrolist.shared.ui.settings.SettingsUiRegistryBuilder
 import com.metrolist.shared.ui.settings.settingsPageSubtitle
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform
+import kotlin.time.Instant
 
 /**
  * Registers the Spotify page and returns its id, or null where Meld's module is not registered or
@@ -61,6 +78,9 @@ internal fun SettingsUiRegistryBuilder.spotifyPage(onSignIn: (() -> Unit)?): Set
     if (connection == null || onSignIn == null) return null
     // State changes must rebuild the registry that owns these rows.
     val state by connection.state.collectAsState()
+    val likeSync = remember { KoinPlatform.getKoin().getOrNull<SpotifyLikeSync>() }
+    val likeStatus = likeSync?.status?.collectAsState()?.value
+    val settings = Settings.shared
     LaunchedEffect(connection) { connection.refresh() }
 
     val status =
@@ -126,9 +146,59 @@ internal fun SettingsUiRegistryBuilder.spotifyPage(onSignIn: (() -> Unit)?): Set
                 }
             }
         }
+        if (likeSync != null && likeStatus != null && state is SpotifyConnectionState.Connected) {
+            group("spotifyLikes", stringResource(Res.string.meld_spotify_likes)) {
+                switch(
+                    id = "spotifyLikesPush",
+                    title = stringResource(Res.string.meld_spotify_likes_push),
+                    description = stringResource(Res.string.meld_spotify_likes_push_description),
+                    checked = settings.meldSpotifyLikesPush,
+                ) {
+                    settings.meldSpotifyLikesPush = it
+                    if (it) likeSync.syncNow()
+                }
+                switch(
+                    id = "spotifyLikesPull",
+                    title = stringResource(Res.string.meld_spotify_likes_pull),
+                    description = stringResource(Res.string.meld_spotify_likes_pull_description),
+                    checked = settings.meldSpotifyLikesPull,
+                ) {
+                    settings.meldSpotifyLikesPull = it
+                    if (it) likeSync.syncNow()
+                }
+                action(
+                    id = "spotifyLikesSyncNow",
+                    title = stringResource(Res.string.meld_spotify_likes_sync_now),
+                    description = likeStatus.text(),
+                    enabled = !likeStatus.syncing && (settings.meldSpotifyLikesPush || settings.meldSpotifyLikesPull),
+                    onClick = likeSync::syncNow,
+                )
+            }
+        }
     }
     return SettingsPageId.SPOTIFY
 }
+
+/** The status line: the import while it runs, else the last sync, then what waits and what Spotify does not have. */
+@Composable
+private fun SpotifyLikeSyncStatus.text(): String {
+    val progress =
+        if (importTotal > 0) {
+            stringResource(Res.string.meld_spotify_likes_importing, importDone, importTotal)
+        } else if (syncedAt > 0) {
+            val time = Instant.fromEpochMilliseconds(syncedAt).toLocalDateTime(TimeZone.currentSystemDefault())
+            stringResource(Res.string.meld_spotify_likes_last_sync, "${time.date} ${time.hour.twoDigits()}:${time.minute.twoDigits()}")
+        } else {
+            stringResource(Res.string.meld_spotify_likes_never_synced)
+        }
+    return listOfNotNull(
+        progress,
+        stringResource(Res.string.meld_spotify_likes_pending, pending).takeIf { pending > 0 },
+        stringResource(Res.string.meld_spotify_likes_not_found, notFound).takeIf { notFound > 0 },
+    ).joinToString(" • ")
+}
+
+private fun Int.twoDigits() = toString().padStart(2, '0')
 
 @Composable
 private fun SpotifySignInNotice(

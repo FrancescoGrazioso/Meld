@@ -58,6 +58,7 @@ import com.metrolist.shared.generated.resources.meld_spotify_expired
 import com.metrolist.shared.generated.resources.meld_spotify_expired_named
 import com.metrolist.shared.generated.resources.meld_spotify_item_unavailable
 import com.metrolist.shared.generated.resources.meld_spotify_item_unavailable_description
+import com.metrolist.shared.generated.resources.meld_spotify_liked
 import com.metrolist.shared.generated.resources.meld_spotify_loaded_of_total
 import com.metrolist.shared.generated.resources.meld_spotify_not_connected
 import com.metrolist.shared.generated.resources.meld_spotify_open_settings
@@ -223,6 +224,7 @@ internal fun SpotifyTrackRow(
     onPlayNext: ((SpotifyTrack) -> Unit)?,
     onAddToQueue: ((SpotifyTrack) -> Unit)?,
     modifier: Modifier = Modifier,
+    liked: Boolean = false,
 ) {
     val track = item.track
     val playable = item.playableTrack
@@ -284,6 +286,14 @@ internal fun SpotifyTrackRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                )
+            }
+            if (liked) {
+                Icon(
+                    MetrolistIcons.Default.Favorite,
+                    contentDescription = stringResource(Res.string.meld_spotify_liked),
+                    tint = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(horizontal = 8.dp).size(18.dp),
                 )
             }
             if (playable != null && hasMenu) {
