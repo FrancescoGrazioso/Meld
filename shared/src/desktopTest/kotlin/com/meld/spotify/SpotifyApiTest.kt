@@ -17,7 +17,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.currentTime
 import kotlinx.coroutines.test.runTest
@@ -33,8 +32,8 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -164,18 +163,15 @@ class SpotifyApiTest {
         runBlocking<Unit> {
             val spotify = FakeSpotify()
             val api = spotify.api()
-            assertFalse(api.isLoggedIn())
             assertFailsWith<SpotifyError.NotLoggedIn> { api.profile() }
 
             spotify.onToken = { respond("""{"accessToken":"anonymous","isAnonymous":true}""") }
             assertFailsWith<SpotifyError.SessionExpired> { api.login(COOKIE) }
             assertNull(spotify.session)
-            assertFalse(api.isLoggedIn())
 
             spotify.onToken =
                 { respond("""{"accessToken":"access-ok","accessTokenExpirationTimestampMs":$FAR_FUTURE,"isAnonymous":false}""") }
             api.login(COOKIE)
-            assertTrue(api.isLoggedIn())
             val user = api.profile()
             assertEquals(SpotifyUser("u1", "spotify:user:u1", "Tester", listOf(SpotifyImage("https://i.scdn.co/image/u1"))), user)
             assertEquals("Bearer access-ok", spotify.queries.single().bearer)
@@ -427,7 +423,8 @@ class SpotifyApiTest {
             }
             val api = spotify.api()
 
-            val pages = spotifyPages { offset -> api.playlist("p1", offset, limit = 3).tracks }.toList()
+            val first = api.playlist("p1", 0, limit = 3).tracks
+            val pages = listOf(first, api.playlist("p1", assertNotNull(first.nextOffset), limit = 3).tracks)
             assertEquals(listOf(0, 3), spotify.queries.map { it.variables.int("offset") })
             assertEquals(listOf("spotify:playlist:p1"), spotify.queries.map { it.variables.str("uri") }.distinct())
             assertEquals(listOf(3, null), pages.map { it.nextOffset })

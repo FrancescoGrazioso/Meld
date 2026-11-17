@@ -2,10 +2,7 @@ package com.meld.spotify.playback
 
 import com.meld.spotify.SpotifyTrack
 
-/**
- * Plays Spotify tracks by matching each one to a YouTube Music song before it enters the queue.
- * Registered in Koin on JVM targets only.
- */
+/** Plays Spotify tracks by matching each one to a YouTube Music song before it enters the queue. */
 interface SpotifyPlayback {
     /**
      * Starts playback at [startIndex]; the tracks before it are queued before it once it plays.

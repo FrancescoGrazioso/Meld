@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
 
 /**
  * What shared screens may read from the user's Spotify account. Every call throws a
- * [com.meld.spotify.SpotifyError]. Registered in Koin on JVM targets only.
+ * [com.meld.spotify.SpotifyError].
  */
 interface SpotifyLibrary {
     /** One level of the playlist tree: the root when [folderUri] is null, else the children of that folder. */

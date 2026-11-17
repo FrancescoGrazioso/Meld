@@ -14,8 +14,6 @@ import io.ktor.http.contentType
 import io.ktor.http.fromHttpToGmtDate
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.TimeZone
@@ -35,17 +33,6 @@ import meow.nyx.spotlib.SpotifySessionExpiredException
 import kotlin.concurrent.Volatile
 import kotlin.random.Random
 import kotlin.time.Clock
-
-/** Emits every page from offset 0 on, following [SpotifyPage.nextOffset]. */
-fun <T> spotifyPages(fetch: suspend (offset: Int) -> SpotifyPage<T>): Flow<SpotifyPage<T>> =
-    flow {
-        var offset: Int? = 0
-        while (offset != null) {
-            val page = fetch(offset)
-            emit(page)
-            offset = page.nextOffset
-        }
-    }
 
 /**
  * Spotify web-player API for Meld. Every call throws a [SpotifyError]; cancellation is never
@@ -92,8 +79,6 @@ class SpotifyApi(
     @Volatile
     private var cooldownUntil = 0L
 
-    fun isLoggedIn(): Boolean = (session ?: storedSession()) != null
-
     /** Exchanges the `sp_dc` cookie for tokens; the cookie is stored only once Spotify has accepted it. */
     suspend fun login(spDc: String) {
         require(spDc.isNotBlank()) { "Empty Spotify session cookie" }
@@ -117,18 +102,9 @@ class SpotifyApi(
             saveSession("")
         }
 
-    /** Downloads the remote hash registry (debounced). Worth calling once at startup. */
-    suspend fun refreshHashes(): Boolean = hashes.refresh()
-
     override fun close() = api.close()
 
     suspend fun profile(): SpotifyUser = query("profileAttributes", buildJsonObject {}, ::parseUser)
-
-    /** Every playlist of the library, folders flattened. */
-    suspend fun libraryPlaylists(
-        offset: Int = 0,
-        limit: Int = 50,
-    ): SpotifyPage<SpotifyPlaylist> = library("Playlists", true, null, offset, limit, ::parseLibraryPlaylists)
 
     /** One level of the library tree: the root when [folderUri] is null, else the children of that folder. */
     suspend fun libraryNode(
