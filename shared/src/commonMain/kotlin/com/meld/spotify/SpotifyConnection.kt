@@ -7,10 +7,11 @@ sealed interface SpotifyConnectionState {
 
     data object Connecting : SpotifyConnectionState
 
-    /** The integration is on: there is no separate switch to enable. */
+    /** [id] is the Spotify user, null until the profile has loaded once; data kept per account is keyed by it. */
     data class Connected(
         val name: String?,
         val imageUrl: String?,
+        val id: String? = null,
     ) : SpotifyConnectionState
 
     /** Spotify no longer accepts the session; survives a restart until the next successful sign-in. */
