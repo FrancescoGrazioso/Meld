@@ -150,7 +150,7 @@ private class App(
     val spotify = FakeSpotify()
     val youtube = FakeYouTube()
     val connection = FakeConnection()
-    val settings = Settings(stored)
+    val settings = Settings(stored).also { it.meldSpotifyLikesPull = true }
     val songs get() = (local as FakeLocal).songs
     val background = CoroutineScope(Dispatchers.Default + Job())
     val store =
@@ -234,6 +234,13 @@ private suspend fun awaitUntil(condition: suspend () -> Boolean) =
     }
 
 class SpotifyLikeSyncTest {
+    @Test
+    fun bringingInSpotifyLikesIsOffUntilTheUserTurnsItOn() {
+        val settings = Settings(MapSettings())
+        assertFalse(settings.meldSpotifyLikesPull)
+        assertTrue(settings.meldSpotifyLikesPush)
+    }
+
     @Test
     fun likeMadeOfflineSurvivesARestartAndIsSentOnce() =
         withFile { file ->
