@@ -20,16 +20,17 @@ import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertIs
 
-private const val FIRST = "first-cookie"
-private const val SECOND = "second-cookie"
+internal const val FIRST = "first-cookie"
+internal const val SECOND = "second-cookie"
 private const val TOKEN = """{"accessToken":"access","accessTokenExpirationTimestampMs":4000000000000,"isAnonymous":false}"""
 private const val PROFILE_AVATAR = """{"sources":[{"url":"https://i.scdn.co/image/u1"}]}"""
 private const val PROFILE_BODY = """{"data":{"me":{"profile":{"uri":"spotify:user:u1","name":"Tester","avatar":$PROFILE_AVATAR}}}}"""
-private val TESTER = Connected("Tester", "https://i.scdn.co/image/u1")
+internal val TESTER = Connected("Tester", "https://i.scdn.co/image/u1")
 
 /** Spotify plus the two settings the owner persists to, so an owner can be re-created over them. */
-private class SpotifyBackend {
+internal class SpotifyBackend {
     val accepted = mutableSetOf(FIRST)
     var offline = false
     var session = ""
@@ -62,7 +63,7 @@ private class SpotifyBackend {
 
 private fun sessionOf(cookie: String) = Json.encodeToString(SpotifySession.serializer(), SpotifySession(cookies = mapOf("sp_dc" to cookie)))
 
-private suspend fun CoroutineScope.settle() =
+internal suspend fun CoroutineScope.settle() =
     coroutineContext.job.children
         .toList()
         .joinAll()
@@ -90,11 +91,11 @@ class SpotifySessionOwnerTest {
 
             backend.offline = true
             owner.connect(FIRST)
-            assertEquals(Failed(SpotifyFailure.OFFLINE), owner.state.value)
+            assertIs<SpotifyError.Offline>(assertIs<Failed>(owner.state.value).error)
 
             backend.offline = false
             owner.connect("unknown-cookie")
-            assertEquals(Failed(SpotifyFailure.REJECTED), owner.state.value)
+            assertIs<SpotifyError.SessionExpired>(assertIs<Failed>(owner.state.value).error)
             assertEquals("", backend.session)
             assertEquals(Disconnected, backend.owner(this).state.value)
 
@@ -119,7 +120,7 @@ class SpotifySessionOwnerTest {
             // A sign-in that fails does not clear the flag.
             val restarted = backend.owner(this)
             restarted.connect(SECOND)
-            assertEquals(Failed(SpotifyFailure.REJECTED), restarted.state.value)
+            assertIs<SpotifyError.SessionExpired>(assertIs<Failed>(restarted.state.value).error)
             assertEquals(Expired("Tester"), backend.owner(this).state.value)
 
             backend.accepted += SECOND

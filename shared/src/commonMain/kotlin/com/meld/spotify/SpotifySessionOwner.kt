@@ -78,7 +78,7 @@ class SpotifySessionOwner(
             } catch (error: SpotifyError) {
                 logger("Sign-in failed: ${error.message}")
                 // A failed sign-in changes nothing that is stored, so a session that was there still counts.
-                mutableState.value = stored().takeIf { it is Connected } ?: Failed(error.failure())
+                mutableState.value = stored().takeIf { it is Connected } ?: Failed(error)
                 return@withLock
             }
             // Drops the expired flag and the profile of whoever was signed in before.
@@ -169,22 +169,6 @@ class SpotifySessionOwner(
             ?.cookies
             ?.get("sp_dc")
             ?.takeIf(String::isNotBlank)
-
-    private fun SpotifyError.failure(): SpotifyFailure =
-        when (this) {
-            is SpotifyError.Offline -> SpotifyFailure.OFFLINE
-
-            is SpotifyError.RateLimited -> SpotifyFailure.RATE_LIMITED
-
-            is SpotifyError.Unavailable -> SpotifyFailure.UNAVAILABLE
-
-            is SpotifyError.Changed -> SpotifyFailure.CHANGED
-
-            is SpotifyError.SessionExpired,
-            is SpotifyError.NotLoggedIn,
-            is SpotifyError.Forbidden,
-            -> SpotifyFailure.REJECTED
-        }
 
     private companion object {
         val json = Json { ignoreUnknownKeys = true }

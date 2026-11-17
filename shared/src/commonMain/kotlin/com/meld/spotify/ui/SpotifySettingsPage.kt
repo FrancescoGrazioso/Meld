@@ -24,7 +24,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.meld.spotify.SpotifyConnection
 import com.meld.spotify.SpotifyConnectionState
-import com.meld.spotify.SpotifyFailure
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.account
 import com.metrolist.shared.generated.resources.import_provider_spotify
@@ -36,11 +35,6 @@ import com.metrolist.shared.generated.resources.meld_spotify_connecting
 import com.metrolist.shared.generated.resources.meld_spotify_disconnect
 import com.metrolist.shared.generated.resources.meld_spotify_disconnect_confirm
 import com.metrolist.shared.generated.resources.meld_spotify_disconnect_description
-import com.metrolist.shared.generated.resources.meld_spotify_error_changed
-import com.metrolist.shared.generated.resources.meld_spotify_error_offline
-import com.metrolist.shared.generated.resources.meld_spotify_error_rate_limited
-import com.metrolist.shared.generated.resources.meld_spotify_error_rejected
-import com.metrolist.shared.generated.resources.meld_spotify_error_unavailable
 import com.metrolist.shared.generated.resources.meld_spotify_expired
 import com.metrolist.shared.generated.resources.meld_spotify_expired_named
 import com.metrolist.shared.generated.resources.meld_spotify_overview
@@ -53,13 +47,12 @@ import com.metrolist.shared.ui.settings.SettingsPageId
 import com.metrolist.shared.ui.settings.SettingsTone
 import com.metrolist.shared.ui.settings.SettingsUiRegistryBuilder
 import com.metrolist.shared.ui.settings.settingsPageSubtitle
-import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform
 
 /**
- * Registers the Spotify page and returns its id, or null where the platform has no Spotify
- * session (iOS) or no login window to open ([onSignIn] is null).
+ * Registers the Spotify page and returns its id, or null where Meld's module is not registered or
+ * the host has no login window to open ([onSignIn] is null).
  */
 @Composable
 @NonRestartableComposable
@@ -126,7 +119,7 @@ internal fun SettingsUiRegistryBuilder.spotifyPage(onSignIn: (() -> Unit)?): Set
                 }
 
                 is SpotifyConnectionState.Failed -> {
-                    val message = stringResource(current.failure.message)
+                    val message = stringResource(current.error.text(signingIn = true))
                     custom("spotifyFailed", message) {
                         SpotifySignInNotice(message, stringResource(Res.string.retry), onSignIn)
                     }
@@ -136,16 +129,6 @@ internal fun SettingsUiRegistryBuilder.spotifyPage(onSignIn: (() -> Unit)?): Set
     }
     return SettingsPageId.SPOTIFY
 }
-
-private val SpotifyFailure.message: StringResource
-    get() =
-        when (this) {
-            SpotifyFailure.OFFLINE -> Res.string.meld_spotify_error_offline
-            SpotifyFailure.RATE_LIMITED -> Res.string.meld_spotify_error_rate_limited
-            SpotifyFailure.UNAVAILABLE -> Res.string.meld_spotify_error_unavailable
-            SpotifyFailure.REJECTED -> Res.string.meld_spotify_error_rejected
-            SpotifyFailure.CHANGED -> Res.string.meld_spotify_error_changed
-        }
 
 @Composable
 private fun SpotifySignInNotice(
