@@ -39,6 +39,7 @@ class SpotifySessionOwner(
         val name: String? = null,
         val image: String? = null,
         val expired: Boolean = false,
+        val id: String? = null,
     )
 
     private val mutex = Mutex()
@@ -118,6 +119,8 @@ class SpotifySessionOwner(
             }
 
             else -> {
+                // Before the session changes hands: whatever is kept per account must not act on the new one as the old.
+                mutableState.value = Connecting
                 saveSession(value)
                 saveAccount("")
                 login(cookie)
@@ -128,7 +131,7 @@ class SpotifySessionOwner(
     private suspend fun loadProfile() {
         try {
             val user = api.profile()
-            saveAccount(json.encodeToString(Account.serializer(), Account(user.name, user.images.firstOrNull()?.url)))
+            saveAccount(json.encodeToString(Account.serializer(), Account(user.name, user.images.firstOrNull()?.url, id = user.id)))
         } catch (error: SpotifyError.SessionExpired) {
             expire()
             return
@@ -150,7 +153,7 @@ class SpotifySessionOwner(
     private fun stored(): SpotifyConnectionState {
         val account = account()
         return when {
-            spDc(loadSession()) != null -> Connected(account.name, account.image)
+            spDc(loadSession()) != null -> Connected(account.name, account.image, account.id)
             account.expired -> Expired(account.name)
             else -> Disconnected
         }

@@ -27,7 +27,7 @@ internal const val SECOND = "second-cookie"
 private const val TOKEN = """{"accessToken":"access","accessTokenExpirationTimestampMs":4000000000000,"isAnonymous":false}"""
 private const val PROFILE_AVATAR = """{"sources":[{"url":"https://i.scdn.co/image/u1"}]}"""
 private const val PROFILE_BODY = """{"data":{"me":{"profile":{"uri":"spotify:user:u1","name":"Tester","avatar":$PROFILE_AVATAR}}}}"""
-internal val TESTER = Connected("Tester", "https://i.scdn.co/image/u1")
+internal val TESTER = Connected("Tester", "https://i.scdn.co/image/u1", "u1")
 
 /** Spotify plus the two settings the owner persists to, so an owner can be re-created over them. */
 internal class SpotifyBackend {
