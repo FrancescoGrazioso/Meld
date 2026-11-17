@@ -49,6 +49,7 @@ import com.metrolist.shared.ui.components.LibraryItemContainer
 import com.metrolist.shared.ui.components.ListCard
 import com.metrolist.shared.ui.icons.MetrolistIcons
 import com.metrolist.shared.ui.navigation.LocalNavigator
+import com.metrolist.shared.ui.navigation.Screen
 import com.metrolist.shared.ui.navigation.SpotifySettingsScreen
 import com.metrolist.shared.ui.screens.LibraryFilter
 import com.metrolist.shared.ui.screens.LibrarySortType
@@ -66,6 +67,7 @@ class LibraryExtras internal constructor(
     val chip: (@Composable () -> Unit)? = null,
     val status: (@Composable () -> Unit)? = null,
     private val entries: (query: String) -> List<SpotifyLibraryEntry> = { emptyList() },
+    private val onOpen: (Screen) -> Unit = {},
 ) {
     /** [items] as the library sorted them, with the Spotify rows that match [query] placed among them. */
     @Composable
@@ -85,7 +87,7 @@ class LibraryExtras internal constructor(
         cell: Int,
         isGridView: Boolean,
     ) {
-        cells.entry(cell)?.let { SpotifyLibraryCell(it, isGridView) }
+        cells.entry(cell)?.let { SpotifyLibraryCell(it, isGridView) { onOpen(it.screen()) } }
     }
 
     companion object {
@@ -98,11 +100,15 @@ class LibraryExtras internal constructor(
  * account is connected. The Spotify chip is a filter of its own next to the kind chips, so with
  * both selected the library shows only the Spotify items of that kind. An expired session keeps
  * the chip, so the way back in stays where the content was.
+ *
+ * [onOpen] opens a Spotify route. A host that provides upstream's [LocalNavigator] can leave it
+ * out; one that does not (iOS) has to pass it.
  */
 @Composable
 fun spotifyLibraryExtras(
     filter: LibraryFilter?,
     onFilterChange: (LibraryFilter?) -> Unit,
+    onOpen: (Screen) -> Unit = LocalNavigator.current::navigate,
 ): LibraryExtras {
     val library = remember { KoinPlatform.getKoin().getOrNull<SpotifyInLibrary>() } ?: return LibraryExtras.None
     val state by library.state.collectAsState()
@@ -117,12 +123,12 @@ fun spotifyLibraryExtras(
 
     val spotifyOnly = stored && filter != LibraryFilter.PODCASTS
     val currentOnFilterChange by rememberUpdatedState(onFilterChange)
-    val navigator = LocalNavigator.current
+    val currentOnOpen by rememberUpdatedState(onOpen)
     val likedTitle = stringResource(Res.string.meld_spotify_liked_songs)
-    return remember(library, state, filter, spotifyOnly, likedTitle, navigator) {
+    return remember(library, state, filter, spotifyOnly, likedTitle) {
         val session = state.session
         val error = state.error(filter)
-        val openSettings = { navigator.navigate(SpotifySettingsScreen) }
+        val openSettings = { currentOnOpen(SpotifySettingsScreen) }
         LibraryExtras(
             spotifyOnly = spotifyOnly,
             chip = {
@@ -134,7 +140,7 @@ fun spotifyLibraryExtras(
             status =
                 when {
                     session is SpotifyConnectionState.Expired && spotifyOnly -> {
-                        { SpotifySessionGate(session, PaddingValues()) {} }
+                        { SpotifySessionGate(session, PaddingValues(), openSettings) {} }
                     }
 
                     session is SpotifyConnectionState.Expired && filter != LibraryFilter.TRACKS -> {
@@ -154,6 +160,7 @@ fun spotifyLibraryExtras(
                     }
                 },
             entries = { query -> state.entries(filter, spotifyOnly, query, likedTitle) },
+            onOpen = { currentOnOpen(it) },
         )
     }
 }
@@ -174,13 +181,13 @@ private fun SpotifyChip(
 private fun SpotifyLibraryCell(
     entry: SpotifyLibraryEntry,
     isGridView: Boolean,
+    onClick: () -> Unit,
 ) {
-    val navigator = LocalNavigator.current
     val artistId = entry.id.takeIf { entry.kind == SpotifyLibraryEntryKind.ARTIST }
     LibraryItemContainer(
         isGridView = isGridView,
         onMenuClick = null,
-        modifier = Modifier.clickable { navigator.navigate(entry.screen()) },
+        modifier = Modifier.clickable(onClick = onClick),
     ) {
         if (isGridView) {
             Box {
@@ -247,7 +254,7 @@ private fun SpotifyFailureRow(
 ) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Text(
-            stringResource(error.text),
+            stringResource(error.text()),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.error,
             modifier = Modifier.weight(1f),

@@ -26,6 +26,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
@@ -176,6 +177,60 @@ class SpotifyLibraryTest {
             assertTrue(state.list.complete)
             assertEquals(3, library.calls)
             assertEquals(SpotifyLibraryEntryKind.FOLDER, state.entries.last().kind)
+        }
+
+    @Test
+    fun aScreenThatLeavesStopsListeningAndComingBackFindsItsListLoaded() =
+        test {
+            // The store listens to the connection for as long as the app runs; a screen only while it is shown.
+            assertEquals(1, connection.state.subscriptionCount.value)
+            val shown = CoroutineScope(scope.coroutineContext + SupervisorJob())
+            val screen = SpotifyTracksViewModel(shown, store, connection, playback, SpotifyCollectionType.PLAYLIST, "p1")
+            screen.loadMore()
+            assertEquals(4, screen.state.value.tracks.items.size)
+            assertTrue(connection.state.subscriptionCount.value > 1)
+            val calls = library.calls
+
+            shown.cancel()
+            assertEquals(1, connection.state.subscriptionCount.value)
+
+            // Before any coroutine of the new screen has run: its first frame already has the list.
+            val idle = CoroutineScope(StandardTestDispatcher() + SupervisorJob())
+            val firstFrame = SpotifyTracksViewModel(idle, store, connection, playback, SpotifyCollectionType.PLAYLIST, "p1").state.value
+            assertEquals(4, firstFrame.tracks.items.size)
+            assertEquals("Mix", firstFrame.info?.title)
+            idle.cancel()
+
+            val back = tracksScreen()
+            assertEquals(4, back.state.value.tracks.items.size)
+            assertEquals(calls, library.calls)
+            back.loadMore()
+            assertEquals(5, back.state.value.tracks.items.size)
+            // The screen that left saw none of it.
+            assertEquals(4, screen.state.value.tracks.items.size)
+        }
+
+    @Test
+    fun aFolderComesBackWithTheSortAndSearchItWasLeftWith() =
+        test {
+            val shown = CoroutineScope(scope.coroutineContext + SupervisorJob())
+            val screen = SpotifyFolderViewModel(shown, store, connection, "spotify:folder:big")
+            screen.setSort(byName = true, descending = true)
+            screen.setQuery("a")
+            val left = screen.state.value
+            val calls = library.calls
+            shown.cancel()
+
+            val idle = CoroutineScope(StandardTestDispatcher() + SupervisorJob())
+            val back = SpotifyFolderViewModel(idle, store, connection, "spotify:folder:big", left.byName to left.descending, left.query)
+            idle.cancel()
+            assertEquals(left.entries, back.state.value.entries)
+            assertEquals(
+                listOf("Delta", "Charlie", "bravo", "alpha"),
+                back.state.value.entries
+                    .map { it.name },
+            )
+            assertEquals(calls, library.calls)
         }
 
     @Test

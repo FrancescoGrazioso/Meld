@@ -48,7 +48,8 @@ import com.metrolist.shared.ui.components.CollectionHeaderHorizontalPadding
 import com.metrolist.shared.ui.components.HeaderPlaybackButtons
 import com.metrolist.shared.ui.components.RefreshIndicator
 import com.metrolist.shared.ui.icons.MetrolistIcons
-import com.metrolist.shared.ui.navigation.LocalNavigator
+import com.metrolist.shared.ui.navigation.Screen
+import com.metrolist.shared.ui.navigation.SpotifySettingsScreen
 import com.metrolist.shared.ui.utils.DragScrollableColumn
 import com.metrolist.shared.ui.utils.artistArtworkShape
 import kotlinx.coroutines.flow.first
@@ -64,17 +65,17 @@ private const val LOAD_AHEAD = 15
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SpotifyTracksContent(
+internal fun SpotifyTracksContent(
     viewModel: SpotifyTracksViewModel,
     type: SpotifyCollectionType,
     id: String,
     titleHint: String?,
     contentPadding: PaddingValues,
+    onOpen: (Screen) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
-    val navigator = LocalNavigator.current
-    SpotifySessionGate(state.session, contentPadding) {
+    SpotifySessionGate(state.session, contentPadding, { onOpen(SpotifySettingsScreen) }) {
         val info = state.info
         val tracks = state.tracks
         val likedTitle = stringResource(Res.string.meld_spotify_liked_songs)
@@ -206,7 +207,7 @@ fun SpotifyTracksContent(
                                 subtitle = entry.subtitle(),
                                 imageUrl = entry.imageUrl,
                                 icon = MetrolistIcons.Outlined.Album,
-                                onClick = { navigator.navigate(entry.screen()) },
+                                onClick = { onOpen(entry.screen()) },
                                 modifier = itemModifier,
                             )
                         }
