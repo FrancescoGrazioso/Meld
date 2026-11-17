@@ -306,7 +306,6 @@
     <string name="appearance_theme">थीम</string>
     <string name="appearance_style">स्टाइल</string>
     <string name="appearance_app_icon">ऐप आइकन</string>
-    <string name="appearance_app_icon_credit">Kayé द्वारा वैकल्पिक आइकन (@thy_k on Discord)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">एक जनरेटेड मटीरियल कलर स्कीम का उपयोग करें</string>
     <string name="song_artwork_colors">गाने की कलाकृति से रंग</string>
@@ -318,14 +317,6 @@
     <string name="theme_palette_fruit_salad">फल सलाद (Fruit salad)</string>
     <string name="theme_palette_monochrome">एकवर्णी (Monochrome)</string>
     <string name="theme_palette_neutral">तटस्थ (Neutral)</string>
-    <string name="app_icon_original">मूल</string>
-    <string name="app_icon_arctic_haze">हिमाचल की बर्फ (Artic Haze)</string>
-    <string name="app_icon_lavender_leap">लैवेंडर छलांग (Lavender Leap)</string>
-    <string name="app_icon_metromallow">मेट्रोमेलो</string>
-    <string name="app_icon_pride_special">प्राइड विशेष</string>
-    <string name="app_icon_static">स्थिर</string>
-    <string name="app_icon_zenith_black">जेनिथ काला</string>
-    <string name="app_icon_zenith_white">ज़ेनिथ सफेद</string>
     <string name="app_font_choose">फ़ॉन्ट फ़ाइल चुनें</string>
     <string name="app_font_picker_desc">TTF या OTF फ़ाइल चुनें। Meld इसे प्राइवेट ऐप स्टोरेज में कॉपी करता है।</string>
     <string name="app_font_system">सिस्टम डिफ़ॉल्ट</string>

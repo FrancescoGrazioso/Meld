@@ -6,9 +6,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.ApplicationScope
 import androidx.compose.ui.window.WindowState
+import com.meld.branding.meldTrayIcon
 import com.metrolist.desktop.state.app.DesktopNavigation
 import com.metrolist.desktop.state.app.UiState
 import com.metrolist.desktop.state.playback.ListenTogetherState
@@ -149,8 +149,8 @@ object ComposeTrayManager {
         val currentTrack = PlayerState.currentTrack
         val isListenTogetherGuest = ListenTogetherState.isListenTogetherGuest()
 
-        @Suppress("DEPRECATION")
-        val icon = painterResource("logo.png")
+        // Meld: the chosen app icon; upstream's macOS menu bar icon is a template image the system tints.
+        val icon = meldTrayIcon(darkMenuBar = true)
 
         val strUnknownTitle = stringResource(Res.string.tray_unknown_title)
         val strUnknown = stringResource(Res.string.tray_unknown)

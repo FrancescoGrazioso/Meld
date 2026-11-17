@@ -309,7 +309,6 @@
     <string name="appearance_theme">Tema</string>
     <string name="appearance_style">Estil</string>
     <string name="appearance_app_icon">Icona de l’aplicació</string>
-    <string name="appearance_app_icon_credit">Icones alternatives de Kayé (@thy_k a Discord)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Fes servir un esquema de color de material generat</string>
     <string name="song_artwork_colors">Colors de la portada de la cançó</string>
@@ -321,14 +320,6 @@
     <string name="theme_palette_fruit_salad">Macedònia de fruites</string>
     <string name="theme_palette_monochrome">Monocrom</string>
     <string name="theme_palette_neutral">Neutre</string>
-    <string name="app_icon_original">Original</string>
-    <string name="app_icon_arctic_haze">Boira àrtica</string>
-    <string name="app_icon_lavender_leap">Lavanda</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Especial de l’Orgull</string>
-    <string name="app_icon_static">Estàtic</string>
-    <string name="app_icon_zenith_black">Zenith Negre</string>
-    <string name="app_icon_zenith_white">Zenith Blanc</string>
     <string name="app_font_choose">Selecciona el fitxer de font</string>
     <string name="app_font_picker_desc">Selecciona un fitxer TTF o OTF. Meld el copia a l’emmagatzematge privat de l’aplicació.</string>
     <string name="app_font_system">Valor per defecte del sistema</string>
@@ -2261,7 +2252,6 @@
     <string name="device_connect_peer_details">%1$s\n%2$s</string>
     <string name="listen_together_server_label">%1$s · %2$s</string>
     <string name="settings_sound">So</string>
-    <string name="app_icon_gradient">Degradat</string>
     <string name="appearance_floating_bottom_nav">Barra de navegació flotant</string>
     <string name="appearance_floating_bottom_nav_description">Mostra una barra flotant damunt de la zona de navegació del sistema, amb Inici, Biblioteca i un botó de Cerca separat.</string>
     <string name="lyrics_accessibility">Accessibilitat</string>

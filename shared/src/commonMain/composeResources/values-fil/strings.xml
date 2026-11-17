@@ -297,7 +297,6 @@
     <string name="appearance_theme">Tema</string>
     <string name="appearance_style">Style</string>
     <string name="appearance_app_icon">Icon ng app</string>
-    <string name="appearance_app_icon_credit">Mga alternate icon ni Kayé (@thy_k sa Discord)</string>
     <string name="material_you_description">Gumamit ng generated na Material color scheme</string>
     <string name="song_artwork_colors">Mga kulay mula sa song artwork</string>
     <string name="song_artwork_colors_description">Palitan ang mga kulay ng app gamit ang kasalukuyang song artwork kung available</string>
@@ -308,14 +307,6 @@
     <string name="theme_palette_fruit_salad">Fruit salad</string>
     <string name="theme_palette_monochrome">Monochrome</string>
     <string name="theme_palette_neutral">Neutral</string>
-    <string name="app_icon_original">Orihinal</string>
-    <string name="app_icon_arctic_haze">Arctic Haze</string>
-    <string name="app_icon_lavender_leap">Lavender Leap</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Pride Special</string>
-    <string name="app_icon_static">Static</string>
-    <string name="app_icon_zenith_black">Zenith Black</string>
-    <string name="app_icon_zenith_white">Zenith White</string>
     <string name="app_font_choose">Pumili ng font file</string>
     <string name="app_font_picker_desc">Pumili ng TTF o OTF file. Kokopyahin ito ng Meld sa pribadong storage ng app.</string>
     <string name="app_font_system">Default ng sistema</string>

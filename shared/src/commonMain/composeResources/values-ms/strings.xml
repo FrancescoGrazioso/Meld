@@ -292,7 +292,6 @@
     <string name="appearance_theme">Tema</string>
     <string name="appearance_style">Gaya</string>
     <string name="appearance_app_icon">Ikon aplikasi</string>
-    <string name="appearance_app_icon_credit">Ikon alternatif oleh Kayé (@thy_k di Discord)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Gunakan skema warna Material yang dijana</string>
     <string name="song_artwork_colors">Warna daripada karya seni lagu</string>
@@ -304,14 +303,6 @@
     <string name="theme_palette_fruit_salad">Salad buah-buahan</string>
     <string name="theme_palette_monochrome">Monokrom</string>
     <string name="theme_palette_neutral">Neutral</string>
-    <string name="app_icon_original">Asal</string>
-    <string name="app_icon_arctic_haze">Jerebu Artik</string>
-    <string name="app_icon_lavender_leap">Lompatan Lavender</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Istimewa Kebanggaan</string>
-    <string name="app_icon_static">Statik</string>
-    <string name="app_icon_zenith_black">Hitam Zenit</string>
-    <string name="app_icon_zenith_white">Putih Zenit</string>
     <string name="app_font_choose">Pilih fail fon</string>
     <string name="app_font_picker_desc">Pilih fail TTF atau OTF. Meld menyalinnya ke storan aplikasi peribadi.</string>
     <string name="app_font_system">Sistem lalai</string>

@@ -299,11 +299,9 @@
     <string name="appearance_theme">Téma</string>
     <string name="appearance_style">Štýl</string>
     <string name="appearance_app_icon">Ikona aplikácie</string>
-    <string name="appearance_app_icon_credit">Alternatívne ikony od Kayé (@thy_k na Discorde)</string>
     <string name="material_you_description">Použite vygenerovanú farebnú schému Material You</string>
     <string name="song_artwork_colors">Farby z grafiky skladby</string>
     <string name="song_artwork_colors_description">Nahradiť farby aplikácie grafikou aktuálnej skladby, ak je k dispozícii</string>
-    <string name="app_icon_original">Originál</string>
     <string name="app_font_system">Predvolené systémom</string>
     <string name="app_font_invalid">Toto písmo sa nepodarilo použiť. Vyberte platný súbor TTF alebo OTF menší ako 20 MB.</string>
     <string name="app_font_downloads">Rýchle sťahovanie písiem</string>
@@ -569,13 +567,6 @@
     <string name="theme_palette_fruit_salad">Ovocný šalát</string>
     <string name="theme_palette_monochrome">Monochromatická</string>
     <string name="theme_palette_neutral">Neutrálna</string>
-    <string name="app_icon_arctic_haze">Arktický opar</string>
-    <string name="app_icon_lavender_leap">Levanduľový skok</string>
-    <string name="app_icon_metromallow">Metromellow</string>
-    <string name="app_icon_pride_special">Špeciál Pride</string>
-    <string name="app_icon_static">Statický</string>
-    <string name="app_icon_zenith_black">Zenith čierna</string>
-    <string name="app_icon_zenith_white">Zenith biela</string>
     <string name="mysterious_fourth_tab_description">Ostatné karty sú skryté. Otvorte ponuku účtu, prejdite do Nastavení a znova ich pridajte.</string>
     <string name="backup_sensitive_title">Citlivá záloha</string>
     <string name="scrobble_max_delay_description">Maximálny počet sekúnd pred vynúteným scrobbleom</string>

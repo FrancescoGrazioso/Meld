@@ -322,7 +322,6 @@
     <string name="appearance_theme">Motyw</string>
     <string name="appearance_style">Styl</string>
     <string name="appearance_app_icon">Ikona aplikacji</string>
-    <string name="appearance_app_icon_credit">Alternatywne ikony aplikacji zostały stworzone przez Kayé (@thy_k na Discordzie)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Użyj wygenerowanego schematu kolorów Material</string>
     <string name="song_artwork_colors">Kolory z okładki utworu</string>
@@ -334,14 +333,6 @@
     <string name="theme_palette_fruit_salad">Owocowa</string>
     <string name="theme_palette_monochrome">Monochromatyczna</string>
     <string name="theme_palette_neutral">Neutralna</string>
-    <string name="app_icon_original">Original</string>
-    <string name="app_icon_arctic_haze">Arctic Haze</string>
-    <string name="app_icon_lavender_leap">Lavender Leap</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Pride Special</string>
-    <string name="app_icon_static">Static</string>
-    <string name="app_icon_zenith_black">Zenith Black</string>
-    <string name="app_icon_zenith_white">Zenith White</string>
     <string name="app_font_choose">Wybierz plik z czcionką</string>
     <string name="app_font_picker_desc">Wybierz plik TTF lub OTF. Meld skopiuje go do prywatnej pamięci aplikacji.</string>
     <string name="app_font_system">Domyślna systemu</string>
@@ -2256,7 +2247,6 @@
     <string name="lyrics_offset_earlier">%1$d ms wcześniej</string>
     <string name="lyrics_offset_later">%1$d ms później</string>
     <string name="lyrics_offset_in_sync">Zsynchronizowano</string>
-    <string name="app_icon_gradient">Gradient</string>
     <string name="lyrics_text_color">Kolor tekstu</string>
     <string name="song_count_with_hidden">%1$s, %2$s</string>
     <string name="settings_storage_summary">%1$s użyte • %2$s wolne</string>

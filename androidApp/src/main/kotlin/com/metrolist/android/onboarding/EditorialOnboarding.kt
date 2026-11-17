@@ -31,18 +31,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil3.compose.SubcomposeAsyncImage
-import com.metrolist.android.R
 import com.metrolist.android.ui.component.Material3SettingsGroup
 import com.metrolist.android.ui.component.Material3SettingsItem
 import com.metrolist.shared.api.lastfm.LastFM
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.action_login
+import com.metrolist.shared.generated.resources.logo
 import com.metrolist.shared.generated.resources.migrated
 import com.metrolist.shared.generated.resources.onboarding_account_picture
 import com.metrolist.shared.generated.resources.onboarding_no_saved_accounts
@@ -57,6 +56,7 @@ import com.metrolist.shared.ui.components.ContainedLoadingIndicator
 import com.metrolist.shared.ui.icons.MetrolistIcons
 import com.metrolist.shared.ui.onboarding.OnboardingPage
 import com.metrolist.shared.ui.onboarding.OnboardingPageContent
+import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import com.metrolist.shared.BuildConfig as SharedBuildConfig
 import com.metrolist.shared.ui.onboarding.OnboardingContent as SharedOnboardingContent
@@ -88,15 +88,10 @@ internal fun OnboardingContent(
                 Modifier
             },
         welcomeContent = { modifier ->
-            val iconRes =
-                if (MaterialTheme.colorScheme.background.luminance() < 0.5f) {
-                    R.drawable.app_icon_zenith_white_foreground
-                } else {
-                    R.drawable.app_icon_zenith_black_foreground
-                }
             Image(
-                painter = painterResource(iconRes),
+                painter = painterResource(Res.drawable.logo),
                 contentDescription = null,
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
                 modifier = modifier,
             )
         },

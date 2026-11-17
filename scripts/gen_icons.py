@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 """
-Generate installer icon files (logo.png, logo.ico, logo.icns) from the
-raw white-on-transparent logo, composited onto a coloured circle background
-that matches the app's default dynamic icon (DefaultThemeColor = #000000).
+Generate installer icon files (logo.png, logo.ico, logo.icns) from Meld's
+Default app icon.
 
 Usage:
   python3 scripts/gen_icons.py
 
-Inputs  (from desktopApp/src/desktopMain/resources/):
-  logo.svg  — rendered via cairosvg when available (best quality)
-  logo.png  — fallback; must be the raw white-on-transparent version from git
+Inputs  (from assets/app-icons/meld/):
+  desktop.png        — 1024×1024 rounded square                (Linux, Windows)
+  desktop-macos.png  — the same on the 824-in-1024 macOS grid  (macOS)
 
-Outputs (written to the same resources directory):
-  logo.png  — 512×512 coloured circle + white M  (Linux .deb / .rpm / AppImage)
+Outputs (written to desktopApp/src/desktopMain/resources/):
+  logo.png  — 512×512                             (Linux .deb / .rpm / AppImage)
   logo.ico  — multi-size ICO                      (Windows .msi)
   logo.icns — macOS icon bundle via iconutil       (macOS .dmg, macOS only)
 """
@@ -23,58 +22,20 @@ import platform
 import subprocess
 import tempfile
 from pathlib import Path
-from io import BytesIO
 
 REPO_ROOT = Path(__file__).parent.parent
 RESOURCES = REPO_ROOT / "desktopApp" / "src" / "desktopMain" / "resources"
 
-ICON_COLOR = (0x00, 0x00, 0x00, 255)
+MASTERS = REPO_ROOT / "assets" / "app-icons" / "meld"
 
 ICO_SIZES = [16, 32, 48, 64, 128, 256]
 
-# Cache the source logo before generated icons overwrite it.
-_original_png_bytes: bytes = (RESOURCES / "logo.png").read_bytes()
 
-
-def render_svg_to_rgba(size: int) -> "Image.Image":
-    """Render logo.svg to a transparent RGBA image at the given size."""
+def make_icon(canvas: int, master: str = "desktop.png") -> "Image.Image":
+    """The master artwork at the given size."""
     from PIL import Image
 
-    svg_path = RESOURCES / "logo.svg"
-
-    try:
-        import cairosvg  # type: ignore
-        png_bytes = cairosvg.svg2png(
-            url=str(svg_path),
-            output_width=size,
-            output_height=size,
-        )
-        return Image.open(BytesIO(png_bytes)).convert("RGBA")
-    except Exception:
-        pass
-
-    img = Image.open(BytesIO(_original_png_bytes)).convert("RGBA")
-    if img.size != (size, size):
-        img = img.resize((size, size), Image.LANCZOS)
-    return img
-
-
-def make_icon(canvas: int) -> "Image.Image":
-    """Coloured circle + white logo at 55 % scale, on a transparent canvas."""
-    from PIL import Image, ImageDraw
-
-    bg = Image.new("RGBA", (canvas, canvas), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(bg)
-    draw.ellipse([0, 0, canvas - 1, canvas - 1], fill=ICON_COLOR)
-
-    logo_px = int(canvas * 0.55)
-    logo = render_svg_to_rgba(logo_px)
-
-    ox = (canvas - logo_px) // 2
-    oy = (canvas - logo_px) // 2
-    bg.paste(logo, (ox, oy), logo)
-    return bg
-
+    return Image.open(MASTERS / master).convert("RGBA").resize((canvas, canvas), Image.LANCZOS)
 
 
 def write_linux_png():
@@ -103,10 +64,10 @@ def write_macos_icns():
 
         # macOS standard iconset requires both 1× and 2× variants
         for base_size in [16, 32, 128, 256, 512]:
-            make_icon(base_size).save(
+            make_icon(base_size, "desktop-macos.png").save(
                 str(iconset / f"icon_{base_size}x{base_size}.png")
             )
-            make_icon(base_size * 2).save(
+            make_icon(base_size * 2, "desktop-macos.png").save(
                 str(iconset / f"icon_{base_size}x{base_size}@2x.png")
             )
 

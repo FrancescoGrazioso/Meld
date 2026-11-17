@@ -314,7 +314,6 @@
     <string name="appearance_theme">Tema</string>
     <string name="appearance_style">Estilo</string>
     <string name="appearance_app_icon">Icono de la aplicación</string>
-    <string name="appearance_app_icon_credit">Iconos alternativos por Kayé (@thy_k on Discord)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Usar una paleta de colores generada con Material You</string>
     <string name="song_artwork_colors">Colores de las portadas de las canciones</string>
@@ -326,14 +325,6 @@
     <string name="theme_palette_fruit_salad">Ensalada de fruta</string>
     <string name="theme_palette_monochrome">Monocroma</string>
     <string name="theme_palette_neutral">Neutral</string>
-    <string name="app_icon_original">Original</string>
-    <string name="app_icon_arctic_haze">Niebla ártica</string>
-    <string name="app_icon_lavender_leap">Lavanda</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Especial del Orgullo</string>
-    <string name="app_icon_static">Estático</string>
-    <string name="app_icon_zenith_black">Zenith Negro</string>
-    <string name="app_icon_zenith_white">Zenith Blanco</string>
     <string name="app_font_choose">Elegir archivo de fuente</string>
     <string name="app_font_picker_desc">Selecciona un archivo TTF u OTF. Meld lo copia en el almacenamiento privado de la aplicación.</string>
     <string name="app_font_system">Predeterminado del sistema</string>
@@ -2271,7 +2262,6 @@
     <string name="device_connect_peer_details">%1$s\n%2$s</string>
     <string name="listen_together_server_label">%1$s · %2$s</string>
     <string name="settings_sound">Sonido</string>
-    <string name="app_icon_gradient">Gradiente</string>
     <string name="appearance_floating_bottom_nav">Barra de navegación flotante</string>
     <string name="appearance_floating_bottom_nav_description">Muestra una barra flotante encima del área de navegación del sistema. Incluye los botones «Inicio», «Biblioteca» y un botón de «Búsqueda» independiente.</string>
     <string name="lyrics_accessibility">Accesibilidad</string>

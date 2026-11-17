@@ -306,7 +306,6 @@
     <string name="appearance_theme">थीम</string>
     <string name="appearance_style">स्टाइल</string>
     <string name="appearance_app_icon">एप आइकन</string>
-    <string name="appearance_app_icon_credit">वैकलपिक आइकन Kayé (@thy_k on Discord) द्वारा</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">उत्पन्न गरिएको Material रंग योजना प्रयोग गर्नुहोस्</string>
     <string name="song_artwork_colors">गीतको आर्टवर्कबाट रङ्गहरू</string>
@@ -318,14 +317,6 @@
     <string name="theme_palette_fruit_salad">फलफूलको सलाद</string>
     <string name="theme_palette_monochrome">एक रंग</string>
     <string name="theme_palette_neutral">तटस्थ</string>
-    <string name="app_icon_original">मूल</string>
-    <string name="app_icon_arctic_haze">आर्कटिक कुहिरो</string>
-    <string name="app_icon_lavender_leap">ल्याभेन्डर छलाङ्ग</string>
-    <string name="app_icon_metromallow">मेट्रोमेलो</string>
-    <string name="app_icon_pride_special">प्राइड विशेष</string>
-    <string name="app_icon_static">स्थिर</string>
-    <string name="app_icon_zenith_black">जेनिथ कालो</string>
-    <string name="app_icon_zenith_white">जेनिथ सेतो</string>
     <string name="app_font_choose">फन्ट फाइल छान्नुहोस्</string>
     <string name="app_font_picker_desc">TTF वा OTF फाइल छान्नुहोस्। Meld ले यसलाई निजी एप स्टोरेजमा प्रतिलिपि गर्छ।</string>
     <string name="app_font_system">सिस्टम डिफ़ॉल्ट</string>
@@ -1171,7 +1162,6 @@
     <string name="device_connect_peer_details">%1$s\n%2$s</string>
     <string name="listen_together_server_label">%1$s · %2$s</string>
     <string name="settings_sound">ध्वनि</string>
-    <string name="app_icon_gradient">ग्रेडियन्ट</string>
     <string name="lyrics_provider_lrcred_description">टाइमस्ट्याम्प वा अटोम्याटिक सिंकसहित पङ्क्तिस्तर र शब्द शब्द लिरिक्सको डेटाबेस</string>
     <string name="lyrics_accessibility">पहुँच</string>
     <string name="lyrics_plus_lighter">प्लस लाइटर</string>

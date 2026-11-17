@@ -314,7 +314,6 @@
     <string name="appearance_theme">Temă</string>
     <string name="appearance_style">Stil</string>
     <string name="appearance_app_icon">Pictograma aplicației</string>
-    <string name="appearance_app_icon_credit">Pictograme alternative de Kayé (@thy_k pe Discord)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Folosește o schemă de culori generată Material</string>
     <string name="song_artwork_colors">Culori din coperta de album a melodiei</string>
@@ -326,14 +325,6 @@
     <string name="theme_palette_fruit_salad">Salată de fructe</string>
     <string name="theme_palette_monochrome">Monocrom</string>
     <string name="theme_palette_neutral">Neutru</string>
-    <string name="app_icon_original">Originală</string>
-    <string name="app_icon_arctic_haze">Ceață arctică</string>
-    <string name="app_icon_lavender_leap">Salt de lavandă</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Special pentru Pride</string>
-    <string name="app_icon_static">Statică</string>
-    <string name="app_icon_zenith_black">Negru Zenith</string>
-    <string name="app_icon_zenith_white">Alb Zenith</string>
     <string name="app_font_choose">Alege fișierul fontului</string>
     <string name="app_font_picker_desc">Selectează un fișier TTF sau OTF. Meld îl va copia în stocarea privată a aplicației.</string>
     <string name="app_font_system">Prestabilit de sistem</string>
@@ -2205,7 +2196,6 @@
     <string name="device_connect_peer_details">%1$s\n%2$s</string>
     <string name="listen_together_server_label">%1$s · %2$s</string>
     <string name="settings_sound">Sunet</string>
-    <string name="app_icon_gradient">Gradient</string>
     <string name="lyrics_accessibility">Accesibilitate</string>
     <string name="privacy_diagnostics">Diagnostice</string>
     <string name="scrobble_create_account">Creează cont</string>

@@ -61,19 +61,11 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.luminance
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -85,7 +77,8 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import coil3.compose.setSingletonImageLoaderFactory
 import com.materialkolor.ktx.isLight
-import com.materialkolor.utils.ColorUtils
+import com.meld.branding.MeldWindowIcon
+import com.meld.branding.meldWindowIconPainter
 import com.meld.desktop.meldModule
 import com.metrolist.desktop.backup.DesktopBackupRestoreManager
 import com.metrolist.desktop.crash.DesktopCrashRecovery
@@ -254,7 +247,6 @@ import sun.misc.Signal
 import sun.misc.SignalHandler
 import java.awt.Desktop
 import java.awt.EventQueue
-import java.awt.Frame
 import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
 import java.awt.desktop.AppReopenedListener
@@ -266,7 +258,6 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.sql.DriverManager
 import java.util.concurrent.atomic.AtomicBoolean
-import javax.imageio.ImageIO
 import javax.swing.JOptionPane
 import javax.swing.SwingUtilities
 import kotlin.system.exitProcess
@@ -1193,67 +1184,6 @@ private fun runDesktopApp(args: Array<String>) {
             UiState.isNativeFullscreen = windowState.placement == WindowPlacement.Fullscreen
         }
 
-        @Suppress("DEPRECATION")
-        val logoPainter = painterResource("logo.svg")
-        val iconColor =
-            UiState.seedColor
-
-        val dynamicIcon =
-            remember(iconColor) {
-                object : Painter() {
-                    override val intrinsicSize: Size = Size(256f, 256f)
-
-                    override fun DrawScope.onDraw() {
-                        drawCircle(
-                            brush =
-                                Brush.linearGradient(
-                                    colors =
-                                        listOf(
-                                            iconColor.copy(alpha = 0.8f),
-                                            iconColor,
-                                            iconColor.copy(alpha = 0.6f),
-                                        ),
-                                    start = Offset(0f, 0f),
-                                    end = Offset(size.width, size.height),
-                                ),
-                            radius = size.minDimension / 2,
-                            center = center,
-                        )
-
-                        drawCircle(
-                            color = iconColor,
-                            radius = size.minDimension / 2.5f,
-                            center = center,
-                        )
-
-                        with(logoPainter) {
-                            val logoSize = size * 0.75f
-                            val offset =
-                                Offset((size.width - logoSize.width) / 2f, (size.height - logoSize.height) / 2f)
-                            translate(offset.x, offset.y) {
-                                draw(
-                                    logoSize,
-                                    colorFilter =
-                                        ColorFilter
-                                            .tint(
-                                                color =
-                                                    if (ColorUtils.calculateLuminance(iconColor.toArgb()) > 0.4) {
-                                                        Color(
-                                                            red = (iconColor.red / 255) * (32 / 255),
-                                                            green = (iconColor.green / 255) * (32 / 255),
-                                                            blue = (iconColor.blue / 255) * (32 / 255),
-                                                        )
-                                                    } else {
-                                                        Color.White
-                                                    },
-                                            ),
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
         val startRoute =
             remember {
                 when (defaultOpenTabRoot(Settings.shared.desktopDefaultOpenTab())) {
@@ -1314,7 +1244,7 @@ private fun runDesktopApp(args: Array<String>) {
             state = windowState,
             undecorated = isLinux && !useSystemWindowFrame,
             transparent = false,
-            icon = dynamicIcon,
+            icon = meldWindowIconPainter(),
         ) {
             LaunchedEffect(window) {
                 while (!window.isShowing) delay(16L)
@@ -1359,19 +1289,7 @@ private fun runDesktopApp(args: Array<String>) {
                 }
                 return@Window
             }
-            LaunchedEffect(window) {
-                runCatching {
-                    val icon =
-                        withContext(Dispatchers.IO) {
-                            Thread
-                                .currentThread()
-                                .contextClassLoader
-                                .getResourceAsStream("logo.png")
-                                ?.use(ImageIO::read)
-                        }
-                    if (icon != null) (window as? Frame)?.iconImage = icon
-                }
-            }
+            MeldWindowIcon()
 
             if (OsUtil.isMac) {
                 DesktopMenuBar(

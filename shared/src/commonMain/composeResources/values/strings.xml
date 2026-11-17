@@ -977,8 +977,6 @@
     <string name="appearance_style">Style</string>
     <!-- Translators: Option or section label for app icon in the Appearance settings. -->
     <string name="appearance_app_icon">App icon</string>
-    <!-- Translators: Option or section label for app icon credit in the Appearance settings. -->
-    <string name="appearance_app_icon_credit">Alternate icons by Kayé (@thy_k on Discord)</string>
     <!-- Translators: Option or section label for material you in the settings. -->
     <string name="material_you" translatable="false">Material You</string>
     <!-- Translators: Supporting text beneath the material you option in the settings. -->
@@ -1011,23 +1009,6 @@
     <string name="theme_palette_monochrome">Monochrome</string>
     <!-- Translators: Option or section label for palette neutral in the Appearance settings. -->
     <string name="theme_palette_neutral">Neutral</string>
-    <!-- Translators: Name of the app’s original icon in the icon picker. -->
-    <string name="app_icon_original">Original</string>
-    <!-- Translators: Label for app icon arctic haze in the Android app. -->
-    <string name="app_icon_arctic_haze">Arctic Haze</string>
-    <!-- Translators: Label for app icon lavender leap in the Android app. -->
-    <string name="app_icon_lavender_leap">Lavender Leap</string>
-    <!-- Translators: Label for app icon metromallow in the Android app. -->
-    <string name="app_icon_metromallow">Metromallow</string>
-    <!-- Translators: Label for app icon pride special in the Android app. -->
-    <string name="app_icon_pride_special">Pride Special</string>
-    <!-- Translators: Label for app icon static in the Android app. -->
-    <string name="app_icon_static">Static</string>
-    <!-- Translators: Label for app icon zenith black in the Android app. -->
-    <string name="app_icon_zenith_black">Zenith Black</string>
-    <!-- Translators: Label for app icon zenith white in the Android app. -->
-    <string name="app_icon_zenith_white">Zenith White</string>
-    <string name="app_icon_gradient">Gradient</string>
     <!-- Translators: Imperative action label for choose in the font settings. -->
     <string name="app_font_choose">Choose font file</string>
     <!-- Translators: Supporting text beneath the picker option; retained for translation compatibility but not currently referenced by app code. -->
@@ -5583,4 +5564,16 @@
     <string name="meld_spotify_likes_not_found">%1$d not found on Spotify</string>
     <string name="meld_spotify_likes_importing">Finding Spotify likes on YouTube: %1$d of %2$d</string>
     <string name="meld_spotify_liked">Liked on Spotify</string>
+    <!-- Meld app icons and the About easter egg -->
+    <string name="meld_app_icon_description">Voted by the Meld community</string>
+    <string name="meld_app_icon_default">Default</string>
+    <string name="meld_app_icon_amber">Amber</string>
+    <string name="meld_app_icon_crimson">Crimson</string>
+    <string name="meld_app_icon_monochrome">Monochrome</string>
+    <string name="meld_app_icon_rainbows">Rainbows</string>
+    <string name="meld_app_icon_violet">Violet</string>
+    <string name="meld_app_icon_legacy">Legacy</string>
+    <string name="meld_app_icon_easter_egg">Easter Egg</string>
+    <string name="meld_easter_egg_title">You found the secret!</string>
+    <string name="meld_easter_egg_message">Congratulations! The Easter Egg icon is now waiting for you in the app icon picker.</string>
 </resources>

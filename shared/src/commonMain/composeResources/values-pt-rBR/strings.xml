@@ -314,7 +314,6 @@
     <string name="appearance_theme">Tema</string>
     <string name="appearance_style">Estilo</string>
     <string name="appearance_app_icon">Ícone do aplicativo</string>
-    <string name="appearance_app_icon_credit">Ícones alternativos criados por Kayé (@thy_k no Discord)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Use um esquema de cores Material You gerado automaticamente</string>
     <string name="song_artwork_colors">Cores da capa da música</string>
@@ -326,14 +325,6 @@
     <string name="theme_palette_fruit_salad">Salada de frutas</string>
     <string name="theme_palette_monochrome">Monocromático</string>
     <string name="theme_palette_neutral">Neutro</string>
-    <string name="app_icon_original">Original</string>
-    <string name="app_icon_arctic_haze">Névoa do Ártico</string>
-    <string name="app_icon_lavender_leap">Salto de Lavender</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Orgulho Especial</string>
-    <string name="app_icon_static">Estático</string>
-    <string name="app_icon_zenith_black">Zenith Preto</string>
-    <string name="app_icon_zenith_white">Zenith Branco</string>
     <string name="app_font_choose">Escolha o arquivo da fonte</string>
     <string name="app_font_picker_desc">Selecione um arquivo TTF ou OTF. Meld o copiará para o armazenamento privado do app.</string>
     <string name="app_font_system">Padrão do sistema</string>

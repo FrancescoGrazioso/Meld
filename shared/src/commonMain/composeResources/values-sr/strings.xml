@@ -272,14 +272,6 @@
     <string name="theme_palette_fruit_salad">Fruit salad</string>
     <string name="theme_palette_monochrome">Monohromatski</string>
     <string name="theme_palette_neutral">Neutralno</string>
-    <string name="app_icon_original">Original</string>
-    <string name="app_icon_arctic_haze">Arctic Haze</string>
-    <string name="app_icon_lavender_leap">Lavender Leap</string>
-    <string name="app_icon_metromallow">Metromelou</string>
-    <string name="app_icon_pride_special">Pride Special</string>
-    <string name="app_icon_static">Statično</string>
-    <string name="app_icon_zenith_black">Zenith Black</string>
-    <string name="app_icon_zenith_white">Zenith White</string>
     <string name="app_font_system">Sistemski podrazumevano</string>
     <string name="app_font_applied">Koristi se %1$s</string>
     <string name="app_font_reset">Resetuj font</string>

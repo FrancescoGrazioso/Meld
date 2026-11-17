@@ -722,7 +722,6 @@
     <string name="back">返回</string>
     <string name="appearance_style">樣式</string>
     <string name="appearance_app_icon">應用程式圖示</string>
-    <string name="appearance_app_icon_credit">由 Kayé 提供替代圖示 (Discord: @thy_k)</string>
     <string name="material_you_description">使用自動產生的色彩配置</string>
     <string name="ui_enhancements">介面優化</string>
     <string name="ui_enhancements_description">圖片圓角更圓潤，多元的藝人頭像形狀及以播放指示圖示取代播放按鈕</string>
@@ -733,14 +732,6 @@
     <string name="theme_palette_fruit_salad">水果沙拉</string>
     <string name="theme_palette_monochrome">單色</string>
     <string name="theme_palette_neutral">中性</string>
-    <string name="app_icon_original">原本</string>
-    <string name="app_icon_arctic_haze">北極氤氳（Arctic Haze）</string>
-    <string name="app_icon_lavender_leap">薰衣草躍舞（Lavender Leap）</string>
-    <string name="app_icon_metromallow">棉花糖（Metromallow）</string>
-    <string name="app_icon_pride_special">同志驕傲特製</string>
-    <string name="app_icon_static">靜態</string>
-    <string name="app_icon_zenith_black">頂峰</string>
-    <string name="app_icon_gradient">顏色漸變</string>
     <string name="app_font_choose">選取字體檔案</string>
     <string name="app_font_picker_desc">選取 TTF 或 OTF 字型檔案。Meld 即將複製該檔案至應用程式私有儲存空間。</string>
     <string name="appearance_mini_player">迷你播放器</string>

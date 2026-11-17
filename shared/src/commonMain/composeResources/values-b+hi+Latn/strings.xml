@@ -306,7 +306,6 @@
     <string name="appearance_theme">Theme</string>
     <string name="appearance_style">Shaili</string>
     <string name="appearance_app_icon">App ki chinh</string>
-    <string name="appearance_app_icon_credit">Kayé (Discord par @thy_k) ke dwara dusre chinh</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Apne aap banayi gayi roop yojna istmaal kare</string>
     <string name="song_artwork_colors">Gaane ki kala se liye gaye rang</string>
@@ -318,14 +317,6 @@
     <string name="theme_palette_fruit_salad">Falo ka salad (Fruit Salad)</string>
     <string name="theme_palette_monochrome">Ek rang (Monochrome)</string>
     <string name="theme_palette_neutral">Madhyam (Neutral)</string>
-    <string name="app_icon_original">Mool (Original)</string>
-    <string name="app_icon_arctic_haze">Himachali barf (Arctic Haze)</string>
-    <string name="app_icon_lavender_leap">Baigni Uchhal (Lavender Leap)</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Khaas Pride</string>
-    <string name="app_icon_static">Sthir (Static)</string>
-    <string name="app_icon_zenith_black">Kaala Shikhar (Zenith Black)</string>
-    <string name="app_icon_zenith_white">Ujla Shikhar (Zenith White)</string>
     <string name="app_font_choose">Akshar ki file chune</string>
     <string name="app_font_picker_desc">Koi TTF ya OTF file chune. Meld ise niji app storage me copy karta hai.</string>
     <string name="app_font_system">System ki akshar</string>

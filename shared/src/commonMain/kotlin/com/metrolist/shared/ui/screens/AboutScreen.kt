@@ -73,6 +73,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.meld.branding.MeldVersionEasterEgg
 import com.metrolist.shared.BuildConfig
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.about_play_favorite_song
@@ -361,11 +362,13 @@ private fun AppHeaderCard(
                 horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                InfoBadge(
-                    version,
-                    colorScheme.surfaceContainerHighest,
-                    colorScheme.onSurfaceVariant,
-                )
+                MeldVersionEasterEgg {
+                    InfoBadge(
+                        version,
+                        colorScheme.surfaceContainerHighest,
+                        colorScheme.onSurfaceVariant,
+                    )
+                }
                 InfoBadge(architecture, colorScheme.surfaceContainerHighest, colorScheme.onSurfaceVariant)
                 InfoBadge(
                     stringResource(if (isDebug) Res.string.build_type_debug else Res.string.build_type_release),

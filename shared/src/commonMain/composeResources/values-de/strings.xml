@@ -306,7 +306,6 @@
     <string name="appearance_theme">Design</string>
     <string name="appearance_style">Style</string>
     <string name="appearance_app_icon">App-Icon</string>
-    <string name="appearance_app_icon_credit">Alternative Icons von Kayé (@thy_k auf Discord)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Nutze ein generiertes Material You Farbschema</string>
     <string name="song_artwork_colors">Farben vom Song Cover</string>
@@ -318,14 +317,6 @@
     <string name="theme_palette_fruit_salad">Fruit Salad</string>
     <string name="theme_palette_monochrome">Monochrome</string>
     <string name="theme_palette_neutral">Neutral</string>
-    <string name="app_icon_original">Original</string>
-    <string name="app_icon_arctic_haze">Arctic Haze</string>
-    <string name="app_icon_lavender_leap">Lavender Leap</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Pride Special</string>
-    <string name="app_icon_static">Static</string>
-    <string name="app_icon_zenith_black">Zenith Black</string>
-    <string name="app_icon_zenith_white">Zenith White</string>
     <string name="app_font_choose">Schriftartdatei auswählen</string>
     <string name="app_font_picker_desc">Wähle eine TTF- oder OTF-Datei aus. Meld kopiert sie in den privaten App-Speicher.</string>
     <string name="app_font_system">System-Standard</string>
@@ -2146,7 +2137,6 @@
     <string name="device_connect_peer_details">%1$s\n%2$s</string>
     <string name="listen_together_server_label">%1$s · %2$s</string>
     <string name="settings_sound">Sound</string>
-    <string name="app_icon_gradient">Farbverlauf</string>
     <string name="appearance_floating_bottom_nav">Schwebende Navigationsleiste</string>
     <string name="appearance_floating_bottom_nav_description">Zeige eine schwebende Leiste über der System-Navigation. Sie hat Startseite, Bibliothek und einer separaten Suchen-Schaltfläche.</string>
     <string name="lyrics_accessibility">Eingabehilfe</string>

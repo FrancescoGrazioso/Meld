@@ -310,7 +310,6 @@
     <string name="appearance_theme">Tema</string>
     <string name="appearance_style">Stil</string>
     <string name="appearance_app_icon">Uygulama simgesi</string>
-    <string name="appearance_app_icon_credit">Alternatif simgeler: Kayé (Discord: @thy_k)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Oluşturulan dinamik Material renk düzenini kullan</string>
     <string name="song_artwork_colors">Şarkı kapağından renkler</string>
@@ -322,14 +321,6 @@
     <string name="theme_palette_fruit_salad">Meyve salatası (Fruit salad)</string>
     <string name="theme_palette_monochrome">Tek renk (Monochrome)</string>
     <string name="theme_palette_neutral">Doğal (Neutral)</string>
-    <string name="app_icon_original">Orijinal</string>
-    <string name="app_icon_arctic_haze">Arctic Haze</string>
-    <string name="app_icon_lavender_leap">Lavender Leap</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Pride Özel</string>
-    <string name="app_icon_static">Static</string>
-    <string name="app_icon_zenith_black">Zenith Siyah</string>
-    <string name="app_icon_zenith_white">Zenith Beyaz</string>
     <string name="app_font_choose">Yazı tipi dosyası seç</string>
     <string name="app_font_picker_desc">Bir TTF veya OTF dosyası seçin. Meld bunu uygulamanın özel depolamasına kopyalar.</string>
     <string name="app_font_system">Sistem varsayılanı</string>
@@ -2066,7 +2057,6 @@
     <string name="settings_sound">Ses</string>
     <string name="ui_enhancements">Arayüz geliştirmeleri</string>
     <string name="ui_enhancements_description">Daha yuvarlak kapak görselleri, ifade gücü yüksek sanatçı şekilleri ve oynatma düğmeleri yerine oynatma göstergeleri</string>
-    <string name="app_icon_gradient">Gradyan</string>
     <string name="appearance_floating_bottom_nav">Yüzen gezinti çubuğu</string>
     <string name="appearance_floating_bottom_nav_description">Sistem gezinti alanının üzerinde yüzen bir çubuk gösterin. Ana Sayfa, Kitaplık ve ayrı bir Arama düğmesi içerir.</string>
     <string name="lyrics_provider_lrcred_description">Zaman damgalı veya otomatik senkronizasyonlu satır ve kelime düzeyinde şarkı sözü veritabanı</string>

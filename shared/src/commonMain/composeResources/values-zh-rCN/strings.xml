@@ -275,7 +275,6 @@
     <string name="appearance_theme">主题</string>
     <string name="appearance_style">样式</string>
     <string name="appearance_app_icon">应用图标</string>
-    <string name="appearance_app_icon_credit">备用图标由 Kayé 制作 (@thy_k on Discord)</string>
     <string name="song_artwork_colors">歌曲封面颜色</string>
     <string name="song_artwork_colors_description">如有当前歌曲封面，则将其覆盖应用颜色</string>
     <string name="theme_palette_style">调色板样式</string>
@@ -285,9 +284,6 @@
     <string name="theme_palette_fruit_salad">水果沙拉</string>
     <string name="theme_palette_monochrome">单色</string>
     <string name="theme_palette_neutral">中性</string>
-    <string name="app_icon_original">原始</string>
-    <string name="app_icon_arctic_haze">北极迷雾</string>
-    <string name="app_icon_static">静态</string>
     <string name="app_font_choose">选择字体文件</string>
     <string name="app_font_picker_desc">选择 TTF 或 OTF 文件。Meld 将其复制到应用私有存储。</string>
     <string name="app_font_system">系统默认</string>
@@ -435,10 +431,6 @@
     <string name="hide_from_library_local">在此设备上隐藏</string>
     <string name="back">返回</string>
     <string name="material_you_description">使用生成的 Material 配色方案</string>
-    <string name="app_icon_lavender_leap">薰衣草飞跃</string>
-    <string name="app_icon_pride_special">骄傲特辑</string>
-    <string name="app_icon_zenith_black">至臻黑</string>
-    <string name="app_icon_zenith_white">天顶白</string>
     <string name="android_auto_youtube_playlist">YouTube 播放列表</string>
     <string name="android_auto_driving_playlists">驾驶歌单</string>
     <string name="my_top_100">我的前 100 名</string>

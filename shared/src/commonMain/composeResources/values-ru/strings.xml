@@ -322,7 +322,6 @@
     <string name="appearance_theme">Тема</string>
     <string name="appearance_style">Стиль</string>
     <string name="appearance_app_icon">Иконка приложения</string>
-    <string name="appearance_app_icon_credit">Альтернативные иконки от Kayé (@thy_k в Discord)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Использовать сгенерированную цветовую схему Material</string>
     <string name="song_artwork_colors">Цвета из обложки песни</string>
@@ -334,14 +333,6 @@
     <string name="theme_palette_fruit_salad">Фруктовый салат</string>
     <string name="theme_palette_monochrome">Монохромная</string>
     <string name="theme_palette_neutral">Нейтральная</string>
-    <string name="app_icon_original">Оригинал</string>
-    <string name="app_icon_arctic_haze">Арктическая Дымка</string>
-    <string name="app_icon_lavender_leap">Лавандовый Скачок</string>
-    <string name="app_icon_metromallow">Метромэллоу</string>
-    <string name="app_icon_pride_special">Спецвыпуск Прайд</string>
-    <string name="app_icon_static">Статический</string>
-    <string name="app_icon_zenith_black">Чёрный Зенит</string>
-    <string name="app_icon_zenith_white">Белый Зенит</string>
     <string name="app_font_choose">Выбрать файл шрифта</string>
     <string name="app_font_picker_desc">Выберите TTF или OTF файл. Meld копирует его в приватное хранилище приложения.</string>
     <string name="app_font_system">По умолчанию системы</string>
@@ -2171,7 +2162,6 @@
     <string name="settings_sound">Звук</string>
     <string name="ui_enhancements">Улучшения UI</string>
     <string name="ui_enhancements_description">Более скругленные обложки, выразительные формы аватаров исполнителей и индикаторы воспроизведения вместо кнопок</string>
-    <string name="app_icon_gradient">Градиент</string>
     <string name="appearance_floating_bottom_nav">Плавающая панель навигации</string>
     <string name="appearance_floating_bottom_nav_description">Отобразить плавающую панель над областью системной навигации. На ней - кнопки «Главная», «Библиотека» и отдельная кнопка «Поиск».</string>
     <string name="lyrics_provider_lrcred_description">База текстов песен с построчными и пословными таймкодами или автоматической синхронизацией</string>
