@@ -6,6 +6,9 @@ import androidx.room3.ConstructedBy
 import androidx.room3.Database
 import androidx.room3.RoomDatabase
 import androidx.room3.RoomDatabaseConstructor
+import androidx.room3.migration.Migration
+import androidx.sqlite.SQLiteConnection
+import androidx.sqlite.execSQL
 import kotlinx.serialization.json.Json
 
 const val MELD_DATABASE_NAME = "meld.db"
@@ -15,14 +18,16 @@ const val MELD_DATABASE_NAME = "meld.db"
  * unknown tables, and every upstream schema bump would collide with ours.
  */
 @Database(
-    entities = [SpotifyMatchEntity::class],
-    version = 1,
+    entities = [SpotifyMatchEntity::class, SpotifyLikeOutboxEntity::class, SpotifyLikedTrackEntity::class],
+    version = 2,
     exportSchema = true,
 )
 @ColumnTypeConverters(MeldConverters::class)
 @ConstructedBy(MeldDatabaseConstructor::class)
 abstract class MeldDatabase : RoomDatabase() {
     abstract fun spotifyMatchDao(): SpotifyMatchDao
+
+    abstract fun spotifyLikeDao(): SpotifyLikeDao
 }
 
 @Suppress("KotlinNoActualForExpect")
@@ -37,3 +42,19 @@ class MeldConverters {
     @ColumnTypeConverter
     fun jsonToStrings(value: String): List<String> = Json.decodeFromString(value)
 }
+
+val MELD_MIGRATION_1_2 =
+    object : Migration(1, 2) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            listOf(
+                "CREATE TABLE IF NOT EXISTS `spotify_like_outbox` (`youtubeId` TEXT NOT NULL, `liked` INTEGER NOT NULL, " +
+                    "`notFound` INTEGER NOT NULL, `createdAt` INTEGER NOT NULL, PRIMARY KEY(`youtubeId`))",
+                "CREATE TABLE IF NOT EXISTS `spotify_liked_track` (`spotifyId` TEXT NOT NULL, `youtubeId` TEXT, " +
+                    "`pending` INTEGER NOT NULL, PRIMARY KEY(`spotifyId`))",
+                "CREATE INDEX IF NOT EXISTS `index_spotify_liked_track_youtubeId` ON `spotify_liked_track` (`youtubeId`)",
+            ).forEach { connection.execSQL(it) }
+        }
+    }
+
+/** The database every platform opens: the platform's builder plus Meld's migrations. */
+fun buildMeldDatabase(context: Any? = null): MeldDatabase = getMeldDatabaseBuilder(context).addMigrations(MELD_MIGRATION_1_2).build()
