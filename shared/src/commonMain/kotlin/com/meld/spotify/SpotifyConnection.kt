@@ -2,15 +2,6 @@ package com.meld.spotify
 
 import kotlinx.coroutines.flow.StateFlow
 
-/** Why a sign-in did not go through, in terms the interface can explain. */
-enum class SpotifyFailure {
-    OFFLINE,
-    RATE_LIMITED,
-    UNAVAILABLE,
-    REJECTED,
-    CHANGED,
-}
-
 sealed interface SpotifyConnectionState {
     data object Disconnected : SpotifyConnectionState
 
@@ -27,12 +18,13 @@ sealed interface SpotifyConnectionState {
         val name: String?,
     ) : SpotifyConnectionState
 
+    /** A sign-in that did not go through; nothing that was stored has changed. */
     data class Failed(
-        val failure: SpotifyFailure,
+        val error: SpotifyError,
     ) : SpotifyConnectionState
 }
 
-/** What shared UI may know about the Spotify session. Registered in Koin on JVM targets only. */
+/** What shared UI may know about the Spotify session. */
 interface SpotifyConnection {
     val state: StateFlow<SpotifyConnectionState>
 
