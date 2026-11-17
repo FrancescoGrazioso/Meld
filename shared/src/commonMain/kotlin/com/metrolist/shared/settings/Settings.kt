@@ -120,6 +120,11 @@ import com.metrolist.shared.constants.LyricsProgressiveBlurKey
 import com.metrolist.shared.constants.LyricsShareImageStyleKey
 import com.metrolist.shared.constants.MeldSpotifyAccountKey
 import com.metrolist.shared.constants.MeldSpotifyHashesKey
+import com.metrolist.shared.constants.MeldSpotifyLikesAccountKey
+import com.metrolist.shared.constants.MeldSpotifyLikesFingerprintKey
+import com.metrolist.shared.constants.MeldSpotifyLikesPullKey
+import com.metrolist.shared.constants.MeldSpotifyLikesPushKey
+import com.metrolist.shared.constants.MeldSpotifyLikesSyncedAtKey
 import com.metrolist.shared.constants.MinimumSongDurationSecondsKey
 import com.metrolist.shared.constants.MusicVideoCacheJsonKey
 import com.metrolist.shared.constants.MusicVideoPlaybackEnabledKey
@@ -278,6 +283,11 @@ class Settings(
     var meldSpotifyAccount by preference(MeldSpotifyAccountKey, "")
     var meldSpotifyHashes by preference(MeldSpotifyHashesKey, "")
     var meldLibrarySpotifyOnly by preference(false)
+    var meldSpotifyLikesPush by preference(MeldSpotifyLikesPushKey, true)
+    var meldSpotifyLikesPull by preference(MeldSpotifyLikesPullKey, true)
+    var meldSpotifyLikesAccount by preference(MeldSpotifyLikesAccountKey, "")
+    var meldSpotifyLikesFingerprint by preference(MeldSpotifyLikesFingerprintKey, "")
+    var meldSpotifyLikesSyncedAt by preference(MeldSpotifyLikesSyncedAtKey, 0L)
 
     private var storedAppLanguage by preference(AppLanguageKey, "SYSTEM")
     var appLanguage: String
@@ -1285,6 +1295,9 @@ class Settings(
                     "aiSlopBlocklistUpdatedAt",
                     MeldSpotifyAccountKey,
                     MeldSpotifyHashesKey,
+                    MeldSpotifyLikesAccountKey,
+                    MeldSpotifyLikesFingerprintKey,
+                    MeldSpotifyLikesSyncedAtKey,
                     SpeedDialArtworkRefreshTimesKey,
                     "customDownloadPath",
                     "knownUploadIdsJson",

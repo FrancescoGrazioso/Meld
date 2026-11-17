@@ -80,6 +80,19 @@ class SpotifyLibraryStore(
             SpotifyCollection(info, SpotifyPager(scope) { offset -> page(type, id, offset, info) })
         }
 
+    /** Mirrors a like or un-like Meld sent to Spotify in the cached Liked Songs, newest first as Spotify lists them. */
+    suspend fun likedSongsChanged(
+        added: List<SpotifyTrack>,
+        removedIds: Set<String>,
+    ) {
+        val liked = cache.value["${SpotifyCollectionType.LIKED}:"] as? SpotifyCollection ?: return
+        val addedIds = added.mapTo(hashSetOf()) { it.id }
+        liked.tracks.edit { items ->
+            added.map { SpotifyTrackItem(null, it.uri, null, it) } +
+                items.filterNot { item -> item.track?.id.let { it in removedIds || it in addedIds } }
+        }
+    }
+
     private suspend fun page(
         type: SpotifyCollectionType,
         id: String,

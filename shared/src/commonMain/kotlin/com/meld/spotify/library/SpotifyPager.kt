@@ -79,6 +79,18 @@ class SpotifyPager<T>(
         }
     }
 
+    /** Changes the loaded items without asking Spotify, after an edit Meld made there. Does nothing before the first page. */
+    suspend fun edit(transform: (List<T>) -> List<T>) =
+        mutex.withLock {
+            val state = mutableState.value
+            if (state.items.isEmpty() && !state.complete) return@withLock
+            val items = transform(state.items)
+            val added = items.size - state.items.size
+            // Spotify's offsets move with the list, so the next page still starts right after what is shown.
+            nextOffset = nextOffset?.let { (it + added).coerceAtLeast(0) }
+            mutableState.value = state.copy(items = items, total = state.total?.let { (it + added).coerceAtLeast(0) })
+        }
+
     private suspend fun loadRemaining(): List<T> {
         do {
             val loaded = loadNext()
