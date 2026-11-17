@@ -176,10 +176,6 @@ class SpotifyParsersTest {
         assertEquals(SpotifyFolder("spotify:user:u1:folder:f1", "Rock", 3), assertIs<SpotifyLibraryItem.Folder>(node.items[0]).folder)
         val playlist = assertIs<SpotifyLibraryItem.Playlist>(node.items[1]).playlist
         assertEquals(listOf("p2", "Shared", "friend", "Friend"), listOf(playlist.id, playlist.name, playlist.ownerId, playlist.ownerName))
-
-        val playlists = assertNotNull(parseLibraryPlaylists(data(json), 0, 4))
-        assertEquals(listOf("p2"), playlists.items.map { it.id })
-        assertEquals(4, playlists.nextOffset)
     }
 
     @Test

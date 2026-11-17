@@ -190,15 +190,6 @@ private fun parseLibraryPlaylist(
     data: JsonObject?,
 ): SpotifyPlaylist? = data?.takeIf { it.str("__typename") == "Playlist" }?.let { parsePlaylist(it, wrapper.str("_uri") ?: it.str("uri")) }
 
-internal fun parseLibraryPlaylists(
-    data: JsonObject,
-    offset: Int,
-    limit: Int,
-): SpotifyPage<SpotifyPlaylist>? =
-    parseLibrary(data, offset, limit) { typename, wrapper, itemData ->
-        if (typename.contains("Playlist", ignoreCase = true)) parseLibraryPlaylist(wrapper, itemData) else null
-    }
-
 internal fun parseLibraryNode(
     data: JsonObject,
     offset: Int,
