@@ -24,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +33,7 @@ import com.meld.spotify.library.SpotifyCollectionType
 import com.meld.spotify.library.SpotifyTracksViewModel
 import com.meld.spotify.library.playableTrack
 import com.meld.spotify.library.toLibraryEntry
+import com.meld.spotify.likes.SpotifyLikeSync
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.albums
 import com.metrolist.shared.generated.resources.import_provider_spotify
@@ -55,6 +57,7 @@ import com.metrolist.shared.ui.utils.artistArtworkShape
 import kotlinx.coroutines.flow.first
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import org.koin.mp.KoinPlatform
 
 /** How many rows before the end of the list the next page is asked for. */
 private const val LOAD_AHEAD = 15
@@ -75,6 +78,8 @@ internal fun SpotifyTracksContent(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
+    val likeSync = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyLikeSync>() }
+    val likedIds = likeSync?.likedIds?.collectAsState()
     SpotifySessionGate(state.session, contentPadding, { onOpen(SpotifySettingsScreen) }) {
         val info = state.info
         val tracks = state.tracks
@@ -185,6 +190,7 @@ internal fun SpotifyTracksContent(
                             onClick = if (canPlay) ({ viewModel.play(index, title) }) else null,
                             onPlayNext = if (canPlay) viewModel::playNext else null,
                             onAddToQueue = if (canPlay) viewModel::addToQueue else null,
+                            liked = item.track?.id in likedIds?.value.orEmpty(),
                             modifier = itemModifier.padding(horizontal = CollectionHeaderHorizontalPadding),
                         )
                     }
