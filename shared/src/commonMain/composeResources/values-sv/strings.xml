@@ -302,7 +302,6 @@
     <string name="appearance_theme">Tema</string>
     <string name="appearance_style">Stil</string>
     <string name="appearance_app_icon">Appikon</string>
-    <string name="appearance_app_icon_credit">Alternativa ikoner av Kayé (@thy_k på Discord)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Använd ett genererat Material-färgschema</string>
     <string name="song_artwork_colors">Färger från låtens omslagsbild</string>
@@ -314,14 +313,6 @@
     <string name="theme_palette_fruit_salad">Fruktsallad</string>
     <string name="theme_palette_monochrome">Svartvit</string>
     <string name="theme_palette_neutral">Neutral</string>
-    <string name="app_icon_original">Original</string>
-    <string name="app_icon_arctic_haze">Arktisk dis</string>
-    <string name="app_icon_lavender_leap">Lavendelsprång</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Pride-special</string>
-    <string name="app_icon_static">Statisk</string>
-    <string name="app_icon_zenith_black">Zenith Svart</string>
-    <string name="app_icon_zenith_white">Zenith White</string>
     <string name="app_font_choose">Välj typsnittsfil</string>
     <string name="app_font_picker_desc">Välj en TTF- eller OTF-fil. Meld kopierar den till appens privata lagringsutrymme.</string>
     <string name="app_font_system">Systemets standardinställning</string>

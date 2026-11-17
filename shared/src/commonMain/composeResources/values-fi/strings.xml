@@ -306,7 +306,6 @@
     <string name="appearance_theme">Teema</string>
     <string name="appearance_style">Tyyli</string>
     <string name="appearance_app_icon">Sovelluskuvake</string>
-    <string name="appearance_app_icon_credit">Vaihtoehtoiset kuvakkeet on luonut Kayé (@thy_k Discordissa)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Luo Material-väripaletti</string>
     <string name="song_artwork_colors">Käytä kappaleen kansikuvan värejä</string>
@@ -318,14 +317,6 @@
     <string name="theme_palette_fruit_salad">Fruit salad (Hedelmäsalaatti)</string>
     <string name="theme_palette_monochrome">Monochrome (Harmaasävy)</string>
     <string name="theme_palette_neutral">Neutral (Neutraali)</string>
-    <string name="app_icon_original">Alkuperäinen</string>
-    <string name="app_icon_arctic_haze">Arctic Haze (Jäinen usva)</string>
-    <string name="app_icon_lavender_leap">Lavender Leap (Laventeliloikka)</string>
-    <string name="app_icon_metromallow">Metromallow (Metromalva)</string>
-    <string name="app_icon_pride_special">Pride Special (Pride-spesiaali)</string>
-    <string name="app_icon_static">Static (Staattinen)</string>
-    <string name="app_icon_zenith_black">Zenith Black (Zeniitinmusta)</string>
-    <string name="app_icon_zenith_white">Zenith White (Zeniitinvalkoinen)</string>
     <string name="app_font_choose">Valitse fonttitiedosto</string>
     <string name="app_font_picker_desc">Valitse TTF- tai OTF-tiedosto. Meld kopioi sen omaan sovellustallennustilaansa.</string>
     <string name="app_font_system">Järjestelmän oletus</string>

@@ -314,7 +314,6 @@
     <string name="appearance_theme">Thème</string>
     <string name="appearance_style">Style</string>
     <string name="appearance_app_icon">Icône de l\u0027application</string>
-    <string name="appearance_app_icon_credit">Icônes alternatives par Kayé (@thy_k sur Discord)</string>
     <string name="material_you_description">Utilise la palette de couleurs Material You</string>
     <string name="song_artwork_colors">Couleurs tirées des pochettes</string>
     <string name="song_artwork_colors_description">Utilise si possible les couleurs de la pochette du titre en cours au lieu des couleurs par défaut</string>
@@ -325,14 +324,6 @@
     <string name="theme_palette_fruit_salad">Salade de fruits</string>
     <string name="theme_palette_monochrome">Monochrome</string>
     <string name="theme_palette_neutral">Neutre</string>
-    <string name="app_icon_original">Par défaut</string>
-    <string name="app_icon_arctic_haze">Mont Blanc</string>
-    <string name="app_icon_lavender_leap">Lavande provençale</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Fiertés</string>
-    <string name="app_icon_static">Bruit statique</string>
-    <string name="app_icon_zenith_black">Blanc astral</string>
-    <string name="app_icon_zenith_white">Noir céleste</string>
     <string name="app_font_choose">Choisir un fichier de police</string>
     <string name="app_font_picker_desc">Sélectionnez un fichier TTF ou OTF. Meld le copiera dans l\u0027espace de stockage privé de l\u0027application.</string>
     <string name="app_font_system">Police par défaut</string>
@@ -2158,7 +2149,6 @@
     <string name="device_connect_peer_details">%1$s\n%2$s</string>
     <string name="listen_together_server_label">%1$s · %2$s</string>
     <string name="settings_sound">Audio</string>
-    <string name="app_icon_gradient">Dégradé</string>
     <string name="appearance_floating_bottom_nav">Barre de navigation flottante</string>
     <string name="appearance_floating_bottom_nav_description">Affiche une barre de navigation flottante avec les boutons Accueil et Bibliothèque, et un bouton de recherche séparé</string>
     <string name="lyrics_provider_lrcred_description">Base de données de paroles ligne par ligne et mot par mot avec horodatage ou synchronisation automatique</string>

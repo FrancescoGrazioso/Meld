@@ -37,6 +37,7 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import com.meld.branding.meldAppIconChoices
 import com.metrolist.desktop.state.DesktopLocaleManager
 import com.metrolist.desktop.state.app.DesktopNavigation
 import com.metrolist.desktop.state.app.UiState
@@ -429,6 +430,7 @@ fun SettingsOverlay(colorScheme: ColorScheme) {
                                 SettingsHostChoice.CONTENT_COUNTRY to contentCountryChoices,
                                 SettingsHostChoice.APP_LANGUAGE to appLanguageChoices,
                                 SettingsHostChoice.LYRICS_TARGET_LANGUAGE to lyricsTargetLanguageChoices,
+                                SettingsHostChoice.APP_ICON to meldAppIconChoices(),
                                 SettingsHostChoice.ARTIST_ICON_SOURCE to artistSourceChoices,
                                 SettingsHostChoice.ARTIST_BANNER_SOURCE to artistSourceChoices,
                             ),
@@ -452,6 +454,7 @@ fun SettingsOverlay(colorScheme: ColorScheme) {
                                 }
 
                                 SettingsHostChoice.APP_ICON -> {
+                                    Settings.shared.appIcon = value
                                 }
 
                                 SettingsHostChoice.ARTIST_ICON_SOURCE -> {

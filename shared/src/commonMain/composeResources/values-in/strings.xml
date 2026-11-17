@@ -295,8 +295,6 @@
     <string name="theme_palette_rainbow">Pelangi (Rainbow)</string>
     <string name="theme_palette_monochrome">Monokrom</string>
     <string name="theme_palette_neutral">Netral</string>
-    <string name="app_icon_original">Asli</string>
-    <string name="app_icon_static">Statis</string>
     <string name="app_font_choose">Pilih file font</string>
     <string name="app_font_picker_desc">Pilih file TTF atau OTF. Meld akan menyalinnya ke penyimpanan aplikasi pribadi.</string>
     <string name="app_font_system">Bawaan sistem</string>
@@ -951,7 +949,6 @@
     <string name="import_error_local_files_require_local_playlist">File audio lokal hanya dapat diimpor ke playlist lokal.</string>
     <string name="import_error_file_read_failed">File playlist tidak dapat dibaca. Pilih lagi dan berikan akses file.</string>
     <string name="settings_lyrics_description">Pengambilan dan penerjemahan lirik</string>
-    <string name="appearance_app_icon_credit">Ikon alternatif dari Kayé (@thy_k di Discord)</string>
     <string name="lyrics_show_on_player_desc">Tampilkan baris lirik saat ini di pemutar</string>
     <string name="discord_rich_presence">Rich presence</string>
     <string name="theme_palette_vibrant">Cerah (Vibrant)</string>
@@ -974,9 +971,6 @@
     <string name="lyrics_provider_kugou_description">LRC tersinkronisasi per baris dengan pencocokan durasi, sangat berguna untuk musik Tiongkok dan Asia</string>
     <string name="theme_palette_tonal_spot">Titik tonal</string>
     <string name="theme_palette_fruit_salad">Salad buah (Fruit salad)</string>
-    <string name="app_icon_arctic_haze">Kabut Arktik (Arctic Haze)</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Edisi Spesial Pride</string>
     <string name="app_font_downloads">Unduhan font cepat</string>
     <string name="android_auto_pinned_playlist_mode">Pemutar playlist</string>
     <string name="lyrics_show_translations">Terjemahan</string>
@@ -1415,8 +1409,6 @@
     <string name="history_playlist_monthly">Lagu Teratas Bulanan</string>
     <string name="queue_youtube_history_when_offline_desc">Simpan laporan pemutaran di perangkat ini dan coba lagi setelah terhubung kembali saat aplikasi berjalan. Riwayat yang sedang dijeda tidak akan dicatat</string>
     <string name="discord_listen_to_metrolist">Dengarkan Meld</string>
-    <string name="app_icon_zenith_black">Zenith Black</string>
-    <string name="app_icon_zenith_white">Zenith White</string>
     <string name="mysterious_fourth_tab">Tab keempat yang misterius</string>
     <string name="lyrics_respect_agent_positioning_desc">Gunakan peran penyanyi untuk menyelaraskan baris lirik, termasuk vokal latar</string>
     <string name="lyrics_behavior">Perilaku lirik</string>
@@ -1458,7 +1450,6 @@
     <string name="updates_installing_description">Mengunduh dan memasang pembaruan</string>
     <string name="updates_release_unavailable">Rilisan ini tidak menyertakan APK yang kompatibel.</string>
     <string name="mini_player_unsubscribe_artist">Batal langganan artis</string>
-    <string name="app_icon_lavender_leap">Lavender Leap</string>
     <string name="device_connect_summary">Pasangkan perangkat tepercaya di jaringan lokal Anda. Koneksi terenkripsi.</string>
     <string name="device_connect_signed_out_pairing">Anda telah keluar. Bandingkan kode pasangan di kedua perangkat sebelum menyetujui.</string>
     <string name="ai_default_json_array_prompt">Prompt default JSON-array presisi</string>
@@ -2317,7 +2308,6 @@
     <string name="credits_leads_section">Pemimpin</string>
     <string name="credits_creator_section">Kreator</string>
     <string name="settings_sound">Suara</string>
-    <string name="app_icon_gradient">Gradasi</string>
     <string name="appearance_floating_bottom_nav">Bar navigasi mengambang</string>
     <string name="appearance_floating_bottom_nav_description">Tampilkan navigasi sebagai bar mengambang di atas area navigasi sistem, dengan tombol Beranda, Koleksi, dan tombol Penelusuran terpisah.</string>
     <string name="lyrics_accessibility">Aksesibilitas</string>

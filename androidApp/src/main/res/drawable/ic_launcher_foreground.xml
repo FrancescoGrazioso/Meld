@@ -1,17 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:height="108dp"
     android:width="108dp"
-    android:viewportWidth="30.0"
-    android:viewportHeight="32.0">
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
     <group
-        android:scaleX="0.47"
-        android:scaleY="0.5"
-        android:translateX="7.8"
-        android:translateY="8.0">
+        android:scaleX="0.75"
+        android:scaleY="0.75"
+        android:translateX="18"
+        android:translateY="18">
         <path
-            android:fillColor="#00000000"
-            android:pathData="M9.5,15.5L3.707,21.293C3.317,21.684 3.317,22.317 3.707,22.707L9.293,28.293C9.683,28.684 10.317,28.684 10.707,28.293L16.707,22.293C16.895,22.105 17,21.851 17,21.586V4.468C17,3.578 18.074,3.132 18.705,3.759L28,13"
-            android:strokeColor="@color/ic_launcher_glyph"
-            android:strokeWidth="5.0" />
+            android:fillColor="@color/ic_launcher_glyph"
+            android:pathData="M 20.87 51.48 L 34.04 34.69 A 9.6 9.6 0 0 1 48.6 33.9 L 52.3 38.7 L 55.2 34.5 Q 57.1 31.75 60.5 31.22 A 9.5 9.5 0 0 1 70.28 35.95 L 76.4 47.1 C 78.8 51.4 79.2 57 74 60.63 C 70 63.6 64 63.4 60 60.88 L 50.6 53.83 Q 47.85 51.77 45.3 54.16 L 39 60.1 Q 34.5 64.6 28.5 65.65 A 8.8 8.8 0 0 1 20.87 51.48 Z" />
     </group>
 </vector>

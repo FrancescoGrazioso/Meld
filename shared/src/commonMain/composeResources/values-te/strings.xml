@@ -304,7 +304,6 @@
     <string name="appearance_theme">థీమ్</string>
     <string name="appearance_style">శైలి</string>
     <string name="appearance_app_icon">యాప్ కోసం చిహ్నం</string>
-    <string name="appearance_app_icon_credit">ద్వారా చిహ్నములు Kayé (Discord లో @thy_k .) రూపకల్పన చేశారు</string>
     <string name="song_artwork_colors">పాట చిత్రాలు నుంచి రంగులు తీసి వాడండి</string>
     <string name="song_artwork_colors_description">కుదిరితే, యాప్ రంగులను ఇప్పుడు వినే పాటను చిత్రాల రంగులు తో అంటే మార్చండి</string>
     <string name="theme_palette_style">పాలెట్ శైలి</string>
@@ -314,14 +313,6 @@
     <string name="theme_palette_fruit_salad">పండ్ల సలాడ్</string>
     <string name="theme_palette_monochrome">ఏకవర్ణ</string>
     <string name="theme_palette_neutral">తటస్థం</string>
-    <string name="app_icon_original">మొదలైన</string>
-    <string name="app_icon_arctic_haze">Arctic Haze (హిమాలయ పొగ)</string>
-    <string name="app_icon_lavender_leap">Lavender Leap</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">గర్వం ప్రత్యేకం (Pride Special)</string>
-    <string name="app_icon_static">స్థిర (Static)</string>
-    <string name="app_icon_zenith_black">జెనిత్ నల్ల (Zenith Black)</string>
-    <string name="app_icon_zenith_white">జెనిత్ వైట్ (Zenith White)</string>
     <string name="app_font_choose">ఫాంట్ ఫైలను ఎంచుకోండి</string>
     <string name="app_font_picker_desc">TTF లేకపోతే OTF ఫైల్‌ను ఎంచుకోండి. Meld దినిని సొంత యాప్ నిల్వలోకు కాపీ చేస్తుంది.</string>
     <string name="app_font_system">సిస్టమ్ డిఫాల్ట్</string>
@@ -715,7 +706,6 @@
     <string name="material_you_description">రూపొందించిన మెటీరియల్ రంగు శైలి వాడండి</string>
     <string name="ui_enhancements">యు.ఐ అభివృద్ధిలు</string>
     <string name="ui_enhancements_description">గుండ్రని చిత్రాలు, భావప్రకాశకమైన కలాకార ఆకారాలు మరియు ప్లే గుండీలు లేకుండా సూచికలు</string>
-    <string name="app_icon_gradient">రంగు ప్రవణత</string>
     <string name="mysterious_fourth_tab_description">ఇల్లు, వెతకడం, మరియు గ్రంథాలయం అన్ని దాచి ఉన్నాయి. మళ్ళి చూపించడానికి ఖాతా మెను తీసి, సెట్టింగ్స లోకి వెళ్ళండి.</string>
     <string name="theme_palette_content">విషయాలు</string>
     <string name="appearance_floating_bottom_nav">తేలుచున్న నావిగేషన్ బార్</string>

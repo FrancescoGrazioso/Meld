@@ -314,7 +314,6 @@
     <string name="appearance_theme">Tema</string>
     <string name="appearance_style">Stile</string>
     <string name="appearance_app_icon">Icona dell\u0027app</string>
-    <string name="appearance_app_icon_credit">Icone alternative realizzate da Kayé (@thy_k su Discord)</string>
     <string name="material_you_description">Utilizza uno schema di colori generato in stile Material</string>
     <string name="song_artwork_colors">Colori dalla copertina del brano</string>
     <string name="song_artwork_colors_description">Genera la palette colori della copertina del brano in riproduzione, quando possibile</string>
@@ -325,14 +324,6 @@
     <string name="theme_palette_fruit_salad">Macedonia</string>
     <string name="theme_palette_monochrome">Monocromatico</string>
     <string name="theme_palette_neutral">Neutrale</string>
-    <string name="app_icon_original">Original</string>
-    <string name="app_icon_arctic_haze">Arctic Haze</string>
-    <string name="app_icon_lavender_leap">Lavander Leap</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Speciale Pride</string>
-    <string name="app_icon_static">Static</string>
-    <string name="app_icon_zenith_black">Zenith Black</string>
-    <string name="app_icon_zenith_white">Zenith White</string>
     <string name="app_font_choose">Scegli file per il font</string>
     <string name="app_font_picker_desc">Seleziona un file TTF od OTF. Meld lo copierà nell\u0027archiviazione privata dell\u0027app.</string>
     <string name="app_font_system">Predefinito di sistema</string>
@@ -2268,7 +2259,6 @@
     <string name="device_connect_peer_details">%1$s\n%2$s</string>
     <string name="listen_together_server_label">%1$s · %2$s</string>
     <string name="settings_sound">Suono</string>
-    <string name="app_icon_gradient">Gradiente</string>
     <string name="lyrics_accessibility">Accessibilità</string>
     <string name="lyrics_plus_lighter">Più chiaro</string>
     <string name="lyrics_plus_lighter_desc">Aumenta la luminosità dei testi sullo sfondo con effetto liquido</string>

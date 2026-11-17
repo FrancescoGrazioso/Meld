@@ -306,7 +306,6 @@
     <string name="appearance_theme">Thema</string>
     <string name="appearance_style">Stijl</string>
     <string name="appearance_app_icon">App pictogram</string>
-    <string name="appearance_app_icon_credit">Alternatieve iconen door Kayé (@thy_k op Discord)</string>
     <string name="material_you_description">Gebruik een gegenereerd Material You-kleurenschema</string>
     <string name="song_artwork_colors">Kleuren van muziek kunstwerk</string>
     <string name="song_artwork_colors_description">Overschrijf app kleuren met de huidige muziek kunstwerk wanneer beschikbaar</string>
@@ -317,11 +316,6 @@
     <string name="theme_palette_fruit_salad">Fruit salade</string>
     <string name="theme_palette_monochrome">Één kleurig</string>
     <string name="theme_palette_neutral">Naturel</string>
-    <string name="app_icon_original">Origineel</string>
-    <string name="app_icon_arctic_haze">Koude bries</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Pride Speciaal</string>
-    <string name="app_icon_static">Staties</string>
     <string name="app_font_choose">Kies font bestand</string>
     <string name="app_font_picker_desc">Selecteer een TTF- of OTF-bestand. Meld kopieert het naar de eigen appopslag.</string>
     <string name="app_font_system">Systeemstandaard</string>

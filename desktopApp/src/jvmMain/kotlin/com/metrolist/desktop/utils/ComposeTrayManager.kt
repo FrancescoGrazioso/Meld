@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.WindowState
+import com.meld.branding.meldTrayIcon
 import com.metrolist.desktop.state.app.DesktopNavigation
 import com.metrolist.desktop.state.app.UiState
 import com.metrolist.desktop.state.playback.ListenTogetherState
@@ -146,8 +146,7 @@ object ComposeTrayManager {
 
         val isMacDarkMenu = if (OsUtil.isMac) rememberMacOsMenuBarIsDark() else true
 
-        @Suppress("DEPRECATION")
-        val icon = painterResource(if (isMacDarkMenu) "logo.png" else "logo_dark.png")
+        val icon = meldTrayIcon(isMacDarkMenu)
 
         val strUnknownTitle = stringResource(Res.string.tray_unknown_title)
         val strUnknown = stringResource(Res.string.tray_unknown)

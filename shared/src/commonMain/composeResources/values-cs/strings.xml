@@ -323,7 +323,6 @@
     <string name="appearance_theme">Motiv</string>
     <string name="appearance_style">Styl</string>
     <string name="appearance_app_icon">Ikona aplikace</string>
-    <string name="appearance_app_icon_credit">Alternativní ikony od Kayé (@thy_k na Discordu)</string>
     <string name="material_you" translatable="false">Material You</string>
     <string name="material_you_description">Použít vygenerované Material barevné schéma</string>
     <string name="song_artwork_colors">Barvy z obalu skladby</string>
@@ -335,14 +334,6 @@
     <string name="theme_palette_fruit_salad">Ovocný salát</string>
     <string name="theme_palette_monochrome">Černobílý</string>
     <string name="theme_palette_neutral">Neutrální</string>
-    <string name="app_icon_original">Originální</string>
-    <string name="app_icon_arctic_haze">Arktická mlha</string>
-    <string name="app_icon_lavender_leap">Levandulový vzlet</string>
-    <string name="app_icon_metromallow">Metromallow</string>
-    <string name="app_icon_pride_special">Pride speciál</string>
-    <string name="app_icon_static">Statický</string>
-    <string name="app_icon_zenith_black">Zenitová černá</string>
-    <string name="app_icon_zenith_white">Zenitová bílá</string>
     <string name="app_font_choose">Vybrat soubor písma</string>
     <string name="app_font_picker_desc">Vybrat TTF nebo OTF soubor. Meld ho zkopíruje do soukromého úložiště aplikace.</string>
     <string name="app_font_system">Podle systému</string>

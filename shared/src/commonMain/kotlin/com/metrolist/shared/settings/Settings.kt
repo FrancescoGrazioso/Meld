@@ -118,6 +118,7 @@ import com.metrolist.shared.constants.LyricsOpenRouterOAuthSessionKey
 import com.metrolist.shared.constants.LyricsPlusLighterKey
 import com.metrolist.shared.constants.LyricsProgressiveBlurKey
 import com.metrolist.shared.constants.LyricsShareImageStyleKey
+import com.metrolist.shared.constants.MeldEasterEggUnlockedKey
 import com.metrolist.shared.constants.MeldSpotifyAccountKey
 import com.metrolist.shared.constants.MeldSpotifyHashesKey
 import com.metrolist.shared.constants.MeldSpotifyLikesAccountKey
@@ -288,6 +289,7 @@ class Settings(
     var meldSpotifyLikesAccount by preference(MeldSpotifyLikesAccountKey, "")
     var meldSpotifyLikesFingerprint by preference(MeldSpotifyLikesFingerprintKey, "")
     var meldSpotifyLikesSyncedAt by preference(MeldSpotifyLikesSyncedAtKey, 0L)
+    var meldEasterEggUnlocked by preference(MeldEasterEggUnlockedKey, false)
 
     private var storedAppLanguage by preference(AppLanguageKey, "SYSTEM")
     var appLanguage: String
@@ -1321,6 +1323,7 @@ class Settings(
                     "pendingUpdateReleaseJson",
                     "lastUpdateCheckTime",
                     DevtoolsUnlockedKey,
+                    MeldEasterEggUnlockedKey,
                     DevtoolsPlaybackClientKey,
                     DevtoolsBenchmarkClientsKey,
                     DesktopRenderBackendKey,
