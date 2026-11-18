@@ -21,7 +21,8 @@ class SpotifyHomeFixtureTest {
         val shelves = assertNotNull(parseHome(data, emptyList())).shelves()
 
         // The shortcuts have no title of their own and take the greeting; the episodes section is gone.
-        assertEquals(listOf<String?>("Good afternoon", "Made For Test User", "Recommended for today", "Your favorite artists"), shelves.map { it.title })
+        val titles = listOf<String?>("Good afternoon", "Made For Test User", "Recommended for today", "Your favorite artists")
+        assertEquals(titles, shelves.map { it.title })
         assertEquals(shelves.size, shelves.map { it.key }.toSet().size)
 
         val kinds = shelves.map { shelf -> shelf.entries.groupingBy { it.kind }.eachCount() }
@@ -32,6 +33,6 @@ class SpotifyHomeFixtureTest {
         assertEquals(mapOf(SpotifyLibraryEntryKind.PLAYLIST to 2), kinds[1])
         assertEquals(mapOf(SpotifyLibraryEntryKind.ALBUM to 2), kinds[2])
         assertEquals(mapOf(SpotifyLibraryEntryKind.ARTIST to 2), kinds[3])
-        shelves.forEach { shelf -> assertEquals(shelf.entries.size, shelf.entries.map { it.key }.toSet().size) }
+        shelves.forEach { shelf -> assertEquals(shelf.entries, shelf.entries.distinctBy { it.key }) }
     }
 }

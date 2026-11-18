@@ -43,9 +43,11 @@ private class Session(
     override fun refresh() = Unit
 }
 
-private fun album(id: String) = SpotifyAlbum(id, "spotify:album:$id", "Album $id", artists = listOf(SpotifyArtist("ar", "spotify:artist:ar", "Band")))
+private fun album(id: String) =
+    SpotifyAlbum(id, "spotify:album:$id", "Album $id", artists = listOf(SpotifyArtist("ar", "spotify:artist:ar", "Band")))
 
-private fun playlistItem(id: String) = SpotifyHomeItem.Playlist(SpotifyPlaylist(id, "spotify:playlist:$id", "Playlist $id"), null, null, null)
+private fun playlistItem(id: String) =
+    SpotifyHomeItem.Playlist(SpotifyPlaylist(id, "spotify:playlist:$id", "Playlist $id"), null, null, null)
 
 private fun section(
     title: String?,
@@ -96,7 +98,13 @@ class SpotifyInHomeTest {
     fun theFeedIsLoadedOnceAndKeptForTheSession() =
         test {
             assertEquals(listOf<String?>("Mixes"), titles)
-            assertEquals(listOf("PLAYLIST:p1"), state.shelves.single().entries.map { it.key })
+            assertEquals(
+                listOf("PLAYLIST:p1"),
+                state.shelves
+                    .single()
+                    .entries
+                    .map { it.key },
+            )
             assertNull(state.error)
 
             // Switching it off hides the rows; switching it back on shows what was loaded, without asking again.
@@ -122,7 +130,13 @@ class SpotifyInHomeTest {
             feed = SpotifyHomeFeed("Good evening", listOf(section(null, playlistItem("p1"), playlistItem("p1"), playlistItem("p2"))))
             home.refresh()
             assertEquals(listOf<String?>("Good evening"), titles)
-            assertEquals(listOf("PLAYLIST:p1", "PLAYLIST:p2"), state.shelves.single().entries.map { it.key })
+            assertEquals(
+                listOf("PLAYLIST:p1", "PLAYLIST:p2"),
+                state.shelves
+                    .single()
+                    .entries
+                    .map { it.key },
+            )
         }
 
     @Test

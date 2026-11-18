@@ -212,7 +212,12 @@ private fun SpotifySearchResults(
                     }
                     if (shown == SpotifySearchKind.TRACKS) {
                         val tracks = state.tracks.take(limit)
-                        itemsIndexed(tracks, key = { _, track -> "spotify_track_${track.id}" }, contentType = { _, _ -> "track" }) { index, track ->
+                        itemsIndexed(tracks, key = {
+                            _,
+                            track,
+                            ->
+                            "spotify_track_${track.id}"
+                        }, contentType = { _, _ -> "track" }) { index, track ->
                             SearchFrame {
                                 SpotifyTrackRow(
                                     item = SpotifyTrackItem(null, track.uri, null, track),
@@ -249,14 +254,23 @@ private fun SpotifySearchResults(
                     }
                 }
                 if (error != null) {
-                    item(key = "spotify_more_failed") { SearchFrame(Modifier.padding(horizontal = 16.dp)) { SpotifyFailureRow(error) { search.retry(kind) } } }
+                    item(
+                        key = "spotify_more_failed",
+                    ) { SearchFrame(Modifier.padding(horizontal = 16.dp)) { SpotifyFailureRow(error) { search.retry(kind) } } }
                 }
             }
         }
     }
 }
 
-private fun SpotifySearchState.count(kind: SpotifySearchKind): Int = if (kind == SpotifySearchKind.TRACKS) tracks.size else entries(kind).size
+private fun SpotifySearchState.count(kind: SpotifySearchKind): Int =
+    if (kind ==
+        SpotifySearchKind.TRACKS
+    ) {
+        tracks.size
+    } else {
+        entries(kind).size
+    }
 
 private fun LazyListScope.entryRows(
     entries: List<SpotifyLibraryEntry>,
