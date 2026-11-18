@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.meld.spotify.library.SpotifyCollectionType
 import com.meld.spotify.library.SpotifyFolderViewModel
+import com.meld.spotify.library.SpotifyPlaylistEditor
 import com.meld.spotify.library.SpotifyTracksViewModel
 import com.meld.spotify.playback.SpotifyPlayback
 import com.metrolist.shared.generated.resources.Res
@@ -70,7 +71,15 @@ fun SpotifyScreen(
                 // Playback is looked up, not required: without it the list still opens and only the play actions are missing.
                 val viewModel =
                     remember {
-                        SpotifyTracksViewModel(scope, koin.get(), koin.get(), koin.getOrNull<SpotifyPlayback>(), screen.type, screen.id)
+                        SpotifyTracksViewModel(
+                            scope,
+                            koin.get(),
+                            koin.get(),
+                            koin.getOrNull<SpotifyPlayback>(),
+                            screen.type,
+                            screen.id,
+                            koin.getOrNull<SpotifyPlaylistEditor>(),
+                        )
                     }
                 val liked = screen.type == SpotifyCollectionType.LIKED
                 val fallback = if (liked) Res.string.meld_spotify_liked_songs else Res.string.import_provider_spotify

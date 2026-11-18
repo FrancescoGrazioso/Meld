@@ -48,6 +48,7 @@ import com.meld.spotify.library.playableTrack
 import com.meld.spotify.library.url
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.add_to_queue
+import com.metrolist.shared.generated.resources.meld_spotify_add_to_playlist
 import com.metrolist.shared.generated.resources.meld_spotify_error_changed
 import com.metrolist.shared.generated.resources.meld_spotify_error_forbidden
 import com.metrolist.shared.generated.resources.meld_spotify_error_offline
@@ -65,6 +66,7 @@ import com.metrolist.shared.generated.resources.meld_spotify_open_settings
 import com.metrolist.shared.generated.resources.meld_spotify_track_unavailable
 import com.metrolist.shared.generated.resources.more_options
 import com.metrolist.shared.generated.resources.play_next
+import com.metrolist.shared.generated.resources.remove_from_playlist
 import com.metrolist.shared.generated.resources.retry
 import com.metrolist.shared.generated.resources.search_no_results
 import com.metrolist.shared.generated.resources.spotify_sign_in_again
@@ -210,8 +212,9 @@ internal fun SpotifyListStatus(
 
 /**
  * A Spotify track as a row of upstream's grouped lists. Entries that cannot be played stay
- * visible but disabled. The menu is Meld's own: [onPlayNext] and [onAddToQueue] are null where
- * nothing can play Spotify tracks, and then there is no menu.
+ * visible but disabled. The menu is Meld's own and holds the actions that are not null: [onPlayNext]
+ * and [onAddToQueue] where something can play Spotify tracks, [onRemove] in a playlist the user may
+ * edit, where an entry that cannot be played can still be removed. [leading] is the reorder handle.
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -225,10 +228,19 @@ internal fun SpotifyTrackRow(
     onAddToQueue: ((SpotifyTrack) -> Unit)?,
     modifier: Modifier = Modifier,
     liked: Boolean = false,
+    onAddToPlaylist: ((SpotifyTrack) -> Unit)? = null,
+    onRemove: (() -> Unit)? = null,
+    leading: (@Composable () -> Unit)? = null,
 ) {
     val track = item.track
     val playable = item.playableTrack
-    val hasMenu = playable != null && onPlayNext != null && onAddToQueue != null
+    val trackActions =
+        listOfNotNull(
+            onPlayNext?.let { Res.string.play_next to it },
+            onAddToQueue?.let { Res.string.add_to_queue to it },
+            onAddToPlaylist?.let { Res.string.meld_spotify_add_to_playlist to it },
+        ).takeIf { playable != null }.orEmpty()
+    val hasMenu = trackActions.isNotEmpty() || onRemove != null
     var menuOpen by remember { mutableStateOf(false) }
     GroupedListItem(index = index, count = count, modifier = modifier) {
         Row(
@@ -245,6 +257,7 @@ internal fun SpotifyTrackRow(
                     ).padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            leading?.invoke()
             if (numbered) {
                 Box(Modifier.width(36.dp), contentAlignment = Alignment.Center) {
                     Text("${index + 1}", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
@@ -296,26 +309,30 @@ internal fun SpotifyTrackRow(
                     modifier = Modifier.padding(horizontal = 8.dp).size(18.dp),
                 )
             }
-            if (playable != null && hasMenu) {
+            if (hasMenu) {
                 Box {
                     IconButton(onClick = { menuOpen = true }, shapes = IconButtonDefaults.shapes()) {
                         Icon(MetrolistIcons.Default.MoreVert, contentDescription = stringResource(Res.string.more_options))
                     }
                     DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
-                        DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.play_next)) },
-                            onClick = {
-                                menuOpen = false
-                                onPlayNext(playable)
-                            },
-                        )
-                        DropdownMenuItem(
-                            text = { Text(stringResource(Res.string.add_to_queue)) },
-                            onClick = {
-                                menuOpen = false
-                                onAddToQueue(playable)
-                            },
-                        )
+                        trackActions.forEach { (label, action) ->
+                            DropdownMenuItem(
+                                text = { Text(stringResource(label)) },
+                                onClick = {
+                                    menuOpen = false
+                                    playable?.let(action)
+                                },
+                            )
+                        }
+                        if (onRemove != null) {
+                            DropdownMenuItem(
+                                text = { Text(stringResource(Res.string.remove_from_playlist)) },
+                                onClick = {
+                                    menuOpen = false
+                                    onRemove()
+                                },
+                            )
+                        }
                     }
                 }
             }
