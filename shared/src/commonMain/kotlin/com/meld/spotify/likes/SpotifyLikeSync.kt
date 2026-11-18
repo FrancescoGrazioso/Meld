@@ -255,8 +255,15 @@ class SpotifyLikeSync(
     }
 
     /**
+     * The Spotify track [song] stands for, for anything that writes it to the user's Spotify account: the match
+     * already trusted for it, else a search. Null when Spotify has no confident match.
+     */
+    suspend fun spotifyTrackFor(song: SongItem): SpotifyTrack? =
+        matches.getByYoutubeId(song.id).firstOrNull { it.isTrusted }?.toTrack() ?: findOnSpotify(song)
+
+    /**
      * The matcher run the other way round: the YouTube song is the query and Spotify's search results are
-     * the candidates. Only a HIGH match is liked, because a wrong one lands in the user's Spotify library.
+     * the candidates. Only a HIGH match is accepted, because a wrong one lands in the user's Spotify library.
      */
     private suspend fun findOnSpotify(song: SongItem): SpotifyTrack? {
         val query =

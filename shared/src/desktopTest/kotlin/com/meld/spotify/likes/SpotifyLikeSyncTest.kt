@@ -435,6 +435,37 @@ class SpotifyLikeSyncTest {
         }
 
     @Test
+    fun aSongIsLookedUpForAPlaylistAsItIsForALike() =
+        withApp { sync ->
+            assertEquals("sp7", sync.spotifyTrackFor(ytSong("yt7", "Song 7"))?.id)
+            assertEquals("yt7", matches.get("sp7")?.youtubeId)
+            assertEquals(MatchConfidence.HIGH, matches.get("sp7")?.confidence)
+
+            // Spotify only has something else under that name: that is not the song.
+            spotify.found = { listOf(track(8).copy(name = "A Different Tune", durationMs = 95_000)) }
+            assertNull(sync.spotifyTrackFor(ytSong("yt8", "Song 8")))
+            assertNull(matches.get("sp8"))
+
+            // The tracks are already matched to other videos, by playback and by the user's own choice: both stay.
+            spotify.found = { listOf(track(it.substringAfterLast(' ').toInt())) }
+            matches.saveAutomatic(storedMatch(9, youtubeId = "video9"))
+            matches.saveManualOverride(storedMatch(10, youtubeId = "chosen10"))
+            assertEquals("sp9", sync.spotifyTrackFor(ytSong("yt9", "Song 9"))?.id)
+            assertEquals("sp10", sync.spotifyTrackFor(ytSong("yt10", "Song 10"))?.id)
+            assertEquals("video9", matches.get("sp9")?.youtubeId)
+            assertEquals("chosen10", matches.get("sp10")?.youtubeId)
+            assertEquals(true, matches.get("sp10")?.isManualOverride)
+
+            // A song played from Spotify is that track, without a search.
+            matches.saveAutomatic(storedMatch(3))
+            val searches = spotify.searches
+            assertEquals("sp3", sync.spotifyTrackFor(ytSong("yt3", "Song 3"))?.id)
+            assertEquals(searches, spotify.searches)
+            // Looking a song up likes nothing.
+            assertTrue(spotify.added.isEmpty())
+        }
+
+    @Test
     fun pullLikesWhatIsNewOnSpotifyAndSendsNothingBack() =
         withApp { sync ->
             spotify.like(1, 2, 3, 4)

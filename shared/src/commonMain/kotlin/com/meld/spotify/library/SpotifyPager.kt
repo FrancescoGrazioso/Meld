@@ -8,6 +8,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -37,12 +38,21 @@ class SpotifyPager<T>(
     private val mutex = Mutex()
     private var nextOffset: Int? = 0
     private val mutableState = MutableStateFlow(SpotifyPagerState<T>())
+    private val held = MutableStateFlow(0)
+    private val loadingMore = MutableStateFlow(false)
 
     val state: StateFlow<SpotifyPagerState<T>> = mutableState.asStateFlow()
 
     /** Loads the next page unless a request is already running; also the retry after a failure. */
     fun loadMore() {
-        if (!mutex.isLocked) scope.launch { runCatching { loadNext() } }
+        if (mutex.isLocked || !loadingMore.compareAndSet(expect = false, update = true)) return
+        scope.launch {
+            try {
+                runCatching { loadNext() }
+            } finally {
+                loadingMore.value = false
+            }
+        }
     }
 
     fun loadAllInBackground() {
@@ -62,7 +72,7 @@ class SpotifyPager<T>(
     fun refresh(all: Boolean = false) {
         scope.launch {
             runCatching {
-                mutex.withLock {
+                unheld {
                     mutableState.update { it.copy(refreshing = true, error = null) }
                     request {
                         var page = fetch(0)
@@ -79,17 +89,37 @@ class SpotifyPager<T>(
         }
     }
 
-    /** Changes the loaded items without asking Spotify, after an edit Meld made there. Does nothing before the first page. */
-    suspend fun edit(transform: (List<T>) -> List<T>) =
-        mutex.withLock {
-            val state = mutableState.value
-            if (state.items.isEmpty() && !state.complete) return@withLock
-            val items = transform(state.items)
-            val added = items.size - state.items.size
-            // Spotify's offsets move with the list, so the next page still starts right after what is shown.
-            nextOffset = nextOffset?.let { (it + added).coerceAtLeast(0) }
-            mutableState.value = state.copy(items = items, total = state.total?.let { (it + added).coerceAtLeast(0) })
+    /**
+     * Changes the loaded items without asking Spotify, after an edit Meld made there. [appended] counts entries
+     * added at Spotify after the pages loaded so far. Does nothing before the first page.
+     */
+    suspend fun edit(
+        appended: Int = 0,
+        transform: (List<T>) -> List<T>,
+    ) = mutex.withLock {
+        val state = mutableState.value
+        if (state.items.isEmpty() && !state.complete) return@withLock
+        val items = transform(state.items)
+        val added = items.size - state.items.size
+        // Spotify's offsets move with the list, so the next page still starts right after what is shown.
+        nextOffset = nextOffset?.let { (it + added).coerceAtLeast(0) }
+        mutableState.value = state.copy(items = items, total = state.total?.let { (it + added + appended).coerceAtLeast(0) })
+    }
+
+    /**
+     * Keeps pages from loading until [release]. While an edit is on its way Spotify may or may not have
+     * applied it, so a page read then could repeat or skip an entry.
+     */
+    fun hold() = held.update { it + 1 }
+
+    fun release() = held.update { it - 1 }
+
+    private suspend fun <R> unheld(block: suspend () -> R): R {
+        while (true) {
+            held.first { it == 0 }
+            mutex.withLock { if (held.value == 0) return block() }
         }
+    }
 
     private suspend fun loadRemaining(): List<T> {
         do {
@@ -99,11 +129,11 @@ class SpotifyPager<T>(
     }
 
     private suspend fun loadNext(): Boolean =
-        mutex.withLock {
+        unheld {
             val offset = nextOffset
             if (offset == null) {
                 mutableState.update { it.copy(error = null) }
-                return false
+                return@unheld false
             }
             mutableState.update { it.copy(loading = true, error = null) }
             request {
