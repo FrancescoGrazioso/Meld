@@ -5,9 +5,13 @@ import com.meld.db.SpotifyLikeDao
 import com.meld.db.SpotifyMatchDao
 import com.meld.db.buildMeldDatabase
 import com.meld.spotify.library.SessionSpotifyLibrary
+import com.meld.spotify.library.SessionSpotifyPlaylists
 import com.meld.spotify.library.SpotifyInLibrary
 import com.meld.spotify.library.SpotifyLibrary
 import com.meld.spotify.library.SpotifyLibraryStore
+import com.meld.spotify.library.SpotifyPlaylistEditor
+import com.meld.spotify.library.SpotifyPlaylistPicker
+import com.meld.spotify.library.SpotifyPlaylistRemote
 import com.meld.spotify.likes.SessionSpotifyLikes
 import com.meld.spotify.likes.SongLikeStateLikes
 import com.meld.spotify.likes.SpotifyLikeSync
@@ -96,6 +100,18 @@ fun meldModule(
                 now = { Clock.System.now().toEpochMilliseconds() },
                 onSpotifyChanged = store::likedSongsChanged,
                 logger = { YtLogger.d("MeldSpotify", it) },
+            )
+        }
+        single<SpotifyPlaylistRemote> { SessionSpotifyPlaylists(get()) }
+        // On its own scope, so an edit is sent even when the screen that made it has closed.
+        single { SpotifyPlaylistEditor(get(), get(), get(), CoroutineScope(SupervisorJob() + Dispatchers.Default)) }
+        single {
+            SpotifyPlaylistPicker(
+                store = get(),
+                editor = get(),
+                connection = get(),
+                findOnSpotify = get<SpotifyLikeSync>()::spotifyTrackFor,
+                scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
             )
         }
         // The like sync runs from app start on every platform; it is built off the main thread, as it opens the session and the database.

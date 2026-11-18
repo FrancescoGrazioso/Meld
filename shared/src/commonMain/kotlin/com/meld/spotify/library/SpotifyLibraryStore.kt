@@ -7,6 +7,7 @@ import com.meld.spotify.SpotifyConnectionState
 import com.meld.spotify.SpotifyImage
 import com.meld.spotify.SpotifyLibraryItem
 import com.meld.spotify.SpotifyPage
+import com.meld.spotify.SpotifyPlaylist
 import com.meld.spotify.SpotifyTrack
 import com.meld.spotify.SpotifyTrackItem
 import kotlinx.coroutines.CoroutineScope
@@ -20,19 +21,23 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
-/** What the header of a track list shows. [albums] is only filled for an artist. */
+/** What the header of a track list shows. [albums] is only filled for an artist, [description] and [ownerId] for a playlist. */
 data class SpotifyCollectionInfo(
     val title: String,
     val owner: String? = null,
     val imageUrl: String? = null,
     val trackCount: Int? = null,
     val albums: List<SpotifyAlbum> = emptyList(),
+    val description: String? = null,
+    val ownerId: String? = null,
 )
 
-class SpotifyCollection(
-    val info: StateFlow<SpotifyCollectionInfo?>,
+class SpotifyCollection internal constructor(
+    internal val mutableInfo: MutableStateFlow<SpotifyCollectionInfo?>,
     val tracks: SpotifyPager<SpotifyTrackItem>,
-)
+) {
+    val info: StateFlow<SpotifyCollectionInfo?> get() = mutableInfo
+}
 
 // shortcut: nothing is evicted, add a size bound if memory use of very large libraries becomes a problem.
 
@@ -80,6 +85,24 @@ class SpotifyLibraryStore(
             SpotifyCollection(info, SpotifyPager(scope) { offset -> page(type, id, offset, info) })
         }
 
+    /** The playlist's track list if a screen has asked for it in this session; an edit is mirrored there. */
+    internal fun cachedPlaylist(id: String): SpotifyCollection? = cache.value["${SpotifyCollectionType.PLAYLIST}:$id"] as? SpotifyCollection
+
+    /** Mirrors an edit of the playlist [id] in every loaded level of the playlist tree. */
+    @Suppress("UNCHECKED_CAST")
+    internal suspend fun editPlaylistEntry(
+        id: String,
+        transform: (SpotifyPlaylist) -> SpotifyPlaylist,
+    ) {
+        fun edited(item: SpotifyLibraryItem): SpotifyLibraryItem {
+            val playlist = (item as? SpotifyLibraryItem.Playlist)?.playlist?.takeIf { it.id == id } ?: return item
+            return SpotifyLibraryItem.Playlist(transform(playlist))
+        }
+        cache.value.filterKeys { it.startsWith("playlists:") }.values.forEach { pager ->
+            (pager as SpotifyPager<SpotifyLibraryItem>).edit { it.map(::edited) }
+        }
+    }
+
     /** Mirrors a like or un-like Meld sent to Spotify in the cached Liked Songs, newest first as Spotify lists them. */
     suspend fun likedSongsChanged(
         added: List<SpotifyTrack>,
@@ -113,6 +136,8 @@ class SpotifyLibraryStore(
                         owner = playlist.ownerName,
                         imageUrl = playlist.images.url(HEADER_IMAGE_SIZE),
                         trackCount = playlist.trackCount ?: page.tracks.total,
+                        description = playlist.description,
+                        ownerId = playlist.ownerId,
                     )
                 page.tracks
             }
