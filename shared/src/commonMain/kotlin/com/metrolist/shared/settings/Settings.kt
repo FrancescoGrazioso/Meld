@@ -130,6 +130,7 @@ import com.metrolist.shared.constants.MatugenThemeKey
 import com.metrolist.shared.constants.MeldEasterEggUnlockedKey
 import com.metrolist.shared.constants.MeldSpotifyAccountKey
 import com.metrolist.shared.constants.MeldSpotifyHashesKey
+import com.metrolist.shared.constants.MeldSpotifyOnHomeKey
 import com.metrolist.shared.constants.MeldSpotifyLikesAccountKey
 import com.metrolist.shared.constants.MeldSpotifyLikesFingerprintKey
 import com.metrolist.shared.constants.MeldSpotifyLikesPullKey
@@ -300,6 +301,8 @@ class Settings(
     var meldSpotifyAccount by preference(MeldSpotifyAccountKey, "")
     var meldSpotifyHashes by preference(MeldSpotifyHashesKey, "")
     var meldLibrarySpotifyOnly by preference(false)
+    var meldSearchSpotify by preference(false)
+    var meldSpotifyOnHome by preference(MeldSpotifyOnHomeKey, true)
     var meldSpotifyLikesPush by preference(MeldSpotifyLikesPushKey, true)
     var meldSpotifyLikesPull by preference(MeldSpotifyLikesPullKey, false)
     var meldSpotifyLikesAccount by preference(MeldSpotifyLikesAccountKey, "")
