@@ -75,6 +75,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import androidx.compose.ui.window.PopupProperties
+import com.meld.spotify.ui.spotifyPlaylistMenuActions
 import com.metrolist.desktop.state.app.AppState
 import com.metrolist.desktop.state.content.ArtistState
 import com.metrolist.desktop.state.content.HomeState
@@ -293,7 +294,7 @@ fun SongContextMenu(
                         }
                     }
                 },
-            additionalActions = additionalActions,
+            additionalActions = additionalActions + spotifyPlaylistMenuActions(song, onDismiss),
         )
     }
 }

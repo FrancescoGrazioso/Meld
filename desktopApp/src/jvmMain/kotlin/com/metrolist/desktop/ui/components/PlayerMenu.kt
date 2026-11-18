@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.meld.spotify.ui.spotifyPlaylistMenuActions
 import com.metrolist.desktop.state.app.AppState
 import com.metrolist.desktop.state.content.ArtistState
 import com.metrolist.desktop.state.content.PlaylistAlbumState
@@ -603,7 +604,7 @@ fun PlayerMenuPanel(
                         currentTrack?.album?.id?.let { albumId -> { PlaylistAlbumState.fetchAlbumData(albumId) } },
                         currentTrack?.album?.name,
                     ),
-                ),
+                ) + spotifyPlaylistMenuActions(currentTrack, onDismiss),
                 listOfNotNull(
                     deleteUploadAction,
                     currentTrack?.let { track ->
