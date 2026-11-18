@@ -1,12 +1,15 @@
 package com.meld.spotify
 
+import androidx.compose.runtime.snapshotFlow
 import com.meld.db.MeldDatabase
 import com.meld.db.SpotifyLikeDao
 import com.meld.db.SpotifyMatchDao
 import com.meld.db.buildMeldDatabase
 import com.meld.spotify.library.SessionSpotifyLibrary
 import com.meld.spotify.library.SessionSpotifyPlaylists
+import com.meld.spotify.library.SpotifyInHome
 import com.meld.spotify.library.SpotifyInLibrary
+import com.meld.spotify.library.SpotifyInSearch
 import com.meld.spotify.library.SpotifyLibrary
 import com.meld.spotify.library.SpotifyLibraryStore
 import com.meld.spotify.library.SpotifyPlaylistEditor
@@ -85,6 +88,25 @@ fun meldModule(
         single<SpotifyLibrary> { SessionSpotifyLibrary(get()) }
         single { SpotifyLibraryStore(get(), get(), CoroutineScope(SupervisorJob() + Dispatchers.Default)) }
         single { SpotifyInLibrary(CoroutineScope(SupervisorJob() + Dispatchers.Default), get(), get()) }
+        single {
+            val owner = get<SpotifySessionOwner>()
+            SpotifyInHome(
+                scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+                connection = owner,
+                enabled = snapshotFlow { Settings.shared.meldSpotifyOnHome },
+                home = { owner.call { home() } },
+                newReleases = { owner.call { newReleases().items } },
+            )
+        }
+        single {
+            val owner = get<SpotifySessionOwner>()
+            SpotifyInSearch(
+                scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+                connection = owner,
+                find = { query, offset -> owner.call { search(query, offset) } },
+                playback = getOrNull(),
+            )
+        }
         single<SpotifyLikeDao> { get<MeldDatabase>().spotifyLikeDao() }
         single {
             val store = get<SpotifyLibraryStore>()
