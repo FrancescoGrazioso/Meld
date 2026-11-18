@@ -5576,4 +5576,12 @@
     <string name="meld_app_icon_easter_egg">Easter Egg</string>
     <string name="meld_easter_egg_title">You found the secret!</string>
     <string name="meld_easter_egg_message">Congratulations! The Easter Egg icon is now waiting for you in the app icon picker.</string>
+    <!-- Meld: editing Spotify playlists -->
+    <string name="meld_spotify_add_to_playlist">Add to Spotify playlist</string>
+    <string name="meld_spotify_searching">Looking for this song on Spotify…</string>
+    <string name="meld_spotify_not_found">This song was not found on Spotify.</string>
+    <string name="meld_spotify_added">Added</string>
+    <string name="meld_spotify_already_in_playlist">Already in this playlist</string>
+    <string name="meld_spotify_edit_failed">Spotify did not save the change, so it was undone. %1$s</string>
+    <string name="meld_spotify_reorder_loading">Loading every song before the playlist can be reordered…</string>
 </resources>
