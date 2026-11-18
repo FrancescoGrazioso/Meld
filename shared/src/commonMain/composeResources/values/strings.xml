@@ -9,7 +9,7 @@
     <!-- Bottom navigation -->
     <!-- Translators: Label for app name in the multiple app screens. -->
     <string name="app_name" translatable="false">Meld</string>
-    <string name="account_menu_license" translatable="false">GPL-3.0 MetrolistGroup</string>
+    <string name="account_menu_license" translatable="false">GPL-3.0 · based on Metrolist</string>
     <!-- Translators: Apple mobile platform name displayed in application information. -->
     <!-- Translators: Navigation label for home in the multiple app screens. -->
     <string name="home">Home</string>
