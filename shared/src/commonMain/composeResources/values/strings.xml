@@ -5584,4 +5584,6 @@
     <string name="meld_spotify_already_in_playlist">Already in this playlist</string>
     <string name="meld_spotify_edit_failed">Spotify did not save the change, so it was undone. %1$s</string>
     <string name="meld_spotify_reorder_loading">Loading every song before the playlist can be reordered…</string>
+    <string name="meld_spotify_on_home">Show Spotify on Home</string>
+    <string name="meld_spotify_on_home_description">Your Spotify home feed is shown above the other sections of the Home screen.</string>
 </resources>

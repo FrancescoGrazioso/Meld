@@ -166,7 +166,7 @@ fun spotifyLibraryExtras(
 }
 
 @Composable
-private fun SpotifyChip(
+internal fun SpotifyChip(
     selected: Boolean,
     onClick: () -> Unit,
 ) {
@@ -178,7 +178,7 @@ private fun SpotifyChip(
 }
 
 @Composable
-private fun SpotifyLibraryCell(
+internal fun SpotifyLibraryCell(
     entry: SpotifyLibraryEntry,
     isGridView: Boolean,
     onClick: () -> Unit,
@@ -236,7 +236,7 @@ private fun SpotifyBadge(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun SpotifyExpiredRow(onClick: () -> Unit) {
+internal fun SpotifyExpiredRow(onClick: () -> Unit) {
     LibraryItemContainer(isGridView = false, onMenuClick = null, modifier = Modifier.clickable(onClick = onClick)) {
         ListCard(
             title = stringResource(Res.string.import_provider_spotify),
@@ -248,7 +248,7 @@ private fun SpotifyExpiredRow(onClick: () -> Unit) {
 }
 
 @Composable
-private fun SpotifyFailureRow(
+internal fun SpotifyFailureRow(
     error: SpotifyError,
     onRetry: () -> Unit,
 ) {

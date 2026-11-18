@@ -28,6 +28,7 @@ import com.meld.spotify.likes.SpotifyLikeSync
 import com.meld.spotify.likes.SpotifyLikeSyncStatus
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.account
+import com.metrolist.shared.generated.resources.home
 import com.metrolist.shared.generated.resources.import_provider_spotify
 import com.metrolist.shared.generated.resources.meld_spotify_connect
 import com.metrolist.shared.generated.resources.meld_spotify_connect_description
@@ -50,6 +51,8 @@ import com.metrolist.shared.generated.resources.meld_spotify_likes_pull_descript
 import com.metrolist.shared.generated.resources.meld_spotify_likes_push
 import com.metrolist.shared.generated.resources.meld_spotify_likes_push_description
 import com.metrolist.shared.generated.resources.meld_spotify_likes_sync_now
+import com.metrolist.shared.generated.resources.meld_spotify_on_home
+import com.metrolist.shared.generated.resources.meld_spotify_on_home_description
 import com.metrolist.shared.generated.resources.meld_spotify_overview
 import com.metrolist.shared.generated.resources.meld_spotify_status_expired
 import com.metrolist.shared.generated.resources.meld_spotify_status_not_connected
@@ -144,6 +147,16 @@ internal fun SettingsUiRegistryBuilder.spotifyPage(onSignIn: (() -> Unit)?): Set
                         SpotifySignInNotice(message, stringResource(Res.string.retry), onSignIn)
                     }
                 }
+            }
+        }
+        if (state is SpotifyConnectionState.Connected) {
+            group("spotifyHome", stringResource(Res.string.home)) {
+                switch(
+                    id = "spotifyOnHome",
+                    title = stringResource(Res.string.meld_spotify_on_home),
+                    description = stringResource(Res.string.meld_spotify_on_home_description),
+                    checked = settings.meldSpotifyOnHome,
+                ) { settings.meldSpotifyOnHome = it }
             }
         }
         if (likeSync != null && likeStatus != null && state is SpotifyConnectionState.Connected) {
