@@ -93,6 +93,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.currentStateAsState
+import com.meld.spotify.ui.SearchExtras
+import com.meld.spotify.ui.spotifySearchExtras
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.explicit
 import com.metrolist.shared.generated.resources.loading
@@ -248,6 +250,7 @@ fun SearchContent(
     onMixClick: (YTItem) -> Unit = {},
     itemContainer: @Composable (YTItem, @Composable () -> Unit) -> Unit = { _, content -> content() },
     onAlbumPlay: ((AlbumItem) -> Unit)? = null,
+    extras: SearchExtras = spotifySearchExtras(uiState.query.takeIf { uiState.isQuerySubmitted }.orEmpty()),
 ) {
     val query = uiState.query
     val isQuerySubmitted = uiState.isQuerySubmitted
@@ -322,6 +325,7 @@ fun SearchContent(
                             onMixClick = onMixClick,
                             itemContainer = itemContainer,
                             onAlbumPlay = onAlbumPlay,
+                            extras = extras,
                             modifier = Modifier.fillMaxSize(),
                         )
                     }
@@ -966,7 +970,9 @@ private fun SearchResultsList(
     onMixClick: (YTItem) -> Unit = {},
     itemContainer: @Composable (YTItem, @Composable () -> Unit) -> Unit = { _, content -> content() },
     onAlbumPlay: ((AlbumItem) -> Unit)? = null,
+    extras: SearchExtras = SearchExtras.None,
 ) {
+    if (extras.active) return extras.Results(listState, modifier, bottomContentPadding, isWide)
     val selectedFilter = uiState.selectedFilter
     val isSearching = uiState.isSearching
     val isLoadingMore = uiState.isLoadingMore
@@ -1038,6 +1044,7 @@ private fun SearchResultsList(
                             }
                         },
                         allLabel = text.filterAll,
+                        leadingContent = extras.chip,
                     )
                 }
             }
