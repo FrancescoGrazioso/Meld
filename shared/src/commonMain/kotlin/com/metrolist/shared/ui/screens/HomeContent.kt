@@ -76,6 +76,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
+import com.meld.spotify.ui.HomeExtras
+import com.meld.spotify.ui.spotifyHomeExtras
 import com.metrolist.shared.constants.CarouselItemCornerRadius
 import com.metrolist.shared.constants.CarouselItemSize
 import com.metrolist.shared.constants.CarouselItemSpacing
@@ -212,6 +214,7 @@ fun HomeContent(
     header: (LazyListScope.() -> Unit)? = null,
     shelfCache: HomeShelfCache? = null,
     onPlaySongs: ((List<SongItem>) -> Unit)? = null,
+    extras: HomeExtras = spotifyHomeExtras(),
 ) {
     val activeSongId =
         remember(currentSongId) {
@@ -231,6 +234,7 @@ fun HomeContent(
             verticalArrangement = Arrangement.spacedBy(if (isWide) 16.dp else 8.dp),
         ) {
             header?.invoke(this)
+            extras.items(this, isWide)
 
             renderHomeShelves(
                 shelves = effectiveShelves,

@@ -2,6 +2,7 @@ package com.metrolist.shared.viewmodels
 
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
+import com.meld.spotify.library.refreshSpotifyInHome
 import com.metrolist.innertubex.InnerTube
 import com.metrolist.shared.auth.AuthManager
 import com.metrolist.shared.db.MusicDatabase
@@ -1118,6 +1119,7 @@ class HomeViewModel(
     private fun String.canonicalPlaylistId(): String = removePrefix("VL")
 
     fun refresh(onComplete: () -> Unit) {
+        refreshSpotifyInHome()
         chipContentCache = emptyMap()
         val selectedChip = _uiState.value.selectedChip?.takeUnless { Settings.shared.hidePodcasts && it.isPodcastChip }
         loadHomeData(
