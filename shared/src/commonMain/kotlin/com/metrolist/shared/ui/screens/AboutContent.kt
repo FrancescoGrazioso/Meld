@@ -254,7 +254,7 @@ data class AboutCommunityLink(
 
 val aboutCommunityLinks: List<AboutCommunityLink> =
     listOf(
-        AboutCommunityLink(AboutCommunityLinkKind.DISCORD, "https://discord.gg/sAErRUVbsK"),
+        AboutCommunityLink(AboutCommunityLinkKind.DISCORD, "https://discord.gg/bmjByBU6c8"),
         AboutCommunityLink(AboutCommunityLinkKind.REPOSITORY, "https://github.com/FrancescoGrazioso/Meld"),
     )
 
