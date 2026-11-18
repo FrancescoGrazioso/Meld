@@ -55,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.meld.spotify.ui.spotifyPlaylistMenuActions
 import com.metrolist.android.LocalListenTogetherManager
 import com.metrolist.android.LocalPlaylistAdder
 import com.metrolist.android.listentogether.AndroidListenTogetherManager
@@ -415,6 +416,7 @@ fun PlayerMenu(
                                                 currentSong?.albumId?.let { albumId -> { onNavigateToAlbum(albumId) } },
                                                 currentSong?.album?.takeIf { it.isNotBlank() },
                                             )?.let(::add)
+                                            addAll(spotifyPlaylistMenuActions(currentSong?.toSongItem(), onDismiss))
                                             add(
                                                 PlayerMenuAction(
                                                     icon = MetrolistIcons.Outlined.Info,

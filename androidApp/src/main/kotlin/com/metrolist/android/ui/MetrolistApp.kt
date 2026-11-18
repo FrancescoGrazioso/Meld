@@ -156,6 +156,7 @@ import androidx.navigationevent.compose.rememberNavigationEventDispatcherOwner
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.meld.android.spotify.spotifyEntries
+import com.meld.spotify.ui.SpotifyPlaylistPickerHost
 import com.metrolist.android.App
 import com.metrolist.android.BuildConfig
 import com.metrolist.android.LocalListenTogetherManager
@@ -688,6 +689,7 @@ fun MetrolistApp(
         val currentSong by playerConnection.currentSong.collectAsState(initial = null)
         val isPlaying by playerConnection.isPlaying.collectAsState()
         val hasMedia = currentSong != null
+        SpotifyPlaylistPickerHost()
         LaunchedEffect(Unit) {
             PlaybackSnackbarEvents.messages.collect { message ->
                 snackbarHostState.showSnackbar(message)

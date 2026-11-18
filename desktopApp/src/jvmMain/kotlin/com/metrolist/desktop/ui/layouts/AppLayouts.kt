@@ -71,6 +71,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowScope
 import com.meld.spotify.library.refreshSpotifyInLibrary
+import com.meld.spotify.ui.SpotifyPlaylistPickerHost
 import com.metrolist.desktop.state.app.DesktopNavigation
 import com.metrolist.desktop.state.app.UiState
 import com.metrolist.desktop.state.content.HomeState
@@ -453,6 +454,7 @@ private fun WindowScope.AdaptiveDesktopLayout(
                 )
 
                 AddToPlaylistDialog()
+                SpotifyPlaylistPickerHost()
             }
         }
 
