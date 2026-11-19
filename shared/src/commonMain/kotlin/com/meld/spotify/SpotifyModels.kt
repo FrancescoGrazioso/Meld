@@ -21,6 +21,8 @@ data class SpotifyUser(
     val uri: String,
     val name: String?,
     val images: List<SpotifyImage> = emptyList(),
+    /** What the playlist service knows the account by; not always the id. */
+    val username: String = id,
 )
 
 data class SpotifyArtist(
@@ -75,6 +77,9 @@ data class SpotifyPlaylist(
     val ownerId: String? = null,
     val ownerName: String? = null,
     val trackCount: Int? = null,
+    /** Whether the signed-in user may add, remove and move entries, or rename it; null where Spotify did not say. */
+    val canEditItems: Boolean? = null,
+    val canEditDetails: Boolean? = null,
 )
 
 data class SpotifyPlaylistPage(

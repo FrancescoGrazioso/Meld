@@ -11,6 +11,7 @@ import io.ktor.http.ContentType
 import io.ktor.http.Headers
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
+import io.ktor.http.encodeURLPathPart
 import io.ktor.http.fromHttpToGmtDate
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.delay
@@ -246,6 +247,27 @@ class SpotifyApi(
         return query("queryWhatsNewFeed", variables) { parseNewReleases(it, offset, limit) }
     }
 
+    /**
+     * One level of the playlists the user may add [itemUri] to: their own and those of others they contribute to.
+     * Liked Songs and other entries that are not playlists are left out.
+     */
+    suspend fun editablePlaylists(
+        itemUri: String,
+        folderUri: String? = null,
+        offset: Int = 0,
+        limit: Int = 50,
+    ): SpotifyPage<SpotifyLibraryItem> {
+        val variables =
+            buildJsonObject {
+                put("offset", offset)
+                put("limit", limit)
+                put("textFilter", "")
+                if (folderUri != null) put("folderUri", folderUri)
+                putJsonArray("uris") { add(itemUri) }
+            }
+        return query("editablePlaylists", variables) { parseLibraryNode(it, offset, limit, "editablePlaylists") }
+    }
+
     suspend fun addToPlaylist(
         playlistId: String,
         trackUris: List<String>,
@@ -298,6 +320,40 @@ class SpotifyApi(
                 if (description?.isEmpty() == true) putJsonArray("noValue") { add("LIST_DESCRIPTION") }
             }
         playlistV2("editPlaylist", "playlist/$playlistId/changes", listChanges(op))
+    }
+
+    /** Creates an empty playlist at the top of the user's library and returns its id. */
+    suspend fun createPlaylist(name: String): String {
+        require(name.isNotBlank()) { "Empty playlist name" }
+        val username = profile().username
+        val created =
+            playlistV2(
+                "createPlaylist",
+                "playlist",
+                buildJsonObject { putJsonArray("ops") { add(listAttributesOp { putJsonObject("values") { put("name", name) } }) } },
+            )
+        val uri =
+            created.body
+                ?.let { runCatching { json.parseToJsonElement(it) as? JsonObject }.getOrNull() }
+                ?.str("uri")
+                ?.takeIf { it.startsWith(PLAYLIST_URI) }
+                ?: throw SpotifyError.Changed("createPlaylist: no playlist in the response")
+        // Spotify has the playlist from here on, but it is in nobody's library until this second request.
+        val add =
+            buildJsonObject {
+                put("kind", "ADD")
+                putJsonObject("add") {
+                    putJsonArray("items") {
+                        addJsonObject {
+                            put("uri", uri)
+                            putJsonObject("attributes") { put("timestamp", clock().toString()) }
+                        }
+                    }
+                    put("addFirst", true)
+                }
+            }
+        playlistV2("createPlaylist", "user/${username.encodeURLPathPart()}/rootlist/changes", listChanges(add))
+        return uri.removePrefix(PLAYLIST_URI)
     }
 
     suspend fun addToLibrary(uris: List<String>) = mutate("addToLibrary") { putJsonArray("libraryItemUris") { uris.forEach(::add) } }
@@ -659,6 +715,7 @@ class SpotifyApi(
         val json = Json { ignoreUnknownKeys = true }
         const val MAX_RESPONSE_BYTES = 2 * 1024 * 1024
         const val ALBUM_PAGE_SIZE = 50
+        const val PLAYLIST_URI = "spotify:playlist:"
         const val EXPIRY_MARGIN_MS = 60_000L
         const val MIN_TOKEN_TRUST_MS = 60_000L
         const val CLIENT_TOKEN_TTL_MS = 13L * 24 * 3600_000

@@ -75,6 +75,10 @@ private class Server(
     var error: SpotifyError? = null
     var appliesBeforeFailing = false
     var gate: CompletableDeferred<Unit>? = null
+
+    /** What Spotify lets the user do with p3, the playlist of someone else: its entries, its name. */
+    var theirs: Pair<Boolean, Boolean>? = null
+    var editableError: SpotifyError? = null
     val requests = mutableListOf<String>()
     var pageCalls = 0
     private var added = 0
@@ -121,6 +125,23 @@ private class Server(
         description?.let { this.description = it }
     }
 
+    override suspend fun create(name: String): String {
+        request("create:$name") {}
+        return "new1"
+    }
+
+    override suspend fun editable(
+        itemUri: String,
+        folderUri: String?,
+        offset: Int,
+    ): SpotifyPage<SpotifyLibraryItem> {
+        editableError?.let { throw it }
+        val own = if (folderUri == null) listOf("p1", "p2") else listOf("p4")
+        val all = if (folderUri == null && theirs?.first == true) own + "p3" else own
+        val folder = SpotifyLibraryItem.Folder(SpotifyFolder("spotify:folder:f1", "Folder", 1)).takeIf { folderUri == null }
+        return page(all.map { SpotifyLibraryItem.Playlist(playlist(it, it, "unused")) } + listOfNotNull(folder), offset)
+    }
+
     private fun <T> page(
         all: List<T>,
         offset: Int,
@@ -135,8 +156,18 @@ private class Server(
     ): SpotifyPlaylistPage {
         pageCalls++
         val owner = if (id == "p3") "someone" else ME
+        val allowed = theirs.takeIf { id == "p3" }
         return SpotifyPlaylistPage(
-            SpotifyPlaylist(id, "spotify:playlist:$id", name, description, ownerId = owner, trackCount = entries.size),
+            SpotifyPlaylist(
+                id,
+                "spotify:playlist:$id",
+                name,
+                description,
+                ownerId = owner,
+                trackCount = entries.size,
+                canEditItems = allowed?.first,
+                canEditDetails = allowed?.second,
+            ),
             page(entries, offset),
         )
     }
@@ -204,6 +235,7 @@ private class Edits(
         SpotifyPlaylistPicker(
             store,
             editor,
+            server,
             account,
             {
                 lookups++
@@ -262,6 +294,47 @@ class SpotifyPlaylistEditTest {
             assertFalse(screen("", SpotifyCollectionType.LIKED).state.value.canEdit)
             // Without an editor there is nothing to offer.
             assertFalse(SpotifyTracksViewModel(scope, store, account, feed, SpotifyCollectionType.PLAYLIST, "p1").state.value.canEdit)
+        }
+
+    @Test
+    fun aPlaylistOfSomeoneElseIsEditedAsFarAsSpotifyAllows() =
+        test(Server().apply { theirs = true to false }) {
+            val contributed = screen("p3").state.value
+            assertTrue(contributed.canEdit)
+            assertFalse(contributed.canEditDetails)
+            // Where Spotify says nothing, the owner may do both.
+            val own = screen("p1").state.value
+            assertTrue(own.canEdit)
+            assertTrue(own.canEditDetails)
+
+            picker.open(song(3))
+            assertEquals(listOf("p1", "p2", "p3", "p4"), picked?.playlists?.map { it.id })
+            // Spotify not saying which playlists take the song leaves the user's own.
+            server.editableError = SpotifyError.Changed("editablePlaylists: HTTP 400")
+            picker.open(song(3))
+            assertEquals(listOf("p1", "p2", "p4"), picked?.playlists?.map { it.id })
+            assertNull(picked?.error)
+        }
+
+    @Test
+    fun aNewPlaylistIsNamedAfterTheSongAndGetsIt() =
+        test {
+            picker.open(song(3))
+            picker.addToNew()
+            release()
+            assertEquals(listOf("create:Track 3", "add:new1:spotify:track:t3"), server.requests)
+            val created = SpotifyPlaylist("new1", "spotify:playlist:new1", "Track 3", ownerId = ME, trackCount = 0)
+            assertEquals(created, picked?.playlists?.first())
+            assertEquals(setOf("new1"), picked?.added)
+            assertNull(picked?.adding)
+
+            // A playlist Spotify did not make gets nothing added to it.
+            server.error = SpotifyError.Forbidden("createPlaylist")
+            picker.addToNew()
+            release()
+            assertIs<SpotifyError.Forbidden>(picked?.error)
+            assertEquals(3, server.requests.size)
+            assertEquals(setOf("new1"), picked?.added)
         }
 
     @Test

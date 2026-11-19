@@ -44,6 +44,7 @@ class SpotifyHashRegistryTest {
                 "addToPlaylist",
                 "removeFromPlaylist",
                 "moveItemsInPlaylist",
+                "editablePlaylists",
                 "addToLibrary",
                 "removeFromLibrary",
                 "home",
