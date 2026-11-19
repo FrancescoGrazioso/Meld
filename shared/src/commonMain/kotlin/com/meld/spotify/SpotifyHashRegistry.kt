@@ -166,8 +166,6 @@ internal class SpotifyHashRegistry(
                         "b907ad6b088d5bf7680fa81198996d58398c2d55dfcdf59fcc959e0be98a418a",
                         "47b2a1234b17748d332dd0431534f22450e9ecbb3d5ddcdacbd83368636a0990",
                     ),
-                "editPlaylistAttributes" to
-                    Entry("35a1a9ce3a2f4f8c32ee0e24c63c2069c6613c0a0b7e56d0e40dabe69a0b4f80", null),
                 "addToLibrary" to
                     Entry(
                         "896ebcb47815681340860d121cb5d494e157e2a78d3950385cd54e0393c67148",

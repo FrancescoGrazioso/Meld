@@ -31,6 +31,7 @@ import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 internal const val SPOTIFY_PATHFINDER_URL = "https://api-partner.spotify.com/pathfinder/v2/query"
+internal const val SPOTIFY_PLAYLIST_URL = "https://spclient.wg.spotify.com/playlist/v2"
 internal const val SPOTIFY_APP_VERSION = "1.2.96.390.gd46a85db"
 private const val USER_AGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:153.0) Gecko/20100101 Firefox/153.0"
 private const val WEB_CLIENT_ID = "d8a5ed958d274c2e8ee717e6a4b0971d"
@@ -38,7 +39,7 @@ private const val OPEN_HOST = "open.spotify.com"
 private const val TOKEN_URL = "https://$OPEN_HOST/api/token"
 private const val CLIENT_TOKEN_URL = "https://clienttoken.spotify.com/v1/clienttoken"
 private const val DEFAULT_MAX_BYTES = 256 * 1024
-private val COOKIE_EXEMPT_HOSTS = setOf("api-partner.spotify.com", "clienttoken.spotify.com")
+private val COOKIE_EXEMPT_HOSTS = setOf("api-partner.spotify.com", "clienttoken.spotify.com", "spclient.wg.spotify.com")
 
 @Serializable
 internal class SpotifyAccessToken(

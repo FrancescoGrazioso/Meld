@@ -44,7 +44,6 @@ class SpotifyHashRegistryTest {
                 "addToPlaylist",
                 "removeFromPlaylist",
                 "moveItemsInPlaylist",
-                "editPlaylistAttributes",
                 "addToLibrary",
                 "removeFromLibrary",
                 "home",
@@ -56,6 +55,8 @@ class SpotifyHashRegistryTest {
         }
         assertEquals(listOf(PROFILE_HASH, PROFILE_PREVIOUS_HASH), registry.candidates("profileAttributes"))
         assertTrue(registry.candidates("unknownOperation").isEmpty())
+        // The web player no longer has it: a playlist is renamed through the playlist service instead.
+        assertTrue(registry.candidates("editPlaylistAttributes").isEmpty())
     }
 
     @Test
