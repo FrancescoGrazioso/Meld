@@ -1,5 +1,6 @@
 package com.metrolist.shared.settings
 
+import com.meld.migration.LEGACY_MELD_SPOTIFY_COOKIE_KEY
 import com.metrolist.shared.constants.DiscordPendingAuthSessionKey
 import com.metrolist.shared.constants.LyricsOpenRouterOAuthKey
 import com.metrolist.shared.constants.LyricsOpenRouterOAuthSessionKey
@@ -31,4 +32,5 @@ internal val secureSettingsKeys =
         "deviceConnectPairedDevices",
         "listenTogetherPairedRoomCode",
         "spotifySession",
+        LEGACY_MELD_SPOTIFY_COOKIE_KEY,
     )

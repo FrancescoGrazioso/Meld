@@ -87,6 +87,30 @@ class SpotifySessionOwner(
             loadProfile()
         }
 
+    /**
+     * Signs in with the cookie an older install left behind, through the same exchange as [connect].
+     * Returns false only when Spotify could not be asked, so that the caller keeps the cookie and tries
+     * again; a cookie Spotify refuses leaves the user in [Expired], and a session that is already
+     * there is not replaced.
+     */
+    suspend fun adopt(spDc: String): Boolean =
+        mutex.withLock {
+            if (spDc(loadSession()) != null) return@withLock true
+            try {
+                api.login(spDc)
+            } catch (error: SpotifyError.SessionExpired) {
+                saveAccount(json.encodeToString(Account.serializer(), Account(expired = true)))
+                mutableState.value = stored()
+                return@withLock true
+            } catch (error: SpotifyError) {
+                logger("Carrying the old session over failed: ${error.message}")
+                return@withLock false
+            }
+            saveAccount("")
+            loadProfile()
+            true
+        }
+
     suspend fun verify() =
         mutex.withLock {
             if (spDc(loadSession()) != null) loadProfile()
