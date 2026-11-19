@@ -24,7 +24,7 @@ private val VERSION_1 =
 
 class MeldDatabaseMigrationTest {
     @Test
-    fun versionOneOpensAsVersionTwoWithItsMatchesAndTheLikeTables() =
+    fun versionOneOpensAsTheCurrentVersionWithItsMatchesAndTheLaterTables() =
         runBlocking<Unit> {
             val file = Files.createTempFile("meld-migration", ".db").toFile()
             try {
@@ -45,6 +45,10 @@ class MeldDatabaseMigrationTest {
                     likes.insertLikedTracks(listOf(SpotifyLikedTrackEntity("sp1", "yt1", pending = false)))
                     assertEquals(listOf("yt1"), likes.outboxIds())
                     assertEquals(listOf("sp1"), likes.likedTracksOf("yt1").map { it.spotifyId })
+
+                    val qobuz = QobuzMatchEntity("yt1", "q1", hires = true, bitDepth = 24, samplingRateKhz = 96.0, matchedAt = 1)
+                    database.qobuzMatchDao().insertIfAbsent(listOf(qobuz, qobuz.copy(qobuzTrackId = "q2")))
+                    assertEquals(listOf(qobuz), database.qobuzMatchDao().all())
                 } finally {
                     database.close()
                 }
