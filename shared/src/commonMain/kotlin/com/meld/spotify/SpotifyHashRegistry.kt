@@ -131,10 +131,12 @@ internal class SpotifyHashRegistry(
                     ),
                 "fetchLibraryTracks" to
                     Entry("087278b20b743578a6262c2b0b4bcd20d879c503cc359a2285baf083ef944240", null),
+                // The web player has moved on to the second hash, whose query takes variables Meld does not send yet.
+                // It is the fallback for the day Spotify drops the first, which is the one the request was written for.
                 "searchDesktop" to
                     Entry(
                         "db61238974d27839a136c9dc02bfdbe3fab7635f21cf85976ebff9a1ee281345",
-                        "4801118d4a100f756e833d33984436a3899cff359c532f8fd3aaf174b60b3b49",
+                        "eef7cc54888d91bdd6802623477873caa3948ae173a0c34fd86827b267e94c03",
                     ),
                 "queryArtistOverview" to
                     Entry(
