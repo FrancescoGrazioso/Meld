@@ -36,14 +36,29 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.concurrent.Volatile
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
-/** [importTotal] is 0 unless Spotify likes are being looked up on YouTube; [syncedAt] is 0 before the first sync. */
+/** What the last "sync now" came to. */
+sealed interface SpotifyLikeSyncResult {
+    /** Every direction that is switched on went through; [sent] likes and un-likes reached Spotify. */
+    data class Done(
+        val sent: Int,
+    ) : SpotifyLikeSyncResult
+
+    data class Failed(
+        val error: SpotifyError,
+    ) : SpotifyLikeSyncResult
+}
+
+/**
+ * [importTotal] is 0 unless Spotify likes are being looked up on YouTube. [syncedAt] is when every direction
+ * that is switched on last went through, 0 before the first time. [result] is null until "sync now" has run
+ * and while it runs.
+ */
 data class SpotifyLikeSyncStatus(
     val pending: Int = 0,
     val notFound: Int = 0,
@@ -51,6 +66,7 @@ data class SpotifyLikeSyncStatus(
     val syncing: Boolean = false,
     val importDone: Int = 0,
     val importTotal: Int = 0,
+    val result: SpotifyLikeSyncResult? = null,
 )
 
 /**
@@ -82,9 +98,9 @@ class SpotifyLikeSync(
     // Held for one outbox entry at a time, so a new intent never waits for more than one request.
     private val outboxLock = Mutex()
     private val pullLock = Mutex()
+    private val manualLock = Mutex()
     private val intents = Channel<Pair<String, Boolean>>(Channel.UNLIMITED)
     private val flushRequests = Channel<Unit>(Channel.CONFLATED)
-    private val pullRequests = Channel<Unit>(Channel.CONFLATED)
     private val mutableStatus = MutableStateFlow(SpotifyLikeSyncStatus())
     private val mutableLikedIds = MutableStateFlow(emptySet<String>())
 
@@ -92,6 +108,10 @@ class SpotifyLikeSync(
     // user's, one could wait in the outbox and later remove a track the user has liked again on Spotify.
     @Volatile
     private var removing = emptySet<String>()
+
+    // The likes and un-likes Spotify has taken since the app started.
+    @Volatile
+    private var sent = 0
 
     val status: StateFlow<SpotifyLikeSyncStatus> = mutableStatus.asStateFlow()
 
@@ -111,15 +131,40 @@ class SpotifyLikeSync(
         scope.launch { connection.state.collectLatest { state -> guarded { follow(state) } } }
     }
 
-    /** The user's "sync now", also called when a switch is turned on: retries what was parked and reads Spotify again. */
+    /** The user's "sync now", also called when a switch is turned on. */
     fun syncNow() {
-        scope.launch {
-            guarded {
+        scope.launch { guarded { sync() } }
+    }
+
+    /**
+     * Runs the directions that are switched on, and no other. To Spotify: the songs it did not have are looked
+     * for again and everything waiting is sent. From Spotify: the Liked Songs are read again. The status is
+     * [SpotifyLikeSyncStatus.syncing] meanwhile and holds the outcome afterwards.
+     */
+    internal suspend fun sync() {
+        if (!manualLock.tryLock()) return
+        var result: SpotifyLikeSyncResult? = null
+        mutableStatus.update { it.copy(syncing = true, result = null) }
+        try {
+            val sentBefore = sent
+            val push = canPush()
+            val pull = canPull()
+            var error: SpotifyError? = null
+            if (push) {
                 dao.retryNotFound()
-                publish()
+                error = flush()
+                // What is left is the background sender's, with its waits between attempts.
+                if (error != null) flushRequests.trySend(Unit)
             }
-            flushRequests.trySend(Unit)
-            pullRequests.trySend(Unit)
+            if (pull) pull(force = true) { error = error ?: it }
+            if (!push && !pull) return
+            val failure = error
+            if (failure == null) settings().meldSpotifyLikesSyncedAt = now()
+            result = failure?.let(SpotifyLikeSyncResult::Failed) ?: SpotifyLikeSyncResult.Done(sent - sentBefore)
+        } finally {
+            manualLock.unlock()
+            val syncedAt = settings().meldSpotifyLikesSyncedAt
+            mutableStatus.update { it.copy(syncing = false, result = result, syncedAt = syncedAt) }
         }
     }
 
@@ -129,10 +174,9 @@ class SpotifyLikeSync(
             return
         }
         flushRequests.trySend(Unit)
-        var force = false
         while (true) {
-            guarded { pull(force) }
-            force = withTimeoutOrNull(PULL_INTERVAL) { pullRequests.receive() } != null
+            guarded { pull() }
+            delay(PULL_INTERVAL)
         }
     }
 
@@ -167,6 +211,7 @@ class SpotifyLikeSync(
             meldSpotifyLikesFingerprint = ""
             meldSpotifyLikesSyncedAt = 0
         }
+        mutableStatus.update { it.copy(result = null) }
         publish()
     }
 
@@ -230,6 +275,7 @@ class SpotifyLikeSync(
                     return true
                 }
                 remote.addToLibrary(listOf(track.uri))
+                sent++
                 dao.putLikedTracks(listOf(SpotifyLikedTrackEntity(track.id, youtubeId, pending = false)))
                 onSpotifyChanged(listOf(track), emptySet())
             }
@@ -237,6 +283,7 @@ class SpotifyLikeSync(
             val targets = likedTargets(youtubeId)
             if (targets.isNotEmpty()) {
                 remote.removeFromLibrary(targets.map { TRACK_URI + it })
+                sent++
                 dao.deleteLikedTracks(targets)
                 onSpotifyChanged(emptyList(), targets.toSet())
             }
@@ -316,10 +363,19 @@ class SpotifyLikeSync(
     /**
      * Reads the Liked Songs and applies what changed there. Returns false when it did not run or Spotify
      * could not be read to the end; then nothing was un-liked. Without [force], a list whose size and
-     * first page are those of the last complete read is not read further.
+     * first page are those of the last complete read is not read further, and a read already running is
+     * not waited for. [onError] gets what Spotify answered when it could not be read.
      */
-    internal suspend fun pull(force: Boolean = false): Boolean {
-        if (!canPull() || !pullLock.tryLock()) return false
+    internal suspend fun pull(
+        force: Boolean = false,
+        onError: (SpotifyError) -> Unit = {},
+    ): Boolean {
+        if (!canPull()) return false
+        if (force) {
+            pullLock.lock()
+        } else if (!pullLock.tryLock()) {
+            return false
+        }
         mutableStatus.update { it.copy(syncing = true) }
         try {
             val prefs = settings()
@@ -360,6 +416,7 @@ class SpotifyLikeSync(
             return true
         } catch (error: SpotifyError) {
             logger("Liked songs not read: ${error.message}")
+            onError(error)
             return false
         } finally {
             pullLock.unlock()
@@ -440,7 +497,14 @@ class SpotifyLikeSync(
         for (request in flushRequests) {
             retry?.cancel()
             var error: SpotifyError? = null
-            guarded { error = flush() }
+            guarded {
+                error = flush()
+                // With nothing to bring in from Spotify, an emptied outbox is all there is to a sync.
+                if (error == null && canPush() && !settings().meldSpotifyLikesPull) {
+                    settings().meldSpotifyLikesSyncedAt = now()
+                    publish()
+                }
+            }
             val wait =
                 when (val stopped = error) {
                     null -> null.also { failures = 0 }

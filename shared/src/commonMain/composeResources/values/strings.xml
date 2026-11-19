@@ -5511,4 +5511,7 @@
     <string name="meld_spotify_reorder_loading">Loading every song before the playlist can be reordered…</string>
     <string name="meld_spotify_on_home">Show Spotify on Home</string>
     <string name="meld_spotify_on_home_description">Your Spotify home feed is shown above the other sections of the Home screen.</string>
+    <string name="meld_spotify_likes_syncing">Syncing…</string>
+    <string name="meld_spotify_likes_up_to_date">Up to date</string>
+    <string name="meld_spotify_likes_sent">%1$d sent to Spotify</string>
 </resources>

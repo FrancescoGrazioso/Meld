@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.meld.spotify.SpotifyConnection
 import com.meld.spotify.SpotifyConnectionState
 import com.meld.spotify.likes.SpotifyLikeSync
+import com.meld.spotify.likes.SpotifyLikeSyncResult
 import com.meld.spotify.likes.SpotifyLikeSyncStatus
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.account
@@ -50,7 +51,10 @@ import com.metrolist.shared.generated.resources.meld_spotify_likes_pull
 import com.metrolist.shared.generated.resources.meld_spotify_likes_pull_description
 import com.metrolist.shared.generated.resources.meld_spotify_likes_push
 import com.metrolist.shared.generated.resources.meld_spotify_likes_push_description
+import com.metrolist.shared.generated.resources.meld_spotify_likes_sent
 import com.metrolist.shared.generated.resources.meld_spotify_likes_sync_now
+import com.metrolist.shared.generated.resources.meld_spotify_likes_syncing
+import com.metrolist.shared.generated.resources.meld_spotify_likes_up_to_date
 import com.metrolist.shared.generated.resources.meld_spotify_on_home
 import com.metrolist.shared.generated.resources.meld_spotify_on_home_description
 import com.metrolist.shared.generated.resources.meld_spotify_overview
@@ -192,20 +196,29 @@ internal fun SettingsUiRegistryBuilder.spotifyPage(onSignIn: (() -> Unit)?): Set
     return SettingsPageId.SPOTIFY
 }
 
-/** The status line: the import while it runs, else the last sync, then what waits and what Spotify does not have. */
+/** The status line: what is running or how "sync now" ended, the last sync, then what waits and what Spotify does not have. */
 @Composable
 private fun SpotifyLikeSyncStatus.text(): String {
-    val progress =
-        if (importTotal > 0) {
-            stringResource(Res.string.meld_spotify_likes_importing, importDone, importTotal)
-        } else if (syncedAt > 0) {
+    val outcome = result
+    val now =
+        when {
+            importTotal > 0 -> stringResource(Res.string.meld_spotify_likes_importing, importDone, importTotal)
+            syncing -> stringResource(Res.string.meld_spotify_likes_syncing)
+            outcome is SpotifyLikeSyncResult.Failed -> stringResource(outcome.error.text())
+            outcome is SpotifyLikeSyncResult.Done && outcome.sent > 0 -> stringResource(Res.string.meld_spotify_likes_sent, outcome.sent)
+            outcome is SpotifyLikeSyncResult.Done && pending == 0 -> stringResource(Res.string.meld_spotify_likes_up_to_date)
+            else -> null
+        }
+    val last =
+        if (syncedAt > 0) {
             val time = Instant.fromEpochMilliseconds(syncedAt).toLocalDateTime(TimeZone.currentSystemDefault())
             stringResource(Res.string.meld_spotify_likes_last_sync, "${time.date} ${time.hour.twoDigits()}:${time.minute.twoDigits()}")
         } else {
             stringResource(Res.string.meld_spotify_likes_never_synced)
         }
     return listOfNotNull(
-        progress,
+        now,
+        last,
         stringResource(Res.string.meld_spotify_likes_pending, pending).takeIf { pending > 0 },
         stringResource(Res.string.meld_spotify_likes_not_found, notFound).takeIf { notFound > 0 },
     ).joinToString(" • ")

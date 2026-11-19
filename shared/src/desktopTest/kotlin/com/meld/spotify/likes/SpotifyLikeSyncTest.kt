@@ -630,6 +630,77 @@ class SpotifyLikeSyncTest {
             assertEquals(emptyList(), spotify.added)
         }
 
+    @Test
+    fun syncNowSaysWhatItDidInEveryCombinationOfTheSwitches() =
+        withApp { sync ->
+            val local = local as FakeLocal
+
+            fun status() = sync.status.value
+
+            // To Spotify only: what waits is sent, the date moves, and nothing is read or brought in from Spotify.
+            settings.meldSpotifyLikesPull = false
+            spotify.like(1)
+            local.like(2)
+            sync.record("yt2", liked = true)
+            assertEquals(0, status().syncedAt)
+            sync.sync()
+            assertEquals(SpotifyLikeSyncResult.Done(sent = 1), status().result)
+            assertFalse(status().syncing)
+            assertEquals(listOf(uri(2)), spotify.added)
+            assertEquals(setOf("yt2"), songs.keys)
+            assertEquals(0, spotify.pageRequests)
+            val first = status().syncedAt
+            assertTrue(first > 0)
+
+            // Nothing waits: that is an answer too, and it is as recent as the tap.
+            sync.sync()
+            assertEquals(SpotifyLikeSyncResult.Done(sent = 0), status().result)
+            assertTrue(status().syncedAt > first)
+
+            // Spotify cannot be reached: the error is the answer, the like keeps waiting and the date stays.
+            local.like(3)
+            sync.record("yt3", liked = true)
+            spotify.error = SpotifyError.Offline(IOException("no route to host"))
+            val before = status().syncedAt
+            sync.sync()
+            assertIs<SpotifyError.Offline>((status().result as SpotifyLikeSyncResult.Failed).error)
+            assertEquals(1, status().pending)
+            assertEquals(before, status().syncedAt)
+            assertEquals(before, settings.meldSpotifyLikesSyncedAt)
+            spotify.error = null
+
+            // Both ways: the like goes out and the Spotify likes come in.
+            settings.meldSpotifyLikesPull = true
+            sync.sync()
+            assertEquals(SpotifyLikeSyncResult.Done(sent = 1), status().result)
+            assertEquals(listOf(uri(2), uri(3)), spotify.added)
+            assertEquals(setOf("yt1", "yt2", "yt3"), songs.keys)
+            assertEquals(0, status().pending)
+
+            // From Spotify only: read again, nothing sent.
+            settings.meldSpotifyLikesPush = false
+            spotify.like(4)
+            sync.sync()
+            assertEquals(SpotifyLikeSyncResult.Done(sent = 0), status().result)
+            assertTrue("yt4" in songs.keys)
+            assertEquals(listOf(uri(2), uri(3)), spotify.added)
+            val read = status().syncedAt
+            spotify.error = SpotifyError.Unavailable(503)
+            sync.sync()
+            assertIs<SpotifyError.Unavailable>((status().result as SpotifyLikeSyncResult.Failed).error)
+            assertEquals(read, status().syncedAt)
+            spotify.error = null
+
+            // Neither: there is nothing to do, and nothing is claimed.
+            settings.meldSpotifyLikesPull = false
+            val pages = spotify.pageRequests
+            sync.sync()
+            assertNull(status().result)
+            assertFalse(status().syncing)
+            assertEquals(read, status().syncedAt)
+            assertEquals(pages, spotify.pageRequests)
+        }
+
     /** The real like state of the app, with upstream's YouTube refresh played by its own `replaceLikesFromRemote`. */
     @Test
     fun wiredToTheAppItCoexistsWithTheYouTubeLikeSync() =
