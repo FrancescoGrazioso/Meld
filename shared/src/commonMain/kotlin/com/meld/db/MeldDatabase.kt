@@ -18,8 +18,8 @@ const val MELD_DATABASE_NAME = "meld.db"
  * unknown tables, and every upstream schema bump would collide with ours.
  */
 @Database(
-    entities = [SpotifyMatchEntity::class, SpotifyLikeOutboxEntity::class, SpotifyLikedTrackEntity::class],
-    version = 2,
+    entities = [SpotifyMatchEntity::class, SpotifyLikeOutboxEntity::class, SpotifyLikedTrackEntity::class, QobuzMatchEntity::class],
+    version = 3,
     exportSchema = true,
 )
 @ColumnTypeConverters(MeldConverters::class)
@@ -28,6 +28,8 @@ abstract class MeldDatabase : RoomDatabase() {
     abstract fun spotifyMatchDao(): SpotifyMatchDao
 
     abstract fun spotifyLikeDao(): SpotifyLikeDao
+
+    abstract fun qobuzMatchDao(): QobuzMatchDao
 }
 
 @Suppress("KotlinNoActualForExpect")
@@ -56,5 +58,17 @@ val MELD_MIGRATION_1_2 =
         }
     }
 
+val MELD_MIGRATION_2_3 =
+    object : Migration(2, 3) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL(
+                "CREATE TABLE IF NOT EXISTS `qobuz_match` (`youtubeId` TEXT NOT NULL, `qobuzTrackId` TEXT NOT NULL, " +
+                    "`hires` INTEGER NOT NULL, `bitDepth` INTEGER, `samplingRateKhz` REAL, `matchedAt` INTEGER NOT NULL, " +
+                    "PRIMARY KEY(`youtubeId`))",
+            )
+        }
+    }
+
 /** The database every platform opens: the platform's builder plus Meld's migrations. */
-fun buildMeldDatabase(context: Any? = null): MeldDatabase = getMeldDatabaseBuilder(context).addMigrations(MELD_MIGRATION_1_2).build()
+fun buildMeldDatabase(context: Any? = null): MeldDatabase =
+    getMeldDatabaseBuilder(context).addMigrations(MELD_MIGRATION_1_2, MELD_MIGRATION_2_3).build()
