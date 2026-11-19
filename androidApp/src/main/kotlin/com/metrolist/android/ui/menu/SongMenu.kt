@@ -16,7 +16,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import com.meld.spotify.ui.spotifyPlaylistMenuActions
 import com.metrolist.android.LocalListenTogetherManager
 import com.metrolist.android.LocalPlaylistAdder
 import com.metrolist.android.listentogether.AndroidListenTogetherManager
@@ -213,7 +212,7 @@ fun SongMenu(
                             onDismiss()
                         }
                     },
-                ) + spotifyPlaylistMenuActions(song, onDismiss),
+                ),
         )
     if (showDetails) {
         SongDetailsSheet(song = song, onDismiss = onDismiss)

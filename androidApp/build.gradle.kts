@@ -214,7 +214,7 @@ android {
         applicationId = "com.meld.app"
         minSdk = 24
         targetSdk = 37
-        versionCode = 28
+        versionCode = 29
         versionName = appVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
