@@ -17,6 +17,7 @@ import androidx.room3.exclusiveTransaction
 import androidx.room3.useReaderConnection
 import androidx.room3.useWriterConnection
 import androidx.sqlite.driver.AndroidSQLiteDriver
+import com.meld.migration.prepareLegacyMeldDatabase
 import com.metrolist.shared.backup.BACKUP_DATABASE_ENTRY
 import com.metrolist.shared.backup.BACKUP_MANIFEST_ENTRY
 import com.metrolist.shared.backup.BACKUP_SETTINGS_ENTRY
@@ -415,6 +416,7 @@ class BackupRestoreManager(
         legacy: File,
         current: File,
     ) {
+        prepareLegacyMeldDatabase(legacy)
         val legacyVersion = readDatabaseVersion(legacy)
         val converted = File(context.cacheDir, "converted-$BACKUP_DATABASE_ENTRY")
         try {
