@@ -38,6 +38,8 @@ import com.metrolist.shared.generated.resources.close
 import com.metrolist.shared.generated.resources.meld_spotify_add_to_playlist
 import com.metrolist.shared.generated.resources.meld_spotify_added
 import com.metrolist.shared.generated.resources.meld_spotify_already_in_playlist
+import com.metrolist.shared.generated.resources.meld_spotify_new_playlist
+import com.metrolist.shared.generated.resources.meld_spotify_new_playlist_description
 import com.metrolist.shared.generated.resources.meld_spotify_not_found
 import com.metrolist.shared.generated.resources.meld_spotify_searching
 import com.metrolist.shared.generated.resources.n_song
@@ -129,6 +131,8 @@ private fun ColumnScope.PickerBody(
         }
 
         state.playlists.isEmpty() -> {
+            NewPlaylistRow(state, picker)
+            if (state.adding != null) LinearProgressIndicator(Modifier.fillMaxWidth())
             SpotifyNotice(stringResource(Res.string.no_editable_playlists), null, {})
         }
 
@@ -155,6 +159,7 @@ private fun ColumnScope.PickerBody(
             val shown = state.shown
             if (shown.isEmpty()) SpotifyNotice(stringResource(Res.string.search_no_results), null, {})
             DragScrollableColumn(Modifier.fillMaxWidth().weight(1f, fill = false)) {
+                if (state.query.isBlank()) item(key = "new") { NewPlaylistRow(state, picker) }
                 items(shown, key = { it.id }) { playlist ->
                     SpotifyLibraryRow(
                         title = playlist.name,
@@ -172,6 +177,20 @@ private fun ColumnScope.PickerBody(
             }
         }
     }
+}
+
+@Composable
+private fun NewPlaylistRow(
+    state: SpotifyPickerState,
+    picker: SpotifyPlaylistPicker,
+) {
+    SpotifyLibraryRow(
+        title = stringResource(Res.string.meld_spotify_new_playlist),
+        subtitle = stringResource(Res.string.meld_spotify_new_playlist_description, state.track?.name.orEmpty()),
+        imageUrl = null,
+        icon = MetrolistIcons.AutoMirrored.Outlined.PlaylistAdd,
+        onClick = picker::addToNew,
+    )
 }
 
 private const val PICKER_IMAGE_SIZE = 150

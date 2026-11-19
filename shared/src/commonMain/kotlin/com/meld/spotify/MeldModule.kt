@@ -131,6 +131,7 @@ fun meldModule(
             SpotifyPlaylistPicker(
                 store = get(),
                 editor = get(),
+                remote = get(),
                 connection = get(),
                 findOnSpotify = get<SpotifyLikeSync>()::spotifyTrackFor,
                 scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),

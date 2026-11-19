@@ -616,6 +616,89 @@ class SpotifyApiTest {
         }
 
     @Test
+    fun aNewPlaylistIsMadeAndThenPutAtTheTopOfTheLibrary() =
+        runTest {
+            val spotify = FakeSpotify { 1_700_000_000_000 }.signedIn(accessToken = "access")
+            spotify.onQuery =
+                { respond("""{"data":{"me":{"profile":{"uri":"spotify:user:user%20name","username":"user name","name":"Tester"}}}}""") }
+            spotify.onPlaylistService = { respond("""{"uri":"spotify:playlist:new1","revision":"AAAAAQ=="}""") }
+            val api = spotify.api()
+
+            assertEquals("new1", api.createPlaylist("Road trip"))
+            assertEquals(
+                listOf(
+                    "POST https://spclient.wg.spotify.com/playlist/v2/playlist " +
+                        """{"ops":[{"kind":"UPDATE_LIST_ATTRIBUTES","updateListAttributes":{"newAttributes":{"values":{"name":"Road trip"}}}}]}""",
+                    "POST https://spclient.wg.spotify.com/playlist/v2/user/user%20name/rootlist/changes " +
+                        """{"deltas":[{"ops":[{"kind":"ADD","add":{"items":[{"uri":"spotify:playlist:new1",""" +
+                        """"attributes":{"timestamp":"1700000000000"}}],"addFirst":true}}],"info":{"source":{"client":"WEBPLAYER"}}}]}""",
+                ),
+                spotify.writes.map { "${it.method.value} ${it.url} ${(it.body as TextContent).text}" },
+            )
+
+            // Without a playlist in the answer there is nothing to put in the library.
+            spotify.writes.clear()
+            spotify.onPlaylistService = { respond("{}") }
+            assertFailsWith<SpotifyError.Changed> { api.createPlaylist("Road trip") }
+            assertEquals(1, spotify.writes.size)
+            // The profile of an account without a separate username: the id of its uri.
+            spotify.onQuery = { respond(PROFILE) }
+            assertEquals("u1", api.profile().username)
+        }
+
+    @Test
+    fun playlistsTheUserMayAddToAndWhatTheyMayEditAreReadFromSpotify() =
+        runBlocking<Unit> {
+            val spotify = FakeSpotify().signedIn(accessToken = "access")
+            spotify.onQuery = {
+                respond(
+                    """{"data":{"me":{"editablePlaylists":{"__typename":"EditablePlaylistPage","totalCount":4,"items":[""" +
+                        """{"item":{"__typename":"LibraryPseudoPlaylistResponseWrapper","data":{"__typename":"PseudoPlaylist",""" +
+                        """"uri":"spotify:collection:tracks","name":"Liked Songs"}},"pinned":false,"curates":false},""" +
+                        """{"item":{"__typename":"PlaylistResponseWrapper","data":{"__typename":"Playlist","uri":"spotify:playlist:p3",""" +
+                        """"name":"Theirs","images":{"items":[]}}},"pinned":false,"curates":true},""" +
+                        """{"item":{"__typename":"LibraryFolderResponseWrapper","data":{"__typename":"Folder",""" +
+                        """"uri":"spotify:user:u1:folder:f1","name":"Folder"}},"pinned":false},""" +
+                        """{"item":{"__typename":"UnknownType"}}]}}}}""",
+                )
+            }
+            val page = spotify.api().editablePlaylists("spotify:track:t1", folderUri = "spotify:user:u1:folder:f0")
+            assertEquals(
+                listOf(
+                    SpotifyLibraryItem.Playlist(SpotifyPlaylist("p3", "spotify:playlist:p3", "Theirs")),
+                    SpotifyLibraryItem.Folder(SpotifyFolder("spotify:user:u1:folder:f1", "Folder", 0)),
+                ),
+                page.items,
+            )
+            assertNull(page.nextOffset)
+            val query = spotify.queries.single()
+            assertEquals("editablePlaylists", query.operation)
+            assertEquals("d5c4b8096437dcc2ac9528c91dfcd299e35b747cda2f8f75d28f41f49c5092ba", query.hash)
+            assertEquals(
+                """{"offset":0,"limit":50,"textFilter":"","folderUri":"spotify:user:u1:folder:f0","uris":["spotify:track:t1"]}""",
+                query.variables.toString(),
+            )
+
+            suspend fun playlist(extra: String): SpotifyPlaylist {
+                val content = """"content":{"totalCount":0,"items":[]}"""
+                spotify.onQuery = { respond("""{"data":{"playlistV2":{"__typename":"Playlist","name":"Mix",$content$extra}}}""") }
+                return spotify.api().playlist("p3").playlist
+            }
+
+            fun allowed(
+                permission: String,
+                details: Boolean,
+            ) = ""","basePermission":"$permission","currentUserCapabilities":{"canEditItems":true,"canEditMetadata":$details}"""
+
+            val contributed = playlist(allowed("VIEWER", details = false))
+            assertEquals(true, contributed.canEditItems)
+            assertEquals(false, contributed.canEditDetails)
+            // As in the web player, a playlist open to everyone with its link is not edited from here.
+            assertEquals(false, playlist(allowed("CONTRIBUTOR", details = true)).canEditItems)
+            assertNull(playlist("").canEditItems)
+        }
+
+    @Test
     fun networkFailureIsOffline() =
         runTest {
             val spotify = FakeSpotify { currentTime }.signedIn(accessToken = "access")

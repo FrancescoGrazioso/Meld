@@ -242,16 +242,23 @@ internal fun SpotifyTracksContent(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
-                            if (state.canEdit) {
+                            if (state.canEdit || state.canEditDetails) {
                                 Row {
-                                    IconButton(onClick = { editingDetails = true }, shapes = IconButtonDefaults.shapes()) {
-                                        Icon(MetrolistIcons.Outlined.Edit, contentDescription = stringResource(Res.string.edit_playlist))
+                                    if (state.canEditDetails) {
+                                        IconButton(onClick = { editingDetails = true }, shapes = IconButtonDefaults.shapes()) {
+                                            Icon(
+                                                MetrolistIcons.Outlined.Edit,
+                                                contentDescription = stringResource(Res.string.edit_playlist),
+                                            )
+                                        }
                                     }
-                                    IconToggleButton(checked = reorderMode, onCheckedChange = { reorderMode = it }) {
-                                        Icon(
-                                            MetrolistIcons.Outlined.DragIndicator,
-                                            contentDescription = stringResource(Res.string.playlist_reorder),
-                                        )
+                                    if (state.canEdit) {
+                                        IconToggleButton(checked = reorderMode, onCheckedChange = { reorderMode = it }) {
+                                            Icon(
+                                                MetrolistIcons.Outlined.DragIndicator,
+                                                contentDescription = stringResource(Res.string.playlist_reorder),
+                                            )
+                                        }
                                     }
                                 }
                                 if (reorderMode && !tracks.complete && tracks.error == null) {

@@ -51,4 +51,12 @@ internal class SessionSpotifyPlaylists(
         name: String?,
         description: String?,
     ) = owner.call { editPlaylist(playlistId, name, description) }
+
+    override suspend fun create(name: String) = owner.call { createPlaylist(name) }
+
+    override suspend fun editable(
+        itemUri: String,
+        folderUri: String?,
+        offset: Int,
+    ) = owner.call { editablePlaylists(itemUri, folderUri, offset) }
 }

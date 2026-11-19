@@ -21,7 +21,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.launch
 
-/** What the header of a track list shows. [albums] is only filled for an artist, [description] and [ownerId] for a playlist. */
+/**
+ * What the header of a track list shows. [albums] is only filled for an artist; [description], [ownerId] and
+ * what Spotify says the user may edit only for a playlist.
+ */
 data class SpotifyCollectionInfo(
     val title: String,
     val owner: String? = null,
@@ -30,6 +33,8 @@ data class SpotifyCollectionInfo(
     val albums: List<SpotifyAlbum> = emptyList(),
     val description: String? = null,
     val ownerId: String? = null,
+    val canEditItems: Boolean? = null,
+    val canEditDetails: Boolean? = null,
 )
 
 class SpotifyCollection internal constructor(
@@ -138,6 +143,8 @@ class SpotifyLibraryStore(
                         trackCount = playlist.trackCount ?: page.tracks.total,
                         description = playlist.description,
                         ownerId = playlist.ownerId,
+                        canEditItems = playlist.canEditItems,
+                        canEditDetails = playlist.canEditDetails,
                     )
                 page.tracks
             }

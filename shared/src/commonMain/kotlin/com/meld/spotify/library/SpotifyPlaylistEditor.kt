@@ -2,6 +2,8 @@ package com.meld.spotify.library
 
 import com.meld.spotify.SpotifyConnectionState
 import com.meld.spotify.SpotifyError
+import com.meld.spotify.SpotifyLibraryItem
+import com.meld.spotify.SpotifyPage
 import com.meld.spotify.SpotifyPlaylist
 import com.meld.spotify.SpotifyTrack
 import com.meld.spotify.SpotifyTrackItem
@@ -46,11 +48,21 @@ interface SpotifyPlaylistRemote {
         name: String?,
         description: String?,
     )
+
+    /** Creates an empty playlist at the top of the library and returns its id. */
+    suspend fun create(name: String): String
+
+    /** One level of the playlists the user may add [itemUri] to, those of others they contribute to included. */
+    suspend fun editable(
+        itemUri: String,
+        folderUri: String?,
+        offset: Int,
+    ): SpotifyPage<SpotifyLibraryItem>
 }
 
 /**
- * Whether the signed-in user may edit a playlist owned by [ownerId]. Only the owner: what Meld reads from
- * Spotify does not say whether a playlist is collaborative, and an edit Spotify refuses is worse than one not offered.
+ * Whether the signed-in user owns the playlist of [ownerId], and so may edit it. The library lists say nothing
+ * more; an opened playlist also says what a collaborator may do, see [SpotifyTracksUiState.canEdit].
  */
 fun canEditPlaylist(
     ownerId: String?,

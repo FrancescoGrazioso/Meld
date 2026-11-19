@@ -25,8 +25,10 @@ data class SpotifyTracksUiState(
     val tracks: SpotifyPagerState<SpotifyTrackItem> = SpotifyPagerState(),
     val preparingShuffle: Boolean = false,
     val editFailure: SpotifyError? = null,
-    /** A playlist the signed-in user may change, see [canEditPlaylist]. */
+    /** A playlist whose entries the signed-in user may change: their own, or one Spotify lets them contribute to. */
     val canEdit: Boolean = false,
+    /** A playlist the signed-in user may rename and describe. */
+    val canEditDetails: Boolean = false,
 )
 
 /** Episodes, local files and removed tracks have no [SpotifyTrackItem.track]; Spotify marks the rest it cannot play. */
@@ -75,14 +77,20 @@ class SpotifyTracksViewModel(
         tracks: SpotifyPagerState<SpotifyTrackItem>,
         preparingShuffle: Boolean,
         editFailure: SpotifyError?,
-    ) = SpotifyTracksUiState(
-        session,
-        info,
-        tracks,
-        preparingShuffle,
-        editFailure,
-        canEdit = editor != null && type == SpotifyCollectionType.PLAYLIST && canEditPlaylist(info?.ownerId, session),
-    )
+    ): SpotifyTracksUiState {
+        val editable = editor != null && type == SpotifyCollectionType.PLAYLIST && session is SpotifyConnectionState.Connected
+        val owned = canEditPlaylist(info?.ownerId, session)
+        return SpotifyTracksUiState(
+            session,
+            info,
+            tracks,
+            preparingShuffle,
+            editFailure,
+            // The owner always: Spotify's answer only ever adds the playlists of others.
+            canEdit = editable && (owned || info?.canEditItems == true),
+            canEditDetails = editable && (info?.canEditDetails ?: owned),
+        )
+    }
 
     init {
         scope.launch {

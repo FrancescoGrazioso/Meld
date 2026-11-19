@@ -1,5 +1,6 @@
 package com.meld.spotify
 
+import io.ktor.http.decodeURLPart
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -58,7 +59,8 @@ private fun JsonObject?.images(): List<SpotifyImage> =
 internal fun parseUser(data: JsonObject): SpotifyUser? {
     val profile = data.obj("me")?.obj("profile") ?: return null
     val uri = profile.str("uri") ?: return null
-    return SpotifyUser(uri.spotifyId(), uri, profile.str("name"), profile.obj("avatar").images())
+    val id = uri.spotifyId()
+    return SpotifyUser(id, uri, profile.str("name"), profile.obj("avatar").images(), profile.str("username") ?: id.decodeURLPart())
 }
 
 private fun parseArtist(
@@ -95,6 +97,7 @@ private fun parsePlaylist(
 ): SpotifyPlaylist? {
     if (uri == null || !uri.startsWith("spotify:playlist:")) return null
     val owner = data.obj("ownerV2")?.obj("data")
+    val capabilities = data.obj("currentUserCapabilities")
     return SpotifyPlaylist(
         id = uri.spotifyId(),
         uri = uri,
@@ -109,6 +112,9 @@ private fun parsePlaylist(
         ownerId = owner?.str("uri")?.spotifyId() ?: owner?.str("id"),
         ownerName = owner?.str("name"),
         trackCount = data.obj("content")?.int("totalCount"),
+        // As the web player reads them: a playlist anyone with the link may contribute to is not edited from it.
+        canEditItems = capabilities?.bool("canEditItems")?.let { it && data.str("basePermission") != "CONTRIBUTOR" },
+        canEditDetails = capabilities?.bool("canEditMetadata"),
     )
 }
 
@@ -176,9 +182,10 @@ private fun <T> parseLibrary(
     data: JsonObject,
     offset: Int,
     limit: Int,
+    list: String = "libraryV3",
     parse: (typename: String, wrapper: JsonObject, itemData: JsonObject?) -> T?,
 ): SpotifyPage<T>? {
-    val library = data.obj("me")?.obj("libraryV3") ?: return null
+    val library = data.obj("me")?.obj(list) ?: return null
     return library.pageOf(offset, limit) { entry ->
         entry.obj("item")?.let { parse(it.str("__typename").orEmpty(), it, it.obj("data")) }
     }
@@ -190,19 +197,21 @@ private fun parseLibraryPlaylist(
     data: JsonObject?,
 ): SpotifyPlaylist? = data?.takeIf { it.str("__typename") == "Playlist" }?.let { parsePlaylist(it, wrapper.str("_uri") ?: it.str("uri")) }
 
+/** One level of the playlist tree; [list] is `editablePlaylists` for the playlists the user may add to. */
 internal fun parseLibraryNode(
     data: JsonObject,
     offset: Int,
     limit: Int,
+    list: String = "libraryV3",
 ): SpotifyPage<SpotifyLibraryItem>? =
-    parseLibrary(data, offset, limit) { typename, wrapper, itemData ->
+    parseLibrary(data, offset, limit, list) { typename, wrapper, itemData ->
         when {
             typename.contains("Playlist", ignoreCase = true) -> {
                 parseLibraryPlaylist(wrapper, itemData)?.let(SpotifyLibraryItem::Playlist)
             }
 
             typename.contains("Folder", ignoreCase = true) -> {
-                val uri = wrapper.str("_uri")
+                val uri = wrapper.str("_uri") ?: itemData?.str("uri")
                 val name = itemData?.str("name") ?: wrapper.str("name")
                 if (uri == null || name == null) return@parseLibrary null
                 val children = itemData?.int("totalLength") ?: itemData?.int("numberOfItems") ?: wrapper.int("totalLength") ?: 0
