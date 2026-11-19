@@ -5,6 +5,7 @@ import com.meld.db.MeldDatabase
 import com.meld.db.SpotifyLikeDao
 import com.meld.db.SpotifyMatchDao
 import com.meld.db.buildMeldDatabase
+import com.meld.migration.adoptLegacySpotifySession
 import com.meld.spotify.library.SessionSpotifyLibrary
 import com.meld.spotify.library.SessionSpotifyPlaylists
 import com.meld.spotify.library.SpotifyInHome
@@ -140,6 +141,10 @@ fun meldModule(
         // The like sync runs from app start on every platform; it is built off the main thread, as it opens the session and the database.
         single(named("meldLikeSyncStart"), createdAtStart = true) {
             CoroutineScope(Dispatchers.Default).launch { get<SpotifyLikeSync>().start() }
+        }
+        // An update from the pre-KMP app: its cookie waits in the encrypted store until Spotify has answered for it.
+        single(named("meldLegacySessionStart"), createdAtStart = true) {
+            CoroutineScope(Dispatchers.Default).launch { adoptLegacySpotifySession(get(), Settings.shared) }
         }
         // Created on first use, so nothing here touches the player until a Spotify track list is opened.
         // The feeder and its target share one main-thread scope: that is what keeps their queue edits in order.

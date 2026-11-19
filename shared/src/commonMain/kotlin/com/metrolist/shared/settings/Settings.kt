@@ -10,6 +10,9 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.meld.migration.LEGACY_MELD_SPOTIFY_COOKIE_KEY
+import com.meld.migration.mapLegacyMeldSettings
+import com.meld.migration.migrateLegacyMeldSettings
 import com.metrolist.shared.api.lyrics.AiProviderPresets
 import com.metrolist.shared.constants.ActiveLyricsTextPositionKey
 import com.metrolist.shared.constants.AiSlopBlocklistCacheKey
@@ -240,6 +243,7 @@ class Settings(
 
     private fun migrateInitialSettings() {
         migrateLegacySettings(settings)
+        migrateLegacyMeldSettings(settings)
         migrateAnimatedArtworkCacheSettings(settings)
         settings.getFloatOrNull(SliderTrackThicknessDpKey)?.let { thickness ->
             if (thickness !in 2f..10f) settings.putFloat(SliderTrackThicknessDpKey, thickness.coerceIn(2f, 10f))
@@ -299,6 +303,7 @@ class Settings(
     var accountThumbnail by preference("")
     var spotifySession by preference("")
     var meldSpotifyAccount by preference(MeldSpotifyAccountKey, "")
+    var meldLegacySpotifyCookie by preference(LEGACY_MELD_SPOTIFY_COOKIE_KEY, "")
     var meldSpotifyHashes by preference(MeldSpotifyHashesKey, "")
     var meldLibrarySpotifyOnly by preference(false)
     var meldSearchSpotify by preference(false)
@@ -1201,6 +1206,7 @@ class Settings(
                 values
                     .toMutableMap()
                     .also { legacy ->
+                        mapLegacyMeldSettings(legacy)
                         if ("keepScreenOnMode" !in legacy) {
                             legacy.remove("keepScreenOn")?.let(::legacyBoolean)?.let { enabled ->
                                 val mode = if (enabled) KeepScreenOnMode.PLAYER_AND_LYRICS else KeepScreenOnMode.NEVER
@@ -1350,6 +1356,7 @@ class Settings(
                     "listenTogetherPairedRoomCode",
                     "deviceConnectPairedDevices",
                     "spotifySession",
+                    LEGACY_MELD_SPOTIFY_COOKIE_KEY,
                     LyricsOpenRouterOAuthSessionKey,
                     DiscordPendingAuthSessionKey,
                 )
