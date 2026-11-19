@@ -56,6 +56,7 @@ private class FakeSpotify(
     val tokenExchanges = AtomicInteger()
     val clientTokenExchanges = AtomicInteger()
     val queries = CopyOnWriteArrayList<Query>()
+    val writes = CopyOnWriteArrayList<HttpRequestData>()
     val logs = CopyOnWriteArrayList<String>()
 
     @Volatile
@@ -82,6 +83,9 @@ private class FakeSpotify(
 
     @Volatile
     var onQuery: suspend MockRequestHandleScope.(Query) -> HttpResponseData = { respond(PROFILE) }
+
+    @Volatile
+    var onPlaylistService: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = { respond("""{"revision":"AAAAAg=="}""") }
 
     @Volatile
     var onRest: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData = { error("Unexpected Web API call") }
@@ -119,6 +123,11 @@ private class FakeSpotify(
 
                 "api.spotify.com" -> {
                     onRest(request)
+                }
+
+                "spclient.wg.spotify.com" -> {
+                    writes += request
+                    onPlaylistService(request)
                 }
 
                 "francescograzioso.github.io" -> {
@@ -502,7 +511,6 @@ class SpotifyApiTest {
             api.removeFromPlaylist("p1", listOf("u1"))
             api.moveInPlaylist("p1", listOf("u1"), beforeUid = "u2")
             api.moveInPlaylist("p1", listOf("u1"), beforeUid = null)
-            api.editPlaylist("p1", name = "Renamed")
             api.addToLibrary(listOf("spotify:track:t1"))
             api.removeFromLibrary(listOf("spotify:track:t1"))
             assertEquals(
@@ -511,7 +519,6 @@ class SpotifyApiTest {
                     """removeFromPlaylist {"playlistUri":"spotify:playlist:p1","uids":["u1"]}""",
                     """moveItemsInPlaylist {"playlistUri":"spotify:playlist:p1","uids":["u1"],"newPosition":{"moveType":"BEFORE_UID","fromUid":"u2"}}""",
                     """moveItemsInPlaylist {"playlistUri":"spotify:playlist:p1","uids":["u1"],"newPosition":{"moveType":"BOTTOM_OF_PLAYLIST","fromUid":null}}""",
-                    """editPlaylistAttributes {"playlistUri":"spotify:playlist:p1","newName":"Renamed"}""",
                     """addToLibrary {"libraryItemUris":["spotify:track:t1"]}""",
                     """removeFromLibrary {"libraryItemUris":["spotify:track:t1"]}""",
                 ),
@@ -528,6 +535,84 @@ class SpotifyApiTest {
             spotify.onQuery = { if (spotify.queries.size == 1) respond("", HttpStatusCode.ServiceUnavailable) else respond(PROFILE) }
             api.profile()
             assertEquals(2, spotify.queries.size)
+        }
+
+    /** The requests are the web player's own, as its bundle of 2026-11-19 builds them in `updateDetails` and `createPlaylist`. */
+    @Test
+    fun aPlaylistIsRenamedAndDescribedThroughThePlaylistService() =
+        runTest {
+            val spotify = FakeSpotify { currentTime }.signedIn(accessToken = "access")
+            val api = spotify.api()
+
+            fun op(newAttributes: String) =
+                """{"deltas":[{"ops":[{"kind":"UPDATE_LIST_ATTRIBUTES","updateListAttributes":{"newAttributes":$newAttributes}}],""" +
+                    """"info":{"source":{"client":"WEBPLAYER"}}}]}"""
+
+            api.editPlaylist("p1", name = "Renamed")
+            api.editPlaylist("p1", description = "Songs for the car")
+            api.editPlaylist("p1", name = "Both", description = "")
+            api.editPlaylist("p1")
+            assertEquals(
+                listOf(
+                    op("""{"values":{"name":"Renamed"}}"""),
+                    op("""{"values":{"description":"Songs for the car"}}"""),
+                    op("""{"values":{"name":"Both"},"noValue":["LIST_DESCRIPTION"]}"""),
+                ),
+                spotify.writes.map { (it.body as TextContent).text },
+            )
+            val request = spotify.writes.first()
+            assertEquals("POST", request.method.value)
+            assertEquals("https://spclient.wg.spotify.com/playlist/v2/playlist/p1/changes", request.url.toString())
+            assertEquals("application/json; charset=UTF-8", request.body.contentType.toString())
+            assertEquals("Bearer access", request.headers[HttpHeaders.Authorization])
+            assertEquals("client-0", request.headers["client-token"])
+            assertEquals("WebPlayer", request.headers["app-platform"])
+            assertEquals(SPOTIFY_APP_VERSION, request.headers["spotify-app-version"])
+            assertEquals("application/json", request.headers[HttpHeaders.Accept])
+            assertNull(request.headers[HttpHeaders.Cookie])
+            assertTrue(spotify.queries.isEmpty())
+            assertFailsWith<IllegalArgumentException> { api.editPlaylist("p1", name = " ") }
+
+            // Spotify's answer is not needed, only that it took the change.
+            spotify.onPlaylistService = { respond("") }
+            api.editPlaylist("p1", name = "Again")
+        }
+
+    @Test
+    fun aRenameSpotifyDoesNotTakeFailsAsEveryOtherCallDoesAndIsNeverRepeated() =
+        runTest {
+            val spotify = FakeSpotify { currentTime }.signedIn(accessToken = "stale")
+            val api = spotify.api()
+
+            suspend fun rename() = api.editPlaylist("p1", name = "Renamed")
+
+            // A token Spotify no longer takes is replaced once; the rename had not been applied.
+            spotify.onPlaylistService = { request ->
+                val stale = request.headers[HttpHeaders.Authorization] == "Bearer stale"
+                if (stale) respond("", HttpStatusCode.Unauthorized) else respond("{}")
+            }
+            rename()
+            assertEquals(2, spotify.writes.size)
+            spotify.onPlaylistService = { respond("", HttpStatusCode.Unauthorized) }
+            assertFailsWith<SpotifyError.SessionExpired> { rename() }
+
+            spotify.onPlaylistService = { respond("", HttpStatusCode.Forbidden) }
+            assertFailsWith<SpotifyError.Forbidden> { rename() }
+            for (status in listOf(HttpStatusCode.BadRequest, HttpStatusCode.NotFound)) {
+                spotify.onPlaylistService = { respond("", status) }
+                assertContains(assertFailsWith<SpotifyError.Changed> { rename() }.message.orEmpty(), "HTTP ${status.value}")
+            }
+
+            spotify.writes.clear()
+            spotify.onPlaylistService = { respond("", HttpStatusCode.ServiceUnavailable) }
+            assertEquals(503, assertFailsWith<SpotifyError.Unavailable> { rename() }.status)
+            spotify.onPlaylistService = { throw IOException("connection reset") }
+            assertFailsWith<SpotifyError.Offline> { rename() }
+            assertEquals(2, spotify.writes.size)
+
+            spotify.onPlaylistService = { respond("", HttpStatusCode.TooManyRequests, headersOf(HttpHeaders.RetryAfter, "30")) }
+            assertEquals(30L, assertFailsWith<SpotifyError.RateLimited> { rename() }.retryAfterSeconds)
+            assertTrue(spotify.logs.none { "stale" in it || "access-" in it || "client-" in it })
         }
 
     @Test

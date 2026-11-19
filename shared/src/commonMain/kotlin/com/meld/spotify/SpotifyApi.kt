@@ -23,6 +23,7 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonObjectBuilder
 import kotlinx.serialization.json.add
+import kotlinx.serialization.json.addJsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
@@ -280,14 +281,23 @@ class SpotifyApi(
         }
     }
 
+    /** A null value is left as it is; an empty [description] removes the one the playlist has. */
     suspend fun editPlaylist(
         playlistId: String,
         name: String? = null,
         description: String? = null,
-    ) = mutate("editPlaylistAttributes") {
-        put("playlistUri", "spotify:playlist:$playlistId")
-        if (name != null) put("newName", name)
-        if (description != null) put("newDescription", description)
+    ) {
+        require(name == null || name.isNotBlank()) { "Empty playlist name" }
+        if (name == null && description == null) return
+        val op =
+            listAttributesOp {
+                putJsonObject("values") {
+                    if (name != null) put("name", name)
+                    if (!description.isNullOrEmpty()) put("description", description)
+                }
+                if (description?.isEmpty() == true) putJsonArray("noValue") { add("LIST_DESCRIPTION") }
+            }
+        playlistV2("editPlaylist", "playlist/$playlistId/changes", listChanges(op))
     }
 
     suspend fun addToLibrary(uris: List<String>) = mutate("addToLibrary") { putJsonArray("libraryItemUris") { uris.forEach(::add) } }
@@ -343,6 +353,46 @@ class SpotifyApi(
                 }
             }
         }
+    }
+
+    private fun listAttributesOp(newAttributes: JsonObjectBuilder.() -> Unit) =
+        buildJsonObject {
+            put("kind", "UPDATE_LIST_ATTRIBUTES")
+            putJsonObject("updateListAttributes") { putJsonObject("newAttributes", newAttributes) }
+        }
+
+    private fun listChanges(op: JsonObject) =
+        buildJsonObject {
+            putJsonArray("deltas") {
+                addJsonObject {
+                    putJsonArray("ops") { add(op) }
+                    putJsonObject("info") { putJsonObject("source") { put("client", "WEBPLAYER") } }
+                }
+            }
+        }
+
+    /**
+     * The playlist service the web player itself writes names, descriptions and new playlists to. A write is
+     * not repeated after a network or server error: it may already have been applied.
+     */
+    private suspend fun playlistV2(
+        operation: String,
+        path: String,
+        body: JsonObject,
+    ): TextResponse {
+        val response =
+            execute(retryTransient = false, maxRateLimitWaitMs = MAX_RATE_LIMIT_WAIT_MS) { tokens ->
+                api.post("$SPOTIFY_PLAYLIST_URL/$path") {
+                    attributes.put(ExpectedHttpFailureStatusCodes, setOf(401, 429))
+                    webPlayerHeaders(tokens)
+                    header("spotify-app-version", SPOTIFY_APP_VERSION)
+                    header("client-token", tokens.client)
+                    contentType(ContentType.Application.Json.withParameter("charset", "UTF-8"))
+                    setBody(body.toString())
+                }
+            }
+        checkStatus(operation, response)
+        return response
     }
 
     private suspend fun mutate(
@@ -463,11 +513,18 @@ class SpotifyApi(
         operation: String,
         response: TextResponse,
     ): JsonObject {
+        checkStatus(operation, response)
+        return response.body?.let { runCatching { json.parseToJsonElement(it) as? JsonObject }.getOrNull() }
+            ?: throw SpotifyError.Changed("$operation: unreadable response")
+    }
+
+    private fun checkStatus(
+        operation: String,
+        response: TextResponse,
+    ) {
         val status = response.status.value
         if (status == 403) throw SpotifyError.Forbidden(operation)
         if (status !in 200..299) throw SpotifyError.Changed("$operation: HTTP $status")
-        return response.body?.let { runCatching { json.parseToJsonElement(it) as? JsonObject }.getOrNull() }
-            ?: throw SpotifyError.Changed("$operation: unreadable response")
     }
 
     /**
