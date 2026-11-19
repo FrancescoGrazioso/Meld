@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.AnnotatedString
+import com.meld.spotify.ui.spotifyPlaylistMenuActions
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.action_download
 import com.metrolist.shared.generated.resources.action_like
@@ -290,7 +291,8 @@ fun songMediaMenuModel(
                     )
                 } else {
                     queueActions(onDismiss, onPlayNext, onAddToQueue)
-                }.map { it.copy(enabled = it.enabled && !song.isUnavailable) },
+                }.map { it.copy(enabled = it.enabled && !song.isUnavailable) } +
+                    spotifyPlaylistMenuActions(song, onDismiss), // Meld: next to the other "add to" entries
             removal =
                 listOfNotNull(
                     onMoveUp?.let {
