@@ -131,7 +131,14 @@ private class FakeLocal : LocalLikes {
 
     override fun isDisliked(id: String) = id in disliked
 
-    override fun add(songs: List<SongItem>) = songs.forEach { this.songs.getOrPut(it.id) { it } }
+    /** As upstream sorts by date added: the songs of each call above those of the calls before it. */
+    val byDateAdded = mutableListOf<String>()
+
+    override fun add(songs: List<SongItem>) {
+        val new = songs.filter { it.id !in this.songs }
+        byDateAdded.addAll(0, new.map { it.id })
+        new.forEach { this.songs[it.id] = it }
+    }
 
     override fun remove(ids: Collection<String>) = ids.forEach { songs.remove(it) }
 }
@@ -545,7 +552,7 @@ class SpotifyLikeSyncTest {
             assertTrue(sync.pull())
             assertEquals(5_000, songs.size)
             assertEquals(100, spotify.pageRequests)
-            assertEquals("yt5000", songs.keys.first())
+            assertEquals((5_000 downTo 1).map { "yt$it" }, (local as FakeLocal).byDateAdded)
 
             spotify.unlike(1..1_200)
             assertTrue(sync.pull())

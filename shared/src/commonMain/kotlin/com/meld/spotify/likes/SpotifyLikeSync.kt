@@ -444,8 +444,10 @@ class SpotifyLikeSync(
     }
 
     /**
-     * Finds the tracks not looked up yet on YouTube and likes the songs, a few at a time and newest first.
-     * Each batch is stored when done, so a stop continues where it was. Returns false when tracks are left.
+     * Finds the tracks not looked up yet on YouTube and likes the songs, a few at a time and oldest first:
+     * upstream lists each batch it is given above the likes it already has when sorting by date added, so
+     * the newest must arrive last. Each batch is stored when done, so a stop continues where it was.
+     * Returns false when tracks are left.
      */
     private suspend fun importPending(tracks: Map<String, SpotifyTrack?>): Boolean {
         val pending = dao.likedTracks().filter { it.pending }.mapTo(hashSetOf()) { it.spotifyId }
@@ -453,7 +455,7 @@ class SpotifyLikeSync(
         if (todo.isEmpty()) return true
         mutableStatus.update { it.copy(importDone = 0, importTotal = todo.size) }
         var failed = false
-        for (batch in todo.chunked(IMPORT_BATCH)) {
+        for (batch in todo.chunked(IMPORT_BATCH).asReversed()) {
             currentCoroutineContext().ensureActive()
             if (!canPull()) return false
             val playable = batch.mapNotNull { (_, track) -> track?.takeIf { it.playable != false } }
