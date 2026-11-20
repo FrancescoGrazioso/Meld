@@ -81,6 +81,7 @@ class SongMetadataEditingTest {
                                 ),
                             ),
                         otherVersions = emptyList(),
+                        isSongListComplete = true,
                     ),
             )
 
