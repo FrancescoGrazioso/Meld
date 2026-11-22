@@ -79,10 +79,12 @@ fun SupportPrompt() {
     val uriHandler = LocalUriHandler.current
     val developers =
         remember {
-            SupportedDeveloperHandles
-                .mapNotNull { handle ->
-                    AboutContributors.all.firstOrNull { it.githubHandle == handle && it.sponsorUrl != null }
-                }.shuffled()
+            // Meld: its developer first, then Metrolist's, on whose work Meld is built.
+            listOf(AboutContributors.meld) +
+                SupportedDeveloperHandles
+                    .mapNotNull { handle ->
+                        AboutContributors.all.firstOrNull { it.githubHandle == handle && it.sponsorUrl != null }
+                    }.shuffled()
         }
     PopupVisibility(visible = visible) {
         AlertDialog(

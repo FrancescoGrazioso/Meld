@@ -144,6 +144,7 @@ object AboutContributors {
             role = AboutContributorRole.MELD_DEVELOPER,
             githubHandle = "FrancescoGrazioso",
             avatarShape = AboutAvatarShape.COOKIE_9_SIDED,
+            sponsorUrl = "https://buymeacoffee.com/francescogm",
         )
 
     val lead: AboutContributor =
