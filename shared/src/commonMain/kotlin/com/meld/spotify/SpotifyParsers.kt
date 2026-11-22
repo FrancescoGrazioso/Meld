@@ -17,6 +17,42 @@ internal fun JsonObject.objs(key: String): List<JsonObject> = arr(key)?.filterIs
 
 internal fun JsonObject.str(key: String): String? = (this[key] as? JsonPrimitive)?.contentOrNull
 
+private val MARKUP = Regex("</?(?:a|b|i|u|em|strong|p|span)(?:\\s[^<>]*)?>", RegexOption.IGNORE_CASE)
+private val LINE_BREAK = Regex("<br\\s*/?>", RegexOption.IGNORE_CASE)
+private val ENTITY = Regex("&(#[0-9]{1,7}|#[xX][0-9a-fA-F]{1,6}|amp|lt|gt|quot|apos|nbsp);")
+
+/**
+ * A playlist description as text. Spotify sends it as HTML: its own descriptions link to other playlists
+ * with `<a href=spotify:...>`, and what a user typed comes back with `&`, `<` and quotes as entities.
+ * Only the tags Spotify uses are removed, so a typed "<3" survives.
+ */
+internal fun String.spotifyPlainText(): String =
+    replace(LINE_BREAK, "\n")
+        .replace(MARKUP, "")
+        .replace(ENTITY) { match ->
+            val name = match.groupValues[1]
+            when {
+                name.startsWith("#x") || name.startsWith("#X") -> name.drop(2).toIntOrNull(16)?.let(::codePointText)
+                name.startsWith("#") -> name.drop(1).toIntOrNull()?.let(::codePointText)
+                name == "amp" -> "&"
+                name == "lt" -> "<"
+                name == "gt" -> ">"
+                name == "quot" -> "\""
+                name == "apos" -> "'"
+                else -> " "
+            } ?: match.value
+        }.trim()
+
+private fun codePointText(code: Int): String? =
+    when {
+        code in 0x20..0xD7FF || code in 0xE000..0xFFFF || code == 0x0A -> code.toChar().toString()
+        code in 0x10000..0x10FFFF -> {
+            val offset = code - 0x10000
+            charArrayOf((0xD800 + (offset shr 10)).toChar(), (0xDC00 + (offset and 0x3FF)).toChar()).concatToString()
+        }
+        else -> null
+    }
+
 internal fun JsonObject.int(key: String): Int? = (this[key] as? JsonPrimitive)?.intOrNull
 
 private fun JsonObject.long(key: String): Long? = (this[key] as? JsonPrimitive)?.longOrNull
@@ -102,7 +138,7 @@ private fun parsePlaylist(
         id = uri.spotifyId(),
         uri = uri,
         name = data.str("name").orEmpty(),
-        description = data.str("description"),
+        description = data.str("description")?.spotifyPlainText(),
         images =
             data
                 .obj("images")

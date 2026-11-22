@@ -283,4 +283,16 @@ class SpotifyParsersTest {
         assertNull(parseSearch(empty, 0, 20))
         assertNull(parseUser(empty))
     }
+
+    @Test
+    fun descriptionsAreReadAsTextNotAsSpotifysHtml() {
+        assertEquals(
+            "Rock & roll, Tom's \"best\" <3 and more",
+            "Rock &amp; roll, Tom&#x27;s &quot;best&quot; &lt;3 and <a href=spotify:playlist:abc>more</a>".spotifyPlainText(),
+        )
+        assertEquals("one\ntwo", "one<br/>two".spotifyPlainText())
+        // Typed text that only looks like markup, and an entity Spotify never sends, stay as they are.
+        assertEquals("a <3 b > c &copy;", "a <3 b > c &copy;".spotifyPlainText())
+        assertEquals("🎵 hi", "&#127925; hi".spotifyPlainText())
+    }
 }
