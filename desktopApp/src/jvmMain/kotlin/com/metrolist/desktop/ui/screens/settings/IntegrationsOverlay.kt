@@ -5,11 +5,14 @@
 
 package com.metrolist.desktop.ui.screens.settings
 
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,6 +31,7 @@ import com.metrolist.desktop.state.app.UiState
 import com.metrolist.desktop.state.playback.DiscordRpcState
 import com.metrolist.desktop.state.playback.ListenTogetherState
 import com.metrolist.desktop.state.playback.PlayerState
+import com.metrolist.desktop.ui.components.LocalCaptionBarInsets
 import com.metrolist.desktop.ui.screens.DiscordLoginDialog
 import com.metrolist.shared.discord.openDiscordUrl
 import com.metrolist.shared.settings.Settings
@@ -55,6 +59,8 @@ fun IntegrationsOverlay(colorScheme: ColorScheme) {
         Card(
             modifier =
                 Modifier
+                    // Meld: below the title bar, as the Settings overlay is; Windows takes clicks on the bar for dragging the window.
+                    .windowInsetsPadding(LocalCaptionBarInsets.current.only(WindowInsetsSides.Top))
                     .padding(16.dp)
                     .widthIn(max = 1180.dp)
                     .fillMaxWidth()
