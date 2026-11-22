@@ -2484,7 +2484,7 @@
     <string name="ai_setup_privacy_hint">Kebijakan data OpenRouter Anda mengecualikan endpoint untuk model ini. Tinjau opsi model gratis dan penyedia layanan dalam pengaturan privasi OpenRouter, lalu coba lagi.</string>
     <string name="ai_setup_credit_hint">Periksa saldo akun Anda dan batas kredit pada kunci OpenRouter Anda. Kunci OAuth dapat memiliki batasnya sendiri. Coba lagi setelah menyelesaikan masalah batas tersebut.</string>
     <string name="desktop_minimize_to_tray">Minimalkan ke tray</string>
-    <string name="desktop_minimize_to_tray_desc">Menutup jendela akan memperkecil Metrolist ke tray</string>
+    <string name="desktop_minimize_to_tray_desc">Menutup jendela akan memperkecil Meld ke tray</string>
     <string name="desktop_tray_toggle_on_click">Sembunyikan atau tampilkan saat klik di tray</string>
-    <string name="desktop_tray_toggle_on_click_desc">Klik kiri ikon tray akan membuka atau menutup jendela Metrolist</string>
+    <string name="desktop_tray_toggle_on_click_desc">Klik kiri ikon tray akan membuka atau menutup jendela Meld</string>
 </resources>

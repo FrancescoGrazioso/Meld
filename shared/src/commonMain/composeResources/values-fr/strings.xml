@@ -2367,7 +2367,7 @@
     <string name="lyrics_progressive_blur">Flou progressif des paroles</string>
     <string name="lyrics_progressive_blur_description">Ajoute un effet de flou progressif aux paroles suivant et précédent la ligne en cours de lecture</string>
     <string name="desktop_minimize_to_tray">Réduire vers la barre d'état</string>
-    <string name="desktop_minimize_to_tray_desc">Fermer la fenêtre réduit Metrolist vers la barre d'état système à la place</string>
+    <string name="desktop_minimize_to_tray_desc">Fermer la fenêtre réduit Meld vers la barre d'état système à la place</string>
     <string name="no_other_devices_nearby">Aucun appareil à proximité</string>
     <string name="album_order_original">Par défaut</string>
     <string name="settings_cast_title">Cast</string>
@@ -2579,8 +2579,8 @@
     <string name="ai_setup_daily_hint">Réessayez demain ou ajoutez des crédits dans OpenRouter pour augmenter votre limite quotidienne. Changer de modèle ne permet pas de contourner cette limite.</string>
     <string name="ai_setup_minute_hint">Réessayez une fois la limite de requêtes par minute d'OpenRouter réinitialisée. Changer de modèle ne permet pas de contourner cette limite.</string>
     <string name="ai_setup_verify_description">Envoie un court échantillon à traduire au modèle sélectionné. La traduction n'est activée que si le test est réussi.</string>
-    <string name="account_keyring_required">Metrolist a besoin d'accéder au trousseau système pour restaurer votre compte. Veuillez déverrouiller le trousseau. Metrolist réessaiera automatiquement.</string>
-    <string name="account_linux_keyring_required">Metrolist requiert un trousseau de clés système pour restaurer votre compte. Installez libsecret-tools ou le paquet de votre distribution contenant secret-tool, puis assurez-vous que le trousseau est actif et déverrouillé. Metrolist réessaiera automatiquement.</string>
+    <string name="account_keyring_required">Meld a besoin d'accéder au trousseau système pour restaurer votre compte. Veuillez déverrouiller le trousseau. Meld réessaiera automatiquement.</string>
+    <string name="account_linux_keyring_required">Meld requiert un trousseau de clés système pour restaurer votre compte. Installez libsecret-tools ou le paquet de votre distribution contenant secret-tool, puis assurez-vous que le trousseau est actif et déverrouillé. Meld réessaiera automatiquement.</string>
     <string name="blocked_songs">Titres masqués</string>
     <string name="blocked_songs_desc">Restaurez les titres que vous avez masqués</string>
     <string name="blocked_songs_empty">Aucun titre masqué</string>

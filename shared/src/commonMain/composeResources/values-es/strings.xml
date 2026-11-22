@@ -2534,9 +2534,9 @@
     <string name="prefer_word_synced_lyrics">Preferir letras sincronizadas por palabra</string>
     <string name="prefer_word_synced_lyrics_description">Busca marcas de tiempo de cada palabra en las fuentes activadas antes de usar letras sincronizadas por línea o sin sincronizar</string>
     <string name="desktop_minimize_to_tray">Minimizar a la bandeja del sistema</string>
-    <string name="desktop_minimize_to_tray_desc">Al cerrar la ventana, Metrolist se minimizará a la bandeja del sistema en lugar de cerrarse</string>
+    <string name="desktop_minimize_to_tray_desc">Al cerrar la ventana, Meld se minimizará a la bandeja del sistema en lugar de cerrarse</string>
     <string name="desktop_tray_toggle_on_click">Ocultar o mostrar al hacer clic en el icono de la bandeja</string>
-    <string name="desktop_tray_toggle_on_click_desc">Al hacer clic con el botón izquierdo en el icono de la bandeja, se mostrará u ocultará la ventana de Metrolist</string>
+    <string name="desktop_tray_toggle_on_click_desc">Al hacer clic con el botón izquierdo en el icono de la bandeja, se mostrará u ocultará la ventana de Meld</string>
     <string name="discord_continue_in_browser">Continúa iniciando sesión en Discord desde el navegador. Vuelve a Metrolist cuando hayas terminado.</string>
     <string name="discord_open_browser_again">Volver a abrir</string>
     <string name="discord_browser_open_failed">No se ha podido abrir el navegador. Inténtalo de nuevo.</string>
@@ -2591,8 +2591,8 @@
     <string name="blocked_songs">Canciones bloqueadas</string>
     <string name="content_undo_hint">Puedes revertir esto en %1$s.</string>
     <string name="content_undo_path">%1$s &gt; %2$s &gt; %3$s</string>
-    <string name="account_keyring_required">Metrolist necesita acceso a tu llavero del sistema para restaurar tu cuenta. Desbloquea el llavero. Metrolist lo intentará automáticamente.</string>
-    <string name="account_linux_keyring_required">Metrolist necesita un llavero del sistema para restaurar tu cuenta. Instala libsecret-tools o el paquete de tu distribución que proporciona secret-tool, y asegúrate de que tu llavero está funcionando y desbloqueado. Metrolist lo intentará automáticamente.</string>
+    <string name="account_keyring_required">Meld necesita acceso a tu llavero del sistema para restaurar tu cuenta. Desbloquea el llavero. Meld lo intentará automáticamente.</string>
+    <string name="account_linux_keyring_required">Meld necesita un llavero del sistema para restaurar tu cuenta. Instala libsecret-tools o el paquete de tu distribución que proporciona secret-tool, y asegúrate de que tu llavero está funcionando y desbloqueado. Meld lo intentará automáticamente.</string>
     <string name="density_massive">Masivo (200%)</string>
     <string name="density_huge">Enorme (175%)</string>
     <string name="density_extra_large">Extra grande (150%)</string>
@@ -2610,7 +2610,7 @@
     <string name="listen_together_location_custom">Personalizado</string>
     <string name="listen_together_custom_server_name">Servidor personalizado</string>
     <string name="listen_together_custom_server_maintainer">Usuario</string>
-    <string name="desktop_tray_toggle_on_click_desc_mac">Al hacer clic con el botón derecho del ratón en el ícono de la bandeja, se abrirá o se cerrará la ventana de Metrolist</string>
-    <string name="desktop_omarchy_unsupported">Metrolist no funciona en Omarchy. Usa otra distribución de Linux, Windows 10 o una versión posterior, o macOS.</string>
+    <string name="desktop_tray_toggle_on_click_desc_mac">Al hacer clic con el botón derecho del ratón en el ícono de la bandeja, se abrirá o se cerrará la ventana de Meld</string>
+    <string name="desktop_omarchy_unsupported">Meld no funciona en Omarchy. Usa otra distribución de Linux, Windows 10 o una versión posterior, o macOS.</string>
     <string name="learn_more">Más información</string>
 </resources>

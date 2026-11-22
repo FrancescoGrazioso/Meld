@@ -2625,9 +2625,9 @@
     <string name="hidden_home_items_desc">Отображать и от-скрывать исполнителей и подкасты, скрытые на главной странице. Вручную закреплённые элементы "Быстрого набора" остаются видимыми.</string>
     <string name="active_lyrics_alignment">Выравнивание текущей строки текста песни</string>
     <string name="desktop_minimize_to_tray">Сворачивать в трей</string>
-    <string name="desktop_minimize_to_tray_desc">При закрытии окна Metrolist будет сворачиваться в трей вместо завершения работы</string>
+    <string name="desktop_minimize_to_tray_desc">При закрытии окна Meld будет сворачиваться в трей вместо завершения работы</string>
     <string name="desktop_tray_toggle_on_click">Показывать или скрывать при нажатии на значок в трее</string>
-    <string name="desktop_tray_toggle_on_click_desc">Щелчок левой кнопкой мыши по значку в трее откроет или скроет окно Metrolist</string>
+    <string name="desktop_tray_toggle_on_click_desc">Щелчок левой кнопкой мыши по значку в трее откроет или скроет окно Meld</string>
     <string name="playlist_order_original">Порядок плейлиста</string>
     <string name="album_order_original">Порядок альбома</string>
     <string name="canvas_cache">Кэш Canvas</string>
@@ -2639,8 +2639,8 @@
     <string name="blocked_songs_empty">Нет заблокированных песен</string>
     <string name="content_undo_hint">Это действие можно отменить здесь: %1$s.</string>
     <string name="content_undo_path">%1$s &gt; %2$s &gt; %3$s</string>
-    <string name="account_keyring_required">Для восстановления аккаунта Metrolist нужен доступ к системной связке ключей. Разблокируйте её. Metrolist повторит попытку автоматически.</string>
-    <string name="account_linux_keyring_required">Для восстановления аккаунта Metrolist нужна системная связка ключей. Установите libsecret-tools или соответствующий пакет вашего дистрибутива, содержащий команду secret-tool, и убедитесь, что связка ключей запущена и разблокирована. Metrolist повторит попытку автоматически.</string>
+    <string name="account_keyring_required">Для восстановления аккаунта Meld нужен доступ к системной связке ключей. Разблокируйте её. Meld повторит попытку автоматически.</string>
+    <string name="account_linux_keyring_required">Для восстановления аккаунта Meld нужна системная связка ключей. Установите libsecret-tools или соответствующий пакет вашего дистрибутива, содержащий команду secret-tool, и убедитесь, что связка ключей запущена и разблокирована. Meld повторит попытку автоматически.</string>
     <string name="density_massive">Гигантский (200%)</string>
     <string name="density_huge">Огромный (175%)</string>
     <string name="density_extra_large">Очень крупный (150%)</string>
@@ -2657,7 +2657,7 @@
     <string name="listen_together_location_custom">Свой</string>
     <string name="listen_together_custom_server_name">Свой сервер</string>
     <string name="listen_together_custom_server_maintainer">Пользователь</string>
-    <string name="desktop_tray_toggle_on_click_desc_mac">Щелчок правой кнопкой мыши по значку в трее откроет или скроет окно Metrolist</string>
-    <string name="desktop_omarchy_unsupported">Metrolist не работает на Omarchy. Используйте другой дистрибутив Linux, Windows 10 и выше или macOS.</string>
+    <string name="desktop_tray_toggle_on_click_desc_mac">Щелчок правой кнопкой мыши по значку в трее откроет или скроет окно Meld</string>
+    <string name="desktop_omarchy_unsupported">Meld не работает на Omarchy. Используйте другой дистрибутив Linux, Windows 10 и выше или macOS.</string>
     <string name="learn_more">Узнать больше</string>
 </resources>

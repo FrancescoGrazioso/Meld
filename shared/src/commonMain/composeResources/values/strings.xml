@@ -3417,8 +3417,8 @@
     <string name="account_logout_confirm">Log out?</string>
     <!-- Translators: Imperative action label for sign in in the account menu. -->
     <string name="account_sign_in">Sign in</string>
-    <string name="account_keyring_required">Metrolist needs access to your system keyring to restore your account. Unlock the keyring. Metrolist will retry automatically.</string>
-    <string name="account_linux_keyring_required">Metrolist needs a system keyring to restore your account. Install libsecret-tools or your distribution's package that provides secret-tool, and make sure your keyring is running and unlocked. Metrolist will retry automatically.</string>
+    <string name="account_keyring_required">Meld needs access to your system keyring to restore your account. Unlock the keyring. Meld will retry automatically.</string>
+    <string name="account_linux_keyring_required">Meld needs a system keyring to restore your account. Install libsecret-tools or your distribution's package that provides secret-tool, and make sure your keyring is running and unlocked. Meld will retry automatically.</string>
     <!-- Translators: Error message about logout WebView in the account menu. -->
     <string name="account_logout_webview_failed">Signed out, but the WebView login profile could not be removed.</string>
     <!-- Translators: Error message about WebView remove in the account menu. -->
@@ -4466,10 +4466,10 @@
     <!-- Translators: Imperative action label for show window in the desktop system tray. -->
     <string name="tray_show_window">Show window</string>
     <string name="desktop_minimize_to_tray">Minimize to tray</string>
-    <string name="desktop_minimize_to_tray_desc">Closing the window will minimize Metrolist to the tray instead</string>
+    <string name="desktop_minimize_to_tray_desc">Closing the window will minimize Meld to the tray instead</string>
     <string name="desktop_tray_toggle_on_click">Hide or show on tray click</string>
-    <string name="desktop_tray_toggle_on_click_desc">Left-clicking the tray icon will open or close the Metrolist window</string>
-    <string name="desktop_tray_toggle_on_click_desc_mac">Right-clicking the tray icon will open or close the Metrolist window</string>
+    <string name="desktop_tray_toggle_on_click_desc">Left-clicking the tray icon will open or close the Meld window</string>
+    <string name="desktop_tray_toggle_on_click_desc_mac">Right-clicking the tray icon will open or close the Meld window</string>
     <!-- Translators: Imperative action label for show miniplayer in the desktop system tray. -->
     <string name="tray_show_miniplayer">Show miniplayer</string>
     <!-- Translators: Imperative action label for hide miniplayer in the desktop system tray. -->
@@ -5351,7 +5351,7 @@
     <string name="crash_retry" translatable="false">Retry</string>
     <string name="crash_updates_action" translatable="false">Update</string>
     <string name="crash_updates_prompt_title" translatable="false">A newer build is available</string>
-    <string name="crash_updates_prompt_text" translatable="false">Metrolist %1$s may already fix this crash. Install it now?</string>
+    <string name="crash_updates_prompt_text" translatable="false">Meld %1$s may already fix this crash. Install it now?</string>
     <string name="crash_updates_prompt_later" translatable="false">Not now</string>
     <string name="crash_updates_changelog" translatable="false">Changelog</string>
     <string name="crash_updates_check" translatable="false">Check for updates</string>

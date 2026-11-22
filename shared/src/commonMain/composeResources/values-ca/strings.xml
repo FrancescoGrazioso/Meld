@@ -2528,9 +2528,9 @@
     <string name="prefer_word_synced_lyrics">Dona preferència a les lletres sincronitzades paraula per paraula</string>
     <string name="prefer_word_synced_lyrics_description">Cerca les marques de temps de cada paraula a les fonts activades abans de fer servir lletres sincronitzades per línies o sense sincronitzar</string>
     <string name="desktop_minimize_to_tray">Minimitza a la safata del sistema</string>
-    <string name="desktop_minimize_to_tray_desc">En tancar la finestra, Metrolist es minimitzarà a la safata del sistema en lloc de tancar-se</string>
+    <string name="desktop_minimize_to_tray_desc">En tancar la finestra, Meld es minimitzarà a la safata del sistema en lloc de tancar-se</string>
     <string name="desktop_tray_toggle_on_click">Amaga o mostra en fer clic a la icona de la safata</string>
-    <string name="desktop_tray_toggle_on_click_desc">En fer clic amb el botó esquerre a la icona de la safata, es mostrarà o s’amagarà la finestra de Metrolist</string>
+    <string name="desktop_tray_toggle_on_click_desc">En fer clic amb el botó esquerre a la icona de la safata, es mostrarà o s’amagarà la finestra de Meld</string>
     <string name="discord_continue_in_browser">Continua iniciant la sessió al Discord des del navegador. Torna al Metrolist quan hagis acabat.</string>
     <string name="discord_open_browser_again">Torna a obrir</string>
     <string name="discord_browser_open_failed">No s’ha pogut obrir el navegador. Torna-ho a provar.</string>

@@ -1672,8 +1672,8 @@
     <string name="account_user_icon">Người dùng</string>
     <string name="account_logout_confirm">Đăng xuất?</string>
     <string name="account_sign_in">Đăng nhập</string>
-    <string name="account_keyring_required">Metrolist cần quyền truy cập vào chuỗi khóa của hệ thống để khôi phục tài khoản của bạn. Hãy mở khóa chuỗi khóa. Metrolist sẽ tự động thử lại.</string>
-    <string name="account_linux_keyring_required">Metrolist cần chuỗi khóa của hệ thống để khôi phục tài khoản của bạn. Hãy cài libsecret-tools hoặc gói của bản phân phối cung cấp secret-tool, và đảm bảo chuỗi khóa đang chạy và đã được mở khóa. Metrolist sẽ tự động thử lại.</string>
+    <string name="account_keyring_required">Meld cần quyền truy cập vào chuỗi khóa của hệ thống để khôi phục tài khoản của bạn. Hãy mở khóa chuỗi khóa. Meld sẽ tự động thử lại.</string>
+    <string name="account_linux_keyring_required">Meld cần chuỗi khóa của hệ thống để khôi phục tài khoản của bạn. Hãy cài libsecret-tools hoặc gói của bản phân phối cung cấp secret-tool, và đảm bảo chuỗi khóa đang chạy và đã được mở khóa. Meld sẽ tự động thử lại.</string>
     <string name="account_logout_webview_failed">Đã đăng xuất, nhưng không thể xóa hồ sơ đăng nhập WebView.</string>
     <string name="account_webview_remove_failed">Không thể xóa hồ sơ đăng nhập WebView.</string>
     <string name="account_retry_cleanup">Thử dọn dẹp lại</string>
@@ -2045,10 +2045,10 @@
     <string name="tray_hide_window">Ẩn cửa sổ</string>
     <string name="tray_show_window">Hiện cửa sổ</string>
     <string name="desktop_minimize_to_tray">Thu nhỏ xuống khay</string>
-    <string name="desktop_minimize_to_tray_desc">Đóng cửa sổ sẽ thu nhỏ Metrolist xuống khay thay vì thoát</string>
+    <string name="desktop_minimize_to_tray_desc">Đóng cửa sổ sẽ thu nhỏ Meld xuống khay thay vì thoát</string>
     <string name="desktop_tray_toggle_on_click">Ẩn hoặc hiện khi nhấp vào khay</string>
-    <string name="desktop_tray_toggle_on_click_desc">Nhấp chuột trái vào biểu tượng khay sẽ mở hoặc đóng cửa sổ Metrolist</string>
-    <string name="desktop_tray_toggle_on_click_desc_mac">Nhấp chuột phải vào biểu tượng khay sẽ mở hoặc đóng cửa sổ Metrolist</string>
+    <string name="desktop_tray_toggle_on_click_desc">Nhấp chuột trái vào biểu tượng khay sẽ mở hoặc đóng cửa sổ Meld</string>
+    <string name="desktop_tray_toggle_on_click_desc_mac">Nhấp chuột phải vào biểu tượng khay sẽ mở hoặc đóng cửa sổ Meld</string>
     <string name="tray_show_miniplayer">Hiện trình phát thu nhỏ</string>
     <string name="tray_settings">Cài đặt</string>
     <string name="tray_quit_metrolist">Thoát Metrolist</string>
@@ -2369,7 +2369,7 @@
     <string name="metroeq_preset_bass">Tăng âm trầm</string>
     <string name="metroeq_presets">Cấu hình sẵn</string>
     <string name="download_error_incomplete">YouTube không cung cấp đầy đủ tệp âm thanh. Hãy thử lại sau hoặc dùng mạng khác.</string>
-    <string name="desktop_omarchy_unsupported">Metrolist không chạy trên Omarchy. Hãy dùng bản phân phối Linux khác, Windows 10 trở lên hoặc macOS.</string>
+    <string name="desktop_omarchy_unsupported">Meld không chạy trên Omarchy. Hãy dùng bản phân phối Linux khác, Windows 10 trở lên hoặc macOS.</string>
     <string name="learn_more">Tìm hiểu thêm</string>
     <string name="chip_content_description">%1$s, chip</string>
     <string name="global_lyrics_offset">Độ lệch lời bài hát toàn cục</string>

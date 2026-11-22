@@ -2560,8 +2560,8 @@
     <string name="ai_translation_failed_invalid">Traduzione con IA non riuscita: risposta non valida</string>
     <string name="ai_translation_failed_incomplete">Traduzione con IA non riuscita: risposta incompleta</string>
     <string name="desktop_minimize_to_tray">Riduci a icona nella barra delle applicazioni</string>
-    <string name="desktop_minimize_to_tray_desc">Chiudendo la finestra Metrolist verrà ridotta a icona nella barra delle applicazioni</string>
-    <string name="desktop_tray_toggle_on_click_desc">Facendo clic con il pulsante sinistro del mouse sull'icona nella barra delle applicazioni si aprirà o si chiuderà la finestra di Metrolist</string>
+    <string name="desktop_minimize_to_tray_desc">Chiudendo la finestra Meld verrà ridotta a icona nella barra delle applicazioni</string>
+    <string name="desktop_tray_toggle_on_click_desc">Facendo clic con il pulsante sinistro del mouse sull'icona nella barra delle applicazioni si aprirà o si chiuderà la finestra di Meld</string>
     <string name="ai_setup_verifying">Prova di traduzione…</string>
     <string name="desktop_tray_toggle_on_click">Nascondi o mostra al click sulla barra di sistema</string>
     <string name="ai_setup_verify_description">Fatto invia un breve campione al modello gratuito che hai scelto. La traduzione si attiva solo dopo che il test ha esito positivo.</string>
@@ -2583,8 +2583,8 @@
     <string name="blocked_songs_empty">Nessun brano bloccato</string>
     <string name="content_undo_hint">È possibile annullare questa operazione in %1$s.</string>
     <string name="content_undo_path">%1$s &gt; %2$s &gt; %3$s</string>
-    <string name="account_keyring_required">Metrolist necessita dell'accesso al portachiavi di sistema per ripristinare l'account. Sblocca il portachiavi. Metrolist tenterà automaticamente di ripristinare l'account.</string>
-    <string name="account_linux_keyring_required">Metrolist necessita di un portachiavi di sistema per ripristinare il tuo account. Installa libsecret-tools o il pacchetto della tua distribuzione che fornisce secret-tool e assicurati che il tuo portachiavi sia attivo e sbloccato. Metrolist tenterà di nuovo automaticamente.</string>
+    <string name="account_keyring_required">Meld necessita dell'accesso al portachiavi di sistema per ripristinare l'account. Sblocca il portachiavi. Meld tenterà automaticamente di ripristinare l'account.</string>
+    <string name="account_linux_keyring_required">Meld necessita di un portachiavi di sistema per ripristinare il tuo account. Installa libsecret-tools o il pacchetto della tua distribuzione che fornisce secret-tool e assicurati che il tuo portachiavi sia attivo e sbloccato. Meld tenterà di nuovo automaticamente.</string>
     <string name="density_massive">Gigante (200%)</string>
     <string name="density_huge">Enorme (175%)</string>
     <string name="density_extra_large">Molto grande (150%)</string>
