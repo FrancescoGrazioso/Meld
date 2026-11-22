@@ -15,6 +15,8 @@ import com.meld.spotify.match.CandidateKind
 import com.meld.spotify.match.MatchCandidate
 import com.meld.spotify.match.MatchConfidence
 import com.meld.spotify.match.MatchQuery
+import com.meld.spotify.match.ScoredCandidate
+import com.meld.spotify.match.SearchScope
 import com.meld.spotify.match.TrackMatcher
 import com.meld.spotify.match.buildSearchPlan
 import com.meld.spotify.playback.SpotifyResolution
@@ -41,6 +43,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 /** What the last "sync now" came to. */
 sealed interface SpotifyLikeSyncResult {
@@ -94,6 +97,8 @@ class SpotifyLikeSync(
     private val now: () -> Long,
     private val onSpotifyChanged: suspend (added: List<SpotifyTrack>, removedIds: Set<String>) -> Unit = { _, _ -> },
     private val logger: (String) -> Unit = {},
+    // YouTube id to when its track was liked on Spotify, whenever the remembered liked tracks change.
+    private val onLikeDates: (Map<String, Long>) -> Unit = {},
 ) {
     // Held for one outbox entry at a time, so a new intent never waits for more than one request.
     private val outboxLock = Mutex()
@@ -276,7 +281,7 @@ class SpotifyLikeSync(
                 }
                 remote.addToLibrary(listOf(track.uri))
                 sent++
-                dao.putLikedTracks(listOf(SpotifyLikedTrackEntity(track.id, youtubeId, pending = false)))
+                dao.putLikedTracks(listOf(SpotifyLikedTrackEntity(track.id, youtubeId, pending = false, addedAt = now())))
                 onSpotifyChanged(listOf(track), emptySet())
             }
         } else {
@@ -312,7 +317,8 @@ class SpotifyLikeSync(
      * The matcher run the other way round: the YouTube song is the query and Spotify's search results are
      * the candidates. Only a HIGH match is accepted, because a wrong one lands in the user's Spotify library.
      */
-    private suspend fun findOnSpotify(song: SongItem): SpotifyTrack? {
+    private suspend fun findOnSpotify(bare: SongItem): SpotifyTrack? {
+        val song = resolver.complete(bare)
         val query =
             MatchQuery(
                 title = song.title,
@@ -321,21 +327,34 @@ class SpotifyLikeSync(
                 durationMs = song.duration?.times(1000),
                 explicit = true.takeIf { song.isExplicit },
             )
-        val text = buildSearchPlan(query, includeIsrc = false).firstOrNull()?.text ?: return null
-        val tracks = remote.searchTracks(text).filter { it.playable != false }
-        val candidates =
-            tracks.map {
-                MatchCandidate(
-                    id = it.id,
-                    title = it.name,
-                    artists = it.artists.map(SpotifyArtist::name),
-                    album = it.album?.name,
-                    durationMs = it.durationMs,
-                    explicit = it.explicit,
-                    kind = CandidateKind.SONG,
-                )
-            }
-        val best = TrackMatcher.best(query, candidates)?.takeIf { it.score.confidence == MatchConfidence.HIGH } ?: return null
+        // The exact title first, then the title without its "(feat. ...)" and version notes: Spotify's search
+        // often has nothing for the first when YouTube and Spotify write the title differently.
+        val texts = buildSearchPlan(query, includeIsrc = false).filter { it.scope == SearchScope.SONGS }.map { it.text }.distinct()
+        var tracks = emptyList<SpotifyTrack>()
+        var best: ScoredCandidate? = null
+        for (text in texts) {
+            tracks = remote.searchTracks(text).filter { it.playable != false }
+            val candidates =
+                tracks.map {
+                    MatchCandidate(
+                        id = it.id,
+                        title = it.name,
+                        artists = it.artists.map(SpotifyArtist::name),
+                        album = it.album?.name,
+                        durationMs = it.durationMs,
+                        explicit = it.explicit,
+                        kind = CandidateKind.SONG,
+                    )
+                }
+            val top = TrackMatcher.best(query, candidates)
+            logger(
+                "Lookup \"$text\" (${query.durationMs?.div(1000)}s): ${tracks.size} tracks, best " +
+                    (top?.let { "\"${it.candidate.title}\" ${it.candidate.durationMs?.div(1000)}s ${it.score.confidence}" } ?: "none"),
+            )
+            best = top?.takeIf { it.score.confidence == MatchConfidence.HIGH }
+            if (best != null) break
+        }
+        if (best == null) return null
         val track = tracks.first { it.id == best.candidate.id }
         val time = now()
         // Never replaces the video chosen for this track when it was played, nor a manual override.
@@ -382,7 +401,7 @@ class SpotifyLikeSync(
             if (force) dao.retryUnmatchedLikedTracks()
             var page = remote.likedSongs(0)
             val total = page.total
-            val fingerprint = "$total:" + page.items.joinToString(",") { it.uri.orEmpty() }
+            val fingerprint = "$FINGERPRINT_VERSION|$total:" + page.items.joinToString(",") { it.uri.orEmpty() }
             if (force || fingerprint != prefs.meldSpotifyLikesFingerprint || dao.pendingLikedTrackCount() > 0) {
                 val items = page.items.toMutableList()
                 while (true) {
@@ -391,12 +410,23 @@ class SpotifyLikeSync(
                 }
                 // In Spotify's order, newest first. A null track is an entry that cannot be played.
                 val tracks = LinkedHashMap<String, SpotifyTrack?>()
+                val dates = HashMap<String, Long>()
+                var newerDate = Long.MAX_VALUE
                 var identified = true
                 items.forEach { item ->
                     val uri = item.uri ?: item.track?.uri
                     when {
                         uri == null -> identified = false
-                        uri.startsWith(TRACK_URI) -> tracks[uri.removePrefix(TRACK_URI)] = item.track
+                        uri.startsWith(TRACK_URI) -> {
+                            val id = uri.removePrefix(TRACK_URI)
+                            tracks[id] = item.track
+                            // Spotify dates to the second and many likes can share one; the list itself says which
+                            // came later, so each date is kept just below the one above it.
+                            item.addedAt?.let(::epochMillisOrNull)?.let { at ->
+                                newerDate = minOf(at + 999, newerDate - 1)
+                                dates[id] = newerDate
+                            }
+                        }
                     }
                 }
                 val remembered = dao.likedTracks()
@@ -406,10 +436,13 @@ class SpotifyLikeSync(
                     identified && total != null && page.total == total && items.size == total &&
                         (tracks.isNotEmpty() || remembered.isEmpty())
                 val rememberedIds = remembered.mapTo(hashSetOf()) { it.spotifyId }
-                dao.insertLikedTracks(tracks.keys.filter { it !in rememberedIds }.map { SpotifyLikedTrackEntity(it, null, pending = true) })
+                dao.insertLikedTracks(
+                    tracks.keys.filter { it !in rememberedIds }.map { SpotifyLikedTrackEntity(it, null, pending = true, addedAt = dates[it]) },
+                )
+                dao.setLikedTrackDates(remembered.mapNotNull { row -> dates[row.spotifyId]?.takeIf { it != row.addedAt }?.let { row.spotifyId to it } }.toMap())
                 if (whole) unlikeRemoved(remembered.filter { it.spotifyId !in tracks })
                 publish()
-                val imported = importPending(tracks)
+                val imported = importPending(tracks, dates)
                 if (whole && imported) prefs.meldSpotifyLikesFingerprint = fingerprint
             }
             prefs.meldSpotifyLikesSyncedAt = now()
@@ -444,18 +477,22 @@ class SpotifyLikeSync(
     }
 
     /**
-     * Finds the tracks not looked up yet on YouTube and likes the songs, a few at a time and oldest first:
-     * upstream lists each batch it is given above the likes it already has when sorting by date added, so
-     * the newest must arrive last. Each batch is stored when done, so a stop continues where it was.
+     * Finds the tracks not looked up yet on YouTube and likes the songs, a few at a time, from the oldest
+     * like to the newest: upstream sends each like to YouTube Music in the order it gets them, and YouTube
+     * lists them by when they arrived. Each batch is stored when done, so a stop continues where it was.
      * Returns false when tracks are left.
      */
-    private suspend fun importPending(tracks: Map<String, SpotifyTrack?>): Boolean {
+    private suspend fun importPending(
+        tracks: Map<String, SpotifyTrack?>,
+        dates: Map<String, Long>,
+    ): Boolean {
         val pending = dao.likedTracks().filter { it.pending }.mapTo(hashSetOf()) { it.spotifyId }
-        val todo = tracks.entries.filter { it.key in pending }
+        // Spotify lists the newest first.
+        val todo = tracks.entries.filter { it.key in pending }.asReversed()
         if (todo.isEmpty()) return true
         mutableStatus.update { it.copy(importDone = 0, importTotal = todo.size) }
         var failed = false
-        for (batch in todo.chunked(IMPORT_BATCH).asReversed()) {
+        for (batch in todo.chunked(IMPORT_BATCH)) {
             currentCoroutineContext().ensureActive()
             if (!canPull()) return false
             val playable = batch.mapNotNull { (_, track) -> track?.takeIf { it.playable != false } }
@@ -472,7 +509,7 @@ class SpotifyLikeSync(
                 // A match that is merely playable is not sure enough to be liked in the user's name.
                 val song = (resolution as? SpotifyResolution.Matched)?.takeUnless { it.lowConfidence }?.song
                 if (song != null) songs += song
-                rows += SpotifyLikedTrackEntity(id, song?.id, pending = false)
+                rows += SpotifyLikedTrackEntity(id, song?.id, pending = false, addedAt = dates[id])
             }
             outboxLock.withLock {
                 // An intent still to be sent says what the user wants for that song; a disliked song stays disliked.
@@ -481,16 +518,29 @@ class SpotifyLikeSync(
                 dao.putLikedTracks(rows)
             }
             mutableStatus.update { it.copy(importDone = it.importDone + batch.size) }
-            mutableLikedIds.value = dao.likedTrackIds().toHashSet()
+            publishLiked()
         }
         return !failed
+    }
+
+    private suspend fun publishLiked() {
+        val liked = dao.likedTracks()
+        mutableLikedIds.value = liked.mapTo(hashSetOf()) { it.spotifyId }
+        val dates = HashMap<String, Long>()
+        liked.forEach { row ->
+            val id = row.youtubeId ?: return@forEach
+            val at = row.addedAt ?: return@forEach
+            // Two liked tracks can be the same YouTube song: the later like counts.
+            if (at > (dates[id] ?: Long.MIN_VALUE)) dates[id] = at
+        }
+        onLikeDates(dates)
     }
 
     private suspend fun publish() {
         val pending = dao.outboxCount(notFound = false)
         val notFound = dao.outboxCount(notFound = true)
         mutableStatus.update { it.copy(pending = pending, notFound = notFound, syncedAt = settings().meldSpotifyLikesSyncedAt) }
-        mutableLikedIds.value = dao.likedTrackIds().toHashSet()
+        publishLiked()
     }
 
     private suspend fun flushWithRetries() {
@@ -541,6 +591,10 @@ class SpotifyLikeSync(
 
     private companion object {
         const val TRACK_URI = "spotify:track:"
+
+        // Part of the remembered fingerprint: raising it makes every install read the whole list once more.
+        // 2: the like dates are kept.
+        const val FINGERPRINT_VERSION = 2
         const val IMPORT_BATCH = 10
         val PULL_INTERVAL = 1.hours
         val PROFILE_RETRY = 5.minutes
@@ -565,3 +619,5 @@ private fun SpotifyMatchEntity.toTrack() =
         explicit = explicit == true,
         isrc = isrc,
     )
+
+private fun epochMillisOrNull(iso: String): Long? = runCatching { Instant.parse(iso).toEpochMilliseconds() }.getOrNull()

@@ -19,6 +19,7 @@ import com.meld.spotify.library.SpotifyPlaylistRemote
 import com.meld.spotify.likes.SessionSpotifyLikes
 import com.meld.spotify.likes.SongLikeStateLikes
 import com.meld.spotify.likes.SpotifyLikeSync
+import com.meld.spotify.likes.SpotifyLikedOrder
 import com.meld.spotify.match.SearchScope
 import com.meld.spotify.playback.SpotifyPlayback
 import com.meld.spotify.playback.SpotifyQueuePlayback
@@ -123,6 +124,7 @@ fun meldModule(
                 now = { Clock.System.now().toEpochMilliseconds() },
                 onSpotifyChanged = store::likedSongsChanged,
                 logger = { YtLogger.d("MeldSpotify", it) },
+                onLikeDates = SpotifyLikedOrder::update,
             )
         }
         single<SpotifyPlaylistRemote> { SessionSpotifyPlaylists(get()) }

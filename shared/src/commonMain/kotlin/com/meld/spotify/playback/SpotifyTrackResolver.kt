@@ -116,6 +116,20 @@ class SpotifyTrackResolver(
         }
     }
 
+    /**
+     * [song] with the duration, artists and album YouTube has for it. Some places hand over a bare song (a
+     * Speed dial tile keeps no duration), and a match is only trusted when the durations agree.
+     */
+    suspend fun complete(song: SongItem): SongItem {
+        if (song.duration != null && song.artists.isNotEmpty()) return song
+        val known = loadSongs(listOf(song.id))[song.id] ?: return song
+        return song.copy(
+            duration = song.duration ?: known.duration,
+            artists = song.artists.ifEmpty { known.artists },
+            album = song.album ?: known.album,
+        )
+    }
+
     /** Callers asking for the same track share one search; it is cancelled when the last of them leaves. */
     private suspend fun searchShared(track: SpotifyTrack): SpotifyResolution {
         val flight =

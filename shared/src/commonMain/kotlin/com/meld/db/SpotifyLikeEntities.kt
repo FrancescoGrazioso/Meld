@@ -21,11 +21,13 @@ data class SpotifyLikeOutboxEntity(
  * A track that was in the Spotify Liked Songs when Meld last looked, or that Meld put there. This is the
  * base of the three-way comparison: only a track listed here and gone from Spotify was removed there.
  * [pending] rows still have to be found on YouTube; after that [youtubeId] is the song liked for the
- * track, or null when it has no confident match.
+ * track, or null when it has no confident match. [addedAt] is when Spotify says the track was liked, in
+ * epoch milliseconds; null on rows written before it was kept.
  */
 @Entity(tableName = "spotify_liked_track", indices = [Index("youtubeId")])
 data class SpotifyLikedTrackEntity(
     @PrimaryKey val spotifyId: String,
     val youtubeId: String?,
     val pending: Boolean,
+    val addedAt: Long? = null,
 )

@@ -57,6 +57,15 @@ interface SpotifyLikeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun putLikedTracks(tracks: List<SpotifyLikedTrackEntity>)
 
+    @Query("UPDATE spotify_liked_track SET addedAt = :addedAt WHERE spotifyId = :spotifyId")
+    suspend fun setLikedTrackDate(
+        spotifyId: String,
+        addedAt: Long,
+    )
+
+    @Transaction
+    suspend fun setLikedTrackDates(dates: Map<String, Long>) = dates.forEach { (spotifyId, addedAt) -> setLikedTrackDate(spotifyId, addedAt) }
+
     /** Lets the tracks that had no match be looked up again. */
     @Query("UPDATE spotify_liked_track SET pending = 1 WHERE youtubeId IS NULL")
     suspend fun retryUnmatchedLikedTracks()

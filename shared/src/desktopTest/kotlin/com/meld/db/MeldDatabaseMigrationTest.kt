@@ -45,6 +45,9 @@ class MeldDatabaseMigrationTest {
                     likes.insertLikedTracks(listOf(SpotifyLikedTrackEntity("sp1", "yt1", pending = false)))
                     assertEquals(listOf("yt1"), likes.outboxIds())
                     assertEquals(listOf("sp1"), likes.likedTracksOf("yt1").map { it.spotifyId })
+                    assertEquals(null, likes.likedTrack("sp1")?.addedAt)
+                    likes.setLikedTrackDates(mapOf("sp1" to 5L))
+                    assertEquals(5L, likes.likedTrack("sp1")?.addedAt)
 
                     val qobuz = QobuzMatchEntity("yt1", "q1", hires = true, bitDepth = 24, samplingRateKhz = 96.0, matchedAt = 1)
                     database.qobuzMatchDao().insertIfAbsent(listOf(qobuz, qobuz.copy(qobuzTrackId = "q2")))

@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import com.meld.spotify.likes.LocalVotes
+import com.meld.spotify.likes.SpotifyLikedOrder
 import com.metrolist.innertubex.InnerTube
 import com.metrolist.shared.api.PlaylistPage
 import com.metrolist.shared.api.SongVote
@@ -64,8 +65,10 @@ object SongLikeState {
         )
     private val _newLikes = MutableSharedFlow<SongItem>(extraBufferCapacity = 16)
     private val _likedSongsFlow = MutableStateFlow(loadLikedSongs())
-    var likedSongRecency by mutableStateOf(loadLikedSongRecency())
-        private set
+    private var storedLikedSongRecency by mutableStateOf(loadLikedSongRecency())
+
+    // Meld: the likes brought in from Spotify take the order they were liked in there.
+    val likedSongRecency: List<String> get() = SpotifyLikedOrder.apply(storedLikedSongRecency)
     private val remoteSyncMutex = Mutex()
 
     private data class RemoteRefresh(
@@ -138,9 +141,9 @@ object SongLikeState {
             remoteSyncGate.withLock {
                 if (Settings.shared !== settings || currentOrderAccount(settings) != account) return
                 persistenceGate.withLock {
-                    if (settings.recoverDatabaseLikes(songs, likedSongs, likedSongRecency)) {
+                    if (settings.recoverDatabaseLikes(songs, likedSongs, storedLikedSongRecency)) {
                         persistenceRevision.incrementAndGet()
-                        likedSongRecency = loadLikedSongRecency()
+                        storedLikedSongRecency = loadLikedSongRecency()
                         updateLikedSongs(loadLikedSongs())
                     }
                 }
@@ -163,7 +166,7 @@ object SongLikeState {
                 customOrdersSettings = null
                 customOrdersCache = null
                 customOrderUpdates = emptyMap()
-                likedSongRecency = loadLikedSongRecency()
+                storedLikedSongRecency = loadLikedSongRecency()
                 updateLikedSongs(loadLikedSongs())
                 dislikedSongIds = loadDislikedSongIds()
             }
@@ -185,9 +188,9 @@ object SongLikeState {
 
     private fun updateLikedSongRecency(songs: List<SongItem>) {
         val ids = songs.mapTo(linkedSetOf(), SongItem::id)
-        val retained = likedSongRecency.filter { it in ids }
+        val retained = storedLikedSongRecency.filter { it in ids }
         val retainedIds = retained.toHashSet()
-        likedSongRecency = ids.filterNot { it in retainedIds } + retained
+        storedLikedSongRecency = ids.filterNot { it in retainedIds } + retained
     }
 
     private fun loadCustomOrders(): Map<String, List<String>> {
@@ -254,7 +257,7 @@ object SongLikeState {
             Settings.shared.likedSongsOrderCustomized =
                 savedOrder != null || (localLikes != null && Settings.shared.likedSongsOrderCustomized)
             Settings.shared.likedSongsJson = Json.encodeToString(_likedSongsFlow.value)
-            Settings.shared.likedSongsRecencyJson = Json.encodeToString(likedSongRecency)
+            Settings.shared.likedSongsRecencyJson = Json.encodeToString(storedLikedSongRecency)
             Settings.shared.likedSongIds = _likedSongsFlow.value.joinToString(",", transform = SongItem::id)
         }
         if (localLikes != null && savedOrder == null) saveLikedSongs() else enqueueSnapshot()
@@ -278,7 +281,7 @@ object SongLikeState {
                     _likedSongsFlow.value,
                     orders,
                     customOrderUpdates,
-                    likedSongRecency,
+                    storedLikedSongRecency,
                 ),
             )
     }
@@ -362,11 +365,11 @@ object SongLikeState {
         val reconciledRemote = (pendingLikes + songs.filter { pending[it.id] == null }).distinctBy(SongItem::id)
         val snapshotIds = localSnapshot.mapTo(hashSetOf(), SongItem::id)
         val concurrentLikes =
-            likedSongRecency
+            storedLikedSongRecency
                 .filter { it !in snapshotIds || it in locallyLikedIds }
                 .takeUnless { accountChanged }
                 .orEmpty()
-        likedSongRecency =
+        storedLikedSongRecency =
             if (accountChanged) {
                 reconciledRemote
             } else {
@@ -377,7 +380,7 @@ object SongLikeState {
                 )
             }.map(SongItem::id)
         val concurrentIds = concurrentLikes.toHashSet()
-        likedSongRecency = concurrentLikes + likedSongRecency.filterNot { it in concurrentIds }
+        storedLikedSongRecency = concurrentLikes + storedLikedSongRecency.filterNot { it in concurrentIds }
         if (reconciledRemote.isEmpty()) Settings.shared.likedSongsOrderCustomized = false
         updateLikedSongs(
             when {

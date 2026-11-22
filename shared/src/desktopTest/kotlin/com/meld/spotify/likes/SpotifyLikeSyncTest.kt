@@ -45,6 +45,7 @@ import kotlinx.serialization.json.Json
 import java.io.File
 import java.nio.file.Files
 import kotlin.test.Test
+import kotlin.time.Instant
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -77,7 +78,17 @@ private class FakeSpotify : SpotifyLikesRemote {
     var searches = 0
     var found: (String) -> List<SpotifyTrack> = { listOf(track(it.substringAfterLast(' ').toInt())) }
 
-    fun like(numbers: Iterable<Int>) = numbers.forEach { liked.add(0, SpotifyTrackItem(null, uri(it), null, track(it))) }
+    // Liked one second apart, in the order given.
+    fun like(numbers: Iterable<Int>) =
+        numbers.forEach { liked.add(0, SpotifyTrackItem(null, uri(it), Instant.fromEpochSeconds(++clock).toString(), track(it))) }
+
+    private var clock = 0L
+
+    /** Liked in the same second: only the place in the list tells them apart. */
+    fun likeAtOnce(vararg numbers: Int) {
+        val at = Instant.fromEpochSeconds(++clock).toString()
+        numbers.forEach { liked.add(0, SpotifyTrackItem(null, uri(it), at, track(it))) }
+    }
 
     fun like(vararg numbers: Int) = like(numbers.asList())
 
@@ -131,11 +142,15 @@ private class FakeLocal : LocalLikes {
 
     override fun isDisliked(id: String) = id in disliked
 
+    /** The songs in the order they were handed over, which is the order upstream sends them to YouTube Music in. */
+    val added = mutableListOf<String>()
+
     /** As upstream sorts by date added: the songs of each call above those of the calls before it. */
     val byDateAdded = mutableListOf<String>()
 
     override fun add(songs: List<SongItem>) {
         val new = songs.filter { it.id !in this.songs }
+        added += new.map { it.id }
         byDateAdded.addAll(0, new.map { it.id })
         new.forEach { this.songs[it.id] = it }
     }
@@ -151,6 +166,7 @@ private class App(
     val local: LocalLikes = FakeLocal(),
     inMemoryMatches: Boolean = false,
 ) {
+    var likeDates = emptyMap<String, Long>()
     val database: MeldDatabase = buildMeldDatabase(file)
     val matches: SpotifyMatchDao = if (inMemoryMatches) FakeMatchDao() else database.spotifyMatchDao()
     val likes = database.spotifyLikeDao()
@@ -200,6 +216,7 @@ private class App(
             scope = scope,
             now = { time++ },
             onSpotifyChanged = store::likedSongsChanged,
+            onLikeDates = { likeDates = it },
         )
 
     val sync = sync(scope)
@@ -473,13 +490,36 @@ class SpotifyLikeSyncTest {
         }
 
     @Test
+    fun likesOfTheSameSecondKeepTheOrderOfSpotifysList() =
+        withApp { sync ->
+            spotify.likeAtOnce(1, 2, 3, 4)
+            assertTrue(sync.pull())
+            // 4 is listed first on Spotify, so it is the latest of the four.
+            assertEquals(listOf("yt4", "yt3", "yt2", "yt1"), likeDates.entries.sortedByDescending { it.value }.map { it.key })
+        }
+
+    @Test
+    fun aSongHandedOverWithoutItsDurationIsCompletedFromYouTubeBeforeTheSearch() =
+        withApp { sync ->
+            // What a Speed dial tile holds: no duration and no album, which alone can never be a confident match.
+            val bare = ytSong("yt7", "Song 7").copy(duration = null)
+            assertEquals("sp7", sync.spotifyTrackFor(bare)?.id)
+            assertEquals(MatchConfidence.HIGH, matches.get("sp7")?.confidence)
+
+            // YouTube does not know the video either: still no guess.
+            youtube.unloadable += "yt8"
+            assertNull(sync.spotifyTrackFor(ytSong("yt8", "Song 8").copy(duration = null)))
+        }
+
+    @Test
     fun pullLikesWhatIsNewOnSpotifyAndSendsNothingBack() =
         withApp { sync ->
             spotify.like(1, 2, 3, 4)
             youtube.missing += "Song 2"
             (local as FakeLocal).disliked += "yt4"
             assertTrue(sync.pull())
-            assertEquals(listOf("yt3", "yt1"), songs.keys.toList())
+            // Handed over from the oldest like to the newest.
+            assertEquals(listOf("yt1", "yt3"), songs.keys.toList())
             assertEquals(setOf("sp1", "sp2", "sp3", "sp4"), sync.likedIds.value)
             assertEquals(emptyList(), likes.outboxIds())
             assertEquals(emptyList(), spotify.added)
@@ -552,7 +592,11 @@ class SpotifyLikeSyncTest {
             assertTrue(sync.pull())
             assertEquals(5_000, songs.size)
             assertEquals(100, spotify.pageRequests)
-            assertEquals((5_000 downTo 1).map { "yt$it" }, (local as FakeLocal).byDateAdded)
+            // Handed over from the oldest like to the newest, so YouTube Music lists them as Spotify does...
+            assertEquals((1..5_000).map { "yt$it" }, (local as FakeLocal).added)
+            // ...and by Spotify's dates the list reads newest first, however upstream stacked the batches.
+            assertEquals(5_000, likeDates.size)
+            assertEquals((5_000 downTo 1).map { "yt$it" }, reorderBySpotifyDate((local as FakeLocal).byDateAdded, likeDates))
 
             spotify.unlike(1..1_200)
             assertTrue(sync.pull())
