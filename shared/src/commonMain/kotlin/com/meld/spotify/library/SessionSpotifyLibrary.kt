@@ -54,6 +54,8 @@ internal class SessionSpotifyPlaylists(
 
     override suspend fun create(name: String) = owner.call { createPlaylist(name) }
 
+    override suspend fun delete(playlistId: String) = owner.call { deletePlaylist(playlistId) }
+
     override suspend fun editable(
         itemUri: String,
         folderUri: String?,

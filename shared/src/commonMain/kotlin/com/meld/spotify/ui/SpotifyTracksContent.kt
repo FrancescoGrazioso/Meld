@@ -53,6 +53,9 @@ import com.meld.spotify.likes.SpotifyLikeSync
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.albums
 import com.metrolist.shared.generated.resources.cancel
+import com.metrolist.shared.generated.resources.delete
+import com.metrolist.shared.generated.resources.delete_playlist
+import com.metrolist.shared.generated.resources.delete_playlist_question
 import com.metrolist.shared.generated.resources.description
 import com.metrolist.shared.generated.resources.dismiss
 import com.metrolist.shared.generated.resources.edit_playlist
@@ -64,6 +67,7 @@ import com.metrolist.shared.generated.resources.meld_spotify_popular
 import com.metrolist.shared.generated.resources.meld_spotify_preparing_shuffle
 import com.metrolist.shared.generated.resources.meld_spotify_reorder_loading
 import com.metrolist.shared.generated.resources.n_song
+import com.metrolist.shared.generated.resources.ok
 import com.metrolist.shared.generated.resources.play
 import com.metrolist.shared.generated.resources.playlist_name
 import com.metrolist.shared.generated.resources.playlist_reorder
@@ -105,6 +109,7 @@ internal fun SpotifyTracksContent(
     titleHint: String?,
     contentPadding: PaddingValues,
     onOpen: (Screen) -> Unit,
+    onBack: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
@@ -118,6 +123,8 @@ internal fun SpotifyTracksContent(
         val listState = rememberLazyListState()
         val picker = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyPlaylistPicker>() }
         var editingDetails by remember { mutableStateOf(false) }
+        var confirmingDelete by remember { mutableStateOf(false) }
+        LaunchedEffect(state.deleted) { if (state.deleted) onBack() }
         var reorderMode by rememberSaveable { mutableStateOf(false) }
         // Positions mean nothing to Spotify until the whole playlist is loaded, so that comes first.
         val reordering = reorderMode && state.canEdit && tracks.complete
@@ -250,13 +257,25 @@ internal fun SpotifyTracksContent(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
-                            if (state.canEdit || state.canEditDetails) {
+                            if (state.canEdit || state.canEditDetails || state.canDelete) {
                                 Row {
                                     if (state.canEditDetails) {
                                         IconButton(onClick = { editingDetails = true }, shapes = IconButtonDefaults.shapes()) {
                                             Icon(
                                                 MetrolistIcons.Outlined.Edit,
                                                 contentDescription = stringResource(Res.string.edit_playlist),
+                                            )
+                                        }
+                                    }
+                                    if (state.canDelete) {
+                                        IconButton(
+                                            onClick = { confirmingDelete = true },
+                                            enabled = !state.deleting,
+                                            shapes = IconButtonDefaults.shapes(),
+                                        ) {
+                                            Icon(
+                                                MetrolistIcons.Outlined.Delete,
+                                                contentDescription = stringResource(Res.string.delete_playlist),
                                             )
                                         }
                                     }
@@ -371,6 +390,30 @@ internal fun SpotifyTracksContent(
                     }
                 }
             }
+        }
+        if (confirmingDelete) {
+            AlertDialog(
+                onDismissRequest = { confirmingDelete = false },
+                title = { Text(stringResource(Res.string.delete_playlist_question)) },
+                text = { Text(title) },
+                confirmButton = {
+                    TextButton(
+                        onClick = {
+                            viewModel.delete()
+                            confirmingDelete = false
+                        },
+                    ) { Text(stringResource(Res.string.delete)) }
+                },
+                dismissButton = { TextButton(onClick = { confirmingDelete = false }) { Text(stringResource(Res.string.cancel)) } },
+            )
+        }
+        state.deleteFailure?.let { error ->
+            AlertDialog(
+                onDismissRequest = viewModel::dismissDeleteFailure,
+                title = { Text(stringResource(Res.string.delete_playlist)) },
+                text = { Text(stringResource(Res.string.meld_spotify_edit_failed, stringResource(error.text()))) },
+                confirmButton = { TextButton(onClick = viewModel::dismissDeleteFailure) { Text(stringResource(Res.string.ok)) } },
+            )
         }
         if (editingDetails && info != null) {
             var name by remember { mutableStateOf(info.title) }

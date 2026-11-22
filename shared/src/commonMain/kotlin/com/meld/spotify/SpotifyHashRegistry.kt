@@ -98,6 +98,9 @@ internal class SpotifyHashRegistry(
                         val entry = value as? JsonObject ?: return@mapNotNull null
                         val hash = entry.str("hash")?.takeIf(HASH::matches)
                         if (hash == null || name !in BUNDLED) return@mapNotNull null
+                        // The published registry could not find this operation in the web player it read, so what it
+                        // holds is only the last hash it once saw: the bundled one is newer.
+                        if (entry.str("status") == "not_in_bundle") return@mapNotNull null
                         name to Entry(hash, entry.str("previous_hash")?.takeIf(HASH::matches))
                     }.toMap()
             require(operations.isNotEmpty())
@@ -131,12 +134,11 @@ internal class SpotifyHashRegistry(
                     ),
                 "fetchLibraryTracks" to
                     Entry("087278b20b743578a6262c2b0b4bcd20d879c503cc359a2285baf083ef944240", null),
-                // The web player has moved on to the second hash, whose query takes variables Meld does not send yet.
-                // It is the fallback for the day Spotify drops the first, which is the one the request was written for.
+                // The first is the web player's current search; the second its older one, kept for as long as Spotify answers it.
                 "searchDesktop" to
                     Entry(
-                        "db61238974d27839a136c9dc02bfdbe3fab7635f21cf85976ebff9a1ee281345",
                         "eef7cc54888d91bdd6802623477873caa3948ae173a0c34fd86827b267e94c03",
+                        "db61238974d27839a136c9dc02bfdbe3fab7635f21cf85976ebff9a1ee281345",
                     ),
                 "queryArtistOverview" to
                     Entry(

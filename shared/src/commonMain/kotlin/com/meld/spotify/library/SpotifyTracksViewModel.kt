@@ -29,6 +29,18 @@ data class SpotifyTracksUiState(
     val canEdit: Boolean = false,
     /** A playlist the signed-in user may rename and describe. */
     val canEditDetails: Boolean = false,
+    /** A playlist of the signed-in user's own, which they may delete. */
+    val canDelete: Boolean = false,
+    val deleting: Boolean = false,
+    /** Set once Spotify has deleted the playlist: the screen has nothing left to show. */
+    val deleted: Boolean = false,
+    val deleteFailure: SpotifyError? = null,
+)
+
+private data class Deletion(
+    val running: Boolean = false,
+    val done: Boolean = false,
+    val failure: SpotifyError? = null,
 )
 
 /** Episodes, local files and removed tracks have no [SpotifyTrackItem.track]; Spotify marks the rest it cannot play. */
@@ -51,6 +63,7 @@ class SpotifyTracksViewModel(
     private val editor: SpotifyPlaylistEditor? = null,
 ) {
     private val preparingShuffle = MutableStateFlow(false)
+    private val deletion = MutableStateFlow(Deletion())
     private val collection get() = store.collection(type, id)
     private val connected = connection.state.map { it is SpotifyConnectionState.Connected }.distinctUntilChanged()
 
@@ -64,7 +77,9 @@ class SpotifyTracksViewModel(
             preparingShuffle,
             editor?.failures?.map { it[id]?.error } ?: flowOf(null),
             ::uiState,
-        ).stateIn(
+        ).combine(deletion) { ui, deletion ->
+            ui.copy(deleting = deletion.running, deleted = deletion.done, deleteFailure = deletion.failure)
+        }.stateIn(
             scope,
             SharingStarted.Eagerly,
             // What the store already holds: a screen that comes back draws its list, and so keeps its scroll, in the first frame.
@@ -89,6 +104,7 @@ class SpotifyTracksViewModel(
             // The owner always: Spotify's answer only ever adds the playlists of others.
             canEdit = editable && (owned || info?.canEditItems == true),
             canEditDetails = editable && (info?.canEditDetails ?: owned),
+            canDelete = editable && owned,
         )
     }
 
@@ -133,6 +149,21 @@ class SpotifyTracksViewModel(
         val newName = name.trim().takeIf { it.isNotEmpty() && it != info.title }
         val newDescription = description.trim().takeIf { it != info.description.orEmpty() }
         if (newName != null || newDescription != null) editor?.details(id, newName, newDescription)
+    }
+
+    /** Asks Spotify to delete the playlist; [SpotifyTracksUiState.deleted] or [SpotifyTracksUiState.deleteFailure] says how it went. */
+    fun delete() {
+        val editor = editor ?: return
+        if (deletion.value.running || deletion.value.done) return
+        deletion.value = Deletion(running = true)
+        scope.launch {
+            val failure = editor.delete(id)
+            deletion.value = Deletion(done = failure == null, failure = failure)
+        }
+    }
+
+    fun dismissDeleteFailure() {
+        deletion.value = Deletion()
     }
 
     fun retryEdit() {

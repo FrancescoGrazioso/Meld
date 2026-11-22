@@ -37,7 +37,7 @@ fun spotifyDestination(destination: Screen): Boolean {
     val navigator = LocalNavigator.current
     when (destination) {
         is SpotifyFolderScreen, is SpotifyTracksScreen -> {
-            SpotifyScreen(destination, navigator::navigate) { title, onRefresh, content ->
+            SpotifyScreen(destination, navigator::navigate, { navigator.goBack() }) { title, onRefresh, content ->
                 // A track list has its own header with the title.
                 SpotifyScreenHost(title.takeIf { destination is SpotifyFolderScreen }, onRefresh) {
                     content(PaddingValues(bottom = 16.dp))

@@ -211,6 +211,11 @@ class SpotifyApi(
                 put("includePreReleases", false)
                 put("includeLocalConcertsField", false)
                 put("includeAuthors", false)
+                // What the web player's current search adds (its bundle of 2026-11-19); the older query ignores them.
+                put("includeAlbumPreReleases", false)
+                put("includeEpisodeContentRatingsV2", false)
+                put("isPrefix", JsonNull)
+                putJsonArray("sectionFilters") { add("GENERIC") }
             }
         return query("searchDesktop", variables) { parseSearch(it, offset, limit) }
     }
@@ -354,6 +359,23 @@ class SpotifyApi(
             }
         playlistV2("createPlaylist", "user/${username.encodeURLPathPart()}/rootlist/changes", listChanges(add))
         return uri.removePrefix(PLAYLIST_URI)
+    }
+
+    /**
+     * Takes the playlist out of the user's library, which is all the web player's "Delete" does: Spotify keeps
+     * the playlist itself, and its link goes on working.
+     */
+    suspend fun deletePlaylist(playlistId: String) {
+        val username = profile().username
+        val remove =
+            buildJsonObject {
+                put("kind", "REM")
+                putJsonObject("rem") {
+                    putJsonArray("items") { addJsonObject { put("uri", PLAYLIST_URI + playlistId) } }
+                    put("itemsAsKey", true)
+                }
+            }
+        playlistV2("deletePlaylist", "user/${username.encodeURLPathPart()}/rootlist/changes", listChanges(remove))
     }
 
     suspend fun addToLibrary(uris: List<String>) = mutate("addToLibrary") { putJsonArray("libraryItemUris") { uris.forEach(::add) } }

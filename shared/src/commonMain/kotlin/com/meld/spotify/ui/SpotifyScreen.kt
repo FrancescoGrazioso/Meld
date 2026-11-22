@@ -33,7 +33,7 @@ import org.koin.mp.KoinPlatform
 /**
  * Draws [screen] when it is a [SpotifyFolderScreen] or a [SpotifyTracksScreen]; this is the only way
  * a host shows them. [onOpen] opens another route, [com.metrolist.shared.ui.navigation.SpotifySettingsScreen]
- * included. [frame] is the host's own chrome (back button, insets): it is given the screen's title
+ * included; [onBack] leaves the screen, which a deleted playlist does by itself. [frame] is the host's own chrome (back button, insets): it is given the screen's title
  * and its refresh action, and calls `content` with the padding the list has to keep.
  *
  * The screen's state lives exactly as long as it is composed. The lists themselves are in the
@@ -43,6 +43,7 @@ import org.koin.mp.KoinPlatform
 fun SpotifyScreen(
     screen: Screen,
     onOpen: (Screen) -> Unit,
+    onBack: () -> Unit = {},
     frame: @Composable (title: String, onRefresh: () -> Unit, content: @Composable (PaddingValues) -> Unit) -> Unit,
 ) {
     // Keyed, so a host that shows every route from one place still gets a scope per screen, cancelled with it.
@@ -84,7 +85,7 @@ fun SpotifyScreen(
                 val liked = screen.type == SpotifyCollectionType.LIKED
                 val fallback = if (liked) Res.string.meld_spotify_liked_songs else Res.string.import_provider_spotify
                 frame(screen.title ?: stringResource(fallback), viewModel::refresh) { padding ->
-                    SpotifyTracksContent(viewModel, screen.type, screen.id, screen.title, padding, onOpen)
+                    SpotifyTracksContent(viewModel, screen.type, screen.id, screen.title, padding, onOpen, onBack)
                 }
             }
 

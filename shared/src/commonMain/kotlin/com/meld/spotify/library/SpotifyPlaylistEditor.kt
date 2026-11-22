@@ -52,6 +52,9 @@ interface SpotifyPlaylistRemote {
     /** Creates an empty playlist at the top of the library and returns its id. */
     suspend fun create(name: String): String
 
+    /** Takes the playlist out of the user's library. */
+    suspend fun delete(playlistId: String)
+
     /** One level of the playlists the user may add [itemUri] to, those of others they contribute to included. */
     suspend fun editable(
         itemUri: String,
@@ -108,6 +111,19 @@ class SpotifyPlaylistEditor(
     private val store: SpotifyLibraryStore,
     private val scope: CoroutineScope,
 ) {
+    /**
+     * Deletes the playlist and takes it out of the cached library. Not queued behind the edits: there is
+     * nothing to undo it with, so the caller waits for the answer and gets what went wrong.
+     */
+    suspend fun delete(playlistId: String): SpotifyError? =
+        try {
+            remote.delete(playlistId)
+            store.playlists(null).refresh()
+            null
+        } catch (error: SpotifyError) {
+            error
+        }
+
     private class Edit(
         val playlistId: String,
         val change: SpotifyPlaylistChange,

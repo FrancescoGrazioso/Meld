@@ -636,6 +636,18 @@ class SpotifyApiTest {
                 spotify.writes.map { "${it.method.value} ${it.url} ${(it.body as TextContent).text}" },
             )
 
+            // Deleting takes the playlist out of the library, as the web player's rootlist "remove" does.
+            spotify.writes.clear()
+            api.deletePlaylist("new1")
+            assertEquals(
+                listOf(
+                    "POST https://spclient.wg.spotify.com/playlist/v2/user/user%20name/rootlist/changes " +
+                        """{"deltas":[{"ops":[{"kind":"REM","rem":{"items":[{"uri":"spotify:playlist:new1"}],"itemsAsKey":true}}],""" +
+                        """"info":{"source":{"client":"WEBPLAYER"}}}]}""",
+                ),
+                spotify.writes.map { "${it.method.value} ${it.url} ${(it.body as TextContent).text}" },
+            )
+
             // Without a playlist in the answer there is nothing to put in the library.
             spotify.writes.clear()
             spotify.onPlaylistService = { respond("{}") }

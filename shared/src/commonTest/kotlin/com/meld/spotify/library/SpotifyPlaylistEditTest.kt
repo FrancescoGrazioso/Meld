@@ -130,6 +130,8 @@ private class Server(
         return "new1"
     }
 
+    override suspend fun delete(playlistId: String) = request("delete:$playlistId") {}
+
     override suspend fun editable(
         itemUri: String,
         folderUri: String?,

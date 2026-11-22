@@ -60,7 +60,7 @@ private fun SpotifyScreenHost(
     navigator: Navigator,
 ) {
     val miniPlayerInset = LocalMiniPlayerBottomInset.current
-    SpotifyScreen(screen, navigator::navigate) { title, _, content ->
+    SpotifyScreen(screen, navigator::navigate, { navigator.goBack() }) { title, _, content ->
         Scaffold(
             modifier = Modifier.imePadding().windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal)),
             containerColor = Color.Transparent,
