@@ -186,7 +186,7 @@ internal class SpotifyWebClient(
         statement.execute { response ->
             val request = response.call.request
             response.headers.getAll(HttpHeaders.SetCookie)?.forEach { capture(request.url.host, it) }
-            log("${request.method.value} ${request.url.host}${request.url.encodedPath} -> ${response.status.value}")
+            log("${request.method.value} ${request.url.host}${redactedPath(request.url.encodedPath)} -> ${response.status.value}")
             TextResponse(response.status, response.headers, response.bodyAsTextLimited(maxBytes))
         }
 
@@ -209,4 +209,15 @@ internal class SpotifyWebClient(
     private companion object {
         val json = Json { ignoreUnknownKeys = true }
     }
+}
+
+private val SPOTIFY_ID = Regex("[A-Za-z0-9]{22}")
+
+/** A request path for the log, without who it is about: the user name and the ids of playlists and tracks are left out. */
+internal fun redactedPath(path: String): String {
+    val segments = path.split('/')
+    return segments
+        .mapIndexed { index, segment ->
+            if (segments.getOrNull(index - 1) == "user" || SPOTIFY_ID.matches(segment)) "…" else segment
+        }.joinToString("/")
 }
