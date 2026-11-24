@@ -5596,6 +5596,9 @@
     <string name="meld_spotify_version_chosen">Plays now, chosen by you</string>
     <string name="meld_spotify_version_automatic">Use the automatic match</string>
     <string name="meld_spotify_version_none">Nothing found on YouTube Music for this track.</string>
+    <string name="meld_spotify_version_link">Or paste a YouTube link</string>
+    <string name="meld_spotify_version_link_use">Use</string>
+    <string name="meld_spotify_version_link_rejected">That is not a YouTube video Meld can play.</string>
     <string name="meld_spotify_version_unreachable">YouTube Music could not be searched.</string>
     <string name="meld_spotify_download_preparing">Finding the songs to download… %1$d of %2$d</string>
     <string name="meld_spotify_download_nothing_new">Already downloaded or waiting to download</string>

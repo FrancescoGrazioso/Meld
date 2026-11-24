@@ -172,6 +172,9 @@ class SpotifyTrackResolver(
         onManualChange()
     }
 
+    /** The YouTube song with this video id, for a link the user gave; null when YouTube has none or cannot be asked. */
+    suspend fun songById(videoId: String): SongItem? = loadSongs(listOf(videoId))[videoId]
+
     /** Drops the user's choice for [track]; the next lookup searches again. */
     suspend fun forgetChoice(track: SpotifyTrack) {
         dao.delete(track.id)

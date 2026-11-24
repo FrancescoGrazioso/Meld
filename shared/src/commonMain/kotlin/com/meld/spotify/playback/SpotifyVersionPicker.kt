@@ -23,7 +23,27 @@ data class SpotifyVersionState(
     val currentId: String? = null,
     val manual: Boolean = false,
     val candidates: List<SongItem> = emptyList(),
+    /** A link is being looked up. */
+    val checkingLink: Boolean = false,
+    /** The link the user gave is not a YouTube video Meld can play. */
+    val linkRejected: Boolean = false,
 )
+
+private val VIDEO_ID = Regex("[A-Za-z0-9_-]{11}")
+private val ID_IN_QUERY = Regex("[?&]v=([A-Za-z0-9_-]{11})(?:[&#]|$)")
+private val ID_IN_PATH = Regex("(?:youtu\\.be/|/shorts/|/embed/|/live/)([A-Za-z0-9_-]{11})(?:[?&#/]|$)")
+
+/**
+ * The video id in what the user pasted: a YouTube or YouTube Music link in any of its usual forms, or the
+ * bare id. Null for anything else, a link to another site included.
+ */
+internal fun youtubeVideoId(text: String): String? {
+    val link = text.trim()
+    if (VIDEO_ID.matches(link)) return link
+    val host = link.substringAfter("://", link).substringBefore('/').substringBefore('?').lowercase()
+    if (host != "youtu.be" && host != "youtube.com" && !host.endsWith(".youtube.com")) return null
+    return ID_IN_QUERY.find(link)?.groupValues?.get(1) ?: ID_IN_PATH.find(link)?.groupValues?.get(1)
+}
 
 /**
  * The one "Choose the YouTube version" dialog of the app: a track row opens it, the host draws it once.
@@ -63,6 +83,39 @@ class SpotifyVersionPicker(
             mutableState.update { if (it?.track == track) it.copy(currentId = song.id, manual = true) else it }
         }
     }
+
+    /**
+     * For when none of the proposals is the one: the video behind [link] plays for the track from then on.
+     * A link that is not a YouTube video, or one YouTube does not have, is said and changes nothing.
+     */
+    fun chooseLink(link: String) {
+        val track = mutableState.value?.track ?: return
+        val videoId = youtubeVideoId(link)
+        if (videoId == null) {
+            mutableState.update { it?.copy(linkRejected = true) }
+            return
+        }
+        mutableState.update { it?.copy(checkingLink = true, linkRejected = false) }
+        scope.launch {
+            val song = resolver.songById(videoId)
+            if (song != null) resolver.choose(track, song)
+            mutableState.update {
+                when {
+                    it?.track != track -> it
+                    song == null -> it.copy(checkingLink = false, linkRejected = true)
+                    else ->
+                        it.copy(
+                            checkingLink = false,
+                            currentId = song.id,
+                            manual = true,
+                            candidates = (listOf(song) + it.candidates).distinctBy { candidate -> candidate.id },
+                        )
+                }
+            }
+        }
+    }
+
+    fun linkEdited() = mutableState.update { it?.copy(linkRejected = false) }
 
     /** Back to the song Meld finds by itself. */
     fun useAutomatic() {

@@ -76,4 +76,54 @@ class SpotifyVersionPickerTest {
             assertEquals(false, picker.state.value?.unreachable)
             assertEquals("yt9", picker.state.value?.currentId)
         }
+
+    @Test
+    fun aVideoIdIsReadFromEveryUsualFormOfAYouTubeLinkAndFromNothingElse() {
+        val id = "f2dP6C7JWhU"
+        listOf(
+            id,
+            "https://www.youtube.com/watch?v=$id",
+            "https://music.youtube.com/watch?v=$id&si=abc",
+            "https://m.youtube.com/watch?feature=share&v=$id",
+            "https://youtu.be/$id?t=12",
+            "youtu.be/$id",
+            "https://www.youtube.com/shorts/$id",
+            "  https://www.youtube.com/embed/$id  ",
+        ).forEach { assertEquals(id, youtubeVideoId(it), it) }
+        listOf(
+            "",
+            "not a link",
+            "https://open.spotify.com/track/$id",
+            "https://example.com/watch?v=$id",
+            "https://notyoutube.com/watch?v=$id",
+            "https://www.youtube.com/playlist?list=PL123",
+            "https://www.youtube.com/watch?v=short",
+        ).forEach { assertNull(youtubeVideoId(it), it) }
+    }
+
+    @Test
+    fun aPastedLinkBecomesTheChoiceAndABadOneIsSaid() =
+        runTest(UnconfinedTestDispatcher()) {
+            val resolver = resolver()
+            val picker = SpotifyVersionPicker(resolver, backgroundScope)
+            picker.open(track(7))
+
+            picker.chooseLink("https://open.spotify.com/track/abc")
+            assertEquals(true, picker.state.value?.linkRejected)
+            assertEquals("yt7", picker.state.value?.currentId)
+            picker.linkEdited()
+            assertEquals(false, picker.state.value?.linkRejected)
+
+            // A YouTube link, but YouTube has no such video.
+            youtube.unloadable += "aaaaaaaaaaa"
+            picker.chooseLink("https://youtu.be/aaaaaaaaaaa")
+            assertEquals(true, picker.state.value?.linkRejected)
+            assertEquals(false, picker.state.value?.manual)
+
+            picker.chooseLink("https://music.youtube.com/watch?v=bbbbbbbbbbb")
+            assertEquals("bbbbbbbbbbb", picker.state.value?.currentId)
+            assertEquals(true, picker.state.value?.manual)
+            assertEquals("bbbbbbbbbbb", picker.state.value?.candidates?.first()?.id)
+            assertEquals("bbbbbbbbbbb", (resolver.resolve(track(7)) as SpotifyResolution.Matched).song.id)
+        }
 }

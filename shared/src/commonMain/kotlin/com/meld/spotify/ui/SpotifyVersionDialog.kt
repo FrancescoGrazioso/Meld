@@ -7,18 +7,24 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,6 +37,9 @@ import com.metrolist.shared.generated.resources.meld_spotify_choose_version
 import com.metrolist.shared.generated.resources.meld_spotify_version_automatic
 import com.metrolist.shared.generated.resources.meld_spotify_version_chosen
 import com.metrolist.shared.generated.resources.meld_spotify_version_current
+import com.metrolist.shared.generated.resources.meld_spotify_version_link
+import com.metrolist.shared.generated.resources.meld_spotify_version_link_rejected
+import com.metrolist.shared.generated.resources.meld_spotify_version_link_use
 import com.metrolist.shared.generated.resources.meld_spotify_version_none
 import com.metrolist.shared.generated.resources.meld_spotify_version_unreachable
 import com.metrolist.shared.generated.resources.retry
@@ -93,7 +102,10 @@ internal fun SpotifyVersionDialog() {
                                 Text(stringResource(Res.string.meld_spotify_version_automatic))
                             }
                         }
-                        DragScrollableColumn(Modifier.fillMaxWidth().weight(1f, fill = false)) {
+                        // The song that plays now leads the list: show it whenever it changes.
+                        val listState = rememberLazyListState()
+                        LaunchedEffect(state.currentId) { listState.scrollToItem(0) }
+                        DragScrollableColumn(Modifier.fillMaxWidth().weight(1f, fill = false), state = listState) {
                             items(state.candidates, key = { it.id }) { song ->
                                 SpotifyLibraryRow(
                                     title = song.title,
@@ -106,7 +118,50 @@ internal fun SpotifyVersionDialog() {
                         }
                     }
                 }
+                // Also when nothing was found: a link is then the only way to give the track a song.
+                if (!state.loading && !state.unreachable) VersionLinkField(state, picker)
             }
+        }
+    }
+}
+
+/** For the version none of the proposals is: the user pastes its YouTube link. */
+@Composable
+private fun VersionLinkField(
+    state: SpotifyVersionState,
+    picker: SpotifyVersionPicker,
+) {
+    var link by remember(state.track.id) { mutableStateOf("") }
+    // Taken: the song now leads the list, and the field is free for another try.
+    LaunchedEffect(state.currentId) { link = "" }
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(start = 16.dp, end = 12.dp, top = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        OutlinedTextField(
+            value = link,
+            onValueChange = {
+                link = it
+                picker.linkEdited()
+            },
+            label = { Text(stringResource(Res.string.meld_spotify_version_link)) },
+            isError = state.linkRejected,
+            supportingText =
+                if (state.linkRejected) {
+                    { Text(stringResource(Res.string.meld_spotify_version_link_rejected)) }
+                } else {
+                    null
+                },
+            singleLine = true,
+            enabled = !state.checkingLink,
+            modifier = Modifier.weight(1f),
+        )
+        TextButton(
+            onClick = { picker.chooseLink(link) },
+            enabled = link.isNotBlank() && !state.checkingLink,
+            modifier = Modifier.padding(start = 4.dp),
+        ) {
+            Text(stringResource(Res.string.meld_spotify_version_link_use))
         }
     }
 }
