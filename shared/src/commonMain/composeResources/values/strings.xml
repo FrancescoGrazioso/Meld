@@ -5591,6 +5591,12 @@
     <string name="meld_spotify_on_home">Show Spotify on Home</string>
     <string name="meld_spotify_on_home_description">Your Spotify home feed is shown above the other sections of the Home screen.</string>
     <string name="meld_spotify_new_playlist">New Spotify playlist</string>
+    <string name="meld_spotify_choose_version">Choose the YouTube version</string>
+    <string name="meld_spotify_version_current">Plays now</string>
+    <string name="meld_spotify_version_chosen">Plays now, chosen by you</string>
+    <string name="meld_spotify_version_automatic">Use the automatic match</string>
+    <string name="meld_spotify_version_none">Nothing found on YouTube Music for this track.</string>
+    <string name="meld_spotify_version_unreachable">YouTube Music could not be searched.</string>
     <string name="meld_spotify_download_preparing">Finding the songs to download… %1$d of %2$d</string>
     <string name="meld_spotify_download_nothing_new">Already downloaded or waiting to download</string>
     <string name="meld_spotify_download_not_found">%1$d not found on YouTube Music</string>

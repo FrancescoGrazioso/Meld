@@ -50,6 +50,7 @@ import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.add_to_queue
 import com.metrolist.shared.generated.resources.action_download
 import com.metrolist.shared.generated.resources.meld_spotify_add_to_playlist
+import com.metrolist.shared.generated.resources.meld_spotify_choose_version
 import com.metrolist.shared.generated.resources.meld_spotify_error_changed
 import com.metrolist.shared.generated.resources.meld_spotify_error_forbidden
 import com.metrolist.shared.generated.resources.meld_spotify_error_offline
@@ -231,6 +232,7 @@ internal fun SpotifyTrackRow(
     liked: Boolean = false,
     onAddToPlaylist: ((SpotifyTrack) -> Unit)? = null,
     onDownload: ((SpotifyTrack) -> Unit)? = null,
+    onChooseVersion: ((SpotifyTrack) -> Unit)? = null,
     onRemove: (() -> Unit)? = null,
     leading: (@Composable () -> Unit)? = null,
 ) {
@@ -242,6 +244,7 @@ internal fun SpotifyTrackRow(
             onAddToQueue?.let { Res.string.add_to_queue to it },
             onAddToPlaylist?.let { Res.string.meld_spotify_add_to_playlist to it },
             onDownload?.let { Res.string.action_download to it },
+            onChooseVersion?.let { Res.string.meld_spotify_choose_version to it },
         ).takeIf { playable != null }.orEmpty()
     val hasMenu = trackActions.isNotEmpty() || onRemove != null
     var menuOpen by remember { mutableStateOf(false) }
@@ -345,7 +348,7 @@ internal fun SpotifyTrackRow(
 
 private const val TRACK_IMAGE_SIZE = 64
 
-private fun Long.asDuration(): String {
+internal fun Long.asDuration(): String {
     if (this <= 0) return ""
     val seconds = this / 1000
     return "${seconds / 60}:${(seconds % 60).toString().padStart(2, '0')}"

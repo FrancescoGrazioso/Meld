@@ -130,6 +130,50 @@ class SpotifyTrackResolver(
         )
     }
 
+    /**
+     * What YouTube Music has for [track], for the user to choose from: every step of the search plan, songs
+     * before videos, each song once. Throws when YouTube cannot be asked.
+     */
+    suspend fun candidates(track: SpotifyTrack): List<SongItem> {
+        val found = LinkedHashMap<String, SongItem>()
+        for (step in buildSearchPlan(track.toMatchQuery(), includeIsrc)) {
+            searchWithRetry(step).filterNot { it.isUnavailable }.forEach { found.getOrPut(it.id) { it } }
+        }
+        return found.values.take(MAX_CANDIDATES)
+    }
+
+    /** Makes [song] the one that plays for [track] until the user says otherwise; matching never replaces it. */
+    suspend fun choose(
+        track: SpotifyTrack,
+        song: SongItem,
+    ) {
+        val query = track.toMatchQuery()
+        val time = now()
+        dao.saveManualOverride(
+            SpotifyMatchEntity(
+                spotifyId = track.id,
+                youtubeId = song.id,
+                score = 1.0,
+                confidence = MatchConfidence.HIGH,
+                isManualOverride = true,
+                matcherVersion = TrackMatcher.VERSION,
+                createdAt = time,
+                updatedAt = time,
+                title = query.title,
+                artists = query.artists,
+                album = query.album,
+                durationMs = query.durationMs,
+                explicit = query.explicit,
+                isrc = query.isrc,
+            ),
+        )
+    }
+
+    /** Drops the user's choice for [track]; the next lookup searches again. */
+    suspend fun forgetChoice(track: SpotifyTrack) = dao.delete(track.id)
+
+    suspend fun isManual(track: SpotifyTrack): Boolean = dao.get(track.id)?.isManualOverride == true
+
     /** Callers asking for the same track share one search; it is cancelled when the last of them leaves. */
     private suspend fun searchShared(track: SpotifyTrack): SpotifyResolution {
         val flight =
@@ -206,6 +250,7 @@ class SpotifyTrackResolver(
         // A song missing from YouTube today may be uploaded later.
         val NO_MATCH_TTL_MS = 7.days.inWholeMilliseconds
         val RETRY_DELAY = 1.seconds
+        const val MAX_CANDIDATES = 30
     }
 }
 

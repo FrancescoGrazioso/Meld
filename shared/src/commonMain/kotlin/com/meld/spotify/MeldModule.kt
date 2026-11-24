@@ -27,6 +27,7 @@ import com.meld.spotify.playback.SpotifyPlayback
 import com.meld.spotify.playback.SpotifyQueuePlayback
 import com.meld.spotify.playback.SpotifyQueueTarget
 import com.meld.spotify.playback.SpotifyTrackResolver
+import com.meld.spotify.playback.SpotifyVersionPicker
 import com.metrolist.shared.model.SearchFilter
 import com.metrolist.shared.model.SongItem
 import com.metrolist.shared.network.createHttpClient
@@ -155,6 +156,7 @@ fun meldModule(
         // Created on first use, so nothing here touches the player until a Spotify track list is opened.
         // The feeder and its target share one main-thread scope: that is what keeps their queue edits in order.
         if (songDownloads != null) single { SpotifyDownloads(get(), songDownloads()) }
+        single { SpotifyVersionPicker(get(), CoroutineScope(SupervisorJob() + Dispatchers.Default)) }
         single {
             val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
             SpotifyQueuePlayback(get(), queueTarget(scope), scope)

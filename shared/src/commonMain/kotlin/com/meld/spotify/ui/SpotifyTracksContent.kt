@@ -51,6 +51,7 @@ import com.meld.spotify.library.SpotifyTracksViewModel
 import com.meld.spotify.library.playableTrack
 import com.meld.spotify.library.toLibraryEntry
 import com.meld.spotify.likes.SpotifyLikeSync
+import com.meld.spotify.playback.SpotifyVersionPicker
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.albums
 import com.metrolist.shared.generated.resources.cancel
@@ -131,6 +132,7 @@ internal fun SpotifyTracksContent(
         val title = info?.title ?: titleHint ?: likedTitle.takeIf { type == SpotifyCollectionType.LIKED }.orEmpty()
         val listState = rememberLazyListState()
         val picker = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyPlaylistPicker>() }
+        val versions = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyVersionPicker>() }
         var editingDetails by remember { mutableStateOf(false) }
         var confirmingDelete by remember { mutableStateOf(false) }
         LaunchedEffect(state.deleted) { if (state.deleted) onBack() }
@@ -352,6 +354,7 @@ internal fun SpotifyTracksContent(
                                 modifier = itemModifier.padding(horizontal = CollectionHeaderHorizontalPadding),
                                 onAddToPlaylist = picker?.let { { track: SpotifyTrack -> it.open(track) } },
                                 onDownload = if (viewModel.canDownload) viewModel::download else null,
+                                onChooseVersion = versions?.takeIf { canPlay }?.let { { track: SpotifyTrack -> it.open(track) } },
                                 onRemove = if (state.canEdit && item.uid != null) ({ viewModel.remove(item) }) else null,
                                 leading = leading,
                             )

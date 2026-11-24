@@ -78,9 +78,13 @@ fun spotifyPlaylistMenuActions(
     )
 }
 
-/** Draws the "Add to Spotify playlist" dialog while one is open. Each host calls it once, above its screens. */
+/**
+ * Draws Meld's dialogs that any screen can open, while one is open: "Add to Spotify playlist" and "Choose the
+ * YouTube version". Each host calls it once, above its screens.
+ */
 @Composable
 fun SpotifyPlaylistPickerHost() {
+    SpotifyVersionDialog()
     val picker = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyPlaylistPicker>() } ?: return
     val state = picker.state.collectAsState().value ?: return
     Dialog(onDismissRequest = picker::close) {
