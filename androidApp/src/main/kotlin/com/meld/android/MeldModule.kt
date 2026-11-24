@@ -1,12 +1,14 @@
 package com.meld.android
 
+import com.meld.spotify.download.SongDownloads
 import com.meld.spotify.meldModule
 import com.meld.spotify.playback.PlayerQueueTarget
+import com.metrolist.android.playback.SongDownloadManager
 import com.metrolist.android.playback.PlayerConnection
 import com.metrolist.android.spotifyimport.androidSpotifyImportManager
 import org.koin.core.module.Module
 
-/** What only Android can supply to Meld: its player's queue functions and its logout hook. */
+/** What only Android can supply to Meld: its player's queue functions, its downloads and its logout hook. */
 val meldModule: Module =
     meldModule(
         queueTarget = { scope ->
@@ -25,4 +27,8 @@ val meldModule: Module =
         },
         // The import manager is a process-wide singleton that keeps its own signed-in client.
         onLogout = { androidSpotifyImportManager.logout() },
+        songDownloads = {
+            val manager = get<SongDownloadManager>()
+            SongDownloads { songs -> manager.downloadAll(songs) }
+        },
     )

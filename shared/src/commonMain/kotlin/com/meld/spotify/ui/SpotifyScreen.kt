@@ -16,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.meld.spotify.download.SpotifyDownloads
 import com.meld.spotify.library.SpotifyCollectionType
 import com.meld.spotify.library.SpotifyFolderViewModel
 import com.meld.spotify.library.SpotifyPlaylistEditor
@@ -80,6 +81,7 @@ fun SpotifyScreen(
                             screen.type,
                             screen.id,
                             koin.getOrNull<SpotifyPlaylistEditor>(),
+                            koin.getOrNull<SpotifyDownloads>(),
                         )
                     }
                 val liked = screen.type == SpotifyCollectionType.LIKED

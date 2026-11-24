@@ -5539,6 +5539,10 @@
     <string name="meld_spotify_liked_songs">Liked Songs</string>
     <string name="meld_spotify_liked_songs_description">Songs you saved on Spotify</string>
     <string name="meld_spotify_folder">Folder</string>
+    <plurals name="meld_spotify_download_queued">
+        <item quantity="one">%1$d song added to downloads</item>
+        <item quantity="other">%1$d songs added to downloads</item>
+    </plurals>
     <plurals name="meld_spotify_n_items">
         <item quantity="one">%1$d item</item>
         <item quantity="other">%1$d items</item>
@@ -5587,6 +5591,10 @@
     <string name="meld_spotify_on_home">Show Spotify on Home</string>
     <string name="meld_spotify_on_home_description">Your Spotify home feed is shown above the other sections of the Home screen.</string>
     <string name="meld_spotify_new_playlist">New Spotify playlist</string>
+    <string name="meld_spotify_download_preparing">Finding the songs to download… %1$d of %2$d</string>
+    <string name="meld_spotify_download_nothing_new">Already downloaded or waiting to download</string>
+    <string name="meld_spotify_download_not_found">%1$d not found on YouTube Music</string>
+    <string name="meld_spotify_download_unreachable">%1$d could not be looked up, try again</string>
     <string name="meld_spotify_new_playlist_description">Named %1$s, with this song in it</string>
     <string name="meld_spotify_likes_syncing">Syncing…</string>
     <string name="meld_spotify_likes_up_to_date">Up to date</string>

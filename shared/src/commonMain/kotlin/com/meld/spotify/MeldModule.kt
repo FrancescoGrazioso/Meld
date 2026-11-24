@@ -6,6 +6,8 @@ import com.meld.db.SpotifyLikeDao
 import com.meld.db.SpotifyMatchDao
 import com.meld.db.buildMeldDatabase
 import com.meld.migration.adoptLegacySpotifySession
+import com.meld.spotify.download.SongDownloads
+import com.meld.spotify.download.SpotifyDownloads
 import com.meld.spotify.library.SessionSpotifyLibrary
 import com.meld.spotify.library.SessionSpotifyPlaylists
 import com.meld.spotify.library.SpotifyInHome
@@ -46,11 +48,13 @@ import kotlin.time.Clock
 /**
  * Everything Meld registers, the same on every platform. [queueTarget] is the platform player behind a
  * [com.meld.spotify.playback.PlayerQueueTarget], built on the scope the feeder runs on; [onLogout] lets a
- * platform drop Spotify clients it keeps alive outside the session owner.
+ * platform drop Spotify clients it keeps alive outside the session owner. [songDownloads] is the platform's own
+ * download queue; without it Spotify tracks cannot be downloaded there.
  */
 fun meldModule(
     queueTarget: Scope.(CoroutineScope) -> SpotifyQueueTarget,
     onLogout: () -> Unit = {},
+    songDownloads: (Scope.() -> SongDownloads)? = null,
 ): Module =
     module {
         single<MeldDatabase> { buildMeldDatabase() }
@@ -150,6 +154,7 @@ fun meldModule(
         }
         // Created on first use, so nothing here touches the player until a Spotify track list is opened.
         // The feeder and its target share one main-thread scope: that is what keeps their queue edits in order.
+        if (songDownloads != null) single { SpotifyDownloads(get(), songDownloads()) }
         single {
             val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
             SpotifyQueuePlayback(get(), queueTarget(scope), scope)

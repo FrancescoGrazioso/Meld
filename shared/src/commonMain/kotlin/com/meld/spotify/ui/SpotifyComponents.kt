@@ -48,6 +48,7 @@ import com.meld.spotify.library.playableTrack
 import com.meld.spotify.library.url
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.add_to_queue
+import com.metrolist.shared.generated.resources.action_download
 import com.metrolist.shared.generated.resources.meld_spotify_add_to_playlist
 import com.metrolist.shared.generated.resources.meld_spotify_error_changed
 import com.metrolist.shared.generated.resources.meld_spotify_error_forbidden
@@ -213,7 +214,7 @@ internal fun SpotifyListStatus(
 /**
  * A Spotify track as a row of upstream's grouped lists. Entries that cannot be played stay
  * visible but disabled. The menu is Meld's own and holds the actions that are not null: [onPlayNext]
- * and [onAddToQueue] where something can play Spotify tracks, [onRemove] in a playlist the user may
+ * and [onAddToQueue] where something can play Spotify tracks, [onDownload] where the app has downloads, [onRemove] in a playlist the user may
  * edit, where an entry that cannot be played can still be removed. [leading] is the reorder handle.
  */
 @OptIn(ExperimentalFoundationApi::class)
@@ -229,6 +230,7 @@ internal fun SpotifyTrackRow(
     modifier: Modifier = Modifier,
     liked: Boolean = false,
     onAddToPlaylist: ((SpotifyTrack) -> Unit)? = null,
+    onDownload: ((SpotifyTrack) -> Unit)? = null,
     onRemove: (() -> Unit)? = null,
     leading: (@Composable () -> Unit)? = null,
 ) {
@@ -239,6 +241,7 @@ internal fun SpotifyTrackRow(
             onPlayNext?.let { Res.string.play_next to it },
             onAddToQueue?.let { Res.string.add_to_queue to it },
             onAddToPlaylist?.let { Res.string.meld_spotify_add_to_playlist to it },
+            onDownload?.let { Res.string.action_download to it },
         ).takeIf { playable != null }.orEmpty()
     val hasMenu = trackActions.isNotEmpty() || onRemove != null
     var menuOpen by remember { mutableStateOf(false) }

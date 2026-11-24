@@ -5,6 +5,8 @@ import com.meld.spotify.SpotifyConnectionState
 import com.meld.spotify.SpotifyError
 import com.meld.spotify.SpotifyTrack
 import com.meld.spotify.SpotifyTrackItem
+import com.meld.spotify.download.SpotifyDownloadResult
+import com.meld.spotify.download.SpotifyDownloads
 import com.meld.spotify.playback.SpotifyPlayback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -35,6 +37,15 @@ data class SpotifyTracksUiState(
     /** Set once Spotify has deleted the playlist: the screen has nothing left to show. */
     val deleted: Boolean = false,
     val deleteFailure: SpotifyError? = null,
+    /** Null until a download was asked for on this screen. */
+    val download: SpotifyDownloadUi? = null,
+)
+
+/** A download asked for on a track list: still looking the songs up while [result] is null. */
+data class SpotifyDownloadUi(
+    val done: Int = 0,
+    val total: Int = 0,
+    val result: SpotifyDownloadResult? = null,
 )
 
 private data class Deletion(
@@ -61,13 +72,18 @@ class SpotifyTracksViewModel(
     private val type: SpotifyCollectionType,
     private val id: String = "",
     private val editor: SpotifyPlaylistEditor? = null,
+    private val downloads: SpotifyDownloads? = null,
 ) {
     private val preparingShuffle = MutableStateFlow(false)
     private val deletion = MutableStateFlow(Deletion())
+    private val downloading = MutableStateFlow<SpotifyDownloadUi?>(null)
     private val collection get() = store.collection(type, id)
     private val connected = connection.state.map { it is SpotifyConnectionState.Connected }.distinctUntilChanged()
 
     val canPlay: Boolean get() = playback != null
+
+    /** False where the app has no downloads to hand the songs to. */
+    val canDownload: Boolean get() = downloads != null
 
     val state: StateFlow<SpotifyTracksUiState> =
         combine(
@@ -79,7 +95,8 @@ class SpotifyTracksViewModel(
             ::uiState,
         ).combine(deletion) { ui, deletion ->
             ui.copy(deleting = deletion.running, deleted = deletion.done, deleteFailure = deletion.failure)
-        }.stateIn(
+        }.combine(downloading) { ui, download -> ui.copy(download = download) }
+            .stateIn(
             scope,
             SharingStarted.Eagerly,
             // What the store already holds: a screen that comes back draws its list, and so keeps its scroll, in the first frame.
@@ -149,6 +166,30 @@ class SpotifyTracksViewModel(
         val newName = name.trim().takeIf { it.isNotEmpty() && it != info.title }
         val newDescription = description.trim().takeIf { it != info.description.orEmpty() }
         if (newName != null || newDescription != null) editor?.details(id, newName, newDescription)
+    }
+
+    /** Downloads every track of the list, loading the pages not shown yet first. */
+    fun downloadAll() = download { collection.tracks.loadAll().mapNotNull { it.playableTrack } }
+
+    fun download(track: SpotifyTrack) = download { listOf(track) }
+
+    private fun download(tracks: suspend () -> List<SpotifyTrack>) {
+        val downloads = downloads ?: return
+        if (downloading.value?.result == null && downloading.value != null) return
+        downloading.value = SpotifyDownloadUi()
+        scope.launch {
+            try {
+                val result = downloads.download(tracks()) { done, total -> downloading.value = SpotifyDownloadUi(done, total) }
+                downloading.value = SpotifyDownloadUi(result = result)
+            } catch (error: SpotifyError) {
+                // The list could not be loaded to the end; the pager shows that with its retry.
+                downloading.value = null
+            }
+        }
+    }
+
+    fun dismissDownload() {
+        if (downloading.value?.result != null) downloading.value = null
     }
 
     /** Asks Spotify to delete the playlist; [SpotifyTracksUiState.deleted] or [SpotifyTracksUiState.deleteFailure] says how it went. */

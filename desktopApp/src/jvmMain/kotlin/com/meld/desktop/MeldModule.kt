@@ -1,12 +1,14 @@
 package com.meld.desktop
 
+import com.meld.spotify.download.SongDownloads
 import com.meld.spotify.meldModule
 import com.meld.spotify.playback.PlayerQueueTarget
 import com.meld.spotify.playback.indicesOf
+import com.metrolist.desktop.storage.DownloadManager
 import com.metrolist.desktop.state.playback.PlayerState
 import org.koin.core.module.Module
 
-/** What only the desktop can supply to Meld: its player's queue functions. The desktop queue has no title. */
+/** What only the desktop can supply to Meld: its player's queue functions and its downloads. The desktop queue has no title. */
 val meldModule: Module =
     meldModule(
         queueTarget = { scope ->
@@ -24,5 +26,13 @@ val meldModule: Module =
                 },
                 toggleShuffle = PlayerState::toggleShuffle,
             )
+        },
+        songDownloads = {
+            SongDownloads { songs ->
+                // The desktop queue does not say what it took: count what is not on disk yet.
+                val fresh = songs.count { !DownloadManager.isDownloaded(it.id) }
+                DownloadManager.downloadAll(songs)
+                fresh
+            }
         },
     )

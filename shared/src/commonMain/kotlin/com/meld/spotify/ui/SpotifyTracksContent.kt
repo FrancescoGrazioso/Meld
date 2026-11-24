@@ -46,6 +46,7 @@ import com.meld.spotify.SpotifyTrack
 import com.meld.spotify.SpotifyTrackItem
 import com.meld.spotify.library.SpotifyCollectionType
 import com.meld.spotify.library.SpotifyPlaylistPicker
+import com.meld.spotify.library.SpotifyDownloadUi
 import com.meld.spotify.library.SpotifyTracksViewModel
 import com.meld.spotify.library.playableTrack
 import com.meld.spotify.library.toLibraryEntry
@@ -58,8 +59,14 @@ import com.metrolist.shared.generated.resources.delete_playlist
 import com.metrolist.shared.generated.resources.delete_playlist_question
 import com.metrolist.shared.generated.resources.description
 import com.metrolist.shared.generated.resources.dismiss
+import com.metrolist.shared.generated.resources.action_download
 import com.metrolist.shared.generated.resources.edit_playlist
 import com.metrolist.shared.generated.resources.import_provider_spotify
+import com.metrolist.shared.generated.resources.meld_spotify_download_not_found
+import com.metrolist.shared.generated.resources.meld_spotify_download_nothing_new
+import com.metrolist.shared.generated.resources.meld_spotify_download_preparing
+import com.metrolist.shared.generated.resources.meld_spotify_download_queued
+import com.metrolist.shared.generated.resources.meld_spotify_download_unreachable
 import com.metrolist.shared.generated.resources.meld_spotify_edit_failed
 import com.metrolist.shared.generated.resources.meld_spotify_empty_tracks
 import com.metrolist.shared.generated.resources.meld_spotify_liked_songs
@@ -250,6 +257,14 @@ internal fun SpotifyTracksContent(
                                     modifier = Modifier.padding(top = 8.dp),
                                 )
                             }
+                            state.download?.let { download ->
+                                Text(
+                                    text = downloadText(download),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(top = 4.dp),
+                                )
+                            }
                             if (state.preparingShuffle) {
                                 Text(
                                     text = stringResource(Res.string.meld_spotify_preparing_shuffle),
@@ -257,8 +272,18 @@ internal fun SpotifyTracksContent(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
-                            if (state.canEdit || state.canEditDetails || state.canDelete) {
+                            val canDownloadAll = viewModel.canDownload && tracks.items.any { it.playableTrack != null }
+                            if (state.canEdit || state.canEditDetails || state.canDelete || canDownloadAll) {
                                 Row {
+                                    if (canDownloadAll) {
+                                        IconButton(
+                                            onClick = viewModel::downloadAll,
+                                            enabled = state.download.let { it == null || it.result != null },
+                                            shapes = IconButtonDefaults.shapes(),
+                                        ) {
+                                            Icon(MetrolistIcons.Outlined.Download, contentDescription = stringResource(Res.string.action_download))
+                                        }
+                                    }
                                     if (state.canEditDetails) {
                                         IconButton(onClick = { editingDetails = true }, shapes = IconButtonDefaults.shapes()) {
                                             Icon(
@@ -314,6 +339,7 @@ internal fun SpotifyTracksContent(
                                 liked = item.track?.id in likedIds?.value.orEmpty(),
                                 modifier = itemModifier.padding(horizontal = CollectionHeaderHorizontalPadding),
                                 onAddToPlaylist = picker?.let { { track: SpotifyTrack -> it.open(track) } },
+                                onDownload = if (viewModel.canDownload) viewModel::download else null,
                                 onRemove = if (state.canEdit && item.uid != null) ({ viewModel.remove(item) }) else null,
                                 leading = leading,
                             )
@@ -452,6 +478,23 @@ internal fun SpotifyTracksContent(
             )
         }
     }
+}
+
+/** What the header says about a download: the lookup while it runs, then what was queued and what was left out. */
+@Composable
+private fun downloadText(download: SpotifyDownloadUi): String {
+    val result = download.result ?: return stringResource(Res.string.meld_spotify_download_preparing, download.done, download.total)
+    val parts =
+        listOfNotNull(
+            when {
+                result.queued > 0 -> pluralStringResource(Res.plurals.meld_spotify_download_queued, result.queued, result.queued)
+                result.found > 0 -> stringResource(Res.string.meld_spotify_download_nothing_new)
+                else -> null
+            },
+            result.notFound.takeIf { it > 0 }?.let { stringResource(Res.string.meld_spotify_download_not_found, it) },
+            result.unreachable.takeIf { it > 0 }?.let { stringResource(Res.string.meld_spotify_download_unreachable, it) },
+        )
+    return parts.joinToString(" • ").ifEmpty { stringResource(Res.string.meld_spotify_download_not_found, 0) }
 }
 
 /**
