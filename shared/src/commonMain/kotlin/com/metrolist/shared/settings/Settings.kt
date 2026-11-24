@@ -315,6 +315,9 @@ class Settings(
     var meldSpotifyLikesSyncedAt by preference(MeldSpotifyLikesSyncedAtKey, 0L)
     var meldEasterEggUnlocked by preference(MeldEasterEggUnlockedKey, false)
 
+    // The user's own choices of a YouTube version, kept here as well so that a backup carries them (meld.db is not in one).
+    var meldManualMatches by preference("")
+
     private var storedAppLanguage by preference(AppLanguageKey, "SYSTEM")
     var appLanguage: String
         get() = canonicalAppLanguageTag(storedAppLanguage)

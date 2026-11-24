@@ -59,6 +59,8 @@ class SpotifyTrackResolver(
     // Whether YouTube Music resolves an ISRC typed as search text is unmeasured.
     private val includeIsrc: Boolean = false,
     maxConcurrentSearches: Int = 3,
+    // Told after the user made or dropped a choice of their own.
+    private val onManualChange: suspend () -> Unit = {},
 ) {
     private class Flight(
         val work: Deferred<SpotifyResolution>,
@@ -167,10 +169,14 @@ class SpotifyTrackResolver(
                 isrc = query.isrc,
             ),
         )
+        onManualChange()
     }
 
     /** Drops the user's choice for [track]; the next lookup searches again. */
-    suspend fun forgetChoice(track: SpotifyTrack) = dao.delete(track.id)
+    suspend fun forgetChoice(track: SpotifyTrack) {
+        dao.delete(track.id)
+        onManualChange()
+    }
 
     suspend fun isManual(track: SpotifyTrack): Boolean = dao.get(track.id)?.isManualOverride == true
 

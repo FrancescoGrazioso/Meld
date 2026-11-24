@@ -53,6 +53,9 @@ interface SpotifyMatchDao {
         insertIfAbsent(match.copy(isManualOverride = true, createdAt = existing?.createdAt ?: match.createdAt))
     }
 
+    @Query("SELECT * FROM spotify_match WHERE isManualOverride = 1")
+    suspend fun manualOverrides(): List<SpotifyMatchEntity>
+
     /** Removes the row whatever it is; this is how the user goes back from an override to automatic matching. */
     @Query("DELETE FROM spotify_match WHERE spotifyId = :spotifyId")
     suspend fun delete(spotifyId: String)

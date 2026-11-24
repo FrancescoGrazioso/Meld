@@ -83,6 +83,8 @@ internal class FakeMatchDao : SpotifyMatchDao {
         rows.remove(spotifyId)
     }
 
+    override suspend fun manualOverrides() = rows.values.filter { it.isManualOverride }
+
     override suspend fun deleteAutomaticOlderThan(matcherVersion: Int) = 0
 }
 

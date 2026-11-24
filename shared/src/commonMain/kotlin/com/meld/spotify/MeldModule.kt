@@ -23,6 +23,7 @@ import com.meld.spotify.likes.SongLikeStateLikes
 import com.meld.spotify.likes.SpotifyLikeSync
 import com.meld.spotify.likes.SpotifyLikedOrder
 import com.meld.spotify.match.SearchScope
+import com.meld.spotify.playback.ManualMatchBackup
 import com.meld.spotify.playback.SpotifyPlayback
 import com.meld.spotify.playback.SpotifyQueuePlayback
 import com.meld.spotify.playback.SpotifyQueueTarget
@@ -76,6 +77,15 @@ fun meldModule(
             )
         } bind SpotifyConnection::class
         single {
+            ManualMatchBackup(
+                dao = get(),
+                load = { Settings.shared.meldManualMatches },
+                save = { Settings.shared.meldManualMatches = it },
+                now = { Clock.System.now().toEpochMilliseconds() },
+            )
+        }
+        single {
+            val backup = get<ManualMatchBackup>()
             SpotifyTrackResolver(
                 dao = get(),
                 search = { step ->
@@ -90,6 +100,7 @@ fun meldModule(
                 songsById = { GlobalYouTubeRepository.instance.getSongsMetadata(it) },
                 scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
                 now = { Clock.System.now().toEpochMilliseconds() },
+                onManualChange = backup::changed,
             )
         }
         single<SpotifyLibrary> { SessionSpotifyLibrary(get()) }
@@ -148,6 +159,10 @@ fun meldModule(
         // The like sync runs from app start on every platform; it is built off the main thread, as it opens the session and the database.
         single(named("meldLikeSyncStart"), createdAtStart = true) {
             CoroutineScope(Dispatchers.Default).launch { get<SpotifyLikeSync>().start() }
+        }
+        // After a restore the settings hold the user's own version choices and meld.db does not: bring them in.
+        single(named("meldManualMatchesStart"), createdAtStart = true) {
+            CoroutineScope(Dispatchers.Default).launch { get<ManualMatchBackup>().restore() }
         }
         // An update from the pre-KMP app: its cookie waits in the encrypted store until Spotify has answered for it.
         single(named("meldLegacySessionStart"), createdAtStart = true) {
