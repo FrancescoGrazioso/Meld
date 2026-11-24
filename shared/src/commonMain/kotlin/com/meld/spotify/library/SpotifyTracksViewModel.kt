@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class SpotifyTracksUiState(
@@ -37,6 +38,9 @@ data class SpotifyTracksUiState(
     /** Set once Spotify has deleted the playlist: the screen has nothing left to show. */
     val deleted: Boolean = false,
     val deleteFailure: SpotifyError? = null,
+    /** Someone else's playlist: true when it is in the user's library, null while that is not known or does not apply. */
+    val following: Boolean? = null,
+    val followFailure: SpotifyError? = null,
     /** Null until a download was asked for on this screen. */
     val download: SpotifyDownloadUi? = null,
 )
@@ -46,6 +50,12 @@ data class SpotifyDownloadUi(
     val done: Int = 0,
     val total: Int = 0,
     val result: SpotifyDownloadResult? = null,
+)
+
+private data class Follow(
+    val following: Boolean? = null,
+    val busy: Boolean = false,
+    val failure: SpotifyError? = null,
 )
 
 private data class Deletion(
@@ -77,6 +87,7 @@ class SpotifyTracksViewModel(
     private val preparingShuffle = MutableStateFlow(false)
     private val deletion = MutableStateFlow(Deletion())
     private val downloading = MutableStateFlow<SpotifyDownloadUi?>(null)
+    private val follow = MutableStateFlow(Follow())
     private val collection get() = store.collection(type, id)
     private val connected = connection.state.map { it is SpotifyConnectionState.Connected }.distinctUntilChanged()
 
@@ -96,6 +107,11 @@ class SpotifyTracksViewModel(
         ).combine(deletion) { ui, deletion ->
             ui.copy(deleting = deletion.running, deleted = deletion.done, deleteFailure = deletion.failure)
         }.combine(downloading) { ui, download -> ui.copy(download = download) }
+            .combine(follow) { ui, follow ->
+                // Only for a playlist that is not the user's own; their own is deleted, not un-followed.
+                val applies = editor != null && type == SpotifyCollectionType.PLAYLIST && !ui.canDelete && ui.info != null
+                ui.copy(following = follow.following.takeIf { applies }, followFailure = follow.failure)
+            }
             .stateIn(
             scope,
             SharingStarted.Eagerly,
@@ -126,6 +142,18 @@ class SpotifyTracksViewModel(
     }
 
     init {
+        if (editor != null && type == SpotifyCollectionType.PLAYLIST) {
+            scope.launch {
+                connected.collect { connected ->
+                    if (!connected) return@collect
+                    try {
+                        follow.update { it.copy(following = editor.inLibrary(id)) }
+                    } catch (error: SpotifyError) {
+                        // Not known: the screen then offers neither to follow nor to un-follow.
+                    }
+                }
+            }
+        }
         scope.launch {
             combine(store.generation, connected) { _, connected -> connected }.collect { connected ->
                 if (connected &&
@@ -167,6 +195,21 @@ class SpotifyTracksViewModel(
         val newDescription = description.trim().takeIf { it != info.description.orEmpty() }
         if (newName != null || newDescription != null) editor?.details(id, newName, newDescription)
     }
+
+    /** Follows the playlist, or un-follows it; [SpotifyTracksUiState.following] changes once Spotify has answered. */
+    fun toggleFollow() {
+        val editor = editor ?: return
+        val current = follow.value
+        val following = current.following ?: return
+        if (current.busy) return
+        follow.value = current.copy(busy = true, failure = null)
+        scope.launch {
+            val failure = if (following) editor.delete(id) else editor.follow(id)
+            follow.value = Follow(following = if (failure == null) !following else following, failure = failure)
+        }
+    }
+
+    fun dismissFollowFailure() = follow.update { it.copy(failure = null) }
 
     /** Downloads every track of the list, loading the pages not shown yet first. */
     fun downloadAll() = download { collection.tracks.loadAll().mapNotNull { it.playableTrack } }

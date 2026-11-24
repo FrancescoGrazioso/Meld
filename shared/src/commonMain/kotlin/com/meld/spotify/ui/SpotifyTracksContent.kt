@@ -60,6 +60,7 @@ import com.metrolist.shared.generated.resources.delete_playlist_question
 import com.metrolist.shared.generated.resources.description
 import com.metrolist.shared.generated.resources.dismiss
 import com.metrolist.shared.generated.resources.action_download
+import com.metrolist.shared.generated.resources.add_to_library
 import com.metrolist.shared.generated.resources.edit_playlist
 import com.metrolist.shared.generated.resources.import_provider_spotify
 import com.metrolist.shared.generated.resources.meld_spotify_download_not_found
@@ -78,6 +79,7 @@ import com.metrolist.shared.generated.resources.ok
 import com.metrolist.shared.generated.resources.play
 import com.metrolist.shared.generated.resources.playlist_name
 import com.metrolist.shared.generated.resources.playlist_reorder
+import com.metrolist.shared.generated.resources.remove_from_library
 import com.metrolist.shared.generated.resources.retry
 import com.metrolist.shared.generated.resources.save
 import com.metrolist.shared.generated.resources.shuffle
@@ -273,8 +275,18 @@ internal fun SpotifyTracksContent(
                                 )
                             }
                             val canDownloadAll = viewModel.canDownload && tracks.items.any { it.playableTrack != null }
-                            if (state.canEdit || state.canEditDetails || state.canDelete || canDownloadAll) {
+                            val following = state.following
+                            if (state.canEdit || state.canEditDetails || state.canDelete || canDownloadAll || following != null) {
                                 Row {
+                                    if (following != null) {
+                                        IconToggleButton(checked = following, onCheckedChange = { viewModel.toggleFollow() }) {
+                                            Icon(
+                                                if (following) MetrolistIcons.Outlined.LibraryAddCheck else MetrolistIcons.Outlined.LibraryAdd,
+                                                contentDescription =
+                                                    stringResource(if (following) Res.string.remove_from_library else Res.string.add_to_library),
+                                            )
+                                        }
+                                    }
                                     if (canDownloadAll) {
                                         IconButton(
                                             onClick = viewModel::downloadAll,
@@ -431,6 +443,14 @@ internal fun SpotifyTracksContent(
                     ) { Text(stringResource(Res.string.delete)) }
                 },
                 dismissButton = { TextButton(onClick = { confirmingDelete = false }) { Text(stringResource(Res.string.cancel)) } },
+            )
+        }
+        state.followFailure?.let { error ->
+            AlertDialog(
+                onDismissRequest = viewModel::dismissFollowFailure,
+                title = { Text(title) },
+                text = { Text(stringResource(Res.string.meld_spotify_edit_failed, stringResource(error.text()))) },
+                confirmButton = { TextButton(onClick = viewModel::dismissFollowFailure) { Text(stringResource(Res.string.ok)) } },
             )
         }
         state.deleteFailure?.let { error ->

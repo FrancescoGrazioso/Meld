@@ -55,6 +55,9 @@ interface SpotifyPlaylistRemote {
     /** Takes the playlist out of the user's library. */
     suspend fun delete(playlistId: String)
 
+    /** Puts someone else's playlist in the user's library. */
+    suspend fun follow(playlistId: String)
+
     /** One level of the playlists the user may add [itemUri] to, those of others they contribute to included. */
     suspend fun editable(
         itemUri: String,
@@ -122,6 +125,27 @@ class SpotifyPlaylistEditor(
             null
         } catch (error: SpotifyError) {
             error
+        }
+
+    /** Follows someone else's playlist and reads the library again, so that it shows there. */
+    suspend fun follow(playlistId: String): SpotifyError? =
+        try {
+            remote.follow(playlistId)
+            store.playlists(null).refresh()
+            null
+        } catch (error: SpotifyError) {
+            error
+        }
+
+    /** Whether the playlist is in the user's library, folders included. Reads the library when it is not loaded yet. */
+    suspend fun inLibrary(playlistId: String): Boolean = libraryPlaylistIds(null).contains(playlistId)
+
+    private suspend fun libraryPlaylistIds(folderUri: String?): Set<String> =
+        store.playlists(folderUri).loadAll().flatMapTo(hashSetOf()) {
+            when (it) {
+                is SpotifyLibraryItem.Playlist -> listOf(it.playlist.id)
+                is SpotifyLibraryItem.Folder -> libraryPlaylistIds(it.folder.uri)
+            }
         }
 
     private class Edit(

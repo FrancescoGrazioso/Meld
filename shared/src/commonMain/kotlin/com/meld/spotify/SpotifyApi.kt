@@ -344,6 +344,18 @@ class SpotifyApi(
                 ?.takeIf { it.startsWith(PLAYLIST_URI) }
                 ?: throw SpotifyError.Changed("createPlaylist: no playlist in the response")
         // Spotify has the playlist from here on, but it is in nobody's library until this second request.
+        addToRootlist("createPlaylist", username, uri)
+        return uri.removePrefix(PLAYLIST_URI)
+    }
+
+    /** Puts someone else's playlist at the top of the user's library, which is what following it means. */
+    suspend fun followPlaylist(playlistId: String) = addToRootlist("followPlaylist", profile().username, PLAYLIST_URI + playlistId)
+
+    private suspend fun addToRootlist(
+        operation: String,
+        username: String,
+        uri: String,
+    ) {
         val add =
             buildJsonObject {
                 put("kind", "ADD")
@@ -357,13 +369,13 @@ class SpotifyApi(
                     put("addFirst", true)
                 }
             }
-        playlistV2("createPlaylist", "user/${username.encodeURLPathPart()}/rootlist/changes", listChanges(add))
-        return uri.removePrefix(PLAYLIST_URI)
+        playlistV2(operation, "user/${username.encodeURLPathPart()}/rootlist/changes", listChanges(add))
     }
 
     /**
-     * Takes the playlist out of the user's library, which is all the web player's "Delete" does: Spotify keeps
-     * the playlist itself, and its link goes on working.
+     * Takes the playlist out of the user's library. For the user's own playlist that is all the web player's
+     * "Delete" does: Spotify keeps the playlist itself, and its link goes on working. For someone else's it is
+     * un-following it.
      */
     suspend fun deletePlaylist(playlistId: String) {
         val username = profile().username

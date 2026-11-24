@@ -132,6 +132,8 @@ private class Server(
 
     override suspend fun delete(playlistId: String) = request("delete:$playlistId") {}
 
+    override suspend fun follow(playlistId: String) = request("follow:$playlistId") {}
+
     override suspend fun editable(
         itemUri: String,
         folderUri: String?,

@@ -648,6 +648,18 @@ class SpotifyApiTest {
                 spotify.writes.map { "${it.method.value} ${it.url} ${(it.body as TextContent).text}" },
             )
 
+            // Following someone else's playlist is the same "add" the new playlist got.
+            spotify.writes.clear()
+            api.followPlaylist("other1")
+            assertEquals(
+                listOf(
+                    "POST https://spclient.wg.spotify.com/playlist/v2/user/user%20name/rootlist/changes " +
+                        """{"deltas":[{"ops":[{"kind":"ADD","add":{"items":[{"uri":"spotify:playlist:other1",""" +
+                        """"attributes":{"timestamp":"1700000000000"}}],"addFirst":true}}],"info":{"source":{"client":"WEBPLAYER"}}}]}""",
+                ),
+                spotify.writes.map { "${it.method.value} ${it.url} ${(it.body as TextContent).text}" },
+            )
+
             // Without a playlist in the answer there is nothing to put in the library.
             spotify.writes.clear()
             spotify.onPlaylistService = { respond("{}") }
