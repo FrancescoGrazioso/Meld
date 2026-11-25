@@ -1,5 +1,6 @@
 package com.meld.spotify.playback
 
+import com.meld.spotify.download.SongDownloads
 import com.meld.spotify.download.SpotifyDownloadResult
 import com.meld.spotify.download.SpotifyDownloads
 import com.metrolist.shared.model.SongItem
@@ -16,11 +17,14 @@ class SpotifyDownloadsTest {
     private val alreadyThere = mutableSetOf<String>()
 
     private fun TestScope.downloads() =
-        SpotifyDownloads(SpotifyTrackResolver(FakeMatchDao(), youtube::search, youtube::songsById, backgroundScope, { 0 })) { songs: List<SongItem> ->
-            val fresh = songs.map { it.id }.filterNot { it in alreadyThere }
-            queued += songs.map { it.id }
-            fresh.size
-        }
+        SpotifyDownloads(
+            SpotifyTrackResolver(FakeMatchDao(), youtube::search, youtube::songsById, backgroundScope, { 0 }),
+            SongDownloads { songs: List<SongItem> ->
+                val fresh = songs.map { it.id }.filterNot { it in alreadyThere }
+                queued += songs.map { it.id }
+                fresh.size
+            },
+        )
 
     @Test
     fun theSongsThatWouldPlayAreQueuedOnceAndInTheOrderOfTheList() =

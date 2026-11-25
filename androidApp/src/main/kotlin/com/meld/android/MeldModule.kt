@@ -4,6 +4,8 @@ import com.meld.spotify.download.SongDownloads
 import com.meld.spotify.meldModule
 import com.meld.spotify.playback.PlayerQueueTarget
 import com.metrolist.android.playback.SongDownloadManager
+import com.metrolist.shared.db.MusicDatabase
+import kotlinx.coroutines.flow.map
 import com.metrolist.android.playback.PlayerConnection
 import com.metrolist.android.spotifyimport.androidSpotifyImportManager
 import org.koin.core.module.Module
@@ -31,4 +33,5 @@ val meldModule: Module =
             val manager = get<SongDownloadManager>()
             SongDownloads { songs -> manager.downloadAll(songs) }
         },
+        downloadedSongIds = { get<MusicDatabase>().dao().cachedAudioIdsByKind("DOWNLOAD").map { it.toSet() } },
     )

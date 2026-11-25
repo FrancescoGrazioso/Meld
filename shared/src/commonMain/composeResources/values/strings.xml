@@ -5543,6 +5543,10 @@
         <item quantity="one">%1$d song added to downloads</item>
         <item quantity="other">%1$d songs added to downloads</item>
     </plurals>
+    <plurals name="meld_spotify_n_not_on_youtube">
+        <item quantity="one">%1$d song here is not on YouTube Music</item>
+        <item quantity="other">%1$d songs here are not on YouTube Music</item>
+    </plurals>
     <plurals name="meld_spotify_n_items">
         <item quantity="one">%1$d item</item>
         <item quantity="other">%1$d items</item>
@@ -5591,6 +5595,8 @@
     <string name="meld_spotify_on_home">Show Spotify on Home</string>
     <string name="meld_spotify_on_home_description">Your Spotify home feed is shown above the other sections of the Home screen.</string>
     <string name="meld_spotify_new_playlist">New Spotify playlist</string>
+    <string name="meld_spotify_downloaded">Downloaded</string>
+    <string name="meld_spotify_not_on_youtube">Not on YouTube Music</string>
     <string name="meld_spotify_choose_version">Choose the YouTube version</string>
     <string name="meld_spotify_version_current">Plays now</string>
     <string name="meld_spotify_version_chosen">Plays now, chosen by you</string>

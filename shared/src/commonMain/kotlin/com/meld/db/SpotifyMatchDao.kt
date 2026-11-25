@@ -5,6 +5,7 @@ import androidx.room3.Insert
 import androidx.room3.OnConflictStrategy
 import androidx.room3.Query
 import androidx.room3.Transaction
+import kotlinx.coroutines.flow.Flow
 
 // SQLite before 3.32 (Android 10 and older) allows 999 bound variables per statement.
 private const val MAX_IDS_PER_QUERY = 900
@@ -56,6 +57,10 @@ interface SpotifyMatchDao {
     @Query("SELECT * FROM spotify_match WHERE isManualOverride = 1")
     suspend fun manualOverrides(): List<SpotifyMatchEntity>
 
+    /** Every track looked up so far and the song found for it, as it changes; null where none was found. */
+    @Query("SELECT spotifyId, youtubeId FROM spotify_match WHERE isManualOverride = 1 OR matcherVersion = :matcherVersion")
+    fun links(matcherVersion: Int): Flow<List<SpotifyMatchLink>>
+
     /** Removes the row whatever it is; this is how the user goes back from an override to automatic matching. */
     @Query("DELETE FROM spotify_match WHERE spotifyId = :spotifyId")
     suspend fun delete(spotifyId: String)
@@ -63,3 +68,9 @@ interface SpotifyMatchDao {
     @Query("DELETE FROM spotify_match WHERE isManualOverride = 0 AND matcherVersion < :matcherVersion")
     suspend fun deleteAutomaticOlderThan(matcherVersion: Int): Int
 }
+
+/** One row of [SpotifyMatchDao.links]. */
+data class SpotifyMatchLink(
+    val spotifyId: String,
+    val youtubeId: String?,
+)

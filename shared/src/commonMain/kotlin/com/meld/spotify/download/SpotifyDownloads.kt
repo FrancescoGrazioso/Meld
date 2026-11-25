@@ -5,6 +5,8 @@ import com.meld.spotify.playback.SpotifyResolution
 import com.meld.spotify.playback.SpotifyTrackResolver
 import com.metrolist.shared.model.SongItem
 import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.ensureActive
 
 /**
@@ -34,6 +36,8 @@ data class SpotifyDownloadResult(
 class SpotifyDownloads(
     private val resolver: SpotifyTrackResolver,
     private val downloads: SongDownloads,
+    /** The ids of the songs the app holds as downloads, as they change. */
+    val downloadedIds: Flow<Set<String>> = flowOf(emptySet()),
 ) {
     /** [onProgress] is told how many of the tracks have been looked up so far. */
     suspend fun download(

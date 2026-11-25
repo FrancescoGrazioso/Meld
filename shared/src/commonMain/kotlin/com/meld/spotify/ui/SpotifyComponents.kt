@@ -51,6 +51,8 @@ import com.metrolist.shared.generated.resources.add_to_queue
 import com.metrolist.shared.generated.resources.action_download
 import com.metrolist.shared.generated.resources.meld_spotify_add_to_playlist
 import com.metrolist.shared.generated.resources.meld_spotify_choose_version
+import com.metrolist.shared.generated.resources.meld_spotify_downloaded
+import com.metrolist.shared.generated.resources.meld_spotify_not_on_youtube
 import com.metrolist.shared.generated.resources.meld_spotify_error_changed
 import com.metrolist.shared.generated.resources.meld_spotify_error_forbidden
 import com.metrolist.shared.generated.resources.meld_spotify_error_offline
@@ -230,6 +232,9 @@ internal fun SpotifyTrackRow(
     onAddToQueue: ((SpotifyTrack) -> Unit)?,
     modifier: Modifier = Modifier,
     liked: Boolean = false,
+    playing: Boolean = false,
+    downloaded: Boolean = false,
+    notOnYouTube: Boolean = false,
     onAddToPlaylist: ((SpotifyTrack) -> Unit)? = null,
     onDownload: ((SpotifyTrack) -> Unit)? = null,
     onChooseVersion: ((SpotifyTrack) -> Unit)? = null,
@@ -283,6 +288,8 @@ internal fun SpotifyTrackRow(
                 ListItemTitle(
                     text = track?.name ?: stringResource(Res.string.meld_spotify_item_unavailable),
                     isExplicit = track?.explicit == true,
+                    // The track the player is on stands out, as upstream's own lists do it.
+                    color = if (playing) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
                     text =
@@ -295,6 +302,13 @@ internal fun SpotifyTrackRow(
                                 stringResource(Res.string.meld_spotify_track_unavailable)
                             }
 
+                            // Looked up and not there: playing it would skip it.
+                            notOnYouTube -> {
+                                listOf(stringResource(Res.string.meld_spotify_not_on_youtube), track.artists.joinToString { it.name })
+                                    .filter(String::isNotEmpty)
+                                    .joinToString(" • ")
+                            }
+
                             else -> {
                                 listOf(track.artists.joinToString { it.name }, track.durationMs.asDuration())
                                     .filter(String::isNotEmpty)
@@ -305,6 +319,14 @@ internal fun SpotifyTrackRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                )
+            }
+            if (downloaded) {
+                Icon(
+                    MetrolistIcons.Outlined.OfflinePin,
+                    contentDescription = stringResource(Res.string.meld_spotify_downloaded),
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 6.dp).size(18.dp),
                 )
             }
             if (liked) {

@@ -5,6 +5,8 @@ import com.meld.spotify.meldModule
 import com.meld.spotify.playback.PlayerQueueTarget
 import com.meld.spotify.playback.indicesOf
 import com.metrolist.desktop.storage.DownloadManager
+import com.metrolist.desktop.storage.DownloadState
+import kotlinx.coroutines.flow.map
 import com.metrolist.desktop.state.playback.PlayerState
 import org.koin.core.module.Module
 
@@ -34,5 +36,8 @@ val meldModule: Module =
                 DownloadManager.downloadAll(songs)
                 fresh
             }
+        },
+        downloadedSongIds = {
+            DownloadManager.downloadStates.map { states -> states.filterValues { it == DownloadState.DOWNLOADED }.keys }
         },
     )

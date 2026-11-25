@@ -1,6 +1,7 @@
 package com.meld.spotify.playback
 
 import com.meld.db.SpotifyMatchDao
+import com.meld.db.SpotifyMatchLink
 import com.meld.db.SpotifyMatchEntity
 import com.meld.spotify.SpotifyArtist
 import com.meld.spotify.SpotifyTrack
@@ -14,6 +15,7 @@ import com.metrolist.shared.playback.MusicQueue
 import com.metrolist.shared.playback.QUEUE_SOURCE_AUTO_MIX
 import com.metrolist.shared.playback.isRecommendationGeneratedQueueSource
 import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.CoroutineScope
 
 internal fun track(
@@ -84,6 +86,8 @@ internal class FakeMatchDao : SpotifyMatchDao {
     }
 
     override suspend fun manualOverrides() = rows.values.filter { it.isManualOverride }
+
+    override fun links(matcherVersion: Int) = flow { emit(rows.values.map { SpotifyMatchLink(it.spotifyId, it.youtubeId) }) }
 
     override suspend fun deleteAutomaticOlderThan(matcherVersion: Int) = 0
 }

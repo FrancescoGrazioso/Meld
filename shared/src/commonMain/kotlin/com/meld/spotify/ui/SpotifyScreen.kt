@@ -22,6 +22,7 @@ import com.meld.spotify.library.SpotifyFolderViewModel
 import com.meld.spotify.library.SpotifyPlaylistEditor
 import com.meld.spotify.library.SpotifyTracksViewModel
 import com.meld.spotify.playback.SpotifyPlayback
+import com.meld.spotify.playback.SpotifyTrackResolver
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.import_provider_spotify
 import com.metrolist.shared.generated.resources.meld_spotify_liked_songs
@@ -82,6 +83,7 @@ fun SpotifyScreen(
                             screen.id,
                             koin.getOrNull<SpotifyPlaylistEditor>(),
                             koin.getOrNull<SpotifyDownloads>(),
+                            koin.getOrNull<SpotifyTrackResolver>(),
                         )
                     }
                 val liked = screen.type == SpotifyCollectionType.LIKED

@@ -19,6 +19,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
@@ -171,6 +173,9 @@ class SpotifyTrackResolver(
         )
         onManualChange()
     }
+
+    /** What is known of every track looked up so far: the id of its YouTube song, or null when it has none. */
+    fun links(): Flow<Map<String, String?>> = dao.links(TrackMatcher.VERSION).map { rows -> rows.associate { it.spotifyId to it.youtubeId } }
 
     /** The YouTube song with this video id, for a link the user gave; null when YouTube has none or cannot be asked. */
     suspend fun songById(videoId: String): SongItem? = loadSongs(listOf(videoId))[videoId]

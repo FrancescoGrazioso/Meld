@@ -7,6 +7,7 @@ import com.meld.spotify.SpotifyTrack
 import com.meld.spotify.SpotifyTrackItem
 import com.meld.spotify.download.SpotifyDownloadResult
 import com.meld.spotify.download.SpotifyDownloads
+import com.meld.spotify.playback.SpotifyTrackResolver
 import com.meld.spotify.playback.SpotifyPlayback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -41,9 +43,24 @@ data class SpotifyTracksUiState(
     /** Someone else's playlist: true when it is in the user's library, null while that is not known or does not apply. */
     val following: Boolean? = null,
     val followFailure: SpotifyError? = null,
+    /** What is known of the tracks beyond what Spotify says: see [SpotifyTrackMarks]. */
+    val marks: SpotifyTrackMarks = SpotifyTrackMarks(),
     /** Null until a download was asked for on this screen. */
     val download: SpotifyDownloadUi? = null,
 )
+
+/**
+ * What Meld knows of Spotify tracks from having looked them up: [youtubeIds] is the song that plays for
+ * a track, by the track's id; [notFound] are the tracks YouTube Music has no song for; [downloaded] are
+ * the ids of the songs the app holds as downloads. A track not looked up yet is in neither.
+ */
+data class SpotifyTrackMarks(
+    val youtubeIds: Map<String, String> = emptyMap(),
+    val notFound: Set<String> = emptySet(),
+    val downloaded: Set<String> = emptySet(),
+) {
+    fun isDownloaded(trackId: String): Boolean = youtubeIds[trackId]?.let { it in downloaded } == true
+}
 
 /** A download asked for on a track list: still looking the songs up while [result] is null. */
 data class SpotifyDownloadUi(
@@ -83,11 +100,23 @@ class SpotifyTracksViewModel(
     private val id: String = "",
     private val editor: SpotifyPlaylistEditor? = null,
     private val downloads: SpotifyDownloads? = null,
+    resolver: SpotifyTrackResolver? = null,
 ) {
     private val preparingShuffle = MutableStateFlow(false)
     private val deletion = MutableStateFlow(Deletion())
     private val downloading = MutableStateFlow<SpotifyDownloadUi?>(null)
     private val follow = MutableStateFlow(Follow())
+    private val marks =
+        // Each side starts empty: the screen must not wait for the database or for the downloads to say something.
+        combine(
+            (resolver?.links() ?: flowOf(emptyMap())).onStart { emit(emptyMap()) },
+            (downloads?.downloadedIds ?: flowOf(emptySet())).onStart { emit(emptySet()) },
+        ) { links, downloaded ->
+            val found = HashMap<String, String>()
+            val notFound = HashSet<String>()
+            links.forEach { (trackId, songId) -> if (songId != null) found[trackId] = songId else notFound += trackId }
+            SpotifyTrackMarks(found, notFound, downloaded)
+        }
     private val collection get() = store.collection(type, id)
     private val connected = connection.state.map { it is SpotifyConnectionState.Connected }.distinctUntilChanged()
 
@@ -107,6 +136,7 @@ class SpotifyTracksViewModel(
         ).combine(deletion) { ui, deletion ->
             ui.copy(deleting = deletion.running, deleted = deletion.done, deleteFailure = deletion.failure)
         }.combine(downloading) { ui, download -> ui.copy(download = download) }
+            .combine(marks) { ui, marks -> ui.copy(marks = marks) }
             .combine(follow) { ui, follow ->
                 // Only for a playlist that is not the user's own; their own is deleted, not un-followed.
                 val applies = editor != null && type == SpotifyCollectionType.PLAYLIST && !ui.canDelete && ui.info != null

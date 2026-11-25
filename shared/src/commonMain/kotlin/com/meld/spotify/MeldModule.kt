@@ -38,6 +38,8 @@ import com.metrolist.shared.youtube.logging.YtLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
@@ -51,12 +53,13 @@ import kotlin.time.Clock
  * Everything Meld registers, the same on every platform. [queueTarget] is the platform player behind a
  * [com.meld.spotify.playback.PlayerQueueTarget], built on the scope the feeder runs on; [onLogout] lets a
  * platform drop Spotify clients it keeps alive outside the session owner. [songDownloads] is the platform's own
- * download queue; without it Spotify tracks cannot be downloaded there.
+ * download queue; without it Spotify tracks cannot be downloaded there. [downloadedSongIds] are the songs it holds.
  */
 fun meldModule(
     queueTarget: Scope.(CoroutineScope) -> SpotifyQueueTarget,
     onLogout: () -> Unit = {},
     songDownloads: (Scope.() -> SongDownloads)? = null,
+    downloadedSongIds: (Scope.() -> Flow<Set<String>>)? = null,
 ): Module =
     module {
         single<MeldDatabase> { buildMeldDatabase() }
@@ -170,7 +173,7 @@ fun meldModule(
         }
         // Created on first use, so nothing here touches the player until a Spotify track list is opened.
         // The feeder and its target share one main-thread scope: that is what keeps their queue edits in order.
-        if (songDownloads != null) single { SpotifyDownloads(get(), songDownloads()) }
+        if (songDownloads != null) single { SpotifyDownloads(get(), songDownloads(), downloadedSongIds?.invoke(this) ?: flowOf(emptySet())) }
         single { SpotifyVersionPicker(get(), CoroutineScope(SupervisorJob() + Dispatchers.Default)) }
         single {
             val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)

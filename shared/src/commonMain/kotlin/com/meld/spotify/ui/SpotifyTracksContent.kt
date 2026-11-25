@@ -70,6 +70,7 @@ import com.metrolist.shared.generated.resources.meld_spotify_download_preparing
 import com.metrolist.shared.generated.resources.meld_spotify_download_queued
 import com.metrolist.shared.generated.resources.meld_spotify_download_unreachable
 import com.metrolist.shared.generated.resources.meld_spotify_edit_failed
+import com.metrolist.shared.generated.resources.meld_spotify_n_not_on_youtube
 import com.metrolist.shared.generated.resources.meld_spotify_empty_tracks
 import com.metrolist.shared.generated.resources.meld_spotify_liked_songs
 import com.metrolist.shared.generated.resources.meld_spotify_popular
@@ -92,6 +93,8 @@ import com.metrolist.shared.ui.components.HeaderPlaybackButtons
 import com.metrolist.shared.ui.components.RefreshIndicator
 import com.metrolist.shared.ui.components.ReorderMenu
 import com.metrolist.shared.ui.icons.MetrolistIcons
+import com.metrolist.shared.ui.playback.LocalPlaybackController
+import com.metrolist.shared.ui.playback.listState
 import com.metrolist.shared.ui.navigation.Screen
 import com.metrolist.shared.ui.navigation.SpotifySettingsScreen
 import com.metrolist.shared.ui.utils.DragScrollableColumn
@@ -133,6 +136,8 @@ internal fun SpotifyTracksContent(
         val listState = rememberLazyListState()
         val picker = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyPlaylistPicker>() }
         val versions = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyVersionPicker>() }
+        val player = LocalPlaybackController.current
+        val nowPlaying by remember(player) { player.listState }.collectAsState(player.state.value.listState())
         var editingDetails by remember { mutableStateOf(false) }
         var confirmingDelete by remember { mutableStateOf(false) }
         LaunchedEffect(state.deleted) { if (state.deleted) onBack() }
@@ -261,6 +266,15 @@ internal fun SpotifyTracksContent(
                                     modifier = Modifier.padding(top = 8.dp),
                                 )
                             }
+                            val missing = tracks.items.count { it.track?.id in state.marks.notFound }
+                            if (missing > 0) {
+                                Text(
+                                    text = pluralStringResource(Res.plurals.meld_spotify_n_not_on_youtube, missing, missing),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(top = 4.dp),
+                                )
+                            }
                             state.download?.let { download ->
                                 Text(
                                     text = downloadText(download),
@@ -351,6 +365,9 @@ internal fun SpotifyTracksContent(
                                 onPlayNext = if (canPlay) viewModel::playNext else null,
                                 onAddToQueue = if (canPlay) viewModel::addToQueue else null,
                                 liked = item.track?.id in likedIds?.value.orEmpty(),
+                                playing = item.track?.id?.let { state.marks.youtubeIds[it] }.let { it != null && it == nowPlaying.currentSongId },
+                                downloaded = item.track?.id?.let(state.marks::isDownloaded) == true,
+                                notOnYouTube = item.track?.id in state.marks.notFound,
                                 modifier = itemModifier.padding(horizontal = CollectionHeaderHorizontalPadding),
                                 onAddToPlaylist = picker?.let { { track: SpotifyTrack -> it.open(track) } },
                                 onDownload = if (viewModel.canDownload) viewModel::download else null,
