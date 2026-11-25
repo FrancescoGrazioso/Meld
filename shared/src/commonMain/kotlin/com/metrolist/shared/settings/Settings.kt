@@ -308,6 +308,9 @@ class Settings(
     var meldLibrarySpotifyOnly by preference(false)
     var meldSearchSpotify by preference(false)
     var meldSpotifyOnHome by preference(MeldSpotifyOnHomeKey, true)
+
+    // The home screen shows Spotify in place of YouTube Music's recommendations; the user's own rows stay.
+    var meldHomeSpotifyOnly by preference(false)
     var meldSpotifyLikesPush by preference(MeldSpotifyLikesPushKey, true)
     var meldSpotifyLikesPull by preference(MeldSpotifyLikesPullKey, false)
     var meldSpotifyLikesAccount by preference(MeldSpotifyLikesAccountKey, "")

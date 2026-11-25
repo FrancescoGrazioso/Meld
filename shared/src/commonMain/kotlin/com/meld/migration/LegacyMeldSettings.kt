@@ -22,15 +22,15 @@ const val LEGACY_MELD_SPOTIFY_COOKIE_KEY = "spotifySpDc"
 private val legacyToggles =
     mapOf(
         "useSpotifyHome" to MeldSpotifyOnHomeKey,
+        "spotifyHomeOnly" to "meldHomeSpotifyOnly",
         "useSpotifySearch" to "meldSearchSpotify",
         "spotifySyncLikes" to MeldSpotifyLikesPushKey,
     )
 
 private val droppedKeys =
     arrayOf(
-        // Being signed in is the switch now, and there is no Spotify-only home.
+        // Being signed in is the switch now.
         "enableSpotify",
-        "spotifyHomeOnly",
         "hideYtmLikedSongs",
         // Never read by the old app.
         "musicSource",

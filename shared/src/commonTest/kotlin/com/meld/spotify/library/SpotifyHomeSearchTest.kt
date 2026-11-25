@@ -27,6 +27,7 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -216,6 +217,51 @@ class SpotifyInHomeTest {
             assertEquals(listOf<String?>("Mixes"), titles)
             assertNull(state.error)
         }
+
+    @Test
+    fun spotifyStandsInForTheHomeOnlyWhileItHasSomethingToShowOrIsAwaited() =
+        test(enabled = false) {
+            // Not wanted, or Spotify switched off on the home screen: the usual home.
+            assertFalse(state.replacesHome(wanted = true))
+            failure = SpotifyError.Offline(RuntimeException("no route to host"))
+            enabled.value = true
+            // The first answer failed: nothing of Spotify to show, so nothing is held back.
+            assertFalse(state.replacesHome(wanted = true))
+
+            failure = null
+            home.refresh()
+            assertTrue(state.replacesHome(wanted = true))
+            assertFalse(state.replacesHome(wanted = false))
+
+            // A refresh that fails keeps the rows, and the home stays Spotify's.
+            failure = SpotifyError.Offline(RuntimeException("no route to host"))
+            home.refresh()
+            assertIs<SpotifyError.Offline>(state.error)
+            assertTrue(state.replacesHome(wanted = true))
+
+            session.state.value = Expired("Tester")
+            assertFalse(state.replacesHome(wanted = true))
+        }
+
+    @Test
+    fun anEmptyFeedLeavesTheUsualHomeAndAFeedOnItsWayHoldsItBack() =
+        test(enabled = false) {
+            // Connected and switched on, the answer not in yet.
+            assertTrue(SpotifyInHomeState(Connected("Tester", null)).replacesHome(wanted = true))
+
+            feed = SpotifyHomeFeed("Good afternoon", emptyList())
+            enabled.value = true
+            assertTrue(state.loaded)
+            assertTrue(state.shelves.isEmpty())
+            assertFalse(state.replacesHome(wanted = true))
+        }
+
+    @Test
+    fun onlyTheUsersOwnRowsStayOnASpotifyOnlyHome() {
+        val kept = listOf("speed_dial", "keep_listening", "forgotten_favorites")
+        val dropped = listOf("chip_0_3", "quick_picks", "new_releases", "trending", "album_charts", "similar_UC1_0", "community_playlists", "recap_playlists", "podcasts", "moods", "section_FEmusic_x_2")
+        assertEquals(kept, (kept + dropped).filter(::staysOnSpotifyOnlyHome))
+    }
 }
 
 private fun song(

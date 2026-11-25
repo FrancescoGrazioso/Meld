@@ -222,11 +222,12 @@ fun HomeContent(
             derivedStateOf { currentSongId.value.takeUnless { Settings.shared.uiEnhancements } }
         }
     val localShelfCache = remember { HomeShelfCache() }
+    val onLoadMore = extras.loadMore(onLoadMore)
     val paginationScrollConnection = rememberHomePagination(uiState, listState, onLoadMore)
     BoxWithConstraints(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
         val isWide = maxWidth > 840.dp
         val effectiveShelves =
-            shelves ?: (shelfCache ?: localShelfCache).build(uiState, text, maxWidth)
+            extras.shelves(shelves ?: (shelfCache ?: localShelfCache).build(uiState, text, maxWidth))
 
         DragScrollableColumn(
             state = listState,
@@ -234,7 +235,7 @@ fun HomeContent(
             contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(if (isWide) 16.dp else 8.dp),
         ) {
-            header?.invoke(this)
+            extras.header(header)?.invoke(this)
             extras.items(this, isWide)
 
             renderHomeShelves(

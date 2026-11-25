@@ -5593,6 +5593,8 @@
     <string name="meld_spotify_edit_failed">Spotify did not save the change, so it was undone. %1$s</string>
     <string name="meld_spotify_reorder_loading">Loading every song before the playlist can be reordered…</string>
     <string name="meld_spotify_on_home">Show Spotify on Home</string>
+    <string name="meld_spotify_home_only">Only Spotify on Home</string>
+    <string name="meld_spotify_home_only_description">Home shows your Spotify feed in place of the YouTube Music recommendations and chips. Speed dial and your recent listening stay. If Spotify cannot be reached, the usual Home is shown.</string>
     <string name="meld_spotify_on_home_description">Your Spotify home feed is shown above the other sections of the Home screen.</string>
     <string name="meld_spotify_new_playlist">New Spotify playlist</string>
     <string name="meld_spotify_sort">Sort</string>

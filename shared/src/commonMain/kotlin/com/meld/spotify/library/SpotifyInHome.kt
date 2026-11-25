@@ -41,9 +41,28 @@ data class SpotifyInHomeState(
     val enabled: Boolean = true,
     val shelves: List<SpotifyHomeShelf> = emptyList(),
     val error: SpotifyError? = null,
+    /** Spotify has answered for this account at least once. */
+    val loaded: Boolean = false,
 ) {
     val expired: Boolean get() = enabled && session is SpotifyConnectionState.Expired
+
+    /**
+     * Whether Spotify stands in for the app's own recommendations, for a user who [wanted] the home
+     * screen that way. It does while its rows are up and while the first answer is awaited, so that
+     * nothing else flashes by; never when there is nothing of Spotify to show, so a session that
+     * expired, a feed that failed or came back empty, leave the usual home screen.
+     */
+    fun replacesHome(wanted: Boolean): Boolean =
+        wanted && enabled && session is SpotifyConnectionState.Connected && (shelves.isNotEmpty() || (!loaded && error == null))
 }
+
+private val OWN_HOME_SHELVES = setOf("speed_dial", "keep_listening", "forgotten_favorites")
+
+/**
+ * Whether a row of the app's home screen, by its key, stays on a Spotify-only home: only the rows made
+ * of the user's own listening. Everything else there is YouTube Music's, the rows of its chips included.
+ */
+fun staysOnSpotifyOnlyHome(shelfKey: String): Boolean = shelfKey in OWN_HOME_SHELVES
 
 /**
  * Loads the Spotify home feed once an account is connected and [enabled] says the home screen
@@ -61,6 +80,7 @@ class SpotifyInHome(
     private data class Content(
         val shelves: List<SpotifyHomeShelf> = emptyList(),
         val error: SpotifyError? = null,
+        val loaded: Boolean = false,
     )
 
     private val content = MutableStateFlow(Content())
@@ -69,7 +89,7 @@ class SpotifyInHome(
     val state: StateFlow<SpotifyInHomeState> =
         combine(connection.state, enabled, content) { session, isEnabled, loaded ->
             val shown = isEnabled && session is SpotifyConnectionState.Connected
-            SpotifyInHomeState(session, isEnabled, if (shown) loaded.shelves else emptyList(), loaded.error.takeIf { shown })
+            SpotifyInHomeState(session, isEnabled, if (shown) loaded.shelves else emptyList(), loaded.error.takeIf { shown }, loaded.loaded)
         }.stateIn(scope, SharingStarted.Eagerly, SpotifyInHomeState(connection.state.value, enabled = false))
 
     init {
@@ -86,7 +106,7 @@ class SpotifyInHome(
                 }
                 if (!isConnected || !isEnabled || loaded == request) return@collectLatest
                 try {
-                    content.value = Content(load())
+                    content.value = Content(load(), loaded = true)
                     loaded = request
                 } catch (cancellation: CancellationException) {
                     throw cancellation

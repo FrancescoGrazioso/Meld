@@ -55,6 +55,8 @@ import com.metrolist.shared.generated.resources.meld_spotify_likes_sent
 import com.metrolist.shared.generated.resources.meld_spotify_likes_sync_now
 import com.metrolist.shared.generated.resources.meld_spotify_likes_syncing
 import com.metrolist.shared.generated.resources.meld_spotify_likes_up_to_date
+import com.metrolist.shared.generated.resources.meld_spotify_home_only
+import com.metrolist.shared.generated.resources.meld_spotify_home_only_description
 import com.metrolist.shared.generated.resources.meld_spotify_on_home
 import com.metrolist.shared.generated.resources.meld_spotify_on_home_description
 import com.metrolist.shared.generated.resources.meld_spotify_overview
@@ -161,6 +163,13 @@ internal fun SettingsUiRegistryBuilder.spotifyPage(onSignIn: (() -> Unit)?): Set
                     description = stringResource(Res.string.meld_spotify_on_home_description),
                     checked = settings.meldSpotifyOnHome,
                 ) { settings.meldSpotifyOnHome = it }
+                switch(
+                    id = "spotifyHomeOnly",
+                    title = stringResource(Res.string.meld_spotify_home_only),
+                    description = stringResource(Res.string.meld_spotify_home_only_description),
+                    checked = settings.meldSpotifyOnHome && settings.meldHomeSpotifyOnly,
+                    enabled = settings.meldSpotifyOnHome,
+                ) { settings.meldHomeSpotifyOnly = it }
             }
         }
         if (likeSync != null && likeStatus != null && state is SpotifyConnectionState.Connected) {

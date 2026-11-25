@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.meld.spotify.library.SpotifyHomeShelf
 import com.meld.spotify.library.SpotifyInHome
 import com.meld.spotify.library.SpotifyLibraryEntry
+import com.meld.spotify.library.staysOnSpotifyOnlyHome
 import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.import_provider_spotify
 import com.metrolist.shared.generated.resources.new_releases
@@ -32,7 +33,9 @@ import com.metrolist.shared.ui.components.DesktopHorizontalScrollControls
 import com.metrolist.shared.ui.components.SectionTitle
 import com.metrolist.shared.ui.navigation.LocalNavigator
 import com.metrolist.shared.ui.navigation.Screen
+import com.metrolist.shared.settings.Settings
 import com.metrolist.shared.ui.navigation.SpotifySettingsScreen
+import com.metrolist.shared.ui.screens.HomeShelf
 import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform
 
@@ -45,7 +48,21 @@ class HomeExtras internal constructor(
     private val shelves: List<SpotifyHomeShelf> = emptyList(),
     private val status: (@Composable () -> Unit)? = null,
     private val onOpen: (Screen) -> Unit = {},
+    /** Spotify stands in for the app's own recommendations, see [SpotifyInHomeState.replacesHome]. */
+    val spotifyOnly: Boolean = false,
 ) {
+    /** The app's own rows that the home screen shows: all of them, or those that stay on a Spotify-only home. */
+    fun shelves(all: List<HomeShelf>): List<HomeShelf> = if (spotifyOnly) all.filter { staysOnSpotifyOnlyHome(it.key) } else all
+
+    /** The home screen's "load more", or null on a Spotify-only home, where more would only be rows that are not shown. */
+    fun loadMore(onLoadMore: (() -> Unit)?): (() -> Unit)? = onLoadMore.takeUnless { spotifyOnly }
+
+    /**
+     * What a host puts above the rows: YouTube Music's chips, and its loading and error rows. None of it
+     * belongs on a Spotify-only home, whose own state is the Spotify rows.
+     */
+    fun header(header: (LazyListScope.() -> Unit)?): (LazyListScope.() -> Unit)? = header.takeUnless { spotifyOnly }
+
     /** The Spotify rows as items of the home list. They come first: Spotify is what Meld is opened for. */
     fun items(
         scope: LazyListScope,
@@ -61,13 +78,16 @@ class HomeExtras internal constructor(
 
     companion object {
         val None = HomeExtras()
+
+        /** A Spotify-only home whose feed has not arrived yet. */
+        internal val Waiting = HomeExtras(spotifyOnly = true)
     }
 }
 
 /**
  * The Spotify side of the home screen, or [HomeExtras.None] while there is nothing to show: no
- * account, the feed switched off in the Spotify settings, or the feed still loading. It never
- * holds the app's own shelves back and never replaces them.
+ * account, the feed switched off in the Spotify settings, or the feed still loading. It holds the
+ * app's own recommendations back only on the Spotify-only home the user can ask for in the settings.
  *
  * [onOpen] opens a Spotify route; a host that provides upstream's [LocalNavigator] leaves it out.
  */
@@ -76,11 +96,13 @@ fun spotifyHomeExtras(onOpen: ((Screen) -> Unit)? = null): HomeExtras {
     val home = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyInHome>() } ?: return HomeExtras.None
     val state by home.state.collectAsState()
     val error = state.error
-    if (!state.expired && error == null && state.shelves.isEmpty()) return HomeExtras.None
+    val spotifyOnly = state.replacesHome(Settings.shared.meldHomeSpotifyOnly)
+    if (!state.expired && error == null && state.shelves.isEmpty()) return if (spotifyOnly) HomeExtras.Waiting else HomeExtras.None
 
     val open by rememberUpdatedState(onOpen ?: LocalNavigator.current::navigate)
-    return remember(home, state) {
+    return remember(home, state, spotifyOnly) {
         HomeExtras(
+            spotifyOnly = spotifyOnly,
             shelves = state.shelves,
             status =
                 when {

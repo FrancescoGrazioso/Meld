@@ -48,9 +48,10 @@ class LegacyMeldSettingsTest {
 
         assertFalse(settings.meldSpotifyOnHome)
         assertTrue(settings.meldSearchSpotify)
+        assertTrue(settings.meldHomeSpotifyOnly)
         assertTrue(settings.meldSpotifyLikesPush)
         assertEquals(
-            setOf("meldSpotifyOnHome", "meldSearchSpotify", "meldSpotifyLikesPush", "spotifySpDc", "qobuzMatchOverrides", "enableQobuz"),
+            setOf("meldSpotifyOnHome", "meldHomeSpotifyOnly", "meldSearchSpotify", "meldSpotifyLikesPush", "spotifySpDc", "qobuzMatchOverrides", "enableQobuz"),
             stored.keys.filterTo(mutableSetOf()) { "potify" in it || "obuz" in it || it == "musicSource" || it == "hideYtmLikedSongs" },
         )
         // The only credential left is the cookie, which every platform keeps in its encrypted store and out of backups.
