@@ -40,7 +40,7 @@ data class SpotifyTracksUiState(
     /** Set once Spotify has deleted the playlist: the screen has nothing left to show. */
     val deleted: Boolean = false,
     val deleteFailure: SpotifyError? = null,
-    /** Someone else's playlist: true when it is in the user's library, null while that is not known or does not apply. */
+    /** Someone else's playlist, an album or an artist: true when it is in the user's library, null while that is not known or does not apply. */
     val following: Boolean? = null,
     val followFailure: SpotifyError? = null,
     /** What is known of the tracks beyond what Spotify says: see [SpotifyTrackMarks]. */
@@ -68,6 +68,8 @@ data class SpotifyDownloadUi(
     val total: Int = 0,
     val result: SpotifyDownloadResult? = null,
 )
+
+private val SAVABLE = setOf(SpotifyCollectionType.PLAYLIST, SpotifyCollectionType.ALBUM, SpotifyCollectionType.ARTIST)
 
 private data class Follow(
     val following: Boolean? = null,
@@ -138,8 +140,8 @@ class SpotifyTracksViewModel(
         }.combine(downloading) { ui, download -> ui.copy(download = download) }
             .combine(marks) { ui, marks -> ui.copy(marks = marks) }
             .combine(follow) { ui, follow ->
-                // Only for a playlist that is not the user's own; their own is deleted, not un-followed.
-                val applies = editor != null && type == SpotifyCollectionType.PLAYLIST && !ui.canDelete && ui.info != null
+                // Not for the user's own playlist: that one is deleted, not un-followed.
+                val applies = editor != null && type in SAVABLE && !ui.canDelete && ui.info != null
                 ui.copy(following = follow.following.takeIf { applies }, followFailure = follow.failure)
             }
             .stateIn(
@@ -172,12 +174,12 @@ class SpotifyTracksViewModel(
     }
 
     init {
-        if (editor != null && type == SpotifyCollectionType.PLAYLIST) {
+        if (editor != null && type in SAVABLE) {
             scope.launch {
                 connected.collect { connected ->
                     if (!connected) return@collect
                     try {
-                        follow.update { it.copy(following = editor.inLibrary(id)) }
+                        follow.update { it.copy(following = editor.inLibrary(type, id)) }
                     } catch (error: SpotifyError) {
                         // Not known: the screen then offers neither to follow nor to un-follow.
                     }
@@ -226,7 +228,7 @@ class SpotifyTracksViewModel(
         if (newName != null || newDescription != null) editor?.details(id, newName, newDescription)
     }
 
-    /** Follows the playlist, or un-follows it; [SpotifyTracksUiState.following] changes once Spotify has answered. */
+    /** Puts the playlist, album or artist in the library, or takes it out; [SpotifyTracksUiState.following] changes once Spotify has answered. */
     fun toggleFollow() {
         val editor = editor ?: return
         val current = follow.value
@@ -234,7 +236,7 @@ class SpotifyTracksViewModel(
         if (current.busy) return
         follow.value = current.copy(busy = true, failure = null)
         scope.launch {
-            val failure = if (following) editor.delete(id) else editor.follow(id)
+            val failure = editor.setInLibrary(type, id, !following)
             follow.value = Follow(following = if (failure == null) !following else following, failure = failure)
         }
     }
@@ -303,6 +305,20 @@ class SpotifyTracksViewModel(
         if (tracks.isEmpty()) return
         val start = items.take(itemIndex ?: 0).count { it.playableTrack != null }
         playback?.play(tracks, start, title, more = more(pager, items))
+    }
+
+    /**
+     * Plays [shown], a searched or sorted view of the list, from [item]: what the user sees is what follows.
+     * The view is of the pages loaded so far; nothing more is fetched behind it.
+     */
+    fun play(
+        shown: List<SpotifyTrackItem>,
+        item: SpotifyTrackItem,
+        title: String? = null,
+    ) {
+        val start = item.playableTrack ?: return
+        val tracks = shown.mapNotNull { it.playableTrack }
+        playback?.play(tracks, tracks.indexOf(start).coerceAtLeast(0), title)
     }
 
     /** Shuffling needs the whole list, so the remaining pages are loaded first; a failure shows in the list. */

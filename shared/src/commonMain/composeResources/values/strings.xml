@@ -5595,6 +5595,8 @@
     <string name="meld_spotify_on_home">Show Spotify on Home</string>
     <string name="meld_spotify_on_home_description">Your Spotify home feed is shown above the other sections of the Home screen.</string>
     <string name="meld_spotify_new_playlist">New Spotify playlist</string>
+    <string name="meld_spotify_sort">Sort</string>
+    <string name="meld_spotify_arrange_loading">Loading every song to search and sort the whole list…</string>
     <string name="meld_spotify_downloaded">Downloaded</string>
     <string name="meld_spotify_not_on_youtube">Not on YouTube Music</string>
     <string name="meld_spotify_choose_version">Choose the YouTube version</string>

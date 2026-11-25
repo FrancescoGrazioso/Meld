@@ -2,6 +2,7 @@
 
 package com.meld.spotify.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,6 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
@@ -47,7 +50,10 @@ import com.meld.spotify.SpotifyTrackItem
 import com.meld.spotify.library.SpotifyCollectionType
 import com.meld.spotify.library.SpotifyPlaylistPicker
 import com.meld.spotify.library.SpotifyDownloadUi
+import com.meld.spotify.library.SpotifyTrackSort
 import com.meld.spotify.library.SpotifyTracksViewModel
+import com.meld.spotify.library.arranged
+import com.meld.spotify.library.isSpotifyArrangement
 import com.meld.spotify.library.playableTrack
 import com.meld.spotify.library.toLibraryEntry
 import com.meld.spotify.likes.SpotifyLikeSync
@@ -61,6 +67,15 @@ import com.metrolist.shared.generated.resources.delete_playlist_question
 import com.metrolist.shared.generated.resources.description
 import com.metrolist.shared.generated.resources.dismiss
 import com.metrolist.shared.generated.resources.action_download
+import com.metrolist.shared.generated.resources.album
+import com.metrolist.shared.generated.resources.artist
+import com.metrolist.shared.generated.resources.duration
+import com.metrolist.shared.generated.resources.meld_spotify_arrange_loading
+import com.metrolist.shared.generated.resources.meld_spotify_sort
+import com.metrolist.shared.generated.resources.playlist_order_original
+import com.metrolist.shared.generated.resources.search
+import com.metrolist.shared.generated.resources.sort_by_create_date
+import com.metrolist.shared.generated.resources.title
 import com.metrolist.shared.generated.resources.add_to_library
 import com.metrolist.shared.generated.resources.edit_playlist
 import com.metrolist.shared.generated.resources.import_provider_spotify
@@ -151,7 +166,19 @@ internal fun SpotifyTracksContent(
         var dragged by remember { mutableStateOf<List<SpotifyTrackItem>?>(null) }
         var draggedUid by remember { mutableStateOf<String?>(null) }
         LaunchedEffect(tracks.items) { dragged = null }
-        val items = dragged ?: tracks.items
+        var query by rememberSaveable { mutableStateOf("") }
+        var searching by rememberSaveable { mutableStateOf(false) }
+        var sort by rememberSaveable { mutableStateOf(SpotifyTrackSort.SPOTIFY) }
+        var sortMenu by remember { mutableStateOf(false) }
+        val plain = isSpotifyArrangement(query, sort)
+        // A search or another order is over the whole list, so the rest of it is loaded; reordering needs Spotify's order.
+        LaunchedEffect(plain, tracks.complete, tracks.error) {
+            if (!plain) {
+                reorderMode = false
+                if (!tracks.complete && tracks.error == null) viewModel.loadAll()
+            }
+        }
+        val items = remember(dragged, tracks.items, query, sort) { (dragged ?: tracks.items).arranged(query, sort) }
         val keys = remember(items) { items.rowKeys() }
 
         fun moveBefore(
@@ -292,8 +319,42 @@ internal fun SpotifyTracksContent(
                             }
                             val canDownloadAll = viewModel.canDownload && tracks.items.any { it.playableTrack != null }
                             val following = state.following
-                            if (state.canEdit || state.canEditDetails || state.canDelete || canDownloadAll || following != null) {
+                            val canArrange = type != SpotifyCollectionType.ARTIST && tracks.items.size > 1
+                            if (state.canEdit || state.canEditDetails || state.canDelete || canDownloadAll || following != null || canArrange) {
                                 Row {
+                                    if (canArrange) {
+                                        IconToggleButton(
+                                            checked = searching,
+                                            onCheckedChange = {
+                                                searching = it
+                                                if (!it) query = ""
+                                            },
+                                        ) {
+                                            Icon(MetrolistIcons.Outlined.Search, contentDescription = stringResource(Res.string.search))
+                                        }
+                                        Box {
+                                            IconToggleButton(checked = sort != SpotifyTrackSort.SPOTIFY, onCheckedChange = { sortMenu = true }) {
+                                                Icon(
+                                                    MetrolistIcons.Outlined.Tune,
+                                                    contentDescription = stringResource(Res.string.meld_spotify_sort),
+                                                )
+                                            }
+                                            DropdownMenu(expanded = sortMenu, onDismissRequest = { sortMenu = false }) {
+                                                SpotifyTrackSort.entries.forEach { option ->
+                                                    DropdownMenuItem(
+                                                        text = { Text(stringResource(option.label())) },
+                                                        leadingIcon = {
+                                                            if (option == sort) Icon(MetrolistIcons.Filled.Check, contentDescription = null)
+                                                        },
+                                                        onClick = {
+                                                            sort = option
+                                                            sortMenu = false
+                                                        },
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
                                     if (following != null) {
                                         IconToggleButton(checked = following, onCheckedChange = { viewModel.toggleFollow() }) {
                                             Icon(
@@ -332,7 +393,7 @@ internal fun SpotifyTracksContent(
                                             )
                                         }
                                     }
-                                    if (state.canEdit) {
+                                    if (state.canEdit && plain) {
                                         IconToggleButton(checked = reorderMode, onCheckedChange = { reorderMode = it }) {
                                             Icon(
                                                 MetrolistIcons.Outlined.DragIndicator,
@@ -340,6 +401,23 @@ internal fun SpotifyTracksContent(
                                             )
                                         }
                                     }
+                                }
+                                if (searching) {
+                                    OutlinedTextField(
+                                        value = query,
+                                        onValueChange = { query = it },
+                                        placeholder = { Text(stringResource(Res.string.search)) },
+                                        singleLine = true,
+                                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                                    )
+                                }
+                                if (!plain && !tracks.complete && tracks.error == null) {
+                                    Text(
+                                        text = stringResource(Res.string.meld_spotify_arrange_loading),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.padding(top = 4.dp),
+                                    )
                                 }
                                 if (reorderMode && !tracks.complete && tracks.error == null) {
                                     Text(
@@ -361,7 +439,12 @@ internal fun SpotifyTracksContent(
                                 index = index,
                                 count = items.size,
                                 numbered = type == SpotifyCollectionType.ALBUM,
-                                onClick = if (canPlay) ({ viewModel.play(index, title) }) else null,
+                                onClick =
+                                    when {
+                                        !canPlay -> null
+                                        plain -> ({ viewModel.play(index, title) })
+                                        else -> ({ viewModel.play(items, item, title) })
+                                    },
                                 onPlayNext = if (canPlay) viewModel::playNext else null,
                                 onAddToQueue = if (canPlay) viewModel::addToQueue else null,
                                 liked = item.track?.id in likedIds?.value.orEmpty(),
@@ -519,6 +602,17 @@ internal fun SpotifyTracksContent(
         }
     }
 }
+
+/** The name of a way to order the list. */
+private fun SpotifyTrackSort.label() =
+    when (this) {
+        SpotifyTrackSort.SPOTIFY -> Res.string.playlist_order_original
+        SpotifyTrackSort.TITLE -> Res.string.title
+        SpotifyTrackSort.ARTIST -> Res.string.artist
+        SpotifyTrackSort.ALBUM -> Res.string.album
+        SpotifyTrackSort.DURATION -> Res.string.duration
+        SpotifyTrackSort.DATE_ADDED -> Res.string.sort_by_create_date
+    }
 
 /** What the header says about a download: the lookup while it runs, then what was queued and what was left out. */
 @Composable

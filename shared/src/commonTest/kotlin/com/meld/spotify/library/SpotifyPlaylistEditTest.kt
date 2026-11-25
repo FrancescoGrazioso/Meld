@@ -134,6 +134,11 @@ private class Server(
 
     override suspend fun follow(playlistId: String) = request("follow:$playlistId") {}
 
+    override suspend fun setSaved(
+        uri: String,
+        saved: Boolean,
+    ) = request("saved:$uri:$saved") {}
+
     override suspend fun editable(
         itemUri: String,
         folderUri: String?,

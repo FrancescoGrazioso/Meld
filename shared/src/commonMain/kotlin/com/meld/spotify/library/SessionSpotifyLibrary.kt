@@ -58,6 +58,11 @@ internal class SessionSpotifyPlaylists(
 
     override suspend fun follow(playlistId: String) = owner.call { followPlaylist(playlistId) }
 
+    override suspend fun setSaved(
+        uri: String,
+        saved: Boolean,
+    ) = owner.call { if (saved) addToLibrary(listOf(uri)) else removeFromLibrary(listOf(uri)) }
+
     override suspend fun editable(
         itemUri: String,
         folderUri: String?,

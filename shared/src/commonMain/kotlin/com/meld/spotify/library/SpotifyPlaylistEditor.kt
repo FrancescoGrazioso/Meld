@@ -58,6 +58,12 @@ interface SpotifyPlaylistRemote {
     /** Puts someone else's playlist in the user's library. */
     suspend fun follow(playlistId: String)
 
+    /** Saves an album or follows an artist, by its uri; [saved] false takes it out again. */
+    suspend fun setSaved(
+        uri: String,
+        saved: Boolean,
+    )
+
     /** One level of the playlists the user may add [itemUri] to, those of others they contribute to included. */
     suspend fun editable(
         itemUri: String,
@@ -139,6 +145,47 @@ class SpotifyPlaylistEditor(
 
     /** Whether the playlist is in the user's library, folders included. Reads the library when it is not loaded yet. */
     suspend fun inLibrary(playlistId: String): Boolean = libraryPlaylistIds(null).contains(playlistId)
+
+    /** The same for a saved album or a followed artist; null for what has no place in the library. */
+    suspend fun inLibrary(
+        type: SpotifyCollectionType,
+        id: String,
+    ): Boolean? =
+        when (type) {
+            SpotifyCollectionType.PLAYLIST -> inLibrary(id)
+            SpotifyCollectionType.ALBUM -> store.albums().loadAll().any { it.id == id }
+            SpotifyCollectionType.ARTIST -> store.artists().loadAll().any { it.id == id }
+            else -> null
+        }
+
+    /**
+     * Puts the playlist, album or artist in the user's library or takes it out, and reads that part of the
+     * library again. Taking out one's own playlist is deleting it.
+     */
+    suspend fun setInLibrary(
+        type: SpotifyCollectionType,
+        id: String,
+        inLibrary: Boolean,
+    ): SpotifyError? =
+        when (type) {
+            SpotifyCollectionType.PLAYLIST -> if (inLibrary) follow(id) else delete(id)
+            SpotifyCollectionType.ALBUM -> saved("spotify:album:$id", inLibrary) { store.albums().refresh() }
+            SpotifyCollectionType.ARTIST -> saved("spotify:artist:$id", inLibrary) { store.artists().refresh() }
+            else -> null
+        }
+
+    private suspend fun saved(
+        uri: String,
+        inLibrary: Boolean,
+        refresh: () -> Unit,
+    ): SpotifyError? =
+        try {
+            remote.setSaved(uri, inLibrary)
+            refresh()
+            null
+        } catch (error: SpotifyError) {
+            error
+        }
 
     private suspend fun libraryPlaylistIds(folderUri: String?): Set<String> =
         store.playlists(folderUri).loadAll().flatMapTo(hashSetOf()) {
