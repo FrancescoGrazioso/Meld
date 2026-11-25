@@ -41,6 +41,7 @@ import com.metrolist.shared.generated.resources.meld_spotify_songs_count
 import com.metrolist.shared.generated.resources.meld_spotify_already_in_playlist
 import com.metrolist.shared.generated.resources.meld_spotify_new_playlist
 import com.metrolist.shared.generated.resources.meld_spotify_new_playlist_description
+import com.metrolist.shared.generated.resources.meld_spotify_new_playlist_description_list
 import com.metrolist.shared.generated.resources.meld_spotify_not_found
 import com.metrolist.shared.generated.resources.meld_spotify_searching
 import com.metrolist.shared.generated.resources.n_song
@@ -199,7 +200,12 @@ private fun NewPlaylistRow(
 ) {
     SpotifyLibraryRow(
         title = stringResource(Res.string.meld_spotify_new_playlist),
-        subtitle = stringResource(Res.string.meld_spotify_new_playlist_description, state.track?.name.orEmpty()),
+        subtitle =
+            if (state.tracks.size > 1) {
+                stringResource(Res.string.meld_spotify_new_playlist_description_list, state.title)
+            } else {
+                stringResource(Res.string.meld_spotify_new_playlist_description, state.track?.name.orEmpty())
+            },
         imageUrl = null,
         icon = MetrolistIcons.AutoMirrored.Outlined.PlaylistAdd,
         onClick = picker::addToNew,

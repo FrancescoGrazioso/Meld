@@ -5627,6 +5627,7 @@
     <string name="meld_spotify_download_not_found">%1$d not found on YouTube Music</string>
     <string name="meld_spotify_download_unreachable">%1$d could not be looked up, try again</string>
     <string name="meld_spotify_new_playlist_description">Named %1$s, with this song in it</string>
+    <string name="meld_spotify_new_playlist_description_list">Named %1$s, with these songs in it</string>
     <string name="meld_spotify_likes_syncing">Syncing…</string>
     <string name="meld_spotify_likes_up_to_date">Up to date</string>
     <string name="meld_spotify_likes_sent">%1$d sent to Spotify</string>
