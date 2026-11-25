@@ -59,7 +59,10 @@ import com.meld.spotify.library.isSpotifyArrangement
 import com.meld.spotify.library.spotifySortOf
 import com.meld.spotify.library.withSpotifySort
 import com.meld.spotify.library.playableTrack
+import com.meld.spotify.library.toEntry
 import com.meld.spotify.library.toLibraryEntry
+import com.meld.spotify.download.SpotifyKeptDownloads
+import com.meld.spotify.download.keptKey
 import com.meld.spotify.likes.SpotifyLikeSync
 import com.meld.spotify.playback.SpotifyVersionPicker
 import com.metrolist.shared.generated.resources.Res
@@ -76,6 +79,8 @@ import com.metrolist.shared.generated.resources.album
 import com.metrolist.shared.generated.resources.artist
 import com.metrolist.shared.generated.resources.duration
 import com.metrolist.shared.generated.resources.meld_spotify_arrange_loading
+import com.metrolist.shared.generated.resources.meld_spotify_keep_downloaded
+import com.metrolist.shared.generated.resources.meld_spotify_related_artists
 import com.metrolist.shared.generated.resources.meld_spotify_sort
 import com.metrolist.shared.generated.resources.menu_copy_link
 import com.metrolist.shared.generated.resources.more_options
@@ -162,6 +167,13 @@ internal fun SpotifyTracksContent(
         val listState = rememberLazyListState()
         val picker = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyPlaylistPicker>() }
         val versions = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyVersionPicker>() }
+        val keptDownloads = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyKeptDownloads>() }
+        val keptKeys = keptDownloads?.keys?.collectAsState()
+        val kept = keptKey(type, id) in keptKeys?.value.orEmpty()
+        // Whenever the whole kept list is in, also after a refresh brought new tracks.
+        LaunchedEffect(kept, state.tracks.complete, state.tracks.items.size) {
+            if (kept && state.tracks.complete) keptDownloads?.opened(type, id)
+        }
         val player = LocalPlaybackController.current
         val nowPlaying by remember(player) { player.listState }.collectAsState(player.state.value.listState())
         var editingDetails by remember { mutableStateOf(false) }
@@ -439,6 +451,18 @@ internal fun SpotifyTracksContent(
                                                     },
                                                 )
                                             }
+                                            if (keptDownloads != null && type != SpotifyCollectionType.ARTIST) {
+                                                DropdownMenuItem(
+                                                    text = { Text(stringResource(Res.string.meld_spotify_keep_downloaded)) },
+                                                    trailingIcon = {
+                                                        if (kept) Icon(MetrolistIcons.Filled.Check, contentDescription = null)
+                                                    },
+                                                    onClick = {
+                                                        overflow = false
+                                                        keptDownloads.set(type, id, !kept)
+                                                    },
+                                                )
+                                            }
                                             spotifyLink(type, id)?.let { link ->
                                                 DropdownMenuItem(
                                                     text = { Text(stringResource(Res.string.menu_copy_link)) },
@@ -553,6 +577,21 @@ internal fun SpotifyTracksContent(
                                 subtitle = entry.subtitle(),
                                 imageUrl = entry.imageUrl,
                                 icon = MetrolistIcons.Outlined.Album,
+                                onClick = { onOpen(entry.screen()) },
+                                modifier = itemModifier,
+                            )
+                        }
+                    }
+                    val related = info?.relatedArtists.orEmpty()
+                    if (related.isNotEmpty()) {
+                        item(key = "related") { SectionTitle(stringResource(Res.string.meld_spotify_related_artists), itemModifier) }
+                        items(related, key = { "artist:${it.id}" }, contentType = { "artist" }) { artist ->
+                            val entry = artist.toEntry()
+                            SpotifyLibraryRow(
+                                title = entry.name,
+                                subtitle = entry.subtitle(),
+                                imageUrl = entry.imageUrl,
+                                icon = MetrolistIcons.Outlined.Person,
                                 onClick = { onOpen(entry.screen()) },
                                 modifier = itemModifier,
                             )

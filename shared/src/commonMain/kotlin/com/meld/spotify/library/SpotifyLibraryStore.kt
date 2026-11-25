@@ -31,6 +31,7 @@ data class SpotifyCollectionInfo(
     val imageUrl: String? = null,
     val trackCount: Int? = null,
     val albums: List<SpotifyAlbum> = emptyList(),
+    val relatedArtists: List<SpotifyArtist> = emptyList(),
     val description: String? = null,
     val ownerId: String? = null,
     val canEditItems: Boolean? = null,
@@ -168,6 +169,7 @@ class SpotifyLibraryStore(
                         title = overview.artist.name,
                         imageUrl = overview.artist.images.url(HEADER_IMAGE_SIZE),
                         albums = overview.albums,
+                        relatedArtists = overview.relatedArtists,
                     )
                 overview.topTracks.asPage()
             }

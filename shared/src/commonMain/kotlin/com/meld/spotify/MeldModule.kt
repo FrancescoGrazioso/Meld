@@ -8,6 +8,7 @@ import com.meld.db.buildMeldDatabase
 import com.meld.migration.adoptLegacySpotifySession
 import com.meld.spotify.download.SongDownloads
 import com.meld.spotify.download.SpotifyDownloads
+import com.meld.spotify.download.SpotifyKeptDownloads
 import com.meld.spotify.library.SessionSpotifyLibrary
 import com.meld.spotify.library.SpotifyCollectionActions
 import com.meld.spotify.library.SessionSpotifyPlaylists
@@ -175,6 +176,19 @@ fun meldModule(
         // Created on first use, so nothing here touches the player until a Spotify track list is opened.
         // The feeder and its target share one main-thread scope: that is what keeps their queue edits in order.
         if (songDownloads != null) single { SpotifyDownloads(get(), songDownloads(), downloadedSongIds?.invoke(this) ?: flowOf(emptySet())) }
+        if (songDownloads != null) {
+            single {
+                SpotifyKeptDownloads(
+                    store = get(),
+                    downloads = get(),
+                    connection = get(),
+                    settings = { Settings.shared },
+                    scope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
+                    logger = { YtLogger.d("MeldSpotify", it) },
+                )
+            }
+            single(named("meldKeptDownloadsStart"), createdAtStart = true) { get<SpotifyKeptDownloads>().start() }
+        }
         single { SpotifyVersionPicker(get(), CoroutineScope(SupervisorJob() + Dispatchers.Default)) }
         // The player is driven from the main thread, as from the screens.
         single { SpotifyCollectionActions(get(), getOrNull(), getOrNull(), CoroutineScope(SupervisorJob() + Dispatchers.Main)) }

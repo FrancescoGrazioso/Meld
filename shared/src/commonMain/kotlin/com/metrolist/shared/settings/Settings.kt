@@ -321,6 +321,9 @@ class Settings(
     // The order the user gave each Spotify track list, as "key=SORT" lines; a list in Spotify's own order is not kept.
     var meldSpotifySorts by preference("")
 
+    // The Spotify lists kept downloaded, one "TYPE:id" per line.
+    var meldSpotifyKeptDownloads by preference("")
+
     private var storedAppLanguage by preference(AppLanguageKey, "SYSTEM")
     var appLanguage: String
         get() = canonicalAppLanguageTag(storedAppLanguage)

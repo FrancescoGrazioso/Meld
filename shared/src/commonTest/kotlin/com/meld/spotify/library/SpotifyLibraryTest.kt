@@ -16,7 +16,14 @@ import com.meld.spotify.SpotifyPlaylist
 import com.meld.spotify.SpotifyPlaylistPage
 import com.meld.spotify.SpotifyTrack
 import com.meld.spotify.SpotifyTrackItem
+import com.meld.spotify.download.SongDownloads
+import com.meld.spotify.download.SpotifyDownloads
+import com.meld.spotify.download.SpotifyKeptDownloads
+import com.meld.spotify.playback.FakeMatchDao
+import com.meld.spotify.playback.FakeYouTube
 import com.meld.spotify.playback.SpotifyPlayback
+import com.meld.spotify.playback.SpotifyTrackResolver
+import com.meld.spotify.playback.tracks as spotifyTracks
 import com.metrolist.shared.model.PlaylistItem
 import com.metrolist.shared.settings.Settings
 import com.metrolist.shared.ui.screens.LibraryFilter
@@ -28,6 +35,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -36,6 +44,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration
 
 private class FakeConnection(
     initial: SpotifyConnectionState = Connected("Tester", null),
@@ -614,4 +623,54 @@ class SpotifyInLibraryTest {
         Settings(stored).meldLibrarySpotifyOnly = true
         assertTrue(Settings(stored).meldLibrarySpotifyOnly)
     }
+
+    @Test
+    fun aKeptListDownloadsWhatIsAddedToItAndStopsWhenNoLongerKept() =
+        runTest {
+            val settings = Settings(MapSettings())
+            val youtube = FakeYouTube()
+            val matches = FakeMatchDao()
+            val queued = mutableListOf<String>()
+            val library = FakeLibrary().apply { tracks = spotifyTracks(1..3).map(::entry) }
+
+            // One run of the app: the lists are read afresh in each.
+            fun run(): SpotifyKeptDownloads {
+                val fixture = Fixture(this, library)
+                val downloads =
+                    SpotifyDownloads(
+                        SpotifyTrackResolver(matches, youtube::search, youtube::songsById, fixture.scope, { 0 }),
+                        SongDownloads { songs ->
+                            val fresh = songs.map { it.id }.filterNot { it in queued }
+                            queued += fresh
+                            fresh.size
+                        },
+                    )
+                return SpotifyKeptDownloads(fixture.store, downloads, fixture.connection, { settings }, fixture.scope, startDelay = Duration.ZERO)
+            }
+
+            var kept = run()
+            kept.start()
+            advanceTimeBy(1_000)
+            assertEquals(emptyList(), queued)
+
+            kept.set(SpotifyCollectionType.PLAYLIST, "p1", kept = true)
+            advanceTimeBy(1_000)
+            assertEquals(listOf("yt1", "yt2", "yt3"), queued)
+            assertEquals(setOf("PLAYLIST:p1"), kept.keys.value)
+
+            // A track is added on Spotify; the next start downloads it.
+            library.tracks = spotifyTracks(1..4).map(::entry)
+            kept = run()
+            kept.start()
+            advanceTimeBy(1_000)
+            assertEquals(listOf("yt1", "yt2", "yt3", "yt4"), queued)
+
+            kept.set(SpotifyCollectionType.PLAYLIST, "p1", kept = false)
+            library.tracks = spotifyTracks(1..5).map(::entry)
+            kept = run()
+            kept.start()
+            advanceTimeBy(1_000)
+            assertEquals(emptySet(), kept.keys.value)
+            assertEquals(4, queued.size)
+        }
 }
