@@ -39,3 +39,27 @@ fun List<SpotifyTrackItem>.arranged(
         SpotifyTrackSort.DATE_ADDED -> matching.sortedByDescending { it.addedAt.orEmpty() }
     }
 }
+
+/** The orders the user chose, one "key=SORT" per line as the setting holds them. */
+fun spotifySortOf(
+    stored: String,
+    key: String,
+): SpotifyTrackSort =
+    stored
+        .lineSequence()
+        .firstOrNull { it.substringBefore('=') == key }
+        ?.substringAfter('=')
+        ?.let { name -> SpotifyTrackSort.entries.firstOrNull { it.name == name } }
+        ?: SpotifyTrackSort.SPOTIFY
+
+/** [stored] with the order of [key] set to [sort]; the newest [limit] lists are kept. */
+fun withSpotifySort(
+    stored: String,
+    key: String,
+    sort: SpotifyTrackSort,
+    limit: Int = 200,
+): String {
+    val others = stored.lineSequence().filter { it.isNotBlank() && it.substringBefore('=') != key }.toList()
+    val lines = if (sort == SpotifyTrackSort.SPOTIFY) others else others + "$key=${sort.name}"
+    return lines.takeLast(limit).joinToString("\n")
+}

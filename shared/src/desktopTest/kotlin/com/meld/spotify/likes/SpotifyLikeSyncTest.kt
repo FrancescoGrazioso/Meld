@@ -830,4 +830,28 @@ class SpotifyLikeSyncTest {
                 if (previous != null) SongLikeState.refreshFromSettings()
             }
         }
+
+    @Test
+    fun aTrackLikedFromItsSpotifyRowIsLikedOnSpotifyAndBroughtIn() =
+        withApp { sync ->
+            sync.setLiked(track(5), liked = true)
+            awaitUntil { "yt5" in songs }
+            assertEquals(listOf(uri(5)), spotify.added)
+            assertEquals(setOf("sp5"), sync.likedIds.value)
+
+            sync.setLiked(track(5), liked = false)
+            awaitUntil { "yt5" !in songs }
+            assertEquals(listOf(uri(5)), spotify.removed)
+            assertEquals(emptySet(), sync.likedIds.value)
+        }
+
+    @Test
+    fun aTrackLikedFromItsSpotifyRowStaysOnSpotifyWhenLikesAreNotBroughtIn() =
+        withApp { sync ->
+            settings.meldSpotifyLikesPull = false
+            sync.setLiked(track(5), liked = true)
+            awaitUntil { sync.likedIds.value == setOf("sp5") }
+            assertEquals(listOf(uri(5)), spotify.added)
+            assertTrue(songs.isEmpty())
+        }
 }

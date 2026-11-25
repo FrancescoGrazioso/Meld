@@ -38,11 +38,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.unit.dp
 import com.meld.spotify.SpotifyError
 import com.meld.spotify.SpotifyTrack
@@ -54,6 +56,8 @@ import com.meld.spotify.library.SpotifyTrackSort
 import com.meld.spotify.library.SpotifyTracksViewModel
 import com.meld.spotify.library.arranged
 import com.meld.spotify.library.isSpotifyArrangement
+import com.meld.spotify.library.spotifySortOf
+import com.meld.spotify.library.withSpotifySort
 import com.meld.spotify.library.playableTrack
 import com.meld.spotify.library.toLibraryEntry
 import com.meld.spotify.likes.SpotifyLikeSync
@@ -67,11 +71,15 @@ import com.metrolist.shared.generated.resources.delete_playlist_question
 import com.metrolist.shared.generated.resources.description
 import com.metrolist.shared.generated.resources.dismiss
 import com.metrolist.shared.generated.resources.action_download
+import com.metrolist.shared.generated.resources.add_to_queue
 import com.metrolist.shared.generated.resources.album
 import com.metrolist.shared.generated.resources.artist
 import com.metrolist.shared.generated.resources.duration
 import com.metrolist.shared.generated.resources.meld_spotify_arrange_loading
 import com.metrolist.shared.generated.resources.meld_spotify_sort
+import com.metrolist.shared.generated.resources.menu_copy_link
+import com.metrolist.shared.generated.resources.more_options
+import com.metrolist.shared.generated.resources.play_next
 import com.metrolist.shared.generated.resources.playlist_order_original
 import com.metrolist.shared.generated.resources.search
 import com.metrolist.shared.generated.resources.sort_by_create_date
@@ -107,14 +115,17 @@ import com.metrolist.shared.ui.components.CollectionHeaderHorizontalPadding
 import com.metrolist.shared.ui.components.HeaderPlaybackButtons
 import com.metrolist.shared.ui.components.RefreshIndicator
 import com.metrolist.shared.ui.components.ReorderMenu
+import com.metrolist.shared.settings.Settings
 import com.metrolist.shared.ui.icons.MetrolistIcons
 import com.metrolist.shared.ui.playback.LocalPlaybackController
 import com.metrolist.shared.ui.playback.listState
+import com.metrolist.shared.ui.utils.setText
 import com.metrolist.shared.ui.navigation.Screen
 import com.metrolist.shared.ui.navigation.SpotifySettingsScreen
 import com.metrolist.shared.ui.utils.DragScrollableColumn
 import com.metrolist.shared.ui.utils.artistArtworkShape
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform
@@ -168,7 +179,12 @@ internal fun SpotifyTracksContent(
         LaunchedEffect(tracks.items) { dragged = null }
         var query by rememberSaveable { mutableStateOf("") }
         var searching by rememberSaveable { mutableStateOf(false) }
-        var sort by rememberSaveable { mutableStateOf(SpotifyTrackSort.SPOTIFY) }
+        val sortKey = "$type:$id"
+        var sort by rememberSaveable { mutableStateOf(spotifySortOf(Settings.shared.meldSpotifySorts, sortKey)) }
+        var overflow by remember { mutableStateOf(false) }
+        val clipboard = LocalClipboard.current
+        val uiScope = rememberCoroutineScope()
+        val copyLink = { link: String -> uiScope.launch { clipboard.setText(link) }.let { } }
         var sortMenu by remember { mutableStateOf(false) }
         val plain = isSpotifyArrangement(query, sort)
         // A search or another order is over the whole list, so the rest of it is loaded; reordering needs Spotify's order.
@@ -320,7 +336,7 @@ internal fun SpotifyTracksContent(
                             val canDownloadAll = viewModel.canDownload && tracks.items.any { it.playableTrack != null }
                             val following = state.following
                             val canArrange = type != SpotifyCollectionType.ARTIST && tracks.items.size > 1
-                            if (state.canEdit || state.canEditDetails || state.canDelete || canDownloadAll || following != null || canArrange) {
+                            run {
                                 Row {
                                     if (canArrange) {
                                         IconToggleButton(
@@ -349,6 +365,7 @@ internal fun SpotifyTracksContent(
                                                         onClick = {
                                                             sort = option
                                                             sortMenu = false
+                                                            Settings.shared.meldSpotifySorts = withSpotifySort(Settings.shared.meldSpotifySorts, sortKey, option)
                                                         },
                                                     )
                                                 }
@@ -399,6 +416,38 @@ internal fun SpotifyTracksContent(
                                                 MetrolistIcons.Outlined.DragIndicator,
                                                 contentDescription = stringResource(Res.string.playlist_reorder),
                                             )
+                                        }
+                                    }
+                                    Box {
+                                        IconButton(onClick = { overflow = true }, shapes = IconButtonDefaults.shapes()) {
+                                            Icon(MetrolistIcons.Default.MoreVert, contentDescription = stringResource(Res.string.more_options))
+                                        }
+                                        DropdownMenu(expanded = overflow, onDismissRequest = { overflow = false }) {
+                                            if (canPlay && tracks.items.any { it.playableTrack != null }) {
+                                                DropdownMenuItem(
+                                                    text = { Text(stringResource(Res.string.play_next)) },
+                                                    onClick = {
+                                                        overflow = false
+                                                        viewModel.queueAll(next = true)
+                                                    },
+                                                )
+                                                DropdownMenuItem(
+                                                    text = { Text(stringResource(Res.string.add_to_queue)) },
+                                                    onClick = {
+                                                        overflow = false
+                                                        viewModel.queueAll(next = false)
+                                                    },
+                                                )
+                                            }
+                                            spotifyLink(type, id)?.let { link ->
+                                                DropdownMenuItem(
+                                                    text = { Text(stringResource(Res.string.menu_copy_link)) },
+                                                    onClick = {
+                                                        overflow = false
+                                                        copyLink(link)
+                                                    },
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -455,6 +504,11 @@ internal fun SpotifyTracksContent(
                                 onAddToPlaylist = picker?.let { { track: SpotifyTrack -> it.open(track) } },
                                 onDownload = if (viewModel.canDownload) viewModel::download else null,
                                 onChooseVersion = versions?.takeIf { canPlay }?.let { { track: SpotifyTrack -> it.open(track) } },
+                                onToggleLike =
+                                    likeSync?.let { sync ->
+                                        { track: SpotifyTrack -> sync.setLiked(track, track.id !in likedIds?.value.orEmpty()) }
+                                    },
+                                onCopyLink = { track: SpotifyTrack -> copyLink("https://open.spotify.com/track/${track.id}") },
                                 onRemove = if (state.canEdit && item.uid != null) ({ viewModel.remove(item) }) else null,
                                 leading = leading,
                             )
@@ -602,6 +656,18 @@ internal fun SpotifyTracksContent(
         }
     }
 }
+
+/** The page of a list on open.spotify.com; the liked songs have none worth sharing. */
+private fun spotifyLink(
+    type: SpotifyCollectionType,
+    id: String,
+): String? =
+    when (type) {
+        SpotifyCollectionType.PLAYLIST -> "https://open.spotify.com/playlist/$id"
+        SpotifyCollectionType.ALBUM -> "https://open.spotify.com/album/$id"
+        SpotifyCollectionType.ARTIST -> "https://open.spotify.com/artist/$id"
+        else -> null
+    }
 
 /** The name of a way to order the list. */
 private fun SpotifyTrackSort.label() =

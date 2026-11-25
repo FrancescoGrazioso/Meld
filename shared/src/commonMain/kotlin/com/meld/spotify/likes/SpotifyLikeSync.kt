@@ -536,6 +536,35 @@ class SpotifyLikeSync(
         onLikeDates(dates)
     }
 
+    /**
+     * Likes or un-likes [track] on Spotify itself, for a row that shows a Spotify track: no lookup is needed,
+     * the track is the one meant. With "Bring in Spotify likes" on, the next read likes its song in Meld too.
+     */
+    fun setLiked(
+        track: SpotifyTrack,
+        liked: Boolean,
+    ) {
+        scope.launch {
+            try {
+                val uri = TRACK_URI + track.id
+                if (liked) {
+                    remote.addToLibrary(listOf(uri))
+                    dao.insertLikedTracks(listOf(SpotifyLikedTrackEntity(track.id, null, pending = true, addedAt = now())))
+                    onSpotifyChanged(listOf(track), emptySet())
+                } else {
+                    remote.removeFromLibrary(listOf(uri))
+                    val gone = dao.likedTrack(track.id)
+                    if (gone != null && canPull()) unlikeRemoved(listOf(gone)) else dao.deleteLikedTracks(listOf(track.id))
+                    onSpotifyChanged(emptyList(), setOf(track.id))
+                }
+                publish()
+                if (canPull()) pull()
+            } catch (error: SpotifyError) {
+                logger("Like not changed on Spotify: ${error.message}")
+            }
+        }
+    }
+
     private suspend fun publish() {
         val pending = dao.outboxCount(notFound = false)
         val notFound = dao.outboxCount(notFound = true)

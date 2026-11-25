@@ -318,6 +318,9 @@ class Settings(
     // The user's own choices of a YouTube version, kept here as well so that a backup carries them (meld.db is not in one).
     var meldManualMatches by preference("")
 
+    // The order the user gave each Spotify track list, as "key=SORT" lines; a list in Spotify's own order is not kept.
+    var meldSpotifySorts by preference("")
+
     private var storedAppLanguage by preference(AppLanguageKey, "SYSTEM")
     var appLanguage: String
         get() = canonicalAppLanguageTag(storedAppLanguage)

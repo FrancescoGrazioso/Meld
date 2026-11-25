@@ -65,4 +65,19 @@ class SpotifyTrackArrangementTest {
         // Newest first; the one Spotify gives no date for comes last.
         assertEquals(listOf("b", "a", "c"), ids(list.arranged("", SpotifyTrackSort.DATE_ADDED)))
     }
+
+    @Test
+    fun theOrderOfEachListIsRememberedAndSpotifysOwnIsNotKept() {
+        var stored = ""
+        assertEquals(SpotifyTrackSort.SPOTIFY, spotifySortOf(stored, "PLAYLIST:a"))
+        stored = withSpotifySort(stored, "PLAYLIST:a", SpotifyTrackSort.TITLE)
+        stored = withSpotifySort(stored, "ALBUM:b", SpotifyTrackSort.DURATION)
+        stored = withSpotifySort(stored, "PLAYLIST:a", SpotifyTrackSort.ARTIST)
+        assertEquals(SpotifyTrackSort.ARTIST, spotifySortOf(stored, "PLAYLIST:a"))
+        assertEquals(SpotifyTrackSort.DURATION, spotifySortOf(stored, "ALBUM:b"))
+        stored = withSpotifySort(stored, "PLAYLIST:a", SpotifyTrackSort.SPOTIFY)
+        assertEquals("ALBUM:b=DURATION", stored)
+        // Only the newest lists are kept.
+        assertEquals("c=TITLE", withSpotifySort(stored, "c", SpotifyTrackSort.TITLE, limit = 1))
+    }
 }

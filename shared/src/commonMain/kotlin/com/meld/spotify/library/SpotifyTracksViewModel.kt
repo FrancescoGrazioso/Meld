@@ -337,6 +337,20 @@ class SpotifyTracksViewModel(
         }
     }
 
+    /** Queues the whole list, next or at the end, loading the pages not shown yet first. */
+    fun queueAll(next: Boolean) {
+        val playback = playback ?: return
+        scope.launch {
+            try {
+                val tracks = collection.tracks.loadAll().mapNotNull { it.playableTrack }
+                if (tracks.isEmpty()) return@launch
+                if (next) playback.playNext(tracks) else playback.addToQueue(tracks)
+            } catch (error: SpotifyError) {
+                // In the pager's state, where the list shows it with a retry.
+            }
+        }
+    }
+
     fun playNext(track: SpotifyTrack) {
         playback?.playNext(listOf(track))
     }
