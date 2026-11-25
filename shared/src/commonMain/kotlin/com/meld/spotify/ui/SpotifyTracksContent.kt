@@ -60,6 +60,8 @@ import com.meld.spotify.library.spotifySortOf
 import com.meld.spotify.library.withSpotifySort
 import com.meld.spotify.library.playableTrack
 import com.meld.spotify.library.toEntry
+import com.meld.spotify.playback.SpotifyResolution
+import com.meld.spotify.playback.SpotifyTrackResolver
 import com.meld.spotify.library.toLibraryEntry
 import com.meld.spotify.download.SpotifyKeptDownloads
 import com.meld.spotify.download.keptKey
@@ -167,6 +169,7 @@ internal fun SpotifyTracksContent(
         val listState = rememberLazyListState()
         val picker = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyPlaylistPicker>() }
         val versions = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyVersionPicker>() }
+        val resolver = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyTrackResolver>() }
         val keptDownloads = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyKeptDownloads>() }
         val keptKeys = keptDownloads?.keys?.collectAsState()
         val kept = keptKey(type, id) in keptKeys?.value.orEmpty()
@@ -533,6 +536,15 @@ internal fun SpotifyTracksContent(
                                         { track: SpotifyTrack -> sync.setLiked(track, track.id !in likedIds?.value.orEmpty()) }
                                     },
                                 onCopyLink = { track: SpotifyTrack -> copyLink("https://open.spotify.com/track/${track.id}") },
+                                // The radio YouTube Music makes from the song that plays for the track.
+                                onStartRadio =
+                                    resolver?.takeIf { canPlay }?.let { resolver ->
+                                        { track: SpotifyTrack ->
+                                            uiScope.launch {
+                                                (resolver.resolve(track) as? SpotifyResolution.Matched)?.song?.let(player::startRadio)
+                                            }.let { }
+                                        }
+                                    },
                                 onOpenAlbum =
                                     { track: SpotifyTrack -> track.album?.let { onOpen(it.toLibraryEntry().screen()) } ?: Unit }
                                         .takeIf { type != SpotifyCollectionType.ALBUM },

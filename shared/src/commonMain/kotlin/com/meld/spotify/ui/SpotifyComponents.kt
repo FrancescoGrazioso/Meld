@@ -73,6 +73,7 @@ import com.metrolist.shared.generated.resources.meld_spotify_track_unavailable
 import com.metrolist.shared.generated.resources.more_options
 import com.metrolist.shared.generated.resources.play_next
 import com.metrolist.shared.generated.resources.remove_from_playlist
+import com.metrolist.shared.generated.resources.start_radio
 import com.metrolist.shared.generated.resources.unlike
 import com.metrolist.shared.generated.resources.view_album
 import com.metrolist.shared.generated.resources.view_artist
@@ -245,6 +246,7 @@ internal fun SpotifyTrackRow(
     onChooseVersion: ((SpotifyTrack) -> Unit)? = null,
     onToggleLike: ((SpotifyTrack) -> Unit)? = null,
     onCopyLink: ((SpotifyTrack) -> Unit)? = null,
+    onStartRadio: ((SpotifyTrack) -> Unit)? = null,
     onOpenAlbum: ((SpotifyTrack) -> Unit)? = null,
     onOpenArtist: ((SpotifyTrack) -> Unit)? = null,
     onRemove: (() -> Unit)? = null,
@@ -256,6 +258,7 @@ internal fun SpotifyTrackRow(
         listOfNotNull(
             onPlayNext?.let { Res.string.play_next to it },
             onAddToQueue?.let { Res.string.add_to_queue to it },
+            onStartRadio?.let { Res.string.start_radio to it },
             onAddToPlaylist?.let { Res.string.meld_spotify_add_to_playlist to it },
             onDownload?.let { Res.string.action_download to it },
             onToggleLike?.let { (if (liked) Res.string.unlike else Res.string.action_like) to it },
