@@ -23,6 +23,8 @@ import kotlinx.coroutines.launch
 data class SpotifyPickerState(
     val title: String,
     val track: SpotifyTrack? = null,
+    /** The whole list being added, when it is more than [track]. */
+    val tracks: List<SpotifyTrack> = emptyList(),
     val notFound: Boolean = false,
     val loading: Boolean = true,
     val error: SpotifyError? = null,
@@ -58,9 +60,15 @@ class SpotifyPlaylistPicker(
     /** Null while the dialog is closed. */
     val state: StateFlow<SpotifyPickerState?> = mutableState.asStateFlow()
 
-    fun open(song: SongItem) = open(song.title) { song.takeUnless { it.isLocal }?.let { findOnSpotify(it) } }
+    fun open(song: SongItem) = open(song.title) { listOfNotNull(song.takeUnless { it.isLocal }?.let { findOnSpotify(it) }) }
 
-    fun open(track: SpotifyTrack) = open(track.name) { track }
+    fun open(track: SpotifyTrack) = open(track.name) { listOf(track) }
+
+    /** For every track of a list named [title]; [tracks] loads them and may throw a [SpotifyError]. */
+    fun openAll(
+        title: String,
+        tracks: suspend () -> List<SpotifyTrack>,
+    ) = open(title, tracks)
 
     fun close() {
         job?.cancel()
@@ -84,7 +92,7 @@ class SpotifyPlaylistPicker(
         if (current.adding != null) return
         mutableState.value = current.copy(adding = playlist.id, error = null)
         scope.launch {
-            val error = editor.add(playlist.id, track).await()
+            val error = if (current.tracks.size > 1) editor.addAll(playlist.id, current.tracks) else editor.add(playlist.id, track).await()
             // Reported here; the playlist's own screen would otherwise show it again later.
             if (error != null) editor.dismissFailure(playlist.id)
             mutableState.update { state ->
@@ -104,11 +112,12 @@ class SpotifyPlaylistPicker(
             var created: SpotifyPlaylist? = null
             val error =
                 try {
-                    val id = remote.create(track.name)
+                    val name = if (current.tracks.size > 1) current.title else track.name
+                    val id = remote.create(name)
                     val owner = (connection.state.value as? SpotifyConnectionState.Connected)?.id
-                    created = SpotifyPlaylist(id, "spotify:playlist:$id", track.name, ownerId = owner, trackCount = 0)
+                    created = SpotifyPlaylist(id, "spotify:playlist:$id", name, ownerId = owner, trackCount = 0)
                     store.playlists(null).refresh()
-                    editor.add(id, track).await()?.also { editor.dismissFailure(id) }
+                    if (current.tracks.size > 1) editor.addAll(id, current.tracks) else editor.add(id, track).await()?.also { editor.dismissFailure(id) }
                 } catch (error: SpotifyError) {
                     error
                 }
@@ -126,21 +135,23 @@ class SpotifyPlaylistPicker(
 
     private fun open(
         title: String,
-        find: suspend () -> SpotifyTrack?,
+        find: suspend () -> List<SpotifyTrack>,
     ) {
         job?.cancel()
         mutableState.value = SpotifyPickerState(title)
         val load: suspend () -> Unit = {
             try {
-                val track = find()
+                val found = find()
+                val track = found.firstOrNull()
                 if (track == null) {
                     mutableState.update { it?.copy(loading = false, notFound = true) }
                 } else {
-                    mutableState.update { it?.copy(track = track) }
+                    mutableState.update { it?.copy(track = track, tracks = found) }
                     val shared = editableIds(track.uri, null)
                     val session = connection.state.value
                     val playlists = playlists(null).distinctBy { it.id }.filter { canEditPlaylist(it.ownerId, session) || it.id in shared }
-                    val containing = playlists.filter { contains(it.id, track) }.mapTo(hashSetOf()) { it.id }
+                    // Of a whole list it is not said which playlists have it already.
+                    val containing = playlists.filter { found.size == 1 && contains(it.id, track) }.mapTo(hashSetOf()) { it.id }
                     mutableState.update { it?.copy(loading = false, playlists = playlists, containing = containing) }
                 }
             } catch (error: SpotifyError) {

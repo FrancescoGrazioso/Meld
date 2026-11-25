@@ -1,8 +1,11 @@
 package com.meld.spotify.library
 
 import com.meld.spotify.SpotifyError
+import com.meld.spotify.SpotifyNotice
+import com.meld.spotify.SpotifyNotices
 import com.meld.spotify.SpotifyTrack
 import com.meld.spotify.download.SpotifyDownloads
+import com.meld.spotify.download.notice
 import com.meld.spotify.playback.SpotifyPlayback
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -33,17 +36,23 @@ class SpotifyCollectionActions(
     fun playNext(
         type: SpotifyCollectionType,
         id: String,
-    ) = with(type, id) { playback?.playNext(it) }
+    ) = with(type, id) {
+        playback?.playNext(it)
+        SpotifyNotices.show(SpotifyNotice.PLAYING_NEXT)
+    }
 
     fun addToQueue(
         type: SpotifyCollectionType,
         id: String,
-    ) = with(type, id) { playback?.addToQueue(it) }
+    ) = with(type, id) {
+        playback?.addToQueue(it)
+        SpotifyNotices.show(SpotifyNotice.QUEUED)
+    }
 
     fun download(
         type: SpotifyCollectionType,
         id: String,
-    ) = with(type, id) { downloads?.download(it) }
+    ) = with(type, id) { tracks -> downloads?.download(tracks)?.let { SpotifyNotices.show(it.notice()) } }
 
     private fun with(
         type: SpotifyCollectionType,
@@ -58,9 +67,10 @@ class SpotifyCollectionActions(
                         .tracks
                         .loadAll()
                         .mapNotNull { it.playableTrack }
-                if (tracks.isNotEmpty()) action(tracks)
+                if (tracks.isNotEmpty()) action(tracks) else SpotifyNotices.show(SpotifyNotice.NOTHING_TO_PLAY)
             } catch (error: SpotifyError) {
-                // Kept in the pager's state: the list shows it with a retry when it is opened.
+                // Also kept in the pager's state: the list shows it with a retry when it is opened.
+                SpotifyNotices.show(SpotifyNotice.FAILED)
             }
         }
     }

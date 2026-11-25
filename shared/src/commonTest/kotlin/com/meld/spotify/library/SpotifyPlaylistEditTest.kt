@@ -680,4 +680,38 @@ class SpotifyPlaylistEditTest {
             assertEquals(listOf("t3", "t4"), more()?.map { it.id })
             assertNull(more())
         }
+
+    @Test
+    fun aWholeListIsAddedInItsOrderAndTheOpenPlaylistReadsItAgain() =
+        test {
+            val screen = loaded()
+            picker.openAll("Road trip") { listOf(song(7), song(8)) }
+            assertEquals(2, picked?.tracks?.size)
+            // Which playlists have a whole list already is not said.
+            assertEquals(emptySet(), picked?.containing)
+            picker.add(picked!!.playlists.first { it.id == "p1" })
+            release()
+            assertEquals(listOf("add:p1:spotify:track:t7", "add:p1:spotify:track:t8"), server.requests)
+            assertEquals(setOf("p1"), picked?.added)
+            with(screen) { assertEquals(listOf("t7", "t8"), items.takeLast(2).map { it.track?.id }) }
+
+            // A new playlist for a list takes the name of the list.
+            server.requests.clear()
+            picker.addToNew()
+            release()
+            assertEquals("create:Road trip", server.requests.first())
+            assertEquals(3, server.requests.size)
+        }
+
+    @Test
+    fun aListThatCannotBeLoadedIsReportedInThePickerAndRetried() =
+        test {
+            var fail = true
+            picker.openAll("Road trip") { if (fail) throw SpotifyError.Offline(RuntimeException("no route to host")) else listOf(song(7), song(8)) }
+            assertIs<SpotifyError.Offline>(picked?.error)
+            fail = false
+            picker.retry()
+            assertNull(picked?.error)
+            assertEquals(2, picked?.tracks?.size)
+        }
 }

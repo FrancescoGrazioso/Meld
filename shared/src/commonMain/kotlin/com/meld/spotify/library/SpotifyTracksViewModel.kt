@@ -3,6 +3,8 @@ package com.meld.spotify.library
 import com.meld.spotify.SpotifyConnection
 import com.meld.spotify.SpotifyConnectionState
 import com.meld.spotify.SpotifyError
+import com.meld.spotify.SpotifyNotice
+import com.meld.spotify.SpotifyNotices
 import com.meld.spotify.SpotifyTrack
 import com.meld.spotify.SpotifyTrackItem
 import com.meld.spotify.download.SpotifyDownloadResult
@@ -243,6 +245,9 @@ class SpotifyTracksViewModel(
 
     fun dismissFollowFailure() = follow.update { it.copy(failure = null) }
 
+    /** Every playable track of the list, loading the pages not shown yet first; throws a [SpotifyError]. */
+    suspend fun allTracks(): List<SpotifyTrack> = collection.tracks.loadAll().mapNotNull { it.playableTrack }
+
     /** Downloads every track of the list, loading the pages not shown yet first. */
     fun downloadAll() = download { collection.tracks.loadAll().mapNotNull { it.playableTrack } }
 
@@ -345,8 +350,10 @@ class SpotifyTracksViewModel(
                 val tracks = collection.tracks.loadAll().mapNotNull { it.playableTrack }
                 if (tracks.isEmpty()) return@launch
                 if (next) playback.playNext(tracks) else playback.addToQueue(tracks)
+                SpotifyNotices.show(if (next) SpotifyNotice.PLAYING_NEXT else SpotifyNotice.QUEUED)
             } catch (error: SpotifyError) {
-                // In the pager's state, where the list shows it with a retry.
+                // Also in the pager's state, where the list shows it with a retry.
+                SpotifyNotices.show(SpotifyNotice.FAILED)
             }
         }
     }

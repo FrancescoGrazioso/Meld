@@ -10,6 +10,8 @@ import com.meld.spotify.SpotifyArtist
 import com.meld.spotify.SpotifyConnection
 import com.meld.spotify.SpotifyConnectionState
 import com.meld.spotify.SpotifyError
+import com.meld.spotify.SpotifyNotice
+import com.meld.spotify.SpotifyNotices
 import com.meld.spotify.SpotifyTrack
 import com.meld.spotify.match.CandidateKind
 import com.meld.spotify.match.MatchCandidate
@@ -558,9 +560,11 @@ class SpotifyLikeSync(
                     onSpotifyChanged(emptyList(), setOf(track.id))
                 }
                 publish()
+                SpotifyNotices.show(if (liked) SpotifyNotice.LIKED else SpotifyNotice.UNLIKED)
                 if (canPull()) pull()
             } catch (error: SpotifyError) {
                 logger("Like not changed on Spotify: ${error.message}")
+                SpotifyNotices.show(SpotifyNotice.FAILED)
             }
         }
     }

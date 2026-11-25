@@ -37,6 +37,7 @@ import com.metrolist.shared.generated.resources.Res
 import com.metrolist.shared.generated.resources.close
 import com.metrolist.shared.generated.resources.meld_spotify_add_to_playlist
 import com.metrolist.shared.generated.resources.meld_spotify_added
+import com.metrolist.shared.generated.resources.meld_spotify_songs_count
 import com.metrolist.shared.generated.resources.meld_spotify_already_in_playlist
 import com.metrolist.shared.generated.resources.meld_spotify_new_playlist
 import com.metrolist.shared.generated.resources.meld_spotify_new_playlist_description
@@ -53,6 +54,7 @@ import com.metrolist.shared.ui.components.Dialog
 import com.metrolist.shared.ui.components.PlayerMenuAction
 import com.metrolist.shared.ui.icons.MetrolistIcons
 import com.metrolist.shared.ui.utils.DragScrollableColumn
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.mp.KoinPlatform
@@ -84,6 +86,7 @@ fun spotifyPlaylistMenuActions(
  */
 @Composable
 fun SpotifyPlaylistPickerHost() {
+    SpotifyNoticeHost()
     SpotifyVersionDialog()
     val picker = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyPlaylistPicker>() } ?: return
     val state = picker.state.collectAsState().value ?: return
@@ -94,7 +97,13 @@ fun SpotifyPlaylistPickerHost() {
                     Column(Modifier.weight(1f)) {
                         Text(stringResource(Res.string.meld_spotify_add_to_playlist), style = MaterialTheme.typography.titleLarge)
                         Text(
-                            text = state.track?.let { track -> "${track.name} • ${track.artists.joinToString { it.name }}" } ?: state.title,
+                            text =
+                                when {
+                                    state.tracks.size > 1 ->
+                                        state.title + " • " +
+                                            pluralStringResource(Res.plurals.meld_spotify_songs_count, state.tracks.size, state.tracks.size)
+                                    else -> state.track?.let { track -> "${track.name} • ${track.artists.joinToString { it.name }}" } ?: state.title
+                                },
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1,

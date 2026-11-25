@@ -35,6 +35,11 @@ internal class SessionSpotifyPlaylists(
         trackUri: String,
     ) = owner.call { addToPlaylist(playlistId, listOf(trackUri)) }
 
+    override suspend fun addAll(
+        playlistId: String,
+        trackUris: List<String>,
+    ) = owner.call { addToPlaylist(playlistId, trackUris) }
+
     override suspend fun remove(
         playlistId: String,
         uid: String,

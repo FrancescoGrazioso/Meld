@@ -47,6 +47,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.unit.dp
 import com.meld.spotify.SpotifyError
+import com.meld.spotify.SpotifyNotice
+import com.meld.spotify.SpotifyNotices
 import com.meld.spotify.SpotifyTrack
 import com.meld.spotify.SpotifyTrackItem
 import com.meld.spotify.library.SpotifyCollectionType
@@ -81,6 +83,7 @@ import com.metrolist.shared.generated.resources.album
 import com.metrolist.shared.generated.resources.artist
 import com.metrolist.shared.generated.resources.duration
 import com.metrolist.shared.generated.resources.meld_spotify_arrange_loading
+import com.metrolist.shared.generated.resources.meld_spotify_add_to_playlist
 import com.metrolist.shared.generated.resources.meld_spotify_keep_downloaded
 import com.metrolist.shared.generated.resources.meld_spotify_related_artists
 import com.metrolist.shared.generated.resources.meld_spotify_sort
@@ -199,7 +202,12 @@ internal fun SpotifyTracksContent(
         var overflow by remember { mutableStateOf(false) }
         val clipboard = LocalClipboard.current
         val uiScope = rememberCoroutineScope()
-        val copyLink = { link: String -> uiScope.launch { clipboard.setText(link) }.let { } }
+        val copyLink = { link: String ->
+            uiScope.launch {
+                clipboard.setText(link)
+                SpotifyNotices.show(SpotifyNotice.COPIED)
+            }.let { }
+        }
         var sortMenu by remember { mutableStateOf(false) }
         val plain = isSpotifyArrangement(query, sort)
         // A search or another order is over the whole list, so the rest of it is loaded; reordering needs Spotify's order.
@@ -454,6 +462,15 @@ internal fun SpotifyTracksContent(
                                                     },
                                                 )
                                             }
+                                            if (picker != null && tracks.items.any { it.playableTrack != null }) {
+                                                DropdownMenuItem(
+                                                    text = { Text(stringResource(Res.string.meld_spotify_add_to_playlist)) },
+                                                    onClick = {
+                                                        overflow = false
+                                                        picker.openAll(info?.title.orEmpty()) { viewModel.allTracks() }
+                                                    },
+                                                )
+                                            }
                                             if (keptDownloads != null && type != SpotifyCollectionType.ARTIST) {
                                                 DropdownMenuItem(
                                                     text = { Text(stringResource(Res.string.meld_spotify_keep_downloaded)) },
@@ -541,7 +558,8 @@ internal fun SpotifyTracksContent(
                                     resolver?.takeIf { canPlay }?.let { resolver ->
                                         { track: SpotifyTrack ->
                                             uiScope.launch {
-                                                (resolver.resolve(track) as? SpotifyResolution.Matched)?.song?.let(player::startRadio)
+                                                val song = (resolver.resolve(track) as? SpotifyResolution.Matched)?.song
+                                                if (song != null) player.startRadio(song) else SpotifyNotices.show(SpotifyNotice.NO_MATCH)
                                             }.let { }
                                         }
                                     },

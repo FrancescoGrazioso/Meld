@@ -1,5 +1,6 @@
 package com.meld.spotify.download
 
+import com.meld.spotify.SpotifyNotice
 import com.meld.spotify.SpotifyTrack
 import com.meld.spotify.playback.SpotifyResolution
 import com.meld.spotify.playback.SpotifyTrackResolver
@@ -28,6 +29,15 @@ data class SpotifyDownloadResult(
     val notFound: Int,
     val unreachable: Int,
 )
+
+/** The one line that says how the download went, for where no dialog shows the counts. */
+fun SpotifyDownloadResult.notice(): SpotifyNotice =
+    when {
+        queued > 0 -> SpotifyNotice.DOWNLOAD_STARTED
+        found > 0 -> SpotifyNotice.NOTHING_NEW
+        unreachable > 0 -> SpotifyNotice.FAILED
+        else -> SpotifyNotice.NO_MATCH
+    }
 
 /**
  * Downloads Spotify tracks through the app's own downloads: each track is matched to the YouTube song

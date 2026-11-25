@@ -29,6 +29,12 @@ interface SpotifyPlaylistRemote {
         trackUri: String,
     )
 
+    /** Adds the tracks at the end, in the order given. */
+    suspend fun addAll(
+        playlistId: String,
+        trackUris: List<String>,
+    ) = trackUris.forEach { add(playlistId, it) }
+
     /** [uid] is the entry's [SpotifyTrackItem.uid], so one of several copies of a track can be meant. */
     suspend fun remove(
         playlistId: String,
@@ -80,6 +86,9 @@ fun canEditPlaylist(
     ownerId: String?,
     session: SpotifyConnectionState,
 ): Boolean = ownerId != null && ownerId == (session as? SpotifyConnectionState.Connected)?.id
+
+/** How many tracks one request adds to a playlist. */
+private const val ADD_BATCH = 100
 
 internal sealed interface SpotifyPlaylistChange {
     data class Add(
@@ -142,6 +151,26 @@ class SpotifyPlaylistEditor(
         } catch (error: SpotifyError) {
             error
         }
+
+    /**
+     * Adds a whole list to the playlist, a batch at a time. Not queued behind the edits and not shown
+     * before Spotify has it: the playlist is read again afterwards when it is loaded, also after a failure,
+     * since the batches before it went through.
+     */
+    suspend fun addAll(
+        playlistId: String,
+        tracks: List<SpotifyTrack>,
+    ): SpotifyError? {
+        val error =
+            try {
+                tracks.map { it.uri }.chunked(ADD_BATCH).forEach { remote.addAll(playlistId, it) }
+                null
+            } catch (error: SpotifyError) {
+                error
+            }
+        store.cachedPlaylist(playlistId)?.tracks?.refresh(all = true)
+        return error
+    }
 
     /** Whether the playlist is in the user's library, folders included. Reads the library when it is not loaded yet. */
     suspend fun inLibrary(playlistId: String): Boolean = libraryPlaylistIds(null).contains(playlistId)

@@ -146,6 +146,7 @@ private fun SpotifySearchResults(
     var kind by rememberSaveable { mutableStateOf<SpotifySearchKind?>(null) }
     val picker = remember { koin?.getOrNull<SpotifyPlaylistPicker>() }
     val likedIds = remember { koin?.getOrNull<SpotifyLikeSync>() }?.likedIds?.collectAsState()
+    val menu = rememberSpotifyTrackMenu(search.canPlay) { onOpen(it) }
     val keyboard = LocalSoftwareKeyboardController.current
     val focus = LocalFocusManager.current
     val leave = {
@@ -238,6 +239,22 @@ private fun SpotifySearchResults(
                                     modifier = Modifier.padding(horizontal = 16.dp),
                                     liked = track.id in likedIds?.value.orEmpty(),
                                     onAddToPlaylist = picker?.let { { chosen: SpotifyTrack -> it.open(chosen) } },
+                                    onDownload = menu.download,
+                                    onChooseVersion = menu.chooseVersion,
+                                    onToggleLike =
+                                        menu.setLiked?.let { setLiked ->
+                                            { chosen: SpotifyTrack -> setLiked(chosen, chosen.id !in likedIds?.value.orEmpty()) }
+                                        },
+                                    onCopyLink = menu.copyLink,
+                                    onStartRadio = menu.startRadio,
+                                    onOpenAlbum = { chosen: SpotifyTrack ->
+                                        leave()
+                                        menu.openAlbum(chosen)
+                                    },
+                                    onOpenArtist = { chosen: SpotifyTrack ->
+                                        leave()
+                                        menu.openArtist(chosen)
+                                    },
                                 )
                             }
                         }

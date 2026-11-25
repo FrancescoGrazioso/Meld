@@ -5597,6 +5597,18 @@
     <string name="meld_spotify_new_playlist">New Spotify playlist</string>
     <string name="meld_spotify_sort">Sort</string>
     <string name="meld_spotify_keep_downloaded">Keep downloaded</string>
+    <string name="meld_spotify_notice_playing_next">Playing next</string>
+    <string name="meld_spotify_notice_queued">Added to queue</string>
+    <string name="meld_spotify_notice_download_started">Download started</string>
+    <string name="meld_spotify_notice_no_match">Not found on YouTube Music</string>
+    <string name="meld_spotify_notice_nothing_to_play">Nothing here can be played</string>
+    <string name="meld_spotify_notice_liked">Added to Liked Songs on Spotify</string>
+    <string name="meld_spotify_notice_unliked">Removed from Liked Songs on Spotify</string>
+    <string name="meld_spotify_notice_failed">Spotify could not be reached, try again</string>
+    <plurals name="meld_spotify_songs_count">
+        <item quantity="one">%1$d song</item>
+        <item quantity="other">%1$d songs</item>
+    </plurals>
     <string name="meld_spotify_related_artists">Fans also like</string>
     <string name="meld_spotify_arrange_loading">Loading every song to search and sort the whole list…</string>
     <string name="meld_spotify_downloaded">Downloaded</string>
