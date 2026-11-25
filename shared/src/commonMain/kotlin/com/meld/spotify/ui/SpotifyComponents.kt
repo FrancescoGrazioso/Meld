@@ -74,6 +74,8 @@ import com.metrolist.shared.generated.resources.more_options
 import com.metrolist.shared.generated.resources.play_next
 import com.metrolist.shared.generated.resources.remove_from_playlist
 import com.metrolist.shared.generated.resources.unlike
+import com.metrolist.shared.generated.resources.view_album
+import com.metrolist.shared.generated.resources.view_artist
 import com.metrolist.shared.generated.resources.retry
 import com.metrolist.shared.generated.resources.search_no_results
 import com.metrolist.shared.generated.resources.spotify_sign_in_again
@@ -243,6 +245,8 @@ internal fun SpotifyTrackRow(
     onChooseVersion: ((SpotifyTrack) -> Unit)? = null,
     onToggleLike: ((SpotifyTrack) -> Unit)? = null,
     onCopyLink: ((SpotifyTrack) -> Unit)? = null,
+    onOpenAlbum: ((SpotifyTrack) -> Unit)? = null,
+    onOpenArtist: ((SpotifyTrack) -> Unit)? = null,
     onRemove: (() -> Unit)? = null,
     leading: (@Composable () -> Unit)? = null,
 ) {
@@ -256,6 +260,8 @@ internal fun SpotifyTrackRow(
             onDownload?.let { Res.string.action_download to it },
             onToggleLike?.let { (if (liked) Res.string.unlike else Res.string.action_like) to it },
             onChooseVersion?.let { Res.string.meld_spotify_choose_version to it },
+            onOpenArtist?.takeIf { !track?.artists?.firstOrNull()?.id.isNullOrBlank() }?.let { Res.string.view_artist to it },
+            onOpenAlbum?.takeIf { !track?.album?.id.isNullOrBlank() }?.let { Res.string.view_album to it },
             onCopyLink?.let { Res.string.menu_copy_link to it },
         ).takeIf { playable != null }.orEmpty()
     val hasMenu = trackActions.isNotEmpty() || onRemove != null

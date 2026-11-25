@@ -533,6 +533,12 @@ internal fun SpotifyTracksContent(
                                         { track: SpotifyTrack -> sync.setLiked(track, track.id !in likedIds?.value.orEmpty()) }
                                     },
                                 onCopyLink = { track: SpotifyTrack -> copyLink("https://open.spotify.com/track/${track.id}") },
+                                onOpenAlbum =
+                                    { track: SpotifyTrack -> track.album?.let { onOpen(it.toLibraryEntry().screen()) } ?: Unit }
+                                        .takeIf { type != SpotifyCollectionType.ALBUM },
+                                onOpenArtist =
+                                    { track: SpotifyTrack -> track.artists.firstOrNull()?.let { onOpen(it.toEntry().screen()) } ?: Unit }
+                                        .takeIf { type != SpotifyCollectionType.ARTIST },
                                 onRemove = if (state.canEdit && item.uid != null) ({ viewModel.remove(item) }) else null,
                                 leading = leading,
                             )
