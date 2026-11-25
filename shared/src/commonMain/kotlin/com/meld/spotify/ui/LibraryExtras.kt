@@ -2,7 +2,9 @@
 
 package com.meld.spotify.ui
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -31,11 +35,18 @@ import androidx.compose.ui.unit.dp
 import com.meld.spotify.SpotifyConnectionState
 import com.meld.spotify.SpotifyError
 import com.meld.spotify.library.LibraryCells
+import com.meld.spotify.library.SpotifyCollectionActions
+import com.meld.spotify.library.SpotifyCollectionType
 import com.meld.spotify.library.SpotifyInLibrary
 import com.meld.spotify.library.SpotifyLibraryEntry
 import com.meld.spotify.library.SpotifyLibraryEntryKind
 import com.meld.spotify.library.libraryCells
 import com.metrolist.shared.generated.resources.Res
+import com.metrolist.shared.generated.resources.action_download
+import com.metrolist.shared.generated.resources.add_to_queue
+import com.metrolist.shared.generated.resources.play
+import com.metrolist.shared.generated.resources.play_next
+import com.metrolist.shared.generated.resources.shuffle
 import com.metrolist.shared.generated.resources.import_provider_spotify
 import com.metrolist.shared.generated.resources.meld_spotify_library_expired
 import com.metrolist.shared.generated.resources.meld_spotify_liked_songs
@@ -177,6 +188,7 @@ internal fun SpotifyChip(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 internal fun SpotifyLibraryCell(
     entry: SpotifyLibraryEntry,
@@ -184,11 +196,37 @@ internal fun SpotifyLibraryCell(
     onClick: () -> Unit,
 ) {
     val artistId = entry.id.takeIf { entry.kind == SpotifyLibraryEntryKind.ARTIST }
+    val actions = remember { KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyCollectionActions>() }
+    // A folder is not a list of tracks: it has no menu.
+    val type = entry.collectionType().takeIf { actions != null && (actions.canPlay || actions.canDownload) }
+    var menuOpen by remember { mutableStateOf(false) }
+    val openMenu: (() -> Unit)? = if (type != null) ({ menuOpen = true }) else null
     LibraryItemContainer(
         isGridView = isGridView,
-        onMenuClick = null,
-        modifier = Modifier.clickable(onClick = onClick),
+        onMenuClick = openMenu,
+        modifier = Modifier.combinedClickable(onClick = onClick, onLongClick = openMenu),
     ) {
+        if (type != null && actions != null) {
+            DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                val items =
+                    listOfNotNull(
+                        (Res.string.play to { actions.play(type, entry.id, entry.name) }).takeIf { actions.canPlay },
+                        (Res.string.shuffle to { actions.play(type, entry.id, entry.name, shuffle = true) }).takeIf { actions.canPlay },
+                        (Res.string.play_next to { actions.playNext(type, entry.id) }).takeIf { actions.canPlay },
+                        (Res.string.add_to_queue to { actions.addToQueue(type, entry.id) }).takeIf { actions.canPlay },
+                        (Res.string.action_download to { actions.download(type, entry.id) }).takeIf { actions.canDownload },
+                    )
+                items.forEach { (label, action) ->
+                    DropdownMenuItem(
+                        text = { Text(stringResource(label)) },
+                        onClick = {
+                            menuOpen = false
+                            action()
+                        },
+                    )
+                }
+            }
+        }
         if (isGridView) {
             Box {
                 GridCard(
@@ -216,6 +254,16 @@ internal fun SpotifyLibraryCell(
         }
     }
 }
+
+/** The kind of track list behind a library row; null for a folder. */
+private fun SpotifyLibraryEntry.collectionType(): SpotifyCollectionType? =
+    when (kind) {
+        SpotifyLibraryEntryKind.LIKED -> SpotifyCollectionType.LIKED
+        SpotifyLibraryEntryKind.PLAYLIST -> SpotifyCollectionType.PLAYLIST
+        SpotifyLibraryEntryKind.ALBUM -> SpotifyCollectionType.ALBUM
+        SpotifyLibraryEntryKind.ARTIST -> SpotifyCollectionType.ARTIST
+        SpotifyLibraryEntryKind.FOLDER -> null
+    }
 
 /** Marks a row as coming from Spotify, the way the library badges its own special collections but quieter. */
 @Composable

@@ -9,6 +9,7 @@ import com.meld.migration.adoptLegacySpotifySession
 import com.meld.spotify.download.SongDownloads
 import com.meld.spotify.download.SpotifyDownloads
 import com.meld.spotify.library.SessionSpotifyLibrary
+import com.meld.spotify.library.SpotifyCollectionActions
 import com.meld.spotify.library.SessionSpotifyPlaylists
 import com.meld.spotify.library.SpotifyInHome
 import com.meld.spotify.library.SpotifyInLibrary
@@ -175,6 +176,8 @@ fun meldModule(
         // The feeder and its target share one main-thread scope: that is what keeps their queue edits in order.
         if (songDownloads != null) single { SpotifyDownloads(get(), songDownloads(), downloadedSongIds?.invoke(this) ?: flowOf(emptySet())) }
         single { SpotifyVersionPicker(get(), CoroutineScope(SupervisorJob() + Dispatchers.Default)) }
+        // The player is driven from the main thread, as from the screens.
+        single { SpotifyCollectionActions(get(), getOrNull(), getOrNull(), CoroutineScope(SupervisorJob() + Dispatchers.Main)) }
         single {
             val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
             SpotifyQueuePlayback(get(), queueTarget(scope), scope)
