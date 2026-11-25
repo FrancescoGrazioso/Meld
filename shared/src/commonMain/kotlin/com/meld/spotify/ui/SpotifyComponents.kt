@@ -86,6 +86,7 @@ import com.metrolist.shared.ui.components.ContainedLoadingIndicator
 import com.metrolist.shared.ui.components.GroupedListItem
 import com.metrolist.shared.ui.components.ListItemTitle
 import com.metrolist.shared.ui.icons.MetrolistIcons
+import com.metrolist.shared.ui.menu.onSecondaryClick
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -281,7 +282,10 @@ internal fun SpotifyTrackRow(
                         enabled = playable != null && onClick != null,
                         onClick = { onClick?.invoke() },
                         onLongClick = if (hasMenu) ({ menuOpen = true }) else null,
-                    ).padding(8.dp),
+                    )
+                    // The right click of a mouse opens the same menu.
+                    .onSecondaryClick(if (hasMenu) ({ menuOpen = true }) else null)
+                    .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             leading?.invoke()
