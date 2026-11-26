@@ -99,8 +99,8 @@ class SpotifyLikeSync(
     private val now: () -> Long,
     private val onSpotifyChanged: suspend (added: List<SpotifyTrack>, removedIds: Set<String>) -> Unit = { _, _ -> },
     private val logger: (String) -> Unit = {},
-    // YouTube id to when its track was liked on Spotify, whenever the remembered liked tracks change.
-    private val onLikeDates: (Map<String, Long>) -> Unit = {},
+    // What the order of the liked songs is built from, whenever the remembered liked tracks change.
+    private val onLikeOrder: (SpotifyLikeOrderData) -> Unit = {},
 ) {
     // Held for one outbox entry at a time, so a new intent never waits for more than one request.
     private val outboxLock = Mutex()
@@ -283,7 +283,9 @@ class SpotifyLikeSync(
                 }
                 remote.addToLibrary(listOf(track.uri))
                 sent++
-                dao.putLikedTracks(listOf(SpotifyLikedTrackEntity(track.id, youtubeId, pending = false, addedAt = now())))
+                dao.putLikedTracks(
+                    listOf(SpotifyLikedTrackEntity(track.id, youtubeId, pending = false, addedAt = now(), origin = LikeOrigin.ANCHOR)),
+                )
                 onSpotifyChanged(listOf(track), emptySet())
             }
         } else {
@@ -511,7 +513,17 @@ class SpotifyLikeSync(
                 // A match that is merely playable is not sure enough to be liked in the user's name.
                 val song = (resolution as? SpotifyResolution.Matched)?.takeUnless { it.lowConfidence }?.song
                 if (song != null) songs += song
-                rows += SpotifyLikedTrackEntity(id, song?.id, pending = false, addedAt = dates[id])
+                val likedAt = dates[id]
+                val origin =
+                    when {
+                        song == null -> LikeOrigin.UNKNOWN
+                        // Liked here before Meld got to it: the user's own like, with a place of its own in the list.
+                        local.song(song.id) != null -> LikeOrigin.OWN
+                        // Liked on Spotify just now, so the place it gets in the list is the right one.
+                        likedAt != null && now() - likedAt <= ANCHOR_WINDOW_MILLIS -> LikeOrigin.ANCHOR
+                        else -> LikeOrigin.COPIED
+                    }
+                rows += SpotifyLikedTrackEntity(id, song?.id, pending = false, addedAt = likedAt, origin = origin)
             }
             outboxLock.withLock {
                 // An intent still to be sent says what the user wants for that song; a disliked song stays disliked.
@@ -526,16 +538,38 @@ class SpotifyLikeSync(
     }
 
     private suspend fun publishLiked() {
-        val liked = dao.likedTracks()
+        var liked = dao.likedTracks()
         mutableLikedIds.value = liked.mapTo(hashSetOf()) { it.spotifyId }
+        if (resolveOrigins(liked)) liked = dao.likedTracks()
         val dates = HashMap<String, Long>()
+        val origins = HashMap<String, Int>()
         liked.forEach { row ->
             val id = row.youtubeId ?: return@forEach
             val at = row.addedAt ?: return@forEach
-            // Two liked tracks can be the same YouTube song: the later like counts.
+            // Two liked tracks can be the same YouTube song: the later like counts, and the like that says most of the song's place.
             if (at > (dates[id] ?: Long.MIN_VALUE)) dates[id] = at
+            if (row.origin > (origins[id] ?: LikeOrigin.UNKNOWN)) origins[id] = row.origin
         }
-        onLikeDates(dates)
+        onLikeOrder(SpotifyLikeOrderData(dates, origins))
+    }
+
+    /**
+     * Tells the origin of the likes written before it was kept, once the whole library is in: a list still
+     * being brought in has not taken its shape. True when rows were changed.
+     */
+    private suspend fun resolveOrigins(liked: List<SpotifyLikedTrackEntity>): Boolean {
+        val unknown = liked.filter { it.origin == LikeOrigin.UNKNOWN && it.youtubeId != null && it.addedAt != null }
+        if (unknown.isEmpty() || liked.any { it.pending }) return false
+        val matchedAt = matches.getAll(unknown.map { it.spotifyId }).associate { it.spotifyId to it.createdAt }
+        val resolved =
+            resolveLikeOrigins(
+                recency = local.order(),
+                unresolved = unknown.map { UnresolvedLike(it.youtubeId!!, it.addedAt!!, matchedAt[it.spotifyId]) },
+                dated = liked.filter { it.addedAt != null }.mapNotNullTo(hashSetOf()) { it.youtubeId },
+            )
+        resolved.forEach { (youtubeId, origin) -> dao.setLikedTrackOrigin(youtubeId, origin) }
+        if (resolved.isNotEmpty()) logger("Told the origin of ${resolved.size} likes: ${resolved.values.groupingBy { it }.eachCount()}")
+        return resolved.isNotEmpty()
     }
 
     /**

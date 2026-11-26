@@ -145,7 +145,7 @@ fun meldModule(
                 now = { Clock.System.now().toEpochMilliseconds() },
                 onSpotifyChanged = store::likedSongsChanged,
                 logger = { YtLogger.d("MeldSpotify", it) },
-                onLikeDates = SpotifyLikedOrder::update,
+                onLikeOrder = SpotifyLikedOrder::update,
             )
         }
         single<SpotifyPlaylistRemote> { SessionSpotifyPlaylists(get()) }

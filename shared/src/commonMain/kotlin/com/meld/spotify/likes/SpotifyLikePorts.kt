@@ -43,6 +43,9 @@ interface LocalLikes {
     /** Likes [songs] that are not liked yet. */
     fun add(songs: List<SongItem>)
 
+    /** The ids of the liked songs as the app has them by date added, newest first, before Meld reorders them. */
+    fun order(): List<String>
+
     fun remove(ids: Collection<String>)
 }
 
@@ -60,6 +63,8 @@ internal object SongLikeStateLikes : LocalLikes {
     override fun add(songs: List<SongItem>) {
         if (songs.isNotEmpty()) SongLikeState.appendLikes(songs)
     }
+
+    override fun order() = SongLikeState.upstreamLikedSongRecency
 
     override fun remove(ids: Collection<String>) {
         SongLikeState.removeLikes(ids)

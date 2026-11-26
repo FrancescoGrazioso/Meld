@@ -156,6 +156,9 @@ private class FakeLocal : LocalLikes {
     }
 
     override fun remove(ids: Collection<String>) = ids.forEach { songs.remove(it) }
+
+    /** What was handed over newest first, then what the user had liked before, newest first as well. */
+    override fun order() = byDateAdded.filter { it in songs } + songs.keys.filterNot { it in byDateAdded }.reversed()
 }
 
 /** One run of the app over the database in [file]; [stored] is what the settings held when it started. */
@@ -167,6 +170,7 @@ private class App(
     inMemoryMatches: Boolean = false,
 ) {
     var likeDates = emptyMap<String, Long>()
+    var likeOrder = SpotifyLikeOrderData()
     val database: MeldDatabase = buildMeldDatabase(file)
     val matches: SpotifyMatchDao = if (inMemoryMatches) FakeMatchDao() else database.spotifyMatchDao()
     val likes = database.spotifyLikeDao()
@@ -202,7 +206,8 @@ private class App(
             connection,
             background,
         )
-    private var time = 1_000L
+    // Long after the likes the fake Spotify dates in its first seconds: bringing them in is copying an old library.
+    private var time = 400L * 24 * 60 * 60 * 1000
 
     fun sync(scope: CoroutineScope) =
         SpotifyLikeSync(
@@ -216,7 +221,10 @@ private class App(
             scope = scope,
             now = { time++ },
             onSpotifyChanged = store::likedSongsChanged,
-            onLikeDates = { likeDates = it },
+            onLikeOrder = {
+                likeOrder = it
+                likeDates = it.dates
+            },
         )
 
     val sync = sync(scope)
@@ -596,7 +604,7 @@ class SpotifyLikeSyncTest {
             assertEquals((1..5_000).map { "yt$it" }, (local as FakeLocal).added)
             // ...and by Spotify's dates the list reads newest first, however upstream stacked the batches.
             assertEquals(5_000, likeDates.size)
-            assertEquals((5_000 downTo 1).map { "yt$it" }, reorderBySpotifyDate((local as FakeLocal).byDateAdded, likeDates))
+            assertEquals((5_000 downTo 1).map { "yt$it" }, orderLikes((local as FakeLocal).byDateAdded, likeOrder))
 
             spotify.unlike(1..1_200)
             assertTrue(sync.pull())
@@ -853,5 +861,32 @@ class SpotifyLikeSyncTest {
             awaitUntil { sync.likedIds.value == setOf("sp5") }
             assertEquals(listOf(uri(5)), spotify.added)
             assertTrue(songs.isEmpty())
+        }
+
+    @Test
+    fun theOriginOfEachLikeIsKeptWithItAndGivesTheOrderOfTheLikedSongs() =
+        withApp { sync ->
+            val local = local as FakeLocal
+            // Liked on YouTube Music long before; Spotify has it too, among likes made there years ago.
+            local.like(9)
+            spotify.like(1, 2, 9)
+            assertTrue(sync.pull(force = true))
+            assertEquals(mapOf("yt1" to LikeOrigin.COPIED, "yt2" to LikeOrigin.COPIED, "yt9" to LikeOrigin.OWN), likeOrder.origins)
+
+            // A like made in Meld goes to Spotify with the date of now: the two agree.
+            local.like(5)
+            sync.record("yt5", liked = true)
+            assertNull(sync.flush())
+            assertEquals(LikeOrigin.ANCHOR, likeOrder.origins["yt5"])
+            assertEquals(LikeOrigin.ANCHOR, likes.likedTrack("sp5")?.origin)
+
+            // Reading Spotify again corrects the date and leaves the origin.
+            assertTrue(sync.pull(force = true))
+            assertEquals(LikeOrigin.ANCHOR, likes.likedTrack("sp5")?.origin)
+            assertEquals(LikeOrigin.OWN, likes.likedTrack("sp9")?.origin)
+
+            // Upstream has the copied likes on top; the user's own come first, then Spotify's by date.
+            assertEquals(listOf("yt1", "yt2", "yt5", "yt9"), local.order())
+            assertEquals(listOf("yt5", "yt9", "yt2", "yt1"), orderLikes(local.order(), likeOrder))
         }
 }

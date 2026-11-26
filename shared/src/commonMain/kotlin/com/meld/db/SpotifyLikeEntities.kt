@@ -1,5 +1,6 @@
 package com.meld.db
 
+import androidx.room3.ColumnInfo
 import androidx.room3.Entity
 import androidx.room3.Index
 import androidx.room3.PrimaryKey
@@ -22,7 +23,8 @@ data class SpotifyLikeOutboxEntity(
  * base of the three-way comparison: only a track listed here and gone from Spotify was removed there.
  * [pending] rows still have to be found on YouTube; after that [youtubeId] is the song liked for the
  * track, or null when it has no confident match. [addedAt] is when Spotify says the track was liked, in
- * epoch milliseconds; null on rows written before it was kept.
+ * epoch milliseconds; null on rows written before it was kept. [origin] is a
+ * [com.meld.spotify.likes.LikeOrigin]: how the song came to be liked here, which the order of the liked songs is built from.
  */
 @Entity(tableName = "spotify_liked_track", indices = [Index("youtubeId")])
 data class SpotifyLikedTrackEntity(
@@ -30,4 +32,5 @@ data class SpotifyLikedTrackEntity(
     val youtubeId: String?,
     val pending: Boolean,
     val addedAt: Long? = null,
+    @ColumnInfo(defaultValue = "0") val origin: Int = 0,
 )

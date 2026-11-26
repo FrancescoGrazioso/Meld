@@ -19,7 +19,7 @@ const val MELD_DATABASE_NAME = "meld.db"
  */
 @Database(
     entities = [SpotifyMatchEntity::class, SpotifyLikeOutboxEntity::class, SpotifyLikedTrackEntity::class, QobuzMatchEntity::class],
-    version = 4,
+    version = 5,
     exportSchema = true,
 )
 @ColumnTypeConverters(MeldConverters::class)
@@ -76,6 +76,13 @@ val MELD_MIGRATION_3_4 =
         }
     }
 
+val MELD_MIGRATION_4_5 =
+    object : Migration(4, 5) {
+        override suspend fun migrate(connection: SQLiteConnection) {
+            connection.execSQL("ALTER TABLE `spotify_liked_track` ADD COLUMN `origin` INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+
 /** The database every platform opens: the platform's builder plus Meld's migrations. */
 fun buildMeldDatabase(context: Any? = null): MeldDatabase =
-    getMeldDatabaseBuilder(context).addMigrations(MELD_MIGRATION_1_2, MELD_MIGRATION_2_3, MELD_MIGRATION_3_4).build()
+    getMeldDatabaseBuilder(context).addMigrations(MELD_MIGRATION_1_2, MELD_MIGRATION_2_3, MELD_MIGRATION_3_4, MELD_MIGRATION_4_5).build()

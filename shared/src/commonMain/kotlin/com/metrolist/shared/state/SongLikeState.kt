@@ -69,6 +69,9 @@ object SongLikeState {
 
     // Meld: the likes brought in from Spotify take the order they were liked in there.
     val likedSongRecency: List<String> get() = SpotifyLikedOrder.apply(storedLikedSongRecency)
+
+    // Meld: the list as upstream keeps it, which is what the order above is worked out from.
+    internal val upstreamLikedSongRecency: List<String> get() = storedLikedSongRecency
     private val remoteSyncMutex = Mutex()
 
     private data class RemoteRefresh(

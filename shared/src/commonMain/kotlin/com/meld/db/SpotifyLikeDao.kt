@@ -67,6 +67,12 @@ interface SpotifyLikeDao {
     suspend fun setLikedTrackDates(dates: Map<String, Long>) = dates.forEach { (spotifyId, addedAt) -> setLikedTrackDate(spotifyId, addedAt) }
 
     /** Lets the tracks that had no match be looked up again. */
+    @Query("UPDATE spotify_liked_track SET origin = :origin WHERE youtubeId = :youtubeId")
+    suspend fun setLikedTrackOrigin(
+        youtubeId: String,
+        origin: Int,
+    )
+
     @Query("UPDATE spotify_liked_track SET pending = 1 WHERE youtubeId IS NULL")
     suspend fun retryUnmatchedLikedTracks()
 
