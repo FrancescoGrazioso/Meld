@@ -1,5 +1,6 @@
 package com.meld.spotify.library
 
+import androidx.compose.runtime.snapshotFlow
 import com.meld.spotify.SpotifyAlbum
 import com.meld.spotify.SpotifyConnection
 import com.meld.spotify.SpotifyConnectionState
@@ -7,6 +8,7 @@ import com.meld.spotify.SpotifyError
 import com.meld.spotify.SpotifyHomeFeed
 import com.meld.spotify.SpotifyHomeItem
 import com.meld.spotify.SpotifyLibraryItem
+import com.metrolist.shared.settings.Settings
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
@@ -18,6 +20,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -154,6 +157,17 @@ private fun SpotifyHomeItem.toEntry(): SpotifyLibraryEntry =
         is SpotifyHomeItem.Album -> album.toEntry()
         is SpotifyHomeItem.Artist -> artist.toEntry()
     }
+
+/**
+ * Whether the home screen is Spotify's just now, see [SpotifyInHomeState.replacesHome]. The app's home
+ * follows it to drop a chip picked earlier: the chips are not shown there, and a picked one would go on
+ * replacing the user's own rows with nothing to un-pick it.
+ */
+fun spotifyOnlyHome(): Flow<Boolean> {
+    val home = KoinPlatform.getKoinOrNull()?.getOrNull<SpotifyInHome>() ?: return flowOf(false)
+    return combine(home.state, snapshotFlow { Settings.shared.meldHomeSpotifyOnly }) { state, wanted -> state.replacesHome(wanted) }
+        .distinctUntilChanged()
+}
 
 /** Where the app's own home refresh also refreshes the Spotify rows. */
 fun refreshSpotifyInHome() {

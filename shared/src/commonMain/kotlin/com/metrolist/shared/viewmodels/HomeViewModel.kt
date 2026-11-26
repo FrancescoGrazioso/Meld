@@ -3,6 +3,7 @@ package com.metrolist.shared.viewmodels
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.snapshotFlow
 import com.meld.spotify.library.refreshSpotifyInHome
+import com.meld.spotify.library.spotifyOnlyHome
 import com.metrolist.innertubex.InnerTube
 import com.metrolist.shared.auth.AuthManager
 import com.metrolist.shared.db.MusicDatabase
@@ -266,6 +267,11 @@ class HomeViewModel(
         )
 
     init {
+        // Meld: a Spotify-only home shows no chips, so a chip picked before must not go on filtering it.
+        scope.launch {
+            combine(spotifyOnlyHome(), _uiState.map { it.selectedChip != null }.distinctUntilChanged()) { only, picked -> only && picked }
+                .collect { if (it) toggleChip(null) }
+        }
         AuthManager().restorePersistedSession()
         val restoreGeneration = contentLoadGeneration
         scope.launch {
