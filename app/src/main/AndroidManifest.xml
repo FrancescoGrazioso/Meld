@@ -319,6 +319,20 @@
                 android:resource="@xml/music_widget_info" />
         </receiver>
 
+        <!-- Music 4x1 Widget (YouTube Music style) -->
+        <receiver
+            android:name=".widget.Music4x1WidgetReceiver"
+            android:exported="true"
+            android:label="@string/widget_music_4x1">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/music_4x1_widget_info" />
+        </receiver>
+
 
         <!-- Playlist Widget -->
         <receiver
